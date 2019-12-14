@@ -67,7 +67,7 @@ int main(void)
 
   HAL_Init();
 
-  //SystemClock_Config();
+  SystemClock_Config();
 
   int k = 0;
   while (1)
