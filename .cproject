@@ -89,6 +89,8 @@
                             							
                             <option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm.338582521" name="Remove command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm" value="rm" valueType="string"/>
                             							
+                            <option id="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id.1795909936" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id" value="962691777" valueType="string"/>
+                            							
                             <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.2080922722" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
                             							
                             <builder buildPath="${workspace_loc:/Test2}/Debug" id="ilg.gnuarmeclipse.managedbuild.cross.builder.1322464437" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
@@ -251,6 +253,10 @@
                                 								
                                 <option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano.886483089" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano" value="true" valueType="boolean"/>
                                 								
+                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat.827535262" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                								
+                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usescanffloat.634818495" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usescanffloat" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                								
                                 <inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input.114133094" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input">
                                     									
                                     <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -292,12 +298,6 @@
                     <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1710887958.1493562930" name="stm32_assert_template.h" rcbsApplicability="disable" resourcePath="system/include/stm32f1xx/stm32_assert_template.h" toolsToInvoke=""/>
                     					
                     <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1710887958.198649439" name="stm32f1xx_hal_conf_template.h" rcbsApplicability="disable" resourcePath="system/include/stm32f1xx/stm32f1xx_hal_conf_template.h" toolsToInvoke=""/>
-                    					
-                    <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1710887958.1149496267" name="stm32f1xx_hal_timebase_tim_template.c" rcbsApplicability="disable" resourcePath="system/src/stm32f1xx/stm32f1xx_hal_timebase_tim_template.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.646964009.1660157735">
-                        						
-                        <tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.646964009.1660157735" name="GNU ARM Cross C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.646964009"/>
-                        					
-                    </fileInfo>
                     					
                     <sourceEntries>
                         						

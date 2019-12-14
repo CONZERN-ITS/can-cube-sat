@@ -13,6 +13,7 @@ int main(void)
 
     SystemClock_Config();
 
+    I2C_HandleTypeDef hi2c;
     /*
     onewire_t how;
     onewire_ResetSearch()
@@ -24,7 +25,7 @@ int main(void)
         status = onewire_Next(&OneWireStruct);
     }*/
 
-
+/*
 
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
@@ -38,7 +39,6 @@ int main(void)
 
 
     __HAL_RCC_I2C1_CLK_ENABLE();
-    I2C_HandleTypeDef hi2c;
     hi2c.Instance = I2C1;
     hi2c.Init.ClockSpeed = 100000;
     hi2c.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
@@ -52,7 +52,16 @@ int main(void)
     {
         Error_Handler();
     }
+*/
 
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
 
     GPIO_InitStruct.Pin = GPIO_PIN_5;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -69,12 +78,12 @@ int main(void)
     char str[] = "hey";
    // int t = HAL_I2C_Master_Transmit(&hi2c, 0b1000000, str, sizeof(str), 1000);
 
-    //pin_res = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
-   // trace_printf("Pin after start: %d\n", pin_res);
+   int pin_res = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
+   trace_printf("Pin before start: %d\n", pin_res);
 
     //trace_printf("is all ok? %d\n", t);
     struct bme280_dev_s hbme280;
-    bme280_register_i2c(&hbme280, &hi2c, BME280_ADDRESS_VCC);
+    bme280_register_i2c(&hbme280, &hi2c, BME280_ADDRESS_GND << 1);
     bme280_init(&hbme280);
 
     ina219_t hina;
@@ -90,7 +99,7 @@ int main(void)
         //_ina_read(&hina, &current, &power);
         //trace_printf("current: %f power: %f\n", current, power);
 
-        struct bme280_float_data_s data;
+        struct bme280_float_data_s data = {0};
         bme280_read(&hbme280, (char*)&data, sizeof(struct bme280_float_data_s));
         trace_printf("pressure: %f temp: %f humidity: %f\n", data.pressure,
                 data.temperature, data.humidity);
