@@ -25,6 +25,7 @@ int main(void)
     }*/
 
 
+
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
     GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -51,9 +52,27 @@ int main(void)
     {
         Error_Handler();
     }
+
+
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    int pp = 0;
+    while (1) {
+
+        int pin_res = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
+        trace_printf("%d | \tPin: %d\n", pp++, pin_res);
+    }
     char str[] = "hey";
-    int t = HAL_I2C_Master_Transmit(&hi2c, 0b1000000, str, sizeof(str), 1000);
-    trace_printf("is all ok? %d\n", t);
+   // int t = HAL_I2C_Master_Transmit(&hi2c, 0b1000000, str, sizeof(str), 1000);
+
+    //pin_res = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
+   // trace_printf("Pin after start: %d\n", pin_res);
+
+    //trace_printf("is all ok? %d\n", t);
     struct bme280_dev_s hbme280;
     bme280_register_i2c(&hbme280, &hi2c, BME280_ADDRESS_VCC);
     bme280_init(&hbme280);
