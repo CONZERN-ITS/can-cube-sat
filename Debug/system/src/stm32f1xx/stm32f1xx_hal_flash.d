@@ -16,10 +16,14 @@ system/src/stm32f1xx/stm32f1xx_hal_flash.o: \
  ../system/include/stm32f1xx/stm32f1xx_hal_gpio_ex.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_dma.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_dma_ex.h \
+ ../system/include/stm32f1xx/stm32f1xx_hal_can.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_cortex.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_flash.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_flash_ex.h \
- ../system/include/stm32f1xx/stm32f1xx_hal_pwr.h
+ ../system/include/stm32f1xx/stm32f1xx_hal_i2c.h \
+ ../system/include/stm32f1xx/stm32f1xx_hal_pwr.h \
+ ../system/include/stm32f1xx/stm32f1xx_hal_spi.h \
+ ../system/include/stm32f1xx/stm32f1xx_hal_uart.h
 
 ../system/include/stm32f1xx/stm32f1xx_hal.h:
 
@@ -53,10 +57,18 @@ system/src/stm32f1xx/stm32f1xx_hal_flash.o: \
 
 ../system/include/stm32f1xx/stm32f1xx_hal_dma_ex.h:
 
+../system/include/stm32f1xx/stm32f1xx_hal_can.h:
+
 ../system/include/stm32f1xx/stm32f1xx_hal_cortex.h:
 
 ../system/include/stm32f1xx/stm32f1xx_hal_flash.h:
 
 ../system/include/stm32f1xx/stm32f1xx_hal_flash_ex.h:
 
+../system/include/stm32f1xx/stm32f1xx_hal_i2c.h:
+
 ../system/include/stm32f1xx/stm32f1xx_hal_pwr.h:
+
+../system/include/stm32f1xx/stm32f1xx_hal_spi.h:
+
+../system/include/stm32f1xx/stm32f1xx_hal_uart.h:

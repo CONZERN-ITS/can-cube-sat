@@ -15,10 +15,17 @@ src/main.o: ../src/main.c ../include/main.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_gpio_ex.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_dma.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_dma_ex.h \
+ ../system/include/stm32f1xx/stm32f1xx_hal_can.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_cortex.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_flash.h \
  ../system/include/stm32f1xx/stm32f1xx_hal_flash_ex.h \
- ../system/include/stm32f1xx/stm32f1xx_hal_pwr.h
+ ../system/include/stm32f1xx/stm32f1xx_hal_i2c.h \
+ ../system/include/stm32f1xx/stm32f1xx_hal_pwr.h \
+ ../system/include/stm32f1xx/stm32f1xx_hal_spi.h \
+ ../system/include/stm32f1xx/stm32f1xx_hal_uart.h ../include/bme280.h \
+ ../include/main.h ../include/ds18b20.h ../include/onewire.h \
+ ../include/Time.h ../include/ina219.h ../include/ina_helper.h \
+ ../system/include/diag/Trace.h ../include/ina219.h
 
 ../include/main.h:
 
@@ -54,10 +61,36 @@ src/main.o: ../src/main.c ../include/main.h \
 
 ../system/include/stm32f1xx/stm32f1xx_hal_dma_ex.h:
 
+../system/include/stm32f1xx/stm32f1xx_hal_can.h:
+
 ../system/include/stm32f1xx/stm32f1xx_hal_cortex.h:
 
 ../system/include/stm32f1xx/stm32f1xx_hal_flash.h:
 
 ../system/include/stm32f1xx/stm32f1xx_hal_flash_ex.h:
 
+../system/include/stm32f1xx/stm32f1xx_hal_i2c.h:
+
 ../system/include/stm32f1xx/stm32f1xx_hal_pwr.h:
+
+../system/include/stm32f1xx/stm32f1xx_hal_spi.h:
+
+../system/include/stm32f1xx/stm32f1xx_hal_uart.h:
+
+../include/bme280.h:
+
+../include/main.h:
+
+../include/ds18b20.h:
+
+../include/onewire.h:
+
+../include/Time.h:
+
+../include/ina219.h:
+
+../include/ina_helper.h:
+
+../system/include/diag/Trace.h:
+
+../include/ina219.h:

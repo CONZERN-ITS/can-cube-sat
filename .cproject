@@ -289,17 +289,21 @@
                         					
                     </folderInfo>
                     					
-                    <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1710887958.1075464696" name="mainss.c" rcbsApplicability="disable" resourcePath="src/mainss.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.646964009.337974497">
+                    <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1710887958.1493562930" name="stm32_assert_template.h" rcbsApplicability="disable" resourcePath="system/include/stm32f1xx/stm32_assert_template.h" toolsToInvoke=""/>
+                    					
+                    <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1710887958.198649439" name="stm32f1xx_hal_conf_template.h" rcbsApplicability="disable" resourcePath="system/include/stm32f1xx/stm32f1xx_hal_conf_template.h" toolsToInvoke=""/>
+                    					
+                    <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1710887958.1149496267" name="stm32f1xx_hal_timebase_tim_template.c" rcbsApplicability="disable" resourcePath="system/src/stm32f1xx/stm32f1xx_hal_timebase_tim_template.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.646964009.1660157735">
                         						
-                        <tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.646964009.337974497" name="GNU ARM Cross C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.646964009"/>
+                        <tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.646964009.1660157735" name="GNU ARM Cross C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.646964009"/>
                         					
                     </fileInfo>
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="mainss.c|syscalls.c|mains.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+                        <entry excluding="the_main.c|can.c|mainss.c|syscalls.c|mains.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
                         						
-                        <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="system"/>
+                        <entry excluding="src/stm32f1xx/stm32f1xx_hal_timebase_tim_template.c|src/stm32f1xx/stm32f1xx_hal_timebase_rtc_alarm_template.c|src/stm32f1xx/stm32f1xx_hal_msp_template.c|include/stm32f1xx/stm32_assert_template.h|include/stm32f1xx/stm32f1xx_hal_conf_template.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="system"/>
                         					
                     </sourceEntries>
                     				
@@ -609,7 +613,21 @@
     	
     <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
     	
-    <storageModule moduleId="refreshScope"/>
+    <storageModule moduleId="refreshScope" versionNumber="2">
+        		
+        <configuration configurationName="Debug">
+            			
+            <resource resourceType="PROJECT" workspacePath="/Test2"/>
+            		
+        </configuration>
+        		
+        <configuration configurationName="Release">
+            			
+            <resource resourceType="PROJECT" workspacePath="/Test2"/>
+            		
+        </configuration>
+        	
+    </storageModule>
     	
     <storageModule moduleId="scannerConfiguration">
         		

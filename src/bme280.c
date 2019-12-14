@@ -361,8 +361,34 @@ static int _bme280_do_write_spi( const struct bme280_dev_s * priv, uint8_t * ctr
     return rc;
 }
 
+static int _bme280_do_read_i2c( const struct bme280_dev_s * priv, uint8_t regaddr, uint8_t * data, size_t datasize)
+{
+
+    int ret = 0;
+    ret = HAL_I2C_Mem_Read(priv->setup_conf.iface.i2c.bus, priv->setup_conf.iface.i2c.devaddr,
+            regaddr, 1, data, datasize, TIMEOUT);
+    if (ret)
+        my_debug("ERROR: read_regs_i2c: i2c_writeread failed: %d\n", ret);
+
+    return ret;
+
+}
+
+static int _bme280_do_write_i2c( const struct bme280_dev_s * priv, uint8_t * ctrl_pairs, size_t ctrl_pairs_count)
+{
+
+    int ret;
+
+    ret = HAL_I2C_Master_Transmit(priv->setup_conf.iface.i2c.bus,priv->setup_conf.iface.i2c.devaddr,
+            ctrl_pairs, ctrl_pairs_count*2,TIMEOUT);
+    if(ret)
+        my_debug("ERROR: write_regs_i2c: i2c_write failed: %d\n", ret);
+
+    return ret;
 
 
+    return 0;
+}
 
 inline static int bme280_read_regn( const struct bme280_dev_s * priv, uint8_t regaddr, uint8_t * data, size_t size)
 {
@@ -647,6 +673,49 @@ int bme280_register_spi(struct bme280_dev_s * bme280, SPI_HandleTypeDef *hspi,
     return rc;
 }
 
+int bme280_register_i2c(struct bme280_dev_s *bme280, I2C_HandleTypeDef *i2c_handler, uint16_t devaddr)
+{
+    int rc;
+
+    struct bme280_dev_s *priv = bme280;
+
+    if (!priv)
+    {
+        my_debug("ERROR: Failed to allocate bme280 device instance\n");//TODO change description
+        return -ENOMEM;
+    }
+    priv->setup_conf.iface.i2c.bus = i2c_handler;
+    priv->setup_conf.iface.i2c.devaddr = devaddr;
+    priv->_do_read = _bme280_do_read_i2c;
+    priv->_do_write = _bme280_do_write_i2c;
+
+
+    /* reset the device */
+    rc = bme280_soft_reset(priv);
+    if (rc < 0)
+    {
+        return rc;
+    }
+
+    /* Check Device ID */
+    rc = bme280_checkid(priv);
+    if (rc < 0)
+    {
+        return rc;
+    }
+
+    /* Read the coefficient value */
+    rc = bme280_pull_calvals(priv);
+    if (rc < 0)
+    {
+        my_debug("ERROR: Can`t load calibration values from device: %d\n", rc);
+        return rc;
+    }
+    my_debug("INFO: loaded calibration values\n");
+
+    my_debug("INFO: BME280 driver loaded successfully!\n");
+    return rc;
+}
 
 int bme280_config_default(bme280_dev_s * bme280)
 {

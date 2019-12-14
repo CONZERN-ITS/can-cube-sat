@@ -35,8 +35,8 @@ void my_debug(const char *fmt, ...)
 	va_start(param, fmt);
 	int count = vsprintf(str, fmt, param);
 
-	HAL_UART_Transmit(&debug_huart, (uint8_t*)str, count, 100);
-	//trace_printf("%s", str);
+	//HAL_UART_Transmit(&debug_huart, (uint8_t*)str, count, 100);
+	trace_printf("%s", str);
 }
 #else
 void my_debug(const char *fmt, ...)

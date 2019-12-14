@@ -39,7 +39,8 @@ typedef int ssize_t;
 
 #define SNIOC_RESET 9
 
-
+#define BME280_ADDRESS_GND 0x76
+#define BME280_ADDRESS_VCC 0x77
 
 
 
@@ -304,7 +305,8 @@ typedef struct bme280_dev_s {
 
 int bme280_config_default(bme280_dev_s * bme280);
 
-//int bme280_register_i2c(struct bme280_dev_s *bme280, I2C_HandleTypeDef *i2c_handler, uint16_t devaddr);
+int bme280_register_i2c(struct bme280_dev_s *bme280, I2C_HandleTypeDef *i2c_handler, uint16_t devaddr);
+
 int bme280_register_spi(struct bme280_dev_s * bme280, SPI_HandleTypeDef *hspi,
         GPIO_TypeDef *NSS_port, uint16_t NSS_pin, uint32_t timeout);
 

@@ -1,80 +1,83 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "bme280.h"
+#include "ds18b20.h"
+#include "ina219.h"
+#include "ina_helper.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
 
-/* USER CODE END PFP */
 
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
+    HAL_Init();
 
-  HAL_Init();
+    SystemClock_Config();
 
-  SystemClock_Config();
+    /*
+    onewire_t how;
+    onewire_ResetSearch()
+    uint8_t status = onewire_First(&how);
+    while (status) {
+        //Save ROM number from device
+        onewire_GetFullROM(ROM_Array_Pointer);
+        //Check for new device
+        status = onewire_Next(&OneWireStruct);
+    }*/
 
-  int k = 0;
-  while (1)
-  {
-      k++;
-      trace_printf("Hey! %d\n", k);
-  }
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
+
+
+    __HAL_RCC_I2C1_CLK_ENABLE();
+    I2C_HandleTypeDef hi2c;
+    hi2c.Instance = I2C1;
+    hi2c.Init.ClockSpeed = 100000;
+    hi2c.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+    hi2c.Init.OwnAddress1 = 0;
+    hi2c.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+    hi2c.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+    hi2c.Init.OwnAddress2 = 0;
+    hi2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+    hi2c.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+    if (HAL_I2C_Init(&hi2c) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    char str[] = "hey";
+    int t = HAL_I2C_Master_Transmit(&hi2c, 0b1000000, str, sizeof(str), 1000);
+    trace_printf("is all ok? %d\n", t);
+    struct bme280_dev_s hbme280;
+    bme280_register_i2c(&hbme280, &hi2c, BME280_ADDRESS_VCC);
+    bme280_init(&hbme280);
+
+    ina219_t hina;
+    //ina219_init(&hina, &hi2c, INA219_I2CADDR_A1_GND_A0_GND);
+    //_ina_init(&hina, INA219_I2CADDR_A1_GND_A0_GND);
+
+    int k = 0;
+    while (1)
+    {
+        trace_printf("\nIteration: %d\n", k++);
+
+        float current, power;
+        //_ina_read(&hina, &current, &power);
+        //trace_printf("current: %f power: %f\n", current, power);
+
+        struct bme280_float_data_s data;
+        bme280_read(&hbme280, (char*)&data, sizeof(struct bme280_float_data_s));
+        trace_printf("pressure: %f temp: %f humidity: %f\n", data.pressure,
+                data.temperature, data.humidity);
+
+        HAL_Delay(1000);
+    }
 }
 
 /**
