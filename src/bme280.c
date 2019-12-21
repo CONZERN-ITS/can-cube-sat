@@ -72,7 +72,7 @@
 #define BME280_STANDBY_POS      (0x05)
 
 
-#define TIMEOUT 5000
+#define TIMEOUT 50000
 
 #define OK 1
 #define true 1
@@ -380,7 +380,7 @@ static int _bme280_do_write_i2c( const struct bme280_dev_s * priv, uint8_t * ctr
     int ret;
 
     ret = HAL_I2C_Master_Transmit(priv->setup_conf.iface.i2c.bus,priv->setup_conf.iface.i2c.devaddr,
-            ctrl_pairs, ctrl_pairs_count*2,TIMEOUT);
+            ctrl_pairs, ctrl_pairs_count*2, TIMEOUT);
     if(ret)
         my_debug("ERROR: write_regs_i2c: i2c_write failed: %d\n", ret);
 
