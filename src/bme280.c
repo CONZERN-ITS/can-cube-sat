@@ -485,7 +485,7 @@ int bme280_pull_calvals( struct bme280_dev_s *priv)
 int bme280_pull_sensor_conf( struct bme280_dev_s * priv)
 {
     int rc = 0;
-    uint8_t reg_data[4];
+    uint8_t reg_data[4] = {0};
     rc = bme280_read_regn(priv, BME280_CTRL_HUM_ADDR, reg_data, 4);
     if (rc < 0)
     {
@@ -661,7 +661,7 @@ int bme280_register_spi(struct bme280_dev_s * bme280, SPI_HandleTypeDef *hspi,
     rc = bme280_checkid(bme280);
     if (rc < 0)
     {
-        return rc;
+        //return rc;
     }
 
     /* Read the coefficient value */

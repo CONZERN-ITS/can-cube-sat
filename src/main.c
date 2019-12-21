@@ -29,8 +29,6 @@ int main(void)
         status = onewire_Next(&OneWireStruct);
     }*/
 
-
-
     __HAL_RCC_I2C1_CLK_ENABLE();
     hi2c.Instance = I2C1;
     hi2c.Init.ClockSpeed = 100000;
@@ -58,13 +56,13 @@ int main(void)
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
 
-
-
-
-    struct bme280_dev_s hbme280;
+    struct bme280_dev_s hbme280 = {0};
     bme280_register_i2c(&hbme280, &hi2c, BME280_ADDRESS_VCC << 1);
-    bme280_init(&hbme280);
+    if (bme280_init(&hbme280) < 0) {
+        trace_printf("Oh my god!\n");
+    }
 
+    bme280_pull_sensor_conf(&hbme280);
     ina219_t hina;
     //ina219_init(&hina, &hi2c, INA219_I2CADDR_A1_GND_A0_GND);
     //_ina_init(&hina, INA219_I2CADDR_A1_GND_A0_GND);
@@ -79,7 +77,7 @@ int main(void)
         //trace_printf("current: %f power: %f\n", current, power);
 
         struct bme280_float_data_s data = {0};
-        bme280_read(&hbme280, (char*)&data, sizeof(struct bme280_float_data_s));
+        bme280_read(&hbme280, (char*)&data, sizeof(data));
         trace_printf("pressure: %f temp: %f humidity: %f\n", data.pressure,
                 data.temperature, data.humidity);
 
