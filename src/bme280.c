@@ -72,7 +72,7 @@
 #define BME280_STANDBY_POS      (0x05)
 
 
-#define TIMEOUT 50000
+#define TIMEOUT 1000
 
 #define OK 1
 #define true 1
@@ -701,7 +701,7 @@ int bme280_register_i2c(struct bme280_dev_s *bme280, I2C_HandleTypeDef *i2c_hand
     rc = bme280_checkid(priv);
     if (rc < 0)
     {
-        return rc;
+        //return rc;
     }
 
     /* Read the coefficient value */
