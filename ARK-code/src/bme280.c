@@ -72,7 +72,7 @@
 #define BME280_STANDBY_POS      (0x05)
 
 
-#define TIMEOUT 5000
+#define TIMEOUT 1000
 
 #define OK 1
 #define true 1
@@ -380,7 +380,7 @@ static int _bme280_do_write_i2c( const struct bme280_dev_s * priv, uint8_t * ctr
     int ret;
 
     ret = HAL_I2C_Master_Transmit(priv->setup_conf.iface.i2c.bus,priv->setup_conf.iface.i2c.devaddr,
-            ctrl_pairs, ctrl_pairs_count*2,TIMEOUT);
+            ctrl_pairs, ctrl_pairs_count*2, TIMEOUT);
     if(ret)
         my_debug("ERROR: write_regs_i2c: i2c_write failed: %d\n", ret);
 
@@ -485,7 +485,7 @@ int bme280_pull_calvals( struct bme280_dev_s *priv)
 int bme280_pull_sensor_conf( struct bme280_dev_s * priv)
 {
     int rc = 0;
-    uint8_t reg_data[4];
+    uint8_t reg_data[4] = {0};
     rc = bme280_read_regn(priv, BME280_CTRL_HUM_ADDR, reg_data, 4);
     if (rc < 0)
     {
@@ -661,7 +661,7 @@ int bme280_register_spi(struct bme280_dev_s * bme280, SPI_HandleTypeDef *hspi,
     rc = bme280_checkid(bme280);
     if (rc < 0)
     {
-        return rc;
+        //return rc;
     }
 
     /* Read the coefficient value */
@@ -701,7 +701,7 @@ int bme280_register_i2c(struct bme280_dev_s *bme280, I2C_HandleTypeDef *i2c_hand
     rc = bme280_checkid(priv);
     if (rc < 0)
     {
-        return rc;
+        //return rc;
     }
 
     /* Read the coefficient value */

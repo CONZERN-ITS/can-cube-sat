@@ -11,9 +11,13 @@ int main(void)
 {
     HAL_Init();
 
+    __HAL_RCC_PWR_CLK_ENABLE();
+
     SystemClock_Config();
 
-    I2C_HandleTypeDef hi2c;
+    __HAL_RCC_AFIO_CLK_ENABLE();
+
+    I2C_HandleTypeDef hi2c = {0};
     /*
     onewire_t how;
     onewire_ResetSearch()
@@ -25,23 +29,10 @@ int main(void)
         status = onewire_Next(&OneWireStruct);
     }*/
 
-
-
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
-
-
     __HAL_RCC_I2C1_CLK_ENABLE();
     hi2c.Instance = I2C1;
     hi2c.Init.ClockSpeed = 100000;
-    hi2c.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+    hi2c.Init.DutyCycle = I2C_DUTYCYCLE_2;
     hi2c.Init.OwnAddress1 = 0;
     hi2c.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
     hi2c.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -52,24 +43,26 @@ int main(void)
     {
         Error_Handler();
     }
-/*
-    int pp = 0;
-    while (1) {
+    //__HAL_UNLOCK(&hi2c);
 
-        int pin_res = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
-        trace_printf("%d | \tPin: %d\n", pp++, pin_res);
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
+
+    struct bme280_dev_s hbme280 = {0};
+    bme280_register_i2c(&hbme280, &hi2c, BME280_ADDRESS_VCC << 1);
+    if (bme280_init(&hbme280) < 0) {
+        trace_printf("Oh my god!\n");
     }
-    char str[] = "hey";
-   // int t = HAL_I2C_Master_Transmit(&hi2c, 0b1000000, str, sizeof(str), 1000);
-*/
-   int pin_res = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
-   trace_printf("Pin before start: %d\n", pin_res);
 
-    //trace_printf("is all ok? %d\n", t);
-    struct bme280_dev_s hbme280;
-    bme280_register_i2c(&hbme280, &hi2c, BME280_ADDRESS_GND << 1);
-    bme280_init(&hbme280);
-
+    bme280_pull_sensor_conf(&hbme280);
     ina219_t hina;
     //ina219_init(&hina, &hi2c, INA219_I2CADDR_A1_GND_A0_GND);
     //_ina_init(&hina, INA219_I2CADDR_A1_GND_A0_GND);
@@ -84,7 +77,7 @@ int main(void)
         //trace_printf("current: %f power: %f\n", current, power);
 
         struct bme280_float_data_s data = {0};
-        bme280_read(&hbme280, (char*)&data, sizeof(struct bme280_float_data_s));
+        bme280_read(&hbme280, (char*)&data, sizeof(data));
         trace_printf("pressure: %f temp: %f humidity: %f\n", data.pressure,
                 data.temperature, data.humidity);
 
