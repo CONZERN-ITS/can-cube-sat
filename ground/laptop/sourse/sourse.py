@@ -1,8 +1,9 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
-from sourse import settings_control
 import pyqtgraph as PyQtGraph
 import numpy as NumPy
 import time
+from sourse import settings_control
+from sourse.data_control import *
 
 APP_ICON_PATH = "./sourse/images/StrelA_MS.png"
 WINDOW_ICON_PATH = "./sourse/images/window.png"
@@ -26,8 +27,21 @@ class AbstractProperties(QtWidgets.QWidget):
         self.default_btn = QtWidgets.QPushButton()
         self.default_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
 
+    def add_btn(self):
+        self.grid_layout.setRowStretch(self.grid_layout.rowCount(), 1)
+        self.grid_layout.addWidget(self.default_btn, self.grid_layout.rowCount(), 0)
+        self.grid_layout.addWidget(self.apply_btn, self.grid_layout.rowCount() - 1, self.grid_layout.columnCount() - 1)
+
     def setup_ui_design(self):
-        pass
+        self.apply_btn.setText("Apply")
+        self.default_btn.setText("Set to default")
+
+    def add_h_line(self, width):
+        frame = QtWidgets.QFrame()
+        frame.setFrameStyle(QtWidgets.QFrame.Plain)
+        frame.setFrameShape(QtWidgets.QFrame.HLine)
+        frame.setLineWidth(width)
+        self.grid_layout.addWidget(frame, self.grid_layout.rowCount(), 0, 1, -1)
 
     def add_edit_group(self, edit_num):
         edit_group = [QtWidgets.QLabel()]
@@ -44,6 +58,12 @@ class AbstractProperties(QtWidgets.QWidget):
         self.grid_layout.addWidget(check_box[1], self.grid_layout.rowCount() - 1, 1)
         return check_box
 
+    def add_combo_box(self):
+        combo_box = [QtWidgets.QLabel(), QtWidgets.QComboBox()]
+        self.grid_layout.addWidget(combo_box[0], self.grid_layout.rowCount(), 0)
+        self.grid_layout.addWidget(combo_box[1], self.grid_layout.rowCount() - 1, 1, 1, -1)
+        return combo_box
+
     def read_from_edit_group(self, edit_group, value_name, func):
         try:
             if (len(edit_group) > 2):
@@ -54,12 +74,7 @@ class AbstractProperties(QtWidgets.QWidget):
                 value = func(edit_group[1].text())
             self.settings.setValue(value_name, value)
         except Exception as e:
-            self.exeption_action(e)
-
-    def exeption_action(self, e):
-        if self.status_bar is not None:
-            self.status_bar.showMessage(str(e))
-        print(e)
+            print(e)
 
 
 class CommonProperties(AbstractProperties):
@@ -69,8 +84,7 @@ class CommonProperties(AbstractProperties):
     def setup_ui(self):
         super(CommonProperties, self).setup_ui()
         self.main_window_size = self.add_edit_group(2)
-        self.grid_layout.addWidget(self.apply_btn, self.grid_layout.rowCount(), self.grid_layout.columnCount() - 1)
-        self.grid_layout.addWidget(self.default_btn, self.grid_layout.rowCount() - 1, self.grid_layout.columnCount() - 2)
+        self.add_btn()
 
     def setup_ui_design(self):
         super(CommonProperties, self).setup_ui_design()
@@ -79,8 +93,6 @@ class CommonProperties(AbstractProperties):
         for i in range(2):
             self.main_window_size[i + 1].setText(str(self.settings.value('size')[i]))
         self.settings.endGroup()
-        self.apply_btn.setText("Apply")
-        self.default_btn.setText("Set to default")
 
     def save_properties(self):
         self.settings.beginGroup("MainWindow")
@@ -89,26 +101,106 @@ class CommonProperties(AbstractProperties):
 
 
 class GraphProperties(AbstractProperties):
+    class Plot_properties_widget(AbstractProperties):
+        def __init__(self, plot):
+            self.change_plot(plot)
+            super(GraphProperties.Plot_properties_widget, self).__init__()
+
+        def change_plot(self, plot):
+            self.plot = plot
+
+        def setup_ui(self):
+            super(GraphProperties.Plot_properties_widget, self).setup_ui()
+            self.name_label = QtWidgets.QLabel()
+            self.name_label.setAlignment(QtCore.Qt.AlignHCenter)
+            self.grid_layout.addWidget(self.name_label, self.grid_layout.rowCount(), 0, 1, -1)
+            self.curve_count = self.add_edit_group(1)
+            self.curve_colour = self.add_edit_group(1)
+
+        def setup_ui_design(self):
+            super(GraphProperties.Plot_properties_widget, self).setup_ui_design()
+            self.name_label.setText("Curve properties for " + self.plot + " plot")
+            self.settings.beginGroup("CentralWidget/GraphWidget/Graph/" + self.plot)
+            self.curve_count[0].setText('Curves count')
+            self.curve_count[1].setText(str(self.settings.value('count')))
+            self.curve_colour[0].setText('Curves colour\n(b,g,r,c,m,y,k,w)')
+            self.curve_colour[1].setText(str(self.settings.value('colour')))
+            self.settings.endGroup()
+
+        def save_properties(self):
+            self.settings.beginGroup("CentralWidget/GraphWidget/Graph/" + self.plot)
+            self.read_from_edit_group(self.curve_count, 'count', int)
+            self.read_from_edit_group(self.curve_count, 'curve_colour', str)
+            while len(self.settings.value('colour')) < self.settings.value('count'):
+                self.settings.setValue('colour', self.settings.value('colour') + 'g')
+            self.settings.endGroup()
+
+    def upload_plots(self):
+        self.settings.beginGroup("CentralWidget/GraphWidget/Graph")
+        groups = self.settings.childGroups()
+        self.settings.endGroup()
+        return groups
+
     def setup_ui(self):
         super(GraphProperties, self).setup_ui()
         self.graph_check_box = self.add_check_box(False)
+        self.graph_position = self.add_edit_group(4)
+        self.add_h_line(2)
+        self.plot_dict = {}
+        for group in self.upload_plots():
+            self.plot_dict.update([(group, [self.add_check_box(False), self.add_edit_group(4)])])
+            self.add_h_line(1)
+        self.plot_combo_box = self.add_combo_box()
+        self.plot_combo_box[1].addItems(self.upload_plots())
+        self.plot_combo_box[1].activated.connect(self.change_plot_properties)
+        self.property  = GraphProperties.Plot_properties_widget(self.plot_combo_box[1].currentText())
+        self.grid_layout.addWidget(self.property, self.grid_layout.rowCount(), 0, 1, -1)
+        self.add_btn()
 
-        self.grid_layout.addWidget(self.apply_btn, self.grid_layout.rowCount(), self.grid_layout.columnCount() - 1)
-        self.grid_layout.addWidget(self.default_btn, self.grid_layout.rowCount()-1, self.grid_layout.columnCount() - 2)
+    def upload_plots_position(self):
+        for plot in self.plot_dict.items():
+            self.settings.beginGroup("CentralWidget/GraphWidget/Graph/" + plot[0])
+            check_box = plot[1][0]
+            edit_group = plot[1][1]
+            check_box[0].setText(plot[0] + ' plot')
+            check_box[1].setCheckState(int(self.settings.value('is_on')))
+            edit_group[0].setText('Position (position, span)')
+            for i in range(4):
+                edit_group[i + 1].setText(str(self.settings.value('position')[i]))
+            self.settings.endGroup()
 
     def setup_ui_design(self):
         super(GraphProperties, self).setup_ui_design()
         self.settings.beginGroup("CentralWidget/GraphWidget")
         self.graph_check_box[0].setText('Graph widget')
         self.graph_check_box[1].setCheckState(int(self.settings.value('is_on')))
+        self.graph_position[0].setText('Widget position (position, span)')
+        for i in range(4):
+            self.graph_position[i + 1].setText(str(self.settings.value('position')[i]))
+        self.plot_combo_box[0].setText('Graph')
         self.settings.endGroup()
-        self.apply_btn.setText("Apply")
-        self.default_btn.setText("Set to default")
+        self.upload_plots_position()
+
+    def change_plot_properties(self):
+        self.property.change_plot(self.plot_combo_box[1].currentText())
+        self.property.setup_ui_design()
+
+    def save_plots_position(self):
+        for plot in self.plot_dict.items():
+            self.settings.beginGroup("CentralWidget/GraphWidget/Graph/" + plot[0])
+            check_box = plot[1][0]
+            edit_group = plot[1][1]
+            self.settings.setValue('is_on', check_box[1].checkState())
+            self.read_from_edit_group(edit_group, 'position', int)
+            self.settings.endGroup()
 
     def save_properties(self):
         self.settings.beginGroup("CentralWidget/GraphWidget")
         self.settings.setValue('is_on', self.graph_check_box[1].checkState()) 
+        self.read_from_edit_group(self.graph_position, 'position', int)
         self.settings.endGroup()
+        self.save_plots_position()
+        self.property.save_properties()
 
 
 class MapProperties(AbstractProperties):
@@ -129,6 +221,11 @@ class SettingsWindow(QtWidgets.QMainWindow):
         self.settings = settings_control.init_settings()
 
         self.setWindowIcon(QtGui.QIcon(APP_ICON_PATH))
+        self.resize(400, 600)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.move_to_center()
+
+        self.settings_is_enabled = True
 
         self.setup_ui()
         self.setup_ui_design()
@@ -180,7 +277,13 @@ class SettingsWindow(QtWidgets.QMainWindow):
         self.central_widget.apply_btn.clicked.connect(self.set_properties)
         if self.centralWidget() is not None:
             self.takeCentralWidget()
+        self.central_widget.setEnabled(self.settings_is_enabled)
+
         self.setCentralWidget(self.central_widget)
+
+    def settings_enabled(self, mode):
+        self.settings_is_enabled = mode
+        self.central_widget.setEnabled(self.settings_is_enabled)
 
     def set_properties(self):
         self.central_widget.save_properties()
@@ -193,23 +296,28 @@ class SettingsWindow(QtWidgets.QMainWindow):
         self.hide()
         super(SettingsWindow, self).show()
 
+    def move_to_center(self):
+        frame = self.frameGeometry()
+        frame.moveCenter(QtWidgets.QDesktopWidget().availableGeometry().center())
+        self.move(frame.topLeft())
+
 
 class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
     class Curve():
-        def __init__(self, plot):
+        def __init__(self, plot, pen):
             self.plot = plot
-            self.pen = 'r'
             self.arr = None
             self.curve = None
+            self.pen=pen
 
         def show_data(self, data):
             if self.arr is None:
-                self.arr = NumPy.array([data[0], self.data_extractor(data[self.number])])
+                self.arr = NumPy.array(data)
                 if self.curve is None:
                     self.curve = self.plot.plot(self.arr, pen=self.pen)
                     return
             else:
-                self.arr = NumPy.vstack((self.arr, NumPy.array([data[0], self.data_extractor(data[self.number])])))
+                self.arr = NumPy.vstack((self.arr, NumPy.array(data)))
             self.curve.setData(self.arr)
 
         def clear(self):
@@ -233,29 +341,48 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
         axis_y.setLabel("Time")
         return self.addPlot(int(pos[0]), int(pos[1]), int(pos[2]), int(pos[3]), axisItems={'left': axis_x, 'bottom': axis_y})
 
-    def setup_curves(self, plot, count):
+    def setup_curves(self, plot, count, colour):
         curves = []
         for i in range(count):
-            curves += [self.Curve(plot)]
+            curves.append(GraphWidget.Curve(plot, colour[i]))
         return curves
 
     def setup_ui_design(self):
         self.plot_dict.clear()
         for plot in self.plot_list:
-            self.removeItem(plot)
+            try:
+                self.removeItem(plot)
+            except Exception as e:
+                print(e)
         self.setup_ui()
 
         self.settings.beginGroup("CentralWidget/GraphWidget")
         self.settings.beginGroup("Graph")
         for group in self.settings.childGroups():
             self.settings.beginGroup(group)
-            if self.settings.value("is_on"):
-                self.plot_list.append(self.setup_graph(self.settings.value("position"), "Height"))
+            if int(self.settings.value("is_on")):
+                self.plot_list.append(self.setup_graph(self.settings.value("position"), group))
                 self.plot_dict.update([(group, self.setup_curves(self.plot_list[-1],
-                                                                 self.settings.value("count")))])
+                                                                 int(self.settings.value("count")),
+                                                                 self.settings.value("colour")))])
             self.settings.endGroup()
         self.settings.endGroup()
         self.settings.endGroup()
+
+    def new_data_reaction(self, data):
+        for plot in self.plot_dict.items():
+            plot_buf = []
+            self.settings.beginGroup("CentralWidget/GraphWidget/Graph/" + plot[0])
+            for i in range(len(data)):
+                if (self.settings.value("packet_name") == data[i][0]) and ((len(data[i]) - 2) >= len(plot[1])):
+                    plot_buf.append(data[i])
+            for i in range(len(plot[1])):
+                curve_buf = []
+                for pack in plot_buf:  
+                    curve_buf.append((pack[1], pack[i + 2]))
+                if len(curve_buf) > 0:  
+                    plot[1][i].show_data(curve_buf)
+            self.settings.endGroup()
 
     def clear_data(self):
         for plot in self.plot_dict.items():
@@ -282,16 +409,81 @@ class CentralWidget(QtWidgets.QWidget):
             if int(self.settings.value("is_on")):
                 pos = self.settings.value("position")
                 self.grid_layout.addWidget(self.widgets_dict[key], int(pos[0]), int(pos[1]), int(pos[2]), int(pos[3]))
-                self.widgets_dict[key].setup_ui_design()
             self.settings.endGroup()
         self.settings.endGroup()
 
+    def new_data_reaction(self, data):
+        for widget in self.widgets_dict.items():
+            widget[1].new_data_reaction(data)
+
+    def clear_data(self):
+        for widget in self.widgets_dict.items():
+            widget[1].clear_data()
+
     def setup_ui_design(self):
+        for widget in self.widgets_dict.items():
+            widget[1].setup_ui_design()
         self.settings.beginGroup("CentralWidget")
         self.settings.endGroup()
 
 
 class MainWindow(QtWidgets.QMainWindow):
+    class DataManager(QtCore.QObject):
+        new_data = QtCore.pyqtSignal(tuple)
+        autoclose = QtCore.pyqtSignal(str)
+        def __init__(self, data_obj):
+            super(MainWindow.DataManager, self).__init__()
+            self.data_obj = data_obj
+            self.mutex = QtCore.QMutex()
+            self.set_close_flag(False)
+
+        def set_close_flag(self, mode):
+            self.mutex.lock()
+            self.close_flag = mode
+            self.mutex.unlock()
+
+        def change_data_obj(self, data_obj):
+            self.data_obj = data_obj
+
+        def start(self):
+            self.a = 0
+            self.b = 0
+            self.set_close_flag(False)
+            close = False
+            try:
+                self.data_obj.start()
+            except Exception as e:
+                self.autoclose.emit(str(e))
+                return
+            start_time = time.time()
+            data_buf = []
+            while not close:
+                self.mutex.lock()
+                close = self.close_flag
+                self.mutex.unlock()
+                try:
+                    data = self.data_obj.read_data()
+                except RuntimeError:
+                    pass
+                except EOFError as e:
+                    self.autoclose.emit(str(e))
+                    break
+                except Exception as e:
+                    print(e)
+                else:
+                    data_buf.append(data)
+                    if (time.time() - start_time) > 0.1:
+                        self.new_data.emit(tuple(data_buf))
+                        start_time = time.time()
+                        data_buf = []
+        def quit(self):
+            self.set_close_flag(True)
+            time.sleep(0.01)
+            try:
+                self.data_obj.stop()
+            except Exception as e:
+                pass
+
     def __init__(self):
         super(MainWindow, self).__init__()
         self.settings = settings_control.init_settings()
@@ -300,7 +492,8 @@ class MainWindow(QtWidgets.QMainWindow):
             settings_control.set_to_default(self.settings)
             self.settings = settings_control.init_settings()
             self.settings.setValue('MainWindow/size', [1000, 800])
-        self.settings.setValue('CentralWidget/GraphWidget/position', [0,0,0,0])
+            self.settings.setValue('CentralWidget/GraphWidget/position', [0,0,0,0])
+            self.settings.setValue('CentralWidget/GraphWidget/is_on', 0)
 
         self.setWindowIcon(QtGui.QIcon(APP_ICON_PATH))
 
@@ -315,6 +508,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.setIconSize(QtCore.QSize(50, 50))
         self.toolbar.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
         self.connection_btn = self.toolbar.addAction('Connect')
+        self.connection_btn.triggered.connect(self.connection_action)
 
         self.settings_window = SettingsWindow()
 
@@ -329,26 +523,73 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.central_widget = CentralWidget()
         self.setCentralWidget(self.central_widget)
+        self.data_obj = self.get_data_object()
+        self.data_manager = MainWindow.DataManager(self.data_obj)
+        self.data_thread = QtCore.QThread(self)
+        self.data_manager.moveToThread(self.data_thread)
+        self.data_thread.started.connect(self.data_manager.start)
+        self.data_manager.new_data.connect(self.central_widget.new_data_reaction)
+        self.data_manager.autoclose.connect(self.connection_action)
 
         self.settings_window.change_settings.connect(self.setup_ui_design)
 
     def setup_ui_design(self):
-        self.resize(int(self.settings.value('MainWindow/size')[0]), int(self.settings.value('MainWindow/size')[1]))
-        self.setWindowTitle("StrelA MS")
-        self.menu_file.setTitle("&File")
-        self.action_settings.setText("&Settings")
-        self.action_settings.setStatusTip("Settings")
-        self.action_exit.setText("&Exit")
-        self.action_exit.setStatusTip("Exit")
+        if not self.data_thread.isRunning():
+            self.resize(int(self.settings.value('MainWindow/size')[0]), int(self.settings.value('MainWindow/size')[1]))
+            self.setWindowTitle("StrelA MS")
+            self.menu_file.setTitle("&File")
+            self.action_settings.setText("&Settings")
+            self.action_settings.setStatusTip("Settings")
+            self.action_exit.setText("&Exit")
+            self.action_exit.setStatusTip("Exit")
 
-        self.central_widget.setup_ui_design()
-        self.settings_window.setup_ui_design()
+
+            self.central_widget.setup_ui_design()
+            self.settings_window.setup_ui_design()
 
     def move_to_center(self):
         frame = self.frameGeometry()
         frame.moveCenter(QtWidgets.QDesktopWidget().availableGeometry().center())
         self.move(frame.topLeft())
 
+    def get_data_object(self):
+        self.settings.beginGroup('MainWindow/DataSourse')
+        sourse = self.settings.value('type')
+        if sourse == 'Log':
+            log = self.settings.value('Log/type')
+            if log == "TXT":
+                data = TXTLogDataSource(self.settings.value('Log/path'),
+                                 int(self.settings.value('Log/real_time')),
+                                 float(self.settings.value('Log/time_delay')),
+                                 int(self.settings.value('Log/time_from_zero')))
+            elif log == "MAV":
+                data = MAVLogDataSource(self.settings.value('Log/path'),
+                                     int(self.settings.value('Log/real_time')),
+                                     float(self.settings.value('Log/time_delay')),
+                                     int(self.settings.value('Log/time_from_zero')))
+        elif sourse == 'MAVLink':
+            data = MAVDataSource(self.settings.value('MAVLink/connection'))
+        self.settings.endGroup()
+        return data
+
     def closeEvent(self, evnt):
         self.settings_window.close()
         super(MainWindow, self).closeEvent(evnt)
+
+    def connection_action(self, stat_bar_msg=None):
+        if not self.data_thread.isRunning():
+            self.central_widget.clear_data()
+            self.settings_window.settings_enabled(False)
+            self.data_thread.start()
+            self.connection_btn.setText("&Disconnect")
+        else:
+            self.data_manager.quit()
+            self.data_thread.quit()
+            self.connection_btn.setText("&Connect")
+            time.sleep(0.1)
+            self.settings_window.settings_enabled(True)
+        if (stat_bar_msg is not None) and (stat_bar_msg != False):
+            print(stat_bar_msg)
+
+
+
