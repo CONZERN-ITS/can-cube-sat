@@ -35,6 +35,10 @@
 #include "BlinkLed.h"
 #include "state.h"
 
+#include "drivers/lis3mdl.h"
+#include "drivers/lsm6ds3.h"
+
+
 SPI_HandleTypeDef spi;
 
 // ----------------------------------------------------------------------------
@@ -69,6 +73,206 @@ SPI_HandleTypeDef spi;
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
+
+//Global structures
+state_system_t state_system;
+stateSINS_rsc_t stateSINS_rsc;
+state_zero_t state_zero;
+state_system_t state_system_prev;
+stateSINS_isc_t stateSINS_isc;
+stateSINS_isc_t stateSINS_isc_prev;
+
+static uint8_t	get_gyro_staticShift(float* gyro_staticShift);
+static uint8_t	get_accel_staticShift(float* gyro_staticShift, float* accel_staticShift);
+void get_staticShifts();
+
+void IMU_Init();
+int IMU_updateDataAll();
+void _IMUtask_updateData();
+
+
+/**
+  * @brief	Static function used to get gyro static shift
+  * @param	gyro_staticShift	Array used to store that shift
+  * @retval	Device's wire error
+  */
+static uint8_t get_gyro_staticShift(float* gyro_staticShift)
+{
+	uint8_t error = 0;
+	uint16_t zero_orientCnt = 2000;
+
+	float gyro[3] = {0, 0, 0};
+
+	//	Get static gyro shift
+	for (int i = 0; i < zero_orientCnt; i++)
+	{
+		//	Collect data
+		PROCESS_ERROR(lsm6ds3_get_g_data_rps(gyro));
+
+		for (int m = 0; m < 3; m++)
+			gyro_staticShift[m] += gyro[m];
+	}
+	for (int m = 0; m < 3; m++) {
+		gyro_staticShift[m] /= zero_orientCnt;
+	}
+end:
+	return error;
+}
+
+
+/**
+  * @brief	Static function used to get accel static shift
+  * @param	gyro_staticShift	Array used to get gyro shift from
+  * @param	accel_staticShift	Array used to store accel shift
+  * @retval	Device's wire error
+  */
+static uint8_t get_accel_staticShift(float* gyro_staticShift, float* accel_staticShift)
+{
+	uint8_t error = 0;
+	uint16_t zero_orientCnt = 300;
+
+	for (int i = 0; i < zero_orientCnt; i++)
+	{
+		float accel[3] = {0, 0, 0};
+		float gyro[3] = {0, 0, 0};
+
+		//	Collect data
+		PROCESS_ERROR(lsm6ds3_get_xl_data_g(accel));
+		PROCESS_ERROR(lsm6ds3_get_g_data_rps(gyro));
+
+		for (int k = 0; k < 3; k++) {
+			gyro[k] -= gyro_staticShift[k];
+		}
+
+		//	Set accel static shift vector as (0,0,g)
+		accel_staticShift[0] = 0;
+		accel_staticShift[1] = 0;
+		accel_staticShift[2] += sqrt(accel[0]*accel[0] + accel[1]*accel[1] + accel[2]*accel[2]);
+	}
+
+	//	Divide shift by counter
+	for (int m = 0; m < 3; m++)
+		accel_staticShift[m] /= zero_orientCnt;
+
+end:
+	return error;
+}
+
+
+/**
+  * @brief	Initializes I2C for IMU and IMU too
+  */
+void SENSORS_Init(void)
+{
+	int error = 0;
+	//	LSM6DS3 init
+	error = lsm6ds3_init();
+	trace_printf("lsm6ds3 init error: %d\n", error);
+	state_system.lsm6ds3_state = error;
+
+	//	LIS3MDL init
+	error = lis3mdl_init();
+	trace_printf("lis3mdl init error: %d\n", error);
+	state_system.lis3mdl_state= error;
+}
+
+
+/**
+  * @brief	Collects data from IMU, stores it and makes quat using S.Madgwick's algo
+  * @retval	R/w IMU error
+  */
+int UpdateDataAll(void)
+{
+	int error = 0;
+
+	//	Arrays
+	float accel[3] = {0, 0, 0};
+	float gyro[3] = {0, 0, 0};
+	float magn[3] = {0, 0, 0};
+
+	error = lsm6ds3_get_xl_data_g(accel);
+	error |= lsm6ds3_get_g_data_rps(gyro);
+	if (error)
+	{
+		state_system.lsm6ds3_state = error;
+		goto end;
+	}
+
+	error = lis3mdl_get_m_data_mG(magn);
+	if (error)
+	{
+		state_system.lis3mdl_state = error;
+		goto end;
+	}
+
+	float _time = (float)HAL_GetTick() / 1000;
+	state_system.time = _time;
+	//	пересчитываем их и записываем в структуры
+	for (int k = 0; k < 3; k++) {
+		stateSINS_rsc.accel[k] = accel[k];
+		gyro[k] -= state_zero.gyro_staticShift[k];
+		stateSINS_rsc.gyro[k] = gyro[k];
+		stateSINS_rsc.magn[k] = magn[k];
+	}
+
+	/////////////////////////////////////////////////////
+	/////////////	UPDATE QUATERNION  //////////////////
+	/////////////////////////////////////////////////////
+		float quaternion[4] = {0, 0, 0, 0};
+
+//	taskENTER_CRITICAL();
+		float dt = _time - state_system_prev.time;
+//	taskEXIT_CRITICAL();
+
+		float beta = 0.041;
+		MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
+
+		//	копируем кватернион в глобальную структуру
+//	taskENTER_CRITICAL();
+		stateSINS_isc.quaternion[0] = quaternion[0];
+		stateSINS_isc.quaternion[1] = quaternion[1];
+		stateSINS_isc.quaternion[2] = quaternion[2];
+		stateSINS_isc.quaternion[3] = quaternion[3];
+//	taskEXIT_CRITICAL();
+
+
+	/////////////////////////////////////////////////////
+	///////////  ROTATE VECTORS TO ISC  /////////////////
+	/////////////////////////////////////////////////////
+
+		float accel_ISC[3] = {0, 0, 0};
+		vect_rotate(accel, quaternion, accel_ISC);
+
+		//	Copy vectors to global structure
+		for (int i = 0; i < 3; i++)
+			accel_ISC[i] -= state_zero.accel_staticShift[i];
+
+		stateSINS_isc.accel[0] = accel_ISC[0];
+		stateSINS_isc.accel[1] = accel_ISC[1];
+		stateSINS_isc.accel[2] = accel_ISC[2];
+		stateSINS_isc.magn[0] = magn[0];
+		stateSINS_isc.magn[1] = magn[1];
+		stateSINS_isc.magn[2] = magn[2];
+
+end:
+//	if (error)
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+//	else
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+// TODO: wtf?
+	return error;
+}
+
+
+/**
+  * @brief	Special function for updating previous values structures by current values
+  */
+void SINS_updatePrevData(void)
+{
+	memcpy(&stateSINS_isc_prev,			&stateSINS_isc,			sizeof(stateSINS_isc));
+	memcpy(&state_system_prev, 			&state_system,		 	sizeof(state_system));
+}
+
 
 
 int32_t bus_init(void* handle)

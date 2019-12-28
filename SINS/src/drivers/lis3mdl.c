@@ -19,15 +19,15 @@
 #define MDPS_TO_RAD	M_PI / 180 / 1000
 
 //	Magnetometer bias & transform matrix
-#define X_MAGN_OFFSET		-292.920973
-#define Y_MAGN_OFFSET		 224.742275
-#define Z_MAGN_OFFSET		-130.841676
-#define XX_MAGN_TRANSFORM_MATIX	 0.002098
-#define YY_MAGN_TRANSFORM_MATIX	 0.002186
-#define ZZ_MAGN_TRANSFORM_MATIX	 0.002267
-#define XY_MAGN_TRANSFORM_MATIX	 0.000118
-#define XZ_MAGN_TRANSFORM_MATIX	-0.000354
-#define YZ_MAGN_TRANSFORM_MATIX	 0.000003
+#define X_MAGN_OFFSET		 1.000000
+#define Y_MAGN_OFFSET		 1.000000
+#define Z_MAGN_OFFSET		 1.000000
+#define XX_MAGN_TRANSFORM_MATIX	 0.000000
+#define YY_MAGN_TRANSFORM_MATIX	 0.000000
+#define ZZ_MAGN_TRANSFORM_MATIX	 0.000000
+#define XY_MAGN_TRANSFORM_MATIX	 0.000000
+#define XZ_MAGN_TRANSFORM_MATIX	 0.000000
+#define YZ_MAGN_TRANSFORM_MATIX	 0.000000
 
 
 typedef union{
@@ -55,7 +55,7 @@ static int32_t platform_write_lis3mdl(void *handle, uint8_t reg, uint8_t *bufp, 
 static int32_t platform_read_lis3mdl(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
 
 
-int32_t lis3mdl_init(void)
+int lis3mdl_init(void)
 {
 	int error = 0;
 
@@ -73,11 +73,11 @@ int32_t lis3mdl_init(void)
 	error |= lis3mdl_device_id_get(&lis3mdl_dev_ctx, &whoamI);
 	if (whoamI != LIS3MDL_ID)
 	{
-		trace_printf("lsm303c not found, %d\terror: %d\n", whoamI, error);
+		trace_printf("lis3mdl not found, %d\terror: %d\n", whoamI, error);
 		return -19;
 	}
 	else
-		trace_printf("lsm303c OK\n");
+		trace_printf("lis3mdl OK\n");
 
 	error |= lis3mdl_block_data_update_set(&lis3mdl_dev_ctx, PROPERTY_DISABLE);
 
@@ -91,7 +91,7 @@ int32_t lis3mdl_init(void)
 }
 
 
-uint32_t lsm303c_get_m_data_mG(float* magn)
+uint32_t lis3mdl_get_m_data_mG(float* magn)
 {
 	axis3bit16_t data_raw_magnetic;
 	uint8_t error;

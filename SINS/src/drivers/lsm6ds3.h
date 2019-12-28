@@ -10,6 +10,7 @@
 
 #include "lsm6ds3_reg.h"
 
-void lsm6ds3_init(void);
+int lsm6ds3_init(void);
+
 
 #endif /* DRIVERS_LSM6DS3_H_ */

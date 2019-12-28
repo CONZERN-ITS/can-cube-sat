@@ -1,5 +1,5 @@
 /*
- * lis3mdl.h
+* lis3mdl.h
  *
  *  Created on: 7 дек. 2019 г.
  *      Author: developer
@@ -12,8 +12,8 @@
 #include "state.h"
 #include "lis3mdl_reg.h"
 
-int32_t init_lis3mdl(void);
+int lis3mdl_init(void);
 
-
+uint32_t lis3mdl_get_m_data_mG(float* magn);
 
 #endif /* DRIVERS_LIS3MDL_H_ */
