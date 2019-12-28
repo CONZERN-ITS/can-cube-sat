@@ -33,6 +33,9 @@
 
 #include "Timer.h"
 #include "BlinkLed.h"
+#include "state.h"
+
+SPI_HandleTypeDef spi;
 
 // ----------------------------------------------------------------------------
 //
@@ -67,38 +70,95 @@
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
-int
-main(int argc, char* argv[])
+
+int32_t bus_init(void* handle)
 {
-  // Send a greeting to the trace device (skipped on Release).
-  trace_puts("Hello ARM World!");
+	int error = 0;
+	if (handle == &spi)
+	{
+		//	SPI init
+		spi.Instance = SPI1;
+		spi.Init.Mode = SPI_MODE_MASTER;
+		spi.Init.Direction = SPI_DIRECTION_2LINES;
+		spi.Init.DataSize = SPI_DATASIZE_8BIT;
+		spi.Init.CLKPolarity = SPI_POLARITY_LOW;
+		spi.Init.CLKPhase = SPI_PHASE_1EDGE;
+		spi.Init.NSS = SPI_NSS_SOFT;
+		spi.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+		spi.Init.FirstBit = SPI_FIRSTBIT_MSB;
+		spi.Init.TIMode = SPI_TIMODE_DISABLED;
+		spi.Init.CRCCalculation = SPI_CRCCALCULATION_ENABLED;
+		spi.Init.CRCPolynomial = 7;
 
-  // At this stage the system clock should have already been configured
-  // at high speed.
-  trace_printf("System clock: %u Hz\n", SystemCoreClock);
+		error |= HAL_SPI_Init(&spi);
+		HAL_Delay(200);
+		trace_printf("spi init error: %d\n", error);
+	}
+	else
+	{
+		trace_printf("invalid spi handle\n");
+		error = -19;
+	}
 
-  timer_start();
-
-  blink_led_init();
-  
-  uint32_t seconds = 0;
-
-  // Infinite loop
-  while (1)
-    {
-      blink_led_on();
-      timer_sleep(seconds == 0 ? TIMER_FREQUENCY_HZ : BLINK_ON_TICKS);
-
-      blink_led_off();
-      timer_sleep(BLINK_OFF_TICKS);
-
-      ++seconds;
-      // Count seconds on the trace device.
-      trace_printf("Second %u\n", seconds);
-    }
-  // Infinite loop, never return.
+	return error;
 }
 
+
+int main(int argc, char* argv[])
+{
+	//	Global structures init
+//	memset(&stateIMU_rsc, 			0x00, sizeof(stateIMU_rsc));
+//	memset(&stateIMU_isc, 			0x00, sizeof(stateIMU_isc));
+//	memset(&state_system, 			0x00, sizeof(state_system));
+//
+//	memset(&stateIMU_isc_prev, 		0x00, sizeof(stateIMU_isc_prev));
+//	memset(&state_system_prev, 		0x00, sizeof(state_system_prev));
+//
+//	state_system.MPU_state = 111;
+//	state_system.NRF_state = 111;
+//
+//
+	init_led();
+	bus_init(&spi);
+//
+//	if (DBGU)
+//		_init_usart_dbg();
+//
+//	//	Peripheral initialization
+//	if (IMU)
+//	{
+//		if (IMU_CALIBRATION)
+//			trace_printf("IMU calibration enable\n");
+//
+//		IMU_Init();
+//		get_staticShifts();
+//	}
+//
+//	if (RF)
+//		TM_Init();
+
+
+	for (; ; )
+	{
+
+
+
+		HAL_Delay(10);
+	}
+
+	return 0;
+}
+
+
+void init_led(void){
+	GPIO_InitTypeDef gpioc;
+	gpioc.Mode = GPIO_MODE_OUTPUT_PP;
+	gpioc.Pin = GPIO_PIN_12;
+	gpioc.Pull = GPIO_NOPULL;
+	gpioc.Speed = GPIO_SPEED_HIGH;
+	HAL_GPIO_Init(GPIOC, &gpioc);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
+}
 #pragma GCC diagnostic pop
 
 // ----------------------------------------------------------------------------

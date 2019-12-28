@@ -8,6 +8,8 @@
 #ifndef DRIVERS_LSM6DS3_H_
 #define DRIVERS_LSM6DS3_H_
 
+#include "lsm6ds3_reg.h"
 
+void lsm6ds3_init(void);
 
 #endif /* DRIVERS_LSM6DS3_H_ */
