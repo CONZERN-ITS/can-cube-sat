@@ -41,26 +41,26 @@ typedef union{
 } axis1bit16_t;
 
 
-static axis3bit16_t data_raw_magnetic;
-static axis1bit16_t data_raw_temperature;
-static float magnetic_mG[3];
-static float temperature_degC;
+//static axis3bit16_t data_raw_magnetic;
+//static axis1bit16_t data_raw_temperature;
+//static float magnetic_mG[3];
+//static float temperature_degC;
 static uint8_t whoamI, rst;
-static uint8_t tx_buffer[1000];
+//static uint8_t tx_buffer[1000];
 
 
 stmdev_ctx_t lis3mdl_dev_ctx;
 
-static int32_t platform_write_lis3mdl(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
-static int32_t platform_read_lis3mdl(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
+static int32_t lis3mdl_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
+static int32_t lis3mdl_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
 
 
 int lis3mdl_init(void)
 {
 	int error = 0;
 
-	lis3mdl_dev_ctx.write_reg = platform_write_lis3mdl;
-	lis3mdl_dev_ctx.read_reg = platform_read_lis3mdl;
+	lis3mdl_dev_ctx.write_reg = lis3mdl_write;
+	lis3mdl_dev_ctx.read_reg = lis3mdl_read;
 	lis3mdl_dev_ctx.handle = &spi;
 
 	// Reset to defaults
@@ -123,7 +123,7 @@ end:
 }
 
 
-static int32_t platform_write_lis3mdl(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len)
+static int32_t lis3mdl_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len)
 {
 	int error = 0;
 
@@ -145,7 +145,7 @@ static int32_t platform_write_lis3mdl(void *handle, uint8_t reg, uint8_t *bufp, 
 }
 
 
-static int32_t platform_read_lis3mdl(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len)
+static int32_t lis3mdl_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len)
 {
 	int error = 0;
 

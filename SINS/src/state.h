@@ -13,7 +13,7 @@
 #define STATE_H_
 
 
-//--------- LIS3MDL ---------------
+//--------- SPI ---------------
 #define PORT		GPIOA
 #define CS_PIN		GPIO_PIN_4
 #define SCK_PIN		GPIO_PIN_5
@@ -43,9 +43,11 @@ typedef struct {
 
 
 typedef struct {
+	//	zero params; this fields should be filled when device started it`s work
+	float zero_quaternion[4];
 	float gyro_staticShift[3];
 	float accel_staticShift[3];
-}state_zero_t;
+} state_zero_t;
 
 
 typedef struct {

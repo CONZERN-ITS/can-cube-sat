@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "diag/Trace.h"
 
 #include "Timer.h"
@@ -38,37 +39,14 @@
 #include "drivers/lis3mdl.h"
 #include "drivers/lsm6ds3.h"
 
+#include "MadgwickAHRS.h"
+#include "vector.h"
+#include "quaternion.h"
+
 
 SPI_HandleTypeDef spi;
 
-// ----------------------------------------------------------------------------
-//
-// Standalone STM32F4 led blink sample (trace via DEBUG).
-//
-// In debug configurations, demonstrate how to print a greeting message
-// on the trace device. In release configurations the message is
-// simply discarded.
-//
-// Then demonstrates how to blink a led with 1 Hz, using a
-// continuous loop and SysTick delays.
-//
-// Trace support is enabled by adding the TRACE macro definition.
-// By default the trace messages are forwarded to the DEBUG output,
-// but can be rerouted to any device or completely suppressed, by
-// changing the definitions required in system/src/diag/trace_impl.c
-// (currently OS_USE_TRACE_ITM, OS_USE_TRACE_SEMIHOSTING_DEBUG/_STDOUT).
-//
 
-// ----- Timing definitions -------------------------------------------------
-
-// Keep the LED on for 2/3 of a second.
-#define BLINK_ON_TICKS  (TIMER_FREQUENCY_HZ * 3 / 4)
-#define BLINK_OFF_TICKS (TIMER_FREQUENCY_HZ - BLINK_ON_TICKS)
-
-// ----- main() ---------------------------------------------------------------
-
-// Sample pragmas to cope with warnings. Please note the related line at
-// the end of this function, used to pop the compiler diagnostics status.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
@@ -83,12 +61,7 @@ stateSINS_isc_t stateSINS_isc;
 stateSINS_isc_t stateSINS_isc_prev;
 
 static uint8_t	get_gyro_staticShift(float* gyro_staticShift);
-static uint8_t	get_accel_staticShift(float* gyro_staticShift, float* accel_staticShift);
-void get_staticShifts();
-
-void IMU_Init();
-int IMU_updateDataAll();
-void _IMUtask_updateData();
+static uint8_t	get_accel_staticShift(float* accel_staticShift);
 
 
 /**
@@ -126,7 +99,7 @@ end:
   * @param	accel_staticShift	Array used to store accel shift
   * @retval	Device's wire error
   */
-static uint8_t get_accel_staticShift(float* gyro_staticShift, float* accel_staticShift)
+static uint8_t get_accel_staticShift(float* accel_staticShift)
 {
 	uint8_t error = 0;
 	uint16_t zero_orientCnt = 300;
@@ -134,15 +107,9 @@ static uint8_t get_accel_staticShift(float* gyro_staticShift, float* accel_stati
 	for (int i = 0; i < zero_orientCnt; i++)
 	{
 		float accel[3] = {0, 0, 0};
-		float gyro[3] = {0, 0, 0};
 
 		//	Collect data
 		PROCESS_ERROR(lsm6ds3_get_xl_data_g(accel));
-		PROCESS_ERROR(lsm6ds3_get_g_data_rps(gyro));
-
-		for (int k = 0; k < 3; k++) {
-			gyro[k] -= gyro_staticShift[k];
-		}
 
 		//	Set accel static shift vector as (0,0,g)
 		accel_staticShift[0] = 0;
@@ -159,9 +126,6 @@ end:
 }
 
 
-/**
-  * @brief	Initializes I2C for IMU and IMU too
-  */
 void SENSORS_Init(void)
 {
 	int error = 0;
@@ -178,7 +142,7 @@ void SENSORS_Init(void)
 
 
 /**
-  * @brief	Collects data from IMU, stores it and makes quat using S.Madgwick's algo
+  * @brief	Collects data from SINS, stores it and makes quat using S.Madgwick's algo
   * @retval	R/w IMU error
   */
 int UpdateDataAll(void)
@@ -317,36 +281,20 @@ int main(int argc, char* argv[])
 //
 //	memset(&stateIMU_isc_prev, 		0x00, sizeof(stateIMU_isc_prev));
 //	memset(&state_system_prev, 		0x00, sizeof(state_system_prev));
-//
-//	state_system.MPU_state = 111;
-//	state_system.NRF_state = 111;
-//
-//
+
+	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
+
 	init_led();
 	bus_init(&spi);
-//
-//	if (DBGU)
-//		_init_usart_dbg();
-//
-//	//	Peripheral initialization
-//	if (IMU)
-//	{
-//		if (IMU_CALIBRATION)
-//			trace_printf("IMU calibration enable\n");
-//
-//		IMU_Init();
-//		get_staticShifts();
-//	}
-//
-//	if (RF)
-//		TM_Init();
+	SENSORS_Init();
 
+	get_gyro_staticShift(state_zero.gyro_staticShift);
+
+	get_accel_staticShift(state_zero.accel_staticShift);
 
 	for (; ; )
 	{
-
-
-
+		UpdateDataAll();
 		HAL_Delay(10);
 	}
 
