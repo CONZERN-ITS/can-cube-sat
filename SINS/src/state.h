@@ -58,6 +58,11 @@ typedef struct {
 }stateSINS_isc_t;
 
 
+typedef struct {
+	float quaternion[4];
+
+}__attribute__((packed, aligned(1))) stateSINS_transfer_t;
+
 extern SPI_HandleTypeDef spi;
 
 extern stmdev_ctx_t lsm6ds3_dev_ctx;
@@ -68,6 +73,7 @@ extern state_zero_t state_zero;
 extern state_system_t state_system_prev;
 extern stateSINS_isc_t stateSINS_isc;
 extern stateSINS_isc_t stateSINS_isc_prev;
+extern stateSINS_transfer_t stateSINS_transfer;
 
 
 int32_t bus_init(void * handle);

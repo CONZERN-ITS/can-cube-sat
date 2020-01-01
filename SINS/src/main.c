@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "diag/Trace.h"
+#include "stm32f4xx_hal.h"
 
 #include "Timer.h"
 #include "BlinkLed.h"
@@ -45,6 +46,7 @@
 
 
 SPI_HandleTypeDef spi;
+UART_HandleTypeDef uartTransfer_data;
 
 
 #pragma GCC diagnostic push
@@ -59,9 +61,14 @@ state_zero_t state_zero;
 state_system_t state_system_prev;
 stateSINS_isc_t stateSINS_isc;
 stateSINS_isc_t stateSINS_isc_prev;
+stateSINS_transfer_t stateSINS_transfer;
+
 
 static uint8_t	get_gyro_staticShift(float* gyro_staticShift);
 static uint8_t	get_accel_staticShift(float* accel_staticShift);
+
+
+uint8_t need_transfer_data = 0;
 
 
 /**
@@ -272,6 +279,35 @@ int32_t bus_init(void* handle)
 }
 
 
+void uartInit(UART_HandleTypeDef * uart){
+	uint8_t error = 0;
+
+	uart->Instance = USART1;
+	uart->Init.BaudRate = 115200;
+	uart->Init.WordLength = UART_WORDLENGTH_8B;
+	uart->Init.StopBits = UART_STOPBITS_1;
+	uart->Init.Parity = UART_PARITY_NONE;
+	uart->Init.Mode = UART_MODE_TX_RX;
+	uart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	uart->Init.OverSampling = UART_OVERSAMPLING_16;
+
+	error = HAL_UART_Init(uart);
+	trace_printf("UART init error: %d\n", error);
+
+}
+
+void USART1_IRQHandler(void){
+	uint8_t tmp;
+	//Проверка флага о приеме байтика по USART
+	if ((USART3->SR & USART_SR_RXNE) != 0){
+		//Сохранение принятого байтика
+		tmp = USART3->DR;
+		if (tmp == 1)
+			need_transfer_data = 1;
+	}
+}
+
+
 int main(int argc, char* argv[])
 {
 	//	Global structures init
@@ -285,6 +321,7 @@ int main(int argc, char* argv[])
 	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
 	init_led();
+	uartInit(&uartTransfer_data);
 	bus_init(&spi);
 	SENSORS_Init();
 
@@ -295,7 +332,17 @@ int main(int argc, char* argv[])
 	for (; ; )
 	{
 		UpdateDataAll();
+		SINS_updatePrevData();
 		HAL_Delay(10);
+
+		if (need_transfer_data)
+		{
+			for (int i = 0; i < 4; i++)
+				stateSINS_transfer.quaternion[i] = stateSINS_isc.quaternion[i];
+
+			trace_printf("uart transmit error: %d\n", HAL_UART_Transmit(&uartTransfer_data, (uint8_t *) &stateSINS_transfer, sizeof(stateSINS_transfer), 10));
+			need_transfer_data = 0;
+		}
 	}
 
 	return 0;
