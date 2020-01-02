@@ -296,10 +296,12 @@ void uartInit(UART_HandleTypeDef * uart){
 
 }
 
-void USART1_IRQHandler(void){
+void USART1_IRQHandler(void)
+{
 	uint8_t tmp;
 	//Проверка флага о приеме байтика по USART
-	if ((USART3->SR & USART_SR_RXNE) != 0){
+	if ((USART3->SR & USART_SR_RXNE) != 0)
+	{
 		//Сохранение принятого байтика
 		tmp = USART3->DR;
 		if (tmp == 1)

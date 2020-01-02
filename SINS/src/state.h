@@ -31,6 +31,7 @@ typedef struct {
 	uint8_t bus_state;
 	uint8_t lis3mdl_state;
 	uint8_t lsm6ds3_state;
+	uint8_t GPS_state;
 	uint32_t time;
 }state_system_t;
 
@@ -59,6 +60,12 @@ typedef struct {
 
 
 typedef struct {
+	float time;
+	float coordinates[3];
+
+}stateGPS_t;
+
+typedef struct {
 	float quaternion[4];
 
 }__attribute__((packed, aligned(1))) stateSINS_transfer_t;
@@ -74,6 +81,7 @@ extern state_system_t state_system_prev;
 extern stateSINS_isc_t stateSINS_isc;
 extern stateSINS_isc_t stateSINS_isc_prev;
 extern stateSINS_transfer_t stateSINS_transfer;
+extern stateGPS_t stateGPS;
 
 
 int32_t bus_init(void * handle);
