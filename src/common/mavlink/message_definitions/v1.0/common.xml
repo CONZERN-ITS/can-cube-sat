@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<mavlink>
+  <version>3</version>
+  <dialect>0</dialect>
+  <enums/>
+  <messages/>
+</mavlink>
