@@ -1,3 +1,6 @@
 [submodule "src/common/mavlink/pymavlink"]
 	path = src/common/mavlink/pymavlink
 	url = https://github.com/CONZERN-ITS/pymavlink
+[submodule "src/common/esp-idf"]
+	path = src/common/esp-idf
+	url = https://github.com/CONZERN-ITS/esp-idf
