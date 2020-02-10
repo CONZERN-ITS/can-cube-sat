@@ -62,6 +62,7 @@ state_system_t state_system_prev;
 stateSINS_isc_t stateSINS_isc;
 stateSINS_isc_t stateSINS_isc_prev;
 stateSINS_transfer_t stateSINS_transfer;
+stateGPS_t stateGPS;
 
 
 static uint8_t	get_gyro_staticShift(float* gyro_staticShift);
@@ -309,16 +310,20 @@ void USART1_IRQHandler(void)
 	}
 }
 
+//FIXME: реализовать таймер для отправки пакетов с мк по uart
 
 int main(int argc, char* argv[])
 {
 	//	Global structures init
-//	memset(&stateIMU_rsc, 			0x00, sizeof(stateIMU_rsc));
-//	memset(&stateIMU_isc, 			0x00, sizeof(stateIMU_isc));
-//	memset(&state_system, 			0x00, sizeof(state_system));
-//
-//	memset(&stateIMU_isc_prev, 		0x00, sizeof(stateIMU_isc_prev));
-//	memset(&state_system_prev, 		0x00, sizeof(state_system_prev));
+	memset(&stateGPS, 				0x00, sizeof(stateGPS));
+	memset(&stateSINS_isc, 			0x00, sizeof(stateSINS_isc));
+	memset(&stateSINS_isc_prev, 	0x00, sizeof(stateSINS_isc_prev));
+	memset(&stateSINS_rsc, 			0x00, sizeof(stateSINS_rsc));
+	memset(&stateSINS_transfer,		0x00, sizeof(stateSINS_transfer));
+	memset(&state_system,			0x00, sizeof(state_system));
+	memset(&state_system_prev,		0x00, sizeof(state_system_prev));
+	memset(&state_zero,				0x00, sizeof(state_zero));
+
 
 	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
@@ -335,7 +340,7 @@ int main(int argc, char* argv[])
 	{
 		UpdateDataAll();
 		SINS_updatePrevData();
-		HAL_Delay(10);
+//		HAL_Delay(10);
 
 		if (need_transfer_data)
 		{
