@@ -22,6 +22,7 @@
 
 
 #define CALIBRATION 0
+#define GPS			1
 
 // if error set value and go to end
 #define PROCESS_ERROR(x) if (0 != (error = (x))) { goto end; }
@@ -48,6 +49,7 @@ typedef struct {
 	float zero_quaternion[4];
 	float gyro_staticShift[3];
 	float accel_staticShift[3];
+	float zero_GPS[3];
 } state_zero_t;
 
 

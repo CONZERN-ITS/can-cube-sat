@@ -112,7 +112,7 @@ uint32_t lis3mdl_get_m_data_mG(float* magn)
 		vmv(magn, offset_vector, magn);
 		mxv(transform_matrix, magn, magn);
 
-		//	Change axes to be like in accelerometer TODO: посмотреть в datasheet направление осей
+		//	Change axes to be like in accelerometer FIXME: посмотреть в datasheet направление осей
 		float tmp = magn[0];
 		magn[0] = -magn[1];
 		magn[1] = -tmp;
