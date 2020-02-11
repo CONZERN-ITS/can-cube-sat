@@ -68,7 +68,8 @@ stateGPS_t stateGPS;
 static uint8_t	get_gyro_staticShift(float* gyro_staticShift);
 static uint8_t	get_accel_staticShift(float* accel_staticShift);
 
-
+float transfer_time	= 0.0;
+float delta_time = 0.0;
 uint8_t need_transfer_data = 0;
 
 
@@ -177,6 +178,7 @@ int UpdateDataAll(void)
 		goto end;
 	}
 
+	__disable_irq();
 	float _time = (float)HAL_GetTick() / 1000;
 	state_system.time = _time;
 	//	пересчитываем их и записываем в структуры
@@ -186,6 +188,7 @@ int UpdateDataAll(void)
 		stateSINS_rsc.gyro[k] = gyro[k];
 		stateSINS_rsc.magn[k] = magn[k];
 	}
+	__enable_irq();
 
 	/////////////////////////////////////////////////////
 	/////////////	UPDATE QUATERNION  //////////////////
@@ -201,10 +204,12 @@ int UpdateDataAll(void)
 
 		//	копируем кватернион в глобальную структуру
 //	taskENTER_CRITICAL();
+		__disable_irq();
 		stateSINS_isc.quaternion[0] = quaternion[0];
 		stateSINS_isc.quaternion[1] = quaternion[1];
 		stateSINS_isc.quaternion[2] = quaternion[2];
 		stateSINS_isc.quaternion[3] = quaternion[3];
+		__enable_irq();
 //	taskEXIT_CRITICAL();
 
 
@@ -216,6 +221,7 @@ int UpdateDataAll(void)
 		vect_rotate(accel, quaternion, accel_ISC);
 
 		//	Copy vectors to global structure
+		__disable_irq();
 		for (int i = 0; i < 3; i++)
 			accel_ISC[i] -= state_zero.accel_staticShift[i];
 
@@ -225,6 +231,15 @@ int UpdateDataAll(void)
 		stateSINS_isc.magn[0] = magn[0];
 		stateSINS_isc.magn[1] = magn[1];
 		stateSINS_isc.magn[2] = magn[2];
+
+		delta_time = _time - HAL_GetTick() / 1000;
+		transfer_time += delta_time;
+		__enable_irq();
+
+		if (error)														//FIXME: change on GPIOC and port 12
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+		else
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
 
 end:
 //	if (error)
@@ -241,8 +256,10 @@ end:
   */
 void SINS_updatePrevData(void)
 {
+	__disable_irq();
 	memcpy(&stateSINS_isc_prev,			&stateSINS_isc,			sizeof(stateSINS_isc));
 	memcpy(&state_system_prev, 			&state_system,		 	sizeof(state_system));
+	__enable_irq();
 }
 
 
@@ -296,7 +313,7 @@ void uartInit(UART_HandleTypeDef * uart){
 	trace_printf("UART init error: %d\n", error);
 
 }
-
+/*
 void USART1_IRQHandler(void)
 {
 	uint8_t tmp;
@@ -309,7 +326,7 @@ void USART1_IRQHandler(void)
 			need_transfer_data = 1;
 	}
 }
-
+*/
 //FIXME: реализовать таймер для отправки пакетов с мк по uart
 
 int main(int argc, char* argv[])
@@ -342,13 +359,13 @@ int main(int argc, char* argv[])
 		SINS_updatePrevData();
 //		HAL_Delay(10);
 
-		if (need_transfer_data)
+		if (transfer_time > 1.0)
 		{
 			for (int i = 0; i < 4; i++)
 				stateSINS_transfer.quaternion[i] = stateSINS_isc.quaternion[i];
 
 			trace_printf("uart transmit error: %d\n", HAL_UART_Transmit(&uartTransfer_data, (uint8_t *) &stateSINS_transfer, sizeof(stateSINS_transfer), 10));
-			need_transfer_data = 0;
+			transfer_time = 0.0;
 		}
 	}
 
@@ -359,11 +376,11 @@ int main(int argc, char* argv[])
 void init_led(void){
 	GPIO_InitTypeDef gpioc;
 	gpioc.Mode = GPIO_MODE_OUTPUT_PP;
-	gpioc.Pin = GPIO_PIN_12;
+	gpioc.Pin = GPIO_PIN_6;
 	gpioc.Pull = GPIO_NOPULL;
 	gpioc.Speed = GPIO_SPEED_HIGH;
-	HAL_GPIO_Init(GPIOC, &gpioc);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
+	HAL_GPIO_Init(GPIOA, &gpioc);  //FIXME: on GPIOC and port 12
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, SET);
 }
 #pragma GCC diagnostic pop
 

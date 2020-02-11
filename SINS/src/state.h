@@ -14,11 +14,12 @@
 
 
 //--------- SPI ---------------
-#define PORT		GPIOA
-#define CS_PIN		GPIO_PIN_4
-#define SCK_PIN		GPIO_PIN_5
-#define MISO_PIN	GPIO_PIN_6
-#define MOSI_PIN	GPIO_PIN_7
+#define PORT				GPIOA
+#define CS_PIN_ACCEL		GPIO_PIN_4
+#define CS_PIN_MAGN			GPIO_PIN_0
+#define SCK_PIN				GPIO_PIN_5
+#define MISO_PIN			GPIO_PIN_6
+#define MOSI_PIN			GPIO_PIN_7
 
 
 #define CALIBRATION 0

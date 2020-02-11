@@ -105,12 +105,58 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi){
 		HAL_GPIO_Init(GPIOA, &gpioa);
 
 		gpioa.Mode = GPIO_MODE_OUTPUT_PP;
-		gpioa.Pin = GPIO_PIN_4 | GPIO_PIN_8;
+		gpioa.Pin = GPIO_PIN_4 | GPIO_PIN_0;
 		gpioa.Pull = GPIO_NOPULL;
 		gpioa.Speed = GPIO_SPEED_FREQ_HIGH;
 		HAL_GPIO_Init(GPIOA, &gpioa);
 
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, SET);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, SET);
+	}
+}
+
+
+void HAL_UART_MspInit(UART_HandleTypeDef *huart){
+
+	//	transmit uart
+	if (huart->Instance == USART1) {
+		__USART1_CLK_ENABLE();
+		__GPIOA_CLK_ENABLE();
+
+		GPIO_InitTypeDef gpioa;
+		gpioa.Alternate = GPIO_AF7_USART1;
+		gpioa.Mode = GPIO_MODE_AF_PP;
+		gpioa.Pin = GPIO_PIN_9;		//TX		//FIXME: вернуть PA9
+		gpioa.Pull = GPIO_NOPULL;
+		gpioa.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+		HAL_GPIO_Init(GPIOA, &gpioa);
+
+		gpioa.Alternate = GPIO_AF7_USART1;
+		gpioa.Mode = GPIO_MODE_AF_OD;
+		gpioa.Pin = GPIO_PIN_10;		//RX		//FIXME: вернуть PA10
+		gpioa.Pull = GPIO_NOPULL;
+		gpioa.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+		HAL_GPIO_Init(GPIOA, &gpioa);
+	}
+
+	//	uart_GPS
+	if(huart->Instance == USART2) {
+		__USART2_CLK_ENABLE();
+		__GPIOA_CLK_ENABLE();
+
+		GPIO_InitTypeDef gpioa;
+		gpioa.Alternate = GPIO_AF7_USART2;
+		gpioa.Mode = GPIO_MODE_AF_PP;
+		gpioa.Pin = GPIO_PIN_2;		//TX
+		gpioa.Pull = GPIO_NOPULL;
+		gpioa.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+		HAL_GPIO_Init(GPIOA, &gpioa);
+
+		gpioa.Alternate = GPIO_AF7_USART2;
+		gpioa.Mode = GPIO_MODE_AF_OD;
+		gpioa.Pin = GPIO_PIN_3;		//RX
+		gpioa.Pull = GPIO_NOPULL;
+		gpioa.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+		HAL_GPIO_Init(GPIOA, &gpioa);
 	}
 }
 

@@ -131,10 +131,10 @@ static int32_t lis3mdl_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t 
 	{
 		/* Write multiple command */
 		reg |= 0x40;
-		HAL_GPIO_WritePin(PORT, CS_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(PORT, CS_PIN_MAGN, GPIO_PIN_RESET);
 		HAL_SPI_Transmit(handle, &reg, 1, 1000);
 		HAL_SPI_Transmit(handle, bufp, len, 1000);
-		HAL_GPIO_WritePin(PORT, CS_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(PORT, CS_PIN_MAGN, GPIO_PIN_SET);
 	}
 	else
 		{
@@ -153,10 +153,10 @@ static int32_t lis3mdl_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t l
 	{
 		/* Read multiple command */
 		reg |= 0xC0;
-		HAL_GPIO_WritePin(PORT, CS_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(PORT, CS_PIN_MAGN, GPIO_PIN_RESET);
 		HAL_SPI_Transmit(handle, &reg, 1, 1000);
 		HAL_SPI_Receive(handle, bufp, len, 1000);
-		HAL_GPIO_WritePin(PORT, CS_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(PORT, CS_PIN_MAGN, GPIO_PIN_SET);
 	}
 	else
 	{
