@@ -60,6 +60,7 @@ int32_t lsm6ds3_init(void)
 	error |= lsm6ds3_reset_set(&lsm6ds3_dev_ctx, PROPERTY_ENABLE);
 	do {
 		error = lsm6ds3_reset_get(&lsm6ds3_dev_ctx, &rst);
+//		trace_printf("not reset\n");
 	} while (rst);
 
 	// Check who_am_i

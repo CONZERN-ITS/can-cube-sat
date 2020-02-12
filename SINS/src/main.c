@@ -144,9 +144,9 @@ void SENSORS_Init(void)
 	state_system.lsm6ds3_state = error;
 
 	//	LIS3MDL init
-	error = lis3mdl_init();
+	/*error = lis3mdl_init();
 	trace_printf("lis3mdl init error: %d\n", error);
-	state_system.lis3mdl_state= error;
+	state_system.lis3mdl_state= error; */ //FIXME: вернуть
 }
 
 
@@ -279,8 +279,8 @@ int32_t bus_init(void* handle)
 		spi.Init.NSS = SPI_NSS_SOFT;
 		spi.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
 		spi.Init.FirstBit = SPI_FIRSTBIT_MSB;
-		spi.Init.TIMode = SPI_TIMODE_DISABLED;
-		spi.Init.CRCCalculation = SPI_CRCCALCULATION_ENABLED;
+		spi.Init.TIMode = SPI_TIMODE_DISABLE;
+		spi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
 		spi.Init.CRCPolynomial = 7;
 
 		error |= HAL_SPI_Init(&spi);
