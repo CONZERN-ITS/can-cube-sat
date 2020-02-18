@@ -33,9 +33,9 @@
 <layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
@@ -52,7 +52,7 @@
 <layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
-<layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
 <layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
@@ -71,12 +71,12 @@
 <layer number="97" name="Info" color="7" fill="1" visible="no" active="no"/>
 <layer number="98" name="Guide" color="6" fill="1" visible="no" active="no"/>
 <layer number="99" name="SpiceOrder" color="5" fill="1" visible="no" active="no"/>
-<layer number="100" name="DocFrame" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="100" name="DocFrame" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="101" name="NotChangedData" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="101" name="NotChangedData" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="102" name="ChangedData" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="102" name="ChangedData" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="100" name="DocFrame" color="15" fill="1" visible="no" active="yes"/>
+<layer number="100" name="DocFrame" color="15" fill="1" visible="no" active="yes"/>
+<layer number="101" name="NotChangedData" color="15" fill="1" visible="no" active="yes"/>
+<layer number="101" name="NotChangedData" color="15" fill="1" visible="no" active="yes"/>
+<layer number="102" name="ChangedData" color="15" fill="1" visible="no" active="yes"/>
+<layer number="102" name="ChangedData" color="15" fill="1" visible="no" active="yes"/>
 </layers>
 <board>
 <plain>
@@ -412,9 +412,6 @@ design rules under a new name.</description>
 <wire x1="30.6628" y1="19.572" x2="11.417" y2="19.572" width="0.5" layer="1"/>
 <wire x1="11.417" y1="19.572" x2="11.3613375" y2="19.560659375" width="0.5" layer="1"/>
 <wire x1="30.6628" y1="19.572" x2="30.8613375" y2="19.560659375" width="0.5" layer="1"/>
-<wire x1="37.1868" y1="2.2834" x2="56.4326" y2="2.2834" width="0.5" layer="1"/>
-<wire x1="56.4326" y1="2.2834" x2="56.638659375" y2="2.4393375" width="0.5" layer="1"/>
-<wire x1="37.1868" y1="2.2834" x2="37.138659375" y2="2.4393375" width="0.5" layer="1"/>
 <contactref element="VAR5" pad="5"/>
 <wire x1="37.138659375" y1="2.4393375" x2="35.5606625" y2="2.4393375" width="0.5" layer="16"/>
 <wire x1="32.73" y1="5.27" x2="32.73" y2="7.5" width="0.5" layer="16"/>
@@ -422,6 +419,7 @@ design rules under a new name.</description>
 <wire x1="30.8613375" y1="19.560659375" x2="30.8613375" y2="17.6386625" width="0.5" layer="16"/>
 <wire x1="32.73" y1="15.77" x2="32.73" y2="7.5" width="0.5" layer="16"/>
 <wire x1="30.8613375" y1="17.6386625" x2="32.73" y2="15.77" width="0.5" layer="16"/>
+<wire x1="37.138659375" y1="2.4393375" x2="56.638659375" y2="2.4393375" width="0.5" layer="1"/>
 </signal>
 <signal name="BMS+">
 <contactref element="B+1" pad="P$44"/>
