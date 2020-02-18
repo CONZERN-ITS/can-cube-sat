@@ -130,6 +130,15 @@
 <text x="59.5" y="65.5" size="1.4224" layer="26" rot="MR0">BUS-</text>
 <text x="59.4" y="33.1" size="1.4224" layer="26" rot="MR0">BUS-</text>
 <text x="26.9" y="33.1" size="1.4224" layer="26" rot="MR0">BUS-</text>
+<text x="13.8" y="67.9" size="1.4224" layer="25" rot="MR45">BUS+</text>
+<text x="72.2" y="72" size="1.4224" layer="26" rot="MR315">BUS+</text>
+<text x="60.2" y="23.4" size="1.4224" layer="26" rot="MR225">BUS+</text>
+<text x="17.6" y="19.3" size="1.4224" layer="26" rot="MR135">BUS+</text>
+<text x="22.6" y="59.3" size="1.4224" layer="26" rot="MR45">BUS-</text>
+<text x="62.1" y="62.1" size="1.4224" layer="26" rot="MR315">BUS-</text>
+<text x="52.2" y="31.5" size="1.4224" layer="26" rot="MR225">BUS-</text>
+<text x="26.1" y="27.8" size="1.4224" layer="26" rot="MR135">BUS-</text>
+<text x="81" y="40.1" size="1.778" layer="25" rot="R90">BSK2 "Концерн ИТС"</text>
 </plain>
 <libraries>
 <library name="resistor" urn="urn:adsk.eagle:library:348">
