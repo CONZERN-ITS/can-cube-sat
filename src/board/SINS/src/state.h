@@ -14,14 +14,16 @@
 
 
 //--------- SPI ---------------
-#define PORT		GPIOA
-#define CS_PIN		GPIO_PIN_4
-#define SCK_PIN		GPIO_PIN_5
-#define MISO_PIN	GPIO_PIN_6
-#define MOSI_PIN	GPIO_PIN_7
+#define PORT				GPIOA
+#define CS_PIN_ACCEL		GPIO_PIN_4
+#define CS_PIN_MAGN			GPIO_PIN_0
+#define SCK_PIN				GPIO_PIN_5
+#define MISO_PIN			GPIO_PIN_6
+#define MOSI_PIN			GPIO_PIN_7
 
 
 #define CALIBRATION 0
+#define GPS			1
 
 // if error set value and go to end
 #define PROCESS_ERROR(x) if (0 != (error = (x))) { goto end; }
@@ -48,6 +50,7 @@ typedef struct {
 	float zero_quaternion[4];
 	float gyro_staticShift[3];
 	float accel_staticShift[3];
+	float zero_GPS[3];
 } state_zero_t;
 
 

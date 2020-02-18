@@ -60,6 +60,7 @@ int32_t lsm6ds3_init(void)
 	error |= lsm6ds3_reset_set(&lsm6ds3_dev_ctx, PROPERTY_ENABLE);
 	do {
 		error = lsm6ds3_reset_get(&lsm6ds3_dev_ctx, &rst);
+//		trace_printf("not reset\n");
 	} while (rst);
 
 	// Check who_am_i
@@ -144,10 +145,10 @@ static int32_t lsm6ds3_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t 
 	if (handle == &spi)
 	{
 		uint32_t error = 0;
-		HAL_GPIO_WritePin(PORT, CS_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(PORT, CS_PIN_ACCEL, GPIO_PIN_RESET);
 		error |= HAL_SPI_Transmit(handle, &reg, 1, 1000);
 		error |= HAL_SPI_Transmit(handle, bufp, len, 1000);
-		HAL_GPIO_WritePin(PORT, CS_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(PORT, CS_PIN_ACCEL, GPIO_PIN_SET);
 
 		return error;
 	}
@@ -173,10 +174,10 @@ static int32_t lsm6ds3_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t l
 		uint32_t error = 0;
 		/* Read command */
 		reg |= 0x80;
-		HAL_GPIO_WritePin(PORT, CS_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(PORT, CS_PIN_ACCEL, GPIO_PIN_RESET);
 		error |= HAL_SPI_Transmit(handle, &reg, 1, 1000);
 		error |= HAL_SPI_Receive(handle, bufp, len, 1000);
-		HAL_GPIO_WritePin(PORT, CS_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(PORT, CS_PIN_ACCEL, GPIO_PIN_SET);
 
 		return error;
 	}

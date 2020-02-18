@@ -24,8 +24,11 @@
 static UART_HandleTypeDef uart_GPS;
 struct minmea_sentence_gga frame;
 
+
+
 float coord_koef = 1853.31;
 
+uint8_t transfer_data = 0;
 
 float tocoord(struct minmea_float *f)
 {
@@ -69,7 +72,7 @@ void USART2_IRQHandler(void)
 			//Сохранение принятого байтика
 			tmp = USART3->DR;
 			if (tmp == (uint8_t)'$')
-				need_transfer_data = 1;
+				transfer_data = 1;
 		}
 
 	float _lon = tocoord(&frame.longitude);
