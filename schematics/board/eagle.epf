@@ -266,22 +266,6 @@ UsedLibraryUrn="urn:adsk.eagle:library:196"
 UsedLibraryUrn="urn:adsk.eagle:library:197"
 UsedLibraryUrn="urn:adsk.eagle:library:198"
 UsedLibraryUrn="urn:adsk.eagle:library:199"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/1437566-3.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/9C-8.000MEEJ-T.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/CanCubeSat.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/CanCubeSat1.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/ECS-49-S-1X.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/LIS3MDLTR.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/LSM6DS3.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/MAX809_.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/STM32F103C8T6.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/STM32F405RGT6.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/cansat-lib.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/idc_2x5.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/micro-stm.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/pinheadCS.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/resistor.lbr"
-UsedLibrary="C:/Users/Черкасова Марина/Documents/EAGLE/libraries/stm32f4.lbr"
 
 [Win_1]
 Type="Board Editor"
@@ -370,6 +354,7 @@ ArcDirection=0
 AddLevel=2
 PadsSameType=0
 Layer=91
+Views=" 1: -16.6288 -8.4676 844.688 428.468"
 Sheet="1"
 
 [Win_3]
