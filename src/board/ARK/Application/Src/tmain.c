@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "ds18b20.h"
-#define DS18B20_COUNT 1
+#define DS18B20_COUNT 2
 
 int tmain(void) {
 
@@ -22,19 +22,32 @@ int tmain(void) {
     int ds_count = 0;
 
 
-    hds[0].rom = 0;
-    onewire_ReadRom(&how, &hds[0].rom);
-    hds[0].resolution = ds18b20_Resolution_12bits;
-    hds[0].how = &how;
-    ds18b20_SetResolution(&hds[0], hds[0].resolution);
-    ds18b20_Start(&hds[0]);
+    onewire_ResetSearch(&how);
+    for (ds_count = 0; ds_count < DS18B20_COUNT; ds_count++) {
+        if (!onewire_Next(&how)) {
+            break;
+        }
+
+        onewire_GetFullROM(&how, &hds[ds_count].rom);
+        hds[ds_count].how = &how;
+        hds[ds_count].resolution = ds18b20_Resolution_12bits;
+        ds18b20_SetResolution(&hds[ds_count], hds[ds_count].resolution);
+    }
+    printf("DS count: %d\n", ds_count);
+
+    ds18b20_StartAll(&hds[0]);
 
     printf("while start\n");
     while(1) {
         float t = 0.1;
-        if (ds18b20_Read(&hds[0], &t)) {
-            printf("temp: %0.2f\n", t);
-            ds18b20_Start(&hds[0]);
+
+        if (onewire_ReadBit(hds->how)) {
+            for (int i = 0; i < ds_count; i++) {
+                ds18b20_Read(&hds[i], &t);
+                printf("[%d]: %0.2f\t", i, t);
+            }
+            printf("\n");
+            ds18b20_StartAll(&hds[0]);
         }
 
     }
