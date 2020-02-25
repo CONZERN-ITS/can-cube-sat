@@ -116,7 +116,7 @@
 <wire x1="22.528" y1="39.862" x2="10.528" y2="39.862" width="0.1" layer="21"/>
 <circle x="41" y="50" radius="16.375" width="2.25" layer="29"/>
 <rectangle x1="10.528" y1="39.862" x2="22.528" y2="56.862" layer="29"/>
-<text x="13.9" y="68.7" size="1.4224" layer="25" rot="MR45">BUS+</text>
+<text x="13.9" y="68.7" size="1.4224" layer="26" rot="MR45">BUS+</text>
 <text x="72.3" y="72.8" size="1.4224" layer="26" rot="MR315">BUS+</text>
 <text x="60.3" y="24.2" size="1.4224" layer="26" rot="MR225">BUS+</text>
 <text x="17.7" y="20.1" size="1.4224" layer="26" rot="MR135">BUS+</text>
@@ -124,7 +124,7 @@
 <text x="62.2" y="62.9" size="1.4224" layer="26" rot="MR315">BUS-</text>
 <text x="52.3" y="32.3" size="1.4224" layer="26" rot="MR225">BUS-</text>
 <text x="26.2" y="28.6" size="1.4224" layer="26" rot="MR135">BUS-</text>
-<text x="80.7" y="41.3" size="1.778" layer="25" rot="R90">BSK3 "Концерн ИТС"</text>
+<text x="53.3" y="9.1" size="1.778" layer="26" rot="MR0">BSK3 "Концерн ИТС"</text>
 </plain>
 <libraries>
 <library name="resistor" urn="urn:adsk.eagle:library:348">
