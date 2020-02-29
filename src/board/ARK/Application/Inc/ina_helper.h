@@ -14,8 +14,10 @@
 
 //#include "delay.h"
 
-#define INA_CURRENT_LSB	((ina219_float_t)(1.f/0x8000)) // считаем из расчета на 3 ампер максимум
-#define INA_POWER_LSB	((ina219_float_t)(20*INA_CURRENT_LSB))
+#define INA_CURRENT_LSB	        ((ina219_float_t)(1.f/0x8000)) // считаем из расчета на 3 ампер максимум
+#define INA_POWER_LSB	        ((ina219_float_t)(20*INA_CURRENT_LSB))
+#define INA_VOLTAGE_BUS_LSB     0.004
+#define INA_VOLTAGE_SHUNT_LSB   0.01
 
 static int _ina_init(ina219_t * self, I2C_HandleTypeDef *hi2c, ina219_i2c_addr_t addr) {
 	int error = 0;
@@ -73,8 +75,8 @@ static float _ina_current_convert(ina219_t * hina, int16_t current) {
     return current * INA_CURRENT_LSB;
 }
 static float _ina_bus_voltage_convert(ina219_t * hina, uint16_t voltage) {
-    return voltage * 0.004;
+    return voltage * INA_VOLTAGE_BUS_LSB;
 }
 static float _ina_shunt_voltage_convert(ina219_t * hina, int16_t voltage) {
-    return voltage * 0.01;
+    return voltage * INA_VOLTAGE_SHUNT_LSB;
 }
