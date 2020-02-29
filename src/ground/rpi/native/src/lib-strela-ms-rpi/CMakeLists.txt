@@ -11,4 +11,5 @@ add_library(strela-ms-rpi SHARED
 	${SRCDIR}/lis3mdl_STdC/driver/lis3mdl_reg.c
 	${SRCDIR}/lsm6ds3_STdC/driver/lsm6ds3_reg.h
 	${SRCDIR}/lsm6ds3_STdC/driver/lsm6ds3_reg.c
+	${SRCDIR}/strela-ms-rpi.c
 )

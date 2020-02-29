@@ -4,9 +4,9 @@
  *  Created on: Feb 21, 2020
  *      Author: developer
  */
-#include "lis3mdl_reg.h"
-#include "lsm6ds3_reg.h"
-
+//#include "lis3mdl_reg.h"
+#include "lis3mdl_STdC/driver/lis3mdl_reg.h"
+#include "lsm6ds3_STdC/driver/lsm6ds3_reg.h"
 typedef enum {
 	ERROR_NO_ERROR = 0,
 	ERROR_UNKNOWN_ID = -1
@@ -55,9 +55,9 @@ int32_t lis3mdl_get_data_G (float* data){
 
 	error = lis3mdl_magnetic_raw_get(&lis3mdl_context, data_raw);
 	if (error) return error;
-	data[0] = LIS3MDL_FROM_FS_16G_TO_G((data_raw[1] << 8) | data_raw[0]);
-	data[1] = LIS3MDL_FROM_FS_16G_TO_G((data_raw[3] << 8) | data_raw[2]);
-	data[2] = LIS3MDL_FROM_FS_16G_TO_G((data_raw[5] << 8) | data_raw[4]);
+	data[0] = LIS3MDL_FROM_FS_16G_TO_G(((data_raw[1] << 8) | data_raw[0]));
+	data[1] = LIS3MDL_FROM_FS_16G_TO_G(((data_raw[3] << 8) | data_raw[2]));
+	data[2] = LIS3MDL_FROM_FS_16G_TO_G(((data_raw[5] << 8) | data_raw[4]));
 	return 0;
 }
 
