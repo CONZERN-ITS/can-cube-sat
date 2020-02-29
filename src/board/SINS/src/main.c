@@ -274,8 +274,8 @@ int32_t bus_init(void* handle)
 		spi.Init.Mode = SPI_MODE_MASTER;
 		spi.Init.Direction = SPI_DIRECTION_2LINES;
 		spi.Init.DataSize = SPI_DATASIZE_8BIT;
-		spi.Init.CLKPolarity = SPI_POLARITY_LOW;
-		spi.Init.CLKPhase = SPI_PHASE_1EDGE;
+		spi.Init.CLKPolarity = SPI_POLARITY_HIGH;
+		spi.Init.CLKPhase = SPI_PHASE_2EDGE;
 		spi.Init.NSS = SPI_NSS_SOFT;
 		spi.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
 		spi.Init.FirstBit = SPI_FIRSTBIT_MSB;

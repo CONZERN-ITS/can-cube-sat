@@ -41,7 +41,7 @@ typedef union{
 
 stmdev_ctx_t lsm6ds3_dev_ctx;
 
-static uint8_t whoamI, rst;
+static uint8_t whoamI = 0, rst = 0;
 
 
 static int32_t lsm6ds3_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
@@ -57,6 +57,7 @@ int32_t lsm6ds3_init(void)
 	lsm6ds3_dev_ctx.handle = &spi;
 
 	// Reset to defaults
+
 	error |= lsm6ds3_reset_set(&lsm6ds3_dev_ctx, PROPERTY_ENABLE);
 	do {
 		error = lsm6ds3_reset_get(&lsm6ds3_dev_ctx, &rst);
@@ -64,7 +65,12 @@ int32_t lsm6ds3_init(void)
 	} while (rst);
 
 	// Check who_am_i
-	error |= lsm6ds3_device_id_get(&lsm6ds3_dev_ctx, &whoamI);
+//	while(1)
+//	{
+		error |= lsm6ds3_device_id_get(&lsm6ds3_dev_ctx, &whoamI);
+//		HAL_Delay(1000);
+//	}
+
 	if (whoamI != LSM6DS3_ID)
 	{
 		trace_printf("lsm6ds3 not found, %d\terror: %d\n", whoamI, error);

@@ -99,7 +99,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi){
 		GPIO_InitTypeDef gpioa;
 		gpioa.Alternate = GPIO_AF5_SPI1;
 		gpioa.Mode = GPIO_MODE_AF_PP;
-		gpioa.Pin = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+		gpioa.Pin = GPIO_PIN_5 | GPIO_PIN_7;
 		gpioa.Pull = GPIO_NOPULL;
 		gpioa.Speed = GPIO_SPEED_FREQ_HIGH;
 		HAL_GPIO_Init(GPIOA, &gpioa);
@@ -109,6 +109,16 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi){
 		gpioa.Pull = GPIO_NOPULL;
 		gpioa.Speed = GPIO_SPEED_FREQ_HIGH;
 		HAL_GPIO_Init(GPIOA, &gpioa);
+
+		gpioa.Mode = GPIO_MODE_AF_PP;
+		gpioa.Pin = GPIO_PIN_6;
+		gpioa.Pull = GPIO_NOPULL;
+		gpioa.Speed = GPIO_SPEED_FREQ_HIGH;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+		HAL_GPIO_Init(GPIOA, &gpioa);
+
+
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4 | GPIO_PIN_0, GPIO_PIN_SET);
 
 //		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, SET);
 	}
