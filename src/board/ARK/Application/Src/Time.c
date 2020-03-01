@@ -20,11 +20,3 @@ void delay_us_init(void)
 		DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 	}
 }
-
-void delay_us(uint32_t us)
-{
-	volatile uint32_t startTick = DWT->CYCCNT;
-	volatile uint32_t delayTicks = us * (SystemCoreClock/1000000);
-
-	while (DWT->CYCCNT - startTick < delayTicks);
-}
