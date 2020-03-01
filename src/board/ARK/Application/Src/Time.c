@@ -5,8 +5,6 @@
  *      Author: sereshotes
  */
 
-#include <stm32f1xx_hal.h>
-
 #include "Time.h"
 
 __IO uint32_t uTick;

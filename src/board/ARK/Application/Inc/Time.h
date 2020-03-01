@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#include <stm32f1xx_hal.h>
+
 void delay_us_init(void);
 
 inline __attribute__((always_inline)) void delay_us(uint32_t us)
