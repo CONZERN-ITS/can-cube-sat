@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 
-inline void delay_us(uint32_t us);
+void delay_us(uint32_t us);
 
 void delay_us_init(void);
 

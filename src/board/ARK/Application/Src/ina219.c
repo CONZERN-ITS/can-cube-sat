@@ -87,7 +87,7 @@ static int _write_reg(ina219_t * device, uint8_t reg_addr, uint16_t reg_value)
 
 	//error = i2c_write(device->bus, device->address, package, sizeof(package));
 	error = HAL_I2C_Master_Transmit(device->bus, device->address,
-	        package, sizeof(package), TIMEOUT);
+			package, sizeof(package), TIMEOUT);
 	return error;
 }
 
@@ -99,9 +99,9 @@ static int _read_reg(ina219_t * device, uint8_t reg_addr, uint16_t * reg_value)
 	int error;
 	//error = i2c_write(device->bus, device->address, &reg_addr, sizeof(reg_addr));
 
-    uint16_t raw_reg_value;
+	uint16_t raw_reg_value;
 	error = HAL_I2C_Mem_Read(device->bus, device->address,
-	        reg_addr, 1, &raw_reg_value, sizeof(raw_reg_value), TIMEOUT);
+			reg_addr, 1, (uint8_t*)&raw_reg_value, sizeof(raw_reg_value), TIMEOUT);
 	//if (error)
 	//	return error;
 

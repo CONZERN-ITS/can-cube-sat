@@ -28,49 +28,49 @@
 
 
 void TM_GPIO_SetPinAsInput(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
-    uint8_t i;
-    /* Go through all pins */
-    for (i = 0x00; i < 0x10; i++) {
-        /* Pin is set */
-        if (GPIO_Pin & (1 << i)) {
-            /* Set 00 bits combination for input */
-            if (i < 7) {
-                GPIOx->CRL &= ~((uint32_t)(0x03 << 4*i));
-            }
-            else {
-                const uint8_t j = i - 8;
-                GPIOx->CRH &= ~((uint32_t)(0x03 << 4*j));
-            }
-        }
-    }
+	uint8_t i;
+	/* Go through all pins */
+	for (i = 0x00; i < 0x10; i++) {
+		/* Pin is set */
+		if (GPIO_Pin & (1 << i)) {
+			/* Set 00 bits combination for input */
+			if (i < 7) {
+				GPIOx->CRL &= ~((uint32_t)(0x03 << 4*i));
+			}
+			else {
+				const uint8_t j = i - 8;
+				GPIOx->CRH &= ~((uint32_t)(0x03 << 4*j));
+			}
+		}
+	}
 }
 
 void TM_GPIO_SetPinAsOutput(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
-    uint8_t i;
-    /* Go through all pins */
-    for (i = 0x00; i < 0x10; i++) {
-        /* Pin is set */
-        if (GPIO_Pin & (1 << i)) {
-            /* Set 00 bits combination for input */
-            if (i < 7) {
-                GPIOx->CRL = (GPIOx->CRL & ~((uint32_t)(0x03 << 4*i))) | ((uint32_t)0x01 << 4*i);
-            }
-            else {
-                const uint8_t j = i - 8;
-                GPIOx->CRH = (GPIOx->CRH & ~((uint32_t)(0x03 << 4*j))) | ((uint32_t)0x01 << 4*j);
-            }
-        }
-    }
+	uint8_t i;
+	/* Go through all pins */
+	for (i = 0x00; i < 0x10; i++) {
+		/* Pin is set */
+		if (GPIO_Pin & (1 << i)) {
+			/* Set 00 bits combination for input */
+			if (i < 7) {
+				GPIOx->CRL = (GPIOx->CRL & ~((uint32_t)(0x03 << 4*i))) | ((uint32_t)0x01 << 4*i);
+			}
+			else {
+				const uint8_t j = i - 8;
+				GPIOx->CRH = (GPIOx->CRH & ~((uint32_t)(0x03 << 4*j))) | ((uint32_t)0x01 << 4*j);
+			}
+		}
+	}
 }
 void onewire_Init(onewire_t* OneWireStruct, GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
 	/* Initialize delay if it was not already */
-    delay_us_init();
+	delay_us_init();
 
 	/* Init GPIO pin */
 	//TM_GPIO_Init(GPIOx, GPIO_Pin, TM_GPIO_Mode_OUT, TM_GPIO_OType_PP, TM_GPIO_PuPd_UP, TM_GPIO_Speed_Medium);
 	//HAL_GPIO_WritePin(GPIOx, GPIO_Pin, SET);
 
-    GPIO_InitTypeDef gp;
+	GPIO_InitTypeDef gp;
 	gp.Mode = GPIO_MODE_INPUT;
 	gp.Pin = GPIO_Pin;
 	gp.Pull = GPIO_NOPULL;
