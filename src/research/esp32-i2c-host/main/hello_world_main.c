@@ -10,40 +10,39 @@
 #include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_system.h"
-#include "esp_spi_flash.h"
+#include "driver/i2c.h"
 
 #ifdef CONFIG_IDF_TARGET_ESP32
-#define CHIP_NAME "ESP32"
+//#define CHIP_NAME "ESP32"
 #endif
 
-#ifdef CONFIG_IDF_TARGET_ESP32S2BETA
-#define CHIP_NAME "ESP32-S2 Beta"
-#endif
+#define I2C_MASTER_TX_BUF_DISABLE 0 /*!< I2C master doesn't need buffer */
+#define I2C_MASTER_RX_BUF_DISABLE 0 /*!< I2C master doesn't need buffer */
+
+static gpio_num_t i2c_gpio_sda = 18;
+static gpio_num_t i2c_gpio_scl = 19;
+static uint32_t i2c_frequency = 100000;
+static i2c_port_t i2c_port = I2C_NUM_0;
+
 
 void app_main(void)
 {
-    printf("Hello world!\n");
+	i2c_config_t conf = {
+		.mode = I2C_MODE_MASTER,
+		.sda_io_num = i2c_gpio_sda,
+		.sda_pullup_en = GPIO_PULLUP_ENABLE,
+		.scl_io_num = i2c_gpio_scl,
+		.scl_pullup_en = GPIO_PULLUP_ENABLE,
+		.master.clk_speed = i2c_frequency
+	};
+	i2c_param_config(i2c_port, &conf);
+	i2c_driver_install(i2c_port, I2C_MODE_MASTER, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, 0);
 
-    /* Print chip information */
-    esp_chip_info_t chip_info;
-    esp_chip_info(&chip_info);
-    printf("This is %s chip with %d CPU cores, WiFi%s%s, ",
-            CHIP_NAME,
-            chip_info.cores,
-            (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
-            (chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "");
-
-    printf("silicon revision %d, ", chip_info.revision);
-
-    printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024),
-            (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
-
-    for (int i = 10; i >= 0; i--) {
-        printf("Restarting in %d seconds...\n", i);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-    printf("Restarting now.\n");
-    fflush(stdout);
-    esp_restart();
+	for (int i = 10; i >= 0; i--) {
+		printf("Restarting in %d seconds...\n", i);
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+	}
+	printf("Restarting now.\n");
+	fflush(stdout);
+	esp_restart();
 }
