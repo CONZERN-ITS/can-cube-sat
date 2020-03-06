@@ -229,17 +229,17 @@
 <wire x1="-5.3" y1="2.75" x2="-5.3" y2="1.65" width="0.01" layer="20"/>
 <wire x1="-5.9" y1="2.75" x2="-5.3" y2="2.75" width="0.01" layer="20" curve="-180"/>
 <wire x1="-5.3" y1="1.65" x2="-5.9" y2="1.65" width="0.01" layer="20" curve="-180"/>
-<smd name="RX0/M1" x="-1.75" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
-<smd name="NC/BUS0" x="-1.25" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
-<smd name="3V3" x="-0.75" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
+<smd name="RX0" x="-1.75" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
+<smd name="3V3/BUS0" x="-1.25" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
+<smd name="NC/3V3" x="-0.75" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
 <smd name="SWD/RXD" x="-0.25" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
 <smd name="SWC/TXD" x="0.25" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
-<smd name="3V31" x="0.75" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
-<smd name="NC/BUS1" x="1.25" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
-<smd name="TX0/3V3" x="1.75" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
+<smd name="NC/M1" x="0.75" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
+<smd name="3V3/BUS1" x="1.25" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
+<smd name="TX0" x="1.75" y="7.1" dx="1.4" dy="0.3" layer="1" rot="R90"/>
 <smd name="GND0" x="-3.2" y="7.1" dx="1.4" dy="0.6" layer="1" rot="R90"/>
-<smd name="RESET/EN" x="-2.4" y="7.1" dx="1.4" dy="0.6" layer="1" rot="R90"/>
-<smd name="GPIO" x="2.4" y="7.1" dx="1.4" dy="0.6" layer="1" rot="R90"/>
+<smd name="NRST/EN" x="-2.4" y="7.1" dx="1.4" dy="0.6" layer="1" rot="R90"/>
+<smd name="NC/GPIO" x="2.4" y="7.1" dx="1.4" dy="0.6" layer="1" rot="R90"/>
 <smd name="GND1" x="3.2" y="7.1" dx="1.4" dy="0.6" layer="1" rot="R90"/>
 <wire x1="4.5" y1="0" x2="4.5" y2="6.6" width="0.127" layer="20"/>
 <wire x1="4.5" y1="6.6" x2="4.4" y2="6.7" width="0.127" layer="20" curve="90"/>
@@ -409,14 +409,14 @@
 </symbol>
 <symbol name="USB-C">
 <pin name="GND" x="-17.78" y="5.08" length="middle"/>
-<pin name="SWC/TXD" x="-17.78" y="2.54" length="middle"/>
-<pin name="TX0/3V3" x="-17.78" y="0" length="middle"/>
-<pin name="NC/VBUS" x="-17.78" y="-2.54" length="middle"/>
-<pin name="3V3/NC" x="-17.78" y="-5.08" length="middle"/>
-<pin name="IO0" x="17.78" y="-5.08" length="middle" rot="R180"/>
-<pin name="NC" x="17.78" y="-2.54" length="middle" rot="R180"/>
-<pin name="RES/EN" x="17.78" y="0" length="middle" rot="R180"/>
-<pin name="RX0/M1" x="17.78" y="2.54" length="middle" rot="R180"/>
+<pin name="NRST/EN" x="-17.78" y="2.54" length="middle"/>
+<pin name="RX0" x="-17.78" y="0" length="middle"/>
+<pin name="3V3/BUS" x="-17.78" y="-2.54" length="middle"/>
+<pin name="NC/3V3" x="-17.78" y="-5.08" length="middle"/>
+<pin name="NC/GPIO" x="17.78" y="-5.08" length="middle" rot="R180"/>
+<pin name="TX0" x="17.78" y="-2.54" length="middle" rot="R180"/>
+<pin name="NC/M1" x="17.78" y="0" length="middle" rot="R180"/>
+<pin name="SWC/TXD" x="17.78" y="2.54" length="middle" rot="R180"/>
 <pin name="SWD/RXD" x="17.78" y="5.08" length="middle" rot="R180"/>
 <wire x1="-12.7" y1="7.62" x2="-12.7" y2="-7.62" width="0.254" layer="94"/>
 <wire x1="-12.7" y1="-7.62" x2="12.6" y2="-7.62" width="0.254" layer="94"/>
@@ -634,16 +634,16 @@
 <devices>
 <device name="" package="USB-C">
 <connects>
-<connect gate="G$1" pin="3V3/NC" pad="3V3"/>
+<connect gate="G$1" pin="3V3/BUS" pad="3V3/BUS0 3V3/BUS1"/>
 <connect gate="G$1" pin="GND" pad="GND0 GND1"/>
-<connect gate="G$1" pin="IO0" pad="GPIO"/>
-<connect gate="G$1" pin="NC" pad="3V31"/>
-<connect gate="G$1" pin="NC/VBUS" pad="NC/BUS0 NC/BUS1"/>
-<connect gate="G$1" pin="RES/EN" pad="RESET/EN"/>
-<connect gate="G$1" pin="RX0/M1" pad="RX0/M1"/>
+<connect gate="G$1" pin="NC/3V3" pad="NC/3V3"/>
+<connect gate="G$1" pin="NC/GPIO" pad="NC/GPIO"/>
+<connect gate="G$1" pin="NC/M1" pad="NC/M1"/>
+<connect gate="G$1" pin="NRST/EN" pad="NRST/EN"/>
+<connect gate="G$1" pin="RX0" pad="RX0"/>
 <connect gate="G$1" pin="SWC/TXD" pad="SWC/TXD"/>
 <connect gate="G$1" pin="SWD/RXD" pad="SWD/RXD"/>
-<connect gate="G$1" pin="TX0/3V3" pad="TX0/3V3"/>
+<connect gate="G$1" pin="TX0" pad="TX0"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -20211,9 +20211,9 @@ Distributor Buerklin, 11G810</description>
 <pinref part="R79" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<wire x1="403.86" y1="210.82" x2="386.08" y2="210.82" width="0.1524" layer="91"/>
-<label x="386.08" y="210.82" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="3V3/NC"/>
+<wire x1="403.86" y1="213.36" x2="386.08" y2="213.36" width="0.1524" layer="91"/>
+<label x="386.08" y="213.36" size="1.778" layer="95"/>
+<pinref part="U$23" gate="G$1" pin="3V3/BUS"/>
 </segment>
 </net>
 <net name="N$133" class="0">
@@ -20978,9 +20978,9 @@ Distributor Buerklin, 11G810</description>
 <label x="500.38" y="302.26" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
-<label x="386.08" y="218.44" size="1.778" layer="95"/>
+<label x="454.66" y="218.44" size="1.778" layer="95"/>
+<wire x1="439.42" y1="218.44" x2="459.74" y2="218.44" width="0.1524" layer="91"/>
 <pinref part="U$23" gate="G$1" pin="SWC/TXD"/>
-<wire x1="386.08" y1="218.44" x2="403.86" y2="218.44" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="SWD" class="0">
@@ -21004,9 +21004,9 @@ Distributor Buerklin, 11G810</description>
 <label x="487.68" y="302.26" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
-<wire x1="403.86" y1="215.9" x2="386.08" y2="215.9" width="0.1524" layer="91"/>
-<label x="386.08" y="215.9" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="TX0/3V3"/>
+<wire x1="459.74" y1="213.36" x2="439.42" y2="213.36" width="0.1524" layer="91"/>
+<label x="454.66" y="213.36" size="1.778" layer="95"/>
+<pinref part="U$23" gate="G$1" pin="TX0"/>
 </segment>
 </net>
 <net name="RX-C" class="0">
@@ -21016,12 +21016,12 @@ Distributor Buerklin, 11G810</description>
 <label x="490.22" y="302.26" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
-<wire x1="439.42" y1="218.44" x2="459.74" y2="218.44" width="0.1524" layer="91"/>
-<label x="454.66" y="218.44" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="RX0/M1"/>
+<wire x1="386.08" y1="215.9" x2="403.86" y2="215.9" width="0.1524" layer="91"/>
+<label x="386.08" y="215.9" size="1.778" layer="95"/>
+<pinref part="U$23" gate="G$1" pin="RX0"/>
 </segment>
 </net>
-<net name="RES-C" class="0">
+<net name="NRST" class="0">
 <segment>
 <pinref part="IC1" gate="MCU" pin="NRST"/>
 <wire x1="467.36" y1="358.14" x2="467.36" y2="368.3" width="0.1524" layer="91"/>
@@ -21031,9 +21031,9 @@ Distributor Buerklin, 11G810</description>
 <label x="467.36" y="375.92" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
-<wire x1="439.42" y1="215.9" x2="462.28" y2="215.9" width="0.1524" layer="91"/>
-<label x="454.66" y="215.9" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="RES/EN"/>
+<wire x1="386.08" y1="218.44" x2="403.86" y2="218.44" width="0.1524" layer="91"/>
+<label x="386.08" y="218.44" size="1.778" layer="95"/>
+<pinref part="U$23" gate="G$1" pin="NRST/EN"/>
 </segment>
 </net>
 <net name="N$5" class="0">
