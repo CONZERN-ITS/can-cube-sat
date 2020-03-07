@@ -46,6 +46,7 @@
 
 
 SPI_HandleTypeDef spi;
+I2C_HandleTypeDef i2c;
 UART_HandleTypeDef uartTransfer_data;
 
 
@@ -144,9 +145,9 @@ void SENSORS_Init(void)
 	state_system.lsm6ds3_state = error;
 
 	//	LIS3MDL init
-	/*error = lis3mdl_init();
+	error = lis3mdl_init();
 	trace_printf("lis3mdl init error: %d\n", error);
-	state_system.lis3mdl_state= error; */ //FIXME: вернуть
+	state_system.lis3mdl_state = error; //FIXME: вернуть
 }
 
 
@@ -164,6 +165,7 @@ int UpdateDataAll(void)
 	float magn[3] = {0, 0, 0};
 
 	error = lsm6ds3_get_xl_data_g(accel);
+//	trace_printf("accel %d :\t%f\n", 0, accel[0]);
 	error |= lsm6ds3_get_g_data_rps(gyro);
 	if (error)
 	{
@@ -183,12 +185,17 @@ int UpdateDataAll(void)
 	state_system.time = _time;
 	//	пересчитываем их и записываем в структуры
 	for (int k = 0; k < 3; k++) {
+//		trace_printf("accel %d :\t%f\n", k, accel[k]);
 		stateSINS_rsc.accel[k] = accel[k];
 		gyro[k] -= state_zero.gyro_staticShift[k];
 		stateSINS_rsc.gyro[k] = gyro[k];
 		stateSINS_rsc.magn[k] = magn[k];
 	}
 	__enable_irq();
+
+	for (int k = 0; k < 3; k++) {
+			trace_printf("accel %d :\t%f\n", k, accel[k]);
+	}
 
 	/////////////////////////////////////////////////////
 	/////////////	UPDATE QUATERNION  //////////////////
@@ -263,8 +270,28 @@ void SINS_updatePrevData(void)
 }
 
 
+int32_t bus_i2c_init(void* handle)
+{
+	int error = 0;
+	//	I2C init
+	i2c.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+	i2c.Init.ClockSpeed = 400000;
+	i2c.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+	i2c.Init.DutyCycle = I2C_DUTYCYCLE_2;
+	i2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+	i2c.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+	i2c.Init.OwnAddress1 = 0x00;
+	i2c.Instance = I2C2;
+	i2c.Mode = HAL_I2C_MODE_MASTER;
 
-int32_t bus_init(void* handle)
+	error |= HAL_I2C_Init(&i2c);
+	HAL_Delay(200);
+	trace_printf("i2c init error: %d\n", error);
+	return error;
+
+}
+
+int32_t bus_spi_init(void* handle)
 {
 	int error = 0;
 	if (handle == &spi)
@@ -277,7 +304,7 @@ int32_t bus_init(void* handle)
 		spi.Init.CLKPolarity = SPI_POLARITY_HIGH;
 		spi.Init.CLKPhase = SPI_PHASE_2EDGE;
 		spi.Init.NSS = SPI_NSS_SOFT;
-		spi.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+		spi.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
 		spi.Init.FirstBit = SPI_FIRSTBIT_MSB;
 		spi.Init.TIMode = SPI_TIMODE_DISABLE;
 		spi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -346,7 +373,7 @@ int main(int argc, char* argv[])
 
 	init_led();
 	uartInit(&uartTransfer_data);
-	bus_init(&spi);
+	bus_i2c_init(&i2c);
 	SENSORS_Init();
 
 	get_gyro_staticShift(state_zero.gyro_staticShift);
@@ -357,8 +384,18 @@ int main(int argc, char* argv[])
 	{
 		UpdateDataAll();
 		SINS_updatePrevData();
-//		HAL_Delay(10);
 
+		float accel[3] = {0};
+		float gyro[3] = {0};
+//			gyro[i] = stateSINS_rsc.gyro[i];
+
+
+
+//		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&accel, sizeof(accel), 10);
+//		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&gyro, sizeof(gyro), 10);
+
+//		HAL_Delay(10);
+/*
 		if (transfer_time > 1.0)
 		{
 			for (int i = 0; i < 4; i++)
@@ -367,7 +404,7 @@ int main(int argc, char* argv[])
 			trace_printf("uart transmit error: %d\n", HAL_UART_Transmit(&uartTransfer_data, (uint8_t *) &stateSINS_transfer, sizeof(stateSINS_transfer), 10));
 			transfer_time = 0.0;
 		}
-	}
+*/	}
 
 	return 0;
 }

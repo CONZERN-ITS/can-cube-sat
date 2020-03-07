@@ -74,6 +74,7 @@ typedef struct {
 }__attribute__((packed, aligned(1))) stateSINS_transfer_t;
 
 extern SPI_HandleTypeDef spi;
+extern I2C_HandleTypeDef i2c;
 
 extern stmdev_ctx_t lsm6ds3_dev_ctx;
 extern stmdev_ctx_t lis3mdl_dev_ctx;
@@ -87,7 +88,7 @@ extern stateSINS_transfer_t stateSINS_transfer;
 extern stateGPS_t stateGPS;
 
 
-int32_t bus_init(void * handle);
+int32_t bus_spi_init(void * handle);
 void init_led(void);
 void SENSORS_Init(void);
 int UpdateDataAll(void);

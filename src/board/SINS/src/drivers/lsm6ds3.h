@@ -10,6 +10,7 @@
 
 #include "lsm6ds3_reg.h"
 
+
 int32_t lsm6ds3_init(void);
 
 uint32_t lsm6ds3_get_xl_data_g(float* accel);

@@ -89,6 +89,23 @@ void HAL_MspDeInit(void)
 }
 
 
+void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
+{
+
+	if(hi2c->Instance == I2C2)
+	{
+		__I2C2_CLK_ENABLE();
+		__GPIOB_CLK_ENABLE();
+
+		GPIO_InitTypeDef gpiob;
+		gpiob.Alternate = GPIO_AF4_I2C2;
+		gpiob.Mode = GPIO_MODE_AF_OD;
+		gpiob.Pin = GPIO_PIN_10 | GPIO_PIN_11;
+		gpiob.Pull = GPIO_NOPULL;
+		gpiob.Speed = GPIO_SPEED_FREQ_HIGH;
+		HAL_GPIO_Init(GPIOB, &gpiob);
+	}
+}
 void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi){
 	if (hspi->Instance == SPI1) {
 		__SPI1_CLK_ENABLE();

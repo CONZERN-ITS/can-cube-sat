@@ -10,6 +10,7 @@
 #include "state.h"
 #include "vector.h"
 #include "diag/Trace.h"
+#include "stm32f4xx_hal.h"
 
 
 #define LSM_TIMEOUT	1000
@@ -27,6 +28,9 @@
 #define XY_ACCEL_TRANSFORM_MATIX	 0.000000
 #define XZ_ACCEL_TRANSFORM_MATIX	 0.000000
 #define YZ_ACCEL_TRANSFORM_MATIX	 0.000000
+
+#define LSM6DS3_I2C_READ_ADD	0b11010111
+#define LSM6DS3_I2C_WRITE_ADD	0b11010110
 
 typedef union{
   int16_t i16bit[3];
@@ -54,20 +58,31 @@ int32_t lsm6ds3_init(void)
 
 	lsm6ds3_dev_ctx.write_reg = lsm6ds3_write;
 	lsm6ds3_dev_ctx.read_reg = lsm6ds3_read;
-	lsm6ds3_dev_ctx.handle = &spi;
+	lsm6ds3_dev_ctx.handle = &i2c;
 
 	// Reset to defaults
-
-	error |= lsm6ds3_reset_set(&lsm6ds3_dev_ctx, PROPERTY_ENABLE);
-	do {
-		error = lsm6ds3_reset_get(&lsm6ds3_dev_ctx, &rst);
+//	error |= lsm6ds3_reset_set(&lsm6ds3_dev_ctx, PROPERTY_ENABLE);
+//	do {
+//		error = lsm6ds3_reset_get(&lsm6ds3_dev_ctx, &rst);
 //		trace_printf("not reset\n");
-	} while (rst);
+//	} while (rst);
+
+
+	lsm6ds3_ctrl3_c_t reg = {0};
+	reg.sw_reset = 1;
+	lsm6ds3_write_reg(&lsm6ds3_dev_ctx, LSM6DS3_CTRL3_C, (uint8_t*)&reg, 1);
+	HAL_Delay(500);
+	lsm6ds3_i2c_interface_set(&lsm6ds3_dev_ctx, LSM6DS3_I2C_ENABLE);
+
 
 	// Check who_am_i
 //	while(1)
 //	{
 		error |= lsm6ds3_device_id_get(&lsm6ds3_dev_ctx, &whoamI);
+		trace_printf("whoami\t0x%02X\n", (int)whoamI);
+		error |= lsm6ds3_device_id_get(&lsm6ds3_dev_ctx, &whoamI);
+		trace_printf("whoami\t0x%02X\n", (int)whoamI);
+
 //		HAL_Delay(1000);
 //	}
 
@@ -79,9 +94,9 @@ int32_t lsm6ds3_init(void)
 	else
 		trace_printf("lsm6ds3 OK\n");
 
-	error |= lsm6ds3_fifo_mode_set(&lsm6ds3_dev_ctx, PROPERTY_DISABLE);
+//	error |= lsm6ds3_fifo_mode_set(&lsm6ds3_dev_ctx, PROPERTY_DISABLE);
 
-	error |= lsm6ds3_block_data_update_set(&lsm6ds3_dev_ctx, PROPERTY_DISABLE);
+	error |= lsm6ds3_block_data_update_set(&lsm6ds3_dev_ctx, PROPERTY_ENABLE);
 
 	error |= lsm6ds3_xl_full_scale_set(&lsm6ds3_dev_ctx, LSM6DS3_4g);
 	error |= lsm6ds3_gy_full_scale_set(&lsm6ds3_dev_ctx, LSM6DS3_1000dps);
@@ -90,6 +105,9 @@ int32_t lsm6ds3_init(void)
 	error |= lsm6ds3_gy_data_rate_set(&lsm6ds3_dev_ctx, LSM6DS3_GY_ODR_104Hz);
 
 	error |= lsm6ds3_xl_filter_analog_set(&lsm6ds3_dev_ctx, LSM6DS3_ANTI_ALIASING_200Hz);
+
+//	error |= lsm6ds3_xl_power_mode_set(&lsm6ds3_dev_ctx, LSM6DS3_XL_HIGH_PERFORMANCE);
+//	error |= lsm6ds3_gy_power_mode_set(&lsm6ds3_dev_ctx, LSM6DS3_GY_HIGH_PERFORMANCE);
 
 	return error;
 }
@@ -104,6 +122,8 @@ uint32_t lsm6ds3_get_xl_data_g(float* accel)
 	accel[0] = lsm6ds3_from_fs4g_to_mg(data_raw_acceleration.i16bit[0]) * MG_TO_MPS2;
 	accel[1] = lsm6ds3_from_fs4g_to_mg(data_raw_acceleration.i16bit[1]) * MG_TO_MPS2;
 	accel[2] = lsm6ds3_from_fs4g_to_mg(data_raw_acceleration.i16bit[2]) * MG_TO_MPS2;
+
+//	trace_printf("accel %f\n", accel[0]);
 
 	if (!CALIBRATION)
 	{
@@ -147,10 +167,16 @@ uint32_t lsm6ds3_get_g_data_rps(float* gyro)
  */
 static int32_t lsm6ds3_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len)
 {
+	uint32_t error = 0;
+
+	if (handle == &i2c)
+	{
+		error = HAL_I2C_Mem_Write(handle, LSM6DS3_I2C_ADD_H, reg, I2C_MEMADD_SIZE_8BIT, bufp, len, LSM_TIMEOUT);
+		return error;
+	}
 
 	if (handle == &spi)
 	{
-		uint32_t error = 0;
 		HAL_GPIO_WritePin(PORT, CS_PIN_ACCEL, GPIO_PIN_RESET);
 		error |= HAL_SPI_Transmit(handle, &reg, 1, 1000);
 		error |= HAL_SPI_Transmit(handle, bufp, len, 1000);
@@ -158,6 +184,7 @@ static int32_t lsm6ds3_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t 
 
 		return error;
 	}
+
 	trace_printf("lsm6ds3 invalid handle\n");
 	return -19;
 }
@@ -174,6 +201,13 @@ static int32_t lsm6ds3_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t 
  */
 static int32_t lsm6ds3_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len)
 {
+	uint32_t error = 0;
+
+	if (handle == &i2c)
+	{
+		error = HAL_I2C_Mem_Read(handle, LSM6DS3_I2C_ADD_H, reg, I2C_MEMADD_SIZE_8BIT, bufp, len, LSM_TIMEOUT);
+		return error;
+	}
 
 	if (handle == &spi)
 	{
@@ -190,4 +224,3 @@ static int32_t lsm6ds3_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t l
 	trace_printf("lsm6ds3 invalid handle\n");
 	return -19;
 }
-

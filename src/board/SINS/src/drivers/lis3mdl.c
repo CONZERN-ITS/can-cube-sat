@@ -11,6 +11,7 @@
 
 #include "lis3mdl_reg.h"
 #include "state.h"
+#include "stm32f4xx_hal.h"
 
 #include "lis3mdl.h"
 #include "vector.h"
@@ -127,20 +128,26 @@ static int32_t lis3mdl_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t 
 {
 	int error = 0;
 
+	if (handle == &i2c)
+	{
+		reg |= 0x80;
+		error = HAL_I2C_Mem_Write(handle, LIS3MDL_I2C_ADD_H, reg, I2C_MEMADD_SIZE_8BIT, bufp, len, LSM_TIMEOUT);
+		return error;
+	}
+
 	if (handle == &spi)
 	{
 		/* Write multiple command */
 		reg |= 0x40;
 		HAL_GPIO_WritePin(PORT, CS_PIN_MAGN, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(handle, &reg, 1, 1000);
-		HAL_SPI_Transmit(handle, bufp, len, 1000);
+		error |= HAL_SPI_Transmit(handle, &reg, 1, 1000);
+		error |= HAL_SPI_Transmit(handle, bufp, len, 1000);
 		HAL_GPIO_WritePin(PORT, CS_PIN_MAGN, GPIO_PIN_SET);
+		return error;
 	}
-	else
-		{
-			trace_printf("lis3mdl invalid handle\n");
-			error = -19;
-		}
+
+	trace_printf("lis3mdl invalid handle\n");
+	error = -19;
 	return error;
 }
 
@@ -149,21 +156,26 @@ static int32_t lis3mdl_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t l
 {
 	int error = 0;
 
+	if (handle == &i2c)
+	{
+		reg |= 0x80;
+		error = HAL_I2C_Mem_Read(handle, LIS3MDL_I2C_ADD_H, reg, I2C_MEMADD_SIZE_8BIT, bufp, len, LSM_TIMEOUT);
+		return error;
+	}
+
 	if (handle == &spi)
 	{
 		/* Read multiple command */
 		reg |= 0xC0;
 		HAL_GPIO_WritePin(PORT, CS_PIN_MAGN, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(handle, &reg, 1, 1000);
-		HAL_SPI_Receive(handle, bufp, len, 1000);
+		error |= HAL_SPI_Transmit(handle, &reg, 1, 1000);
+		error |= HAL_SPI_Receive(handle, bufp, len, 1000);
 		HAL_GPIO_WritePin(PORT, CS_PIN_MAGN, GPIO_PIN_SET);
-	}
-	else
-	{
-		trace_printf("lis3mdl invalid handle\n");
-		error = -19;
+		return error;
 	}
 
+	trace_printf("lis3mdl invalid handle\n");
+	error = -19;
 	return error;
 }
 
