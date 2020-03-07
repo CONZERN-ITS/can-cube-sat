@@ -1394,6 +1394,46 @@ for trimmer refence see : &lt;u&gt;www.electrospec-inc.com/cross_references/trim
 </package>
 </packages>
 </library>
+<library name="led" urn="urn:adsk.eagle:library:259">
+<description>&lt;b&gt;LEDs&lt;/b&gt;&lt;p&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;&lt;br&gt;
+Extended by Federico Battaglin &lt;author&gt;&amp;lt;federico.rd@fdpinternational.com&amp;gt;&lt;/author&gt; with DUOLED</description>
+<packages>
+<package name="CHIPLED_0603" urn="urn:adsk.eagle:footprint:15676/1" library_version="5">
+<description>&lt;b&gt;CHIPLED&lt;/b&gt;&lt;p&gt;
+Source: http://www.osram.convergy.de/ ... LG_LY Q971.pdf</description>
+<wire x1="-0.3" y1="0.8" x2="0.3" y2="0.8" width="0.1016" layer="51" curve="170.055574"/>
+<wire x1="-0.275" y1="-0.825" x2="0.275" y2="-0.825" width="0.0508" layer="51" curve="-180"/>
+<wire x1="-0.4" y1="0.375" x2="-0.4" y2="-0.35" width="0.1016" layer="51"/>
+<wire x1="0.4" y1="0.35" x2="0.4" y2="-0.35" width="0.1016" layer="51"/>
+<circle x="-0.35" y="0.625" radius="0.075" width="0.0508" layer="51"/>
+<smd name="C" x="0" y="0.75" dx="0.8" dy="0.8" layer="1"/>
+<smd name="A" x="0" y="-0.75" dx="0.8" dy="0.8" layer="1"/>
+<text x="-0.635" y="-1.27" size="1.27" layer="25" rot="R90">&gt;NAME</text>
+<text x="1.905" y="-1.27" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+<rectangle x1="-0.45" y1="0.7" x2="-0.25" y2="0.85" layer="51"/>
+<rectangle x1="-0.275" y1="0.55" x2="-0.225" y2="0.6" layer="51"/>
+<rectangle x1="-0.45" y1="0.35" x2="-0.4" y2="0.725" layer="51"/>
+<rectangle x1="0.25" y1="0.55" x2="0.45" y2="0.85" layer="51"/>
+<rectangle x1="-0.45" y1="0.35" x2="0.45" y2="0.575" layer="51"/>
+<rectangle x1="-0.45" y1="-0.85" x2="-0.25" y2="-0.35" layer="51"/>
+<rectangle x1="0.25" y1="-0.85" x2="0.45" y2="-0.35" layer="51"/>
+<rectangle x1="-0.275" y1="-0.575" x2="0.275" y2="-0.35" layer="51"/>
+<rectangle x1="-0.275" y1="-0.65" x2="-0.175" y2="-0.55" layer="51"/>
+<rectangle x1="0.175" y1="-0.65" x2="0.275" y2="-0.55" layer="51"/>
+<rectangle x1="-0.125" y1="0" x2="0.125" y2="0.25" layer="21"/>
+</package>
+</packages>
+<packages3d>
+<package3d name="CHIPLED_0603" urn="urn:adsk.eagle:package:15822/2" type="model" library_version="5">
+<description>CHIPLED
+Source: http://www.osram.convergy.de/ ... LG_LY Q971.pdf</description>
+<packageinstances>
+<packageinstance name="CHIPLED_0603"/>
+</packageinstances>
+</package3d>
+</packages3d>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -1631,7 +1671,7 @@ design rules under a new name.</description>
 <element name="U$5" library="CanCubeSat" package="DS18B20Z" value="DS18B20Z" x="38.48" y="73.78" smashed="yes" rot="R270">
 <attribute name="VALUE" x="36.575" y="69.843" size="1.27" layer="27"/>
 </element>
-<element name="U$6" library="CanCubeSat" package="EM_HEAT" value="EM_HEAT" x="62.34" y="49.51" smashed="yes" rot="R270"/>
+<element name="U$6" library="CanCubeSat" package="EM_HEAT" value="EM_HEAT" x="62.52" y="49.72" smashed="yes" rot="R270"/>
 <element name="U$7" library="CanCubeSat" package="EM_HEAT" value="EM_HEAT" x="14.13" y="61.86" smashed="yes" rot="R180"/>
 <element name="U$8" library="CanCubeSat" package="L293DD" value="L293DD" x="51.58" y="84.12" smashed="yes" rot="R180"/>
 <element name="BSK5" library="pinheadCS" package="1X08" value="" x="41" y="1.25" smashed="yes">
@@ -1641,6 +1681,42 @@ design rules under a new name.</description>
 <element name="BSK1" library="pinheadCS" package="1X12" value="" x="41" y="98.75" smashed="yes">
 <attribute name="NAME" x="27.5838" y="95.7788" size="1.27" layer="25" ratio="10"/>
 <attribute name="VALUE" x="25.76" y="95.575" size="1.27" layer="27"/>
+</element>
+<element name="LED2" library="led" library_urn="urn:adsk.eagle:library:259" package="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2" value="" x="65.3" y="46.1" smashed="yes">
+<attribute name="NAME" x="66.665" y="45.03" size="0.6096" layer="25" rot="R90"/>
+<attribute name="POPULARITY" value="28" x="56.9" y="51.7" size="1.778" layer="27" display="off"/>
+<attribute name="VALUE" x="67.205" y="44.83" size="1.27" layer="27" rot="R90"/>
+</element>
+<element name="R81" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k" x="63" y="45.3" smashed="yes">
+<attribute name="NAME" x="58.365" y="44.835" size="1.27" layer="25"/>
+<attribute name="VALUE" x="62.365" y="43.395" size="1.27" layer="27"/>
+</element>
+<element name="R1" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k" x="63" y="43.2" smashed="yes">
+<attribute name="NAME" x="59.265" y="42.735" size="1.27" layer="25"/>
+<attribute name="VALUE" x="62.365" y="41.295" size="1.27" layer="27"/>
+</element>
+<element name="LED1" library="led" library_urn="urn:adsk.eagle:library:259" package="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2" value="" x="65.3" y="43.5" smashed="yes">
+<attribute name="NAME" x="66.665" y="42.33" size="0.6096" layer="25" rot="R90"/>
+<attribute name="POPULARITY" value="28" x="55.5" y="39.2" size="1.778" layer="27" display="off"/>
+<attribute name="VALUE" x="67.205" y="42.23" size="1.27" layer="27" rot="R90"/>
+</element>
+<element name="R2" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k" x="9.9" y="62.5" smashed="yes" rot="R270">
+<attribute name="NAME" x="7.435" y="63.335" size="1.27" layer="25" rot="R270"/>
+<attribute name="VALUE" x="7.995" y="63.135" size="1.27" layer="27" rot="R270"/>
+</element>
+<element name="LED3" library="led" library_urn="urn:adsk.eagle:library:259" package="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2" value="" x="11" y="64.6" smashed="yes" rot="R90">
+<attribute name="NAME" x="14.47" y="66.565" size="1.27" layer="25" rot="R180"/>
+<attribute name="POPULARITY" value="28" x="20.2" y="42.9" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="VALUE" x="12.27" y="66.505" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="LED4" library="led" library_urn="urn:adsk.eagle:library:259" package="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2" value="" x="31.3" y="75.7" smashed="yes" rot="R180">
+<attribute name="NAME" x="29.335" y="77.67" size="1.27" layer="25" rot="R270"/>
+<attribute name="POPULARITY" value="28" x="50.9" y="79.4" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VALUE" x="29.395" y="76.97" size="1.27" layer="27" rot="R270"/>
+</element>
+<element name="R3" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k" x="33" y="75.7" smashed="yes" rot="R90">
+<attribute name="NAME" x="31.565" y="72.735" size="1.27" layer="25"/>
+<attribute name="VALUE" x="34.905" y="75.065" size="1.27" layer="27" rot="R90"/>
 </element>
 </elements>
 <signals>
@@ -1694,11 +1770,11 @@ design rules under a new name.</description>
 <wire x1="31.0992" y1="89.4588" x2="33.3756" y2="89.4588" width="1.2" layer="1"/>
 <wire x1="25.8652" y1="84.2248" x2="31.0992" y2="89.4588" width="1.2" layer="1"/>
 <wire x1="25.8652" y1="84.2248" x2="16.3564" y2="84.2248" width="1.2" layer="16"/>
-<wire x1="16.3564" y1="84.2248" x2="9.016" y2="76.8844" width="1.2" layer="16"/>
-<wire x1="9.016" y1="76.8844" x2="9.016" y2="64.898" width="1.2" layer="16"/>
+<wire x1="16.3564" y1="84.2248" x2="8.916" y2="76.7844" width="1.2" layer="16"/>
+<wire x1="8.916" y1="76.7844" x2="8.916" y2="59.598" width="1.2" layer="16"/>
 <via x="50.5968" y="90.5256" extent="1-16" drill="0.35"/>
 <via x="49.3776" y="77.724" extent="1-16" drill="0.35"/>
-<via x="9.016" y="64.898" extent="1-16" drill="0.35"/>
+<via x="8.916" y="59.598" extent="1-16" drill="0.35"/>
 <via x="25.8652" y="84.2248" extent="1-16" drill="0.35"/>
 <wire x1="43.434" y1="71.7804" x2="45.7" y2="74.0464" width="0.3" layer="1"/>
 <wire x1="45.7" y1="74.0464" x2="45.7" y2="74.1" width="0.3" layer="1"/>
@@ -1717,13 +1793,14 @@ design rules under a new name.</description>
 <wire x1="32.11" y1="98.29" x2="32.11" y2="98.75" width="1.2" layer="1"/>
 <wire x1="32.004" y1="4.202" x2="18.806" y2="17.4" width="1.2" layer="16"/>
 <wire x1="18.806" y1="17.4" x2="14.2" y2="17.4" width="1.2" layer="16"/>
-<wire x1="14.2" y1="17.4" x2="9.016" y2="22.584" width="1.2" layer="16"/>
-<wire x1="12.13" y1="61.86" x2="9.19" y2="64.8" width="0.3" layer="1"/>
-<wire x1="9.19" y1="64.8" x2="9.1" y2="64.8" width="0.3" layer="1"/>
-<wire x1="9.016" y1="22.584" x2="9.016" y2="64.898" width="1.2" layer="16"/>
+<wire x1="14.2" y1="17.4" x2="8.916" y2="22.684" width="1.2" layer="16"/>
+<wire x1="8.916" y1="22.684" x2="8.916" y2="59.598" width="1.2" layer="16"/>
 <wire x1="35.4" y1="90.9684" x2="35.4" y2="95" width="1.2" layer="1"/>
-<wire x1="9.048" y1="64.9194" x2="9.1" y2="64.8" width="0.3" layer="1"/>
-<wire x1="9.048" y1="64.9194" x2="9.016" y2="64.898" width="0.3" layer="1"/>
+<wire x1="12.13" y1="61.86" x2="9.868" y2="59.598" width="0.3" layer="1"/>
+<wire x1="9.868" y1="59.598" x2="8.916" y2="59.598" width="0.3" layer="1"/>
+<contactref element="R2" pad="2"/>
+<wire x1="9.9" y1="61.65" x2="11.92" y2="61.65" width="0.3" layer="1"/>
+<wire x1="11.92" y1="61.65" x2="12.13" y2="61.86" width="0.3" layer="1"/>
 </signal>
 <signal name="5V">
 <contactref element="U$8" pad="1"/>
@@ -1779,6 +1856,9 @@ design rules under a new name.</description>
 <via x="58.5" y="88.8" extent="1-16" drill="0.35"/>
 <wire x1="58.5" y1="88.8" x2="57.415" y2="88.8" width="0.3" layer="1"/>
 <wire x1="57.415" y1="88.8" x2="57.295" y2="88.92" width="0.3" layer="1"/>
+<contactref element="R3" pad="1"/>
+<wire x1="33" y1="74.85" x2="33.2016" y2="74.85" width="0.3" layer="1"/>
+<wire x1="33.2016" y1="74.85" x2="34.29" y2="73.7616" width="0.3" layer="1"/>
 </signal>
 <signal name="1W">
 <contactref element="U$5" pad="4"/>
@@ -1903,14 +1983,20 @@ design rules under a new name.</description>
 <wire x1="50.8064" y1="65.5604" x2="50.8064" y2="66.8892" width="0.3" layer="16"/>
 <wire x1="62.5792" y1="53.3876" x2="62.5792" y2="53.7876" width="0.3" layer="16"/>
 <wire x1="62.5792" y1="53.7876" x2="50.8064" y2="65.5604" width="0.3" layer="16"/>
-<wire x1="62.5792" y1="53.3876" x2="62.5792" y2="51.7492" width="0.3" layer="1"/>
-<wire x1="62.34" y1="51.51" x2="62.5792" y2="51.7492" width="0.3" layer="1"/>
+<wire x1="62.5792" y1="53.3876" x2="62.5792" y2="51.7792" width="0.3" layer="1"/>
+<wire x1="62.52" y1="51.72" x2="62.5792" y2="51.7792" width="0.3" layer="1"/>
 <wire x1="54.7116" y1="89.0016" x2="54.755" y2="88.92" width="0.3" layer="1"/>
 <via x="54.102" y="90.5256" extent="1-16" drill="0.35"/>
 <via x="62.5792" y="53.3876" extent="1-16" drill="0.35"/>
+<contactref element="LED2" pad="A"/>
+<contactref element="LED1" pad="C"/>
+<wire x1="65.3" y1="44.25" x2="65.3" y2="45.35" width="0.3" layer="1"/>
+<wire x1="65.3" y1="45.35" x2="66.2" y2="46.25" width="0.3" layer="1"/>
+<wire x1="66.2" y1="46.25" x2="66.2" y2="50.7" width="0.3" layer="1"/>
+<wire x1="66.2" y1="50.7" x2="65.18" y2="51.72" width="0.3" layer="1"/>
+<wire x1="65.18" y1="51.72" x2="62.52" y2="51.72" width="0.3" layer="1"/>
 </signal>
 <signal name="N$2">
-<contactref element="U$6" pad="2"/>
 <contactref element="U$8" pad="8"/>
 <wire x1="48.4632" y1="90.2208" x2="48.4632" y2="89.0016" width="0.3" layer="1"/>
 <wire x1="48.1584" y1="90.5256" x2="48.4632" y2="90.2208" width="0.3" layer="1"/>
@@ -1922,11 +2008,18 @@ design rules under a new name.</description>
 <wire x1="48.4632" y1="89.0016" x2="48.405" y2="88.92" width="0.3" layer="1"/>
 <via x="48.1584" y="90.5256" extent="1-16" drill="0.35"/>
 <via x="59.5552" y="47.8728" extent="1-16" drill="0.35"/>
-<wire x1="59.5552" y1="47.8728" x2="61.9772" y2="47.8728" width="0.3" layer="1"/>
-<wire x1="61.9772" y1="47.8728" x2="62.34" y2="47.51" width="0.3" layer="1"/>
+<wire x1="61.9772" y1="47.8728" x2="59.5552" y2="47.8728" width="0.3" layer="1"/>
+<contactref element="U$6" pad="2"/>
+<contactref element="R81" pad="1"/>
+<contactref element="R1" pad="1"/>
+<wire x1="62.52" y1="45.67" x2="62.15" y2="45.3" width="0.3" layer="1"/>
+<wire x1="62.15" y1="45.3" x2="62.15" y2="43.2" width="0.3" layer="1"/>
+<wire x1="62.15" y1="45.3" x2="62.15" y2="47.35" width="0.3" layer="1"/>
+<wire x1="62.15" y1="47.35" x2="62.52" y2="47.72" width="0.3" layer="1"/>
+<wire x1="62.52" y1="47.72" x2="62.13" y2="47.72" width="0.3" layer="1"/>
+<wire x1="62.13" y1="47.72" x2="61.9772" y2="47.8728" width="0.3" layer="1"/>
 </signal>
 <signal name="N$3">
-<contactref element="U$7" pad="1"/>
 <contactref element="U$8" pad="18"/>
 <wire x1="54.7116" y1="78.4908" x2="54.7116" y2="79.248" width="0.3" layer="1"/>
 <wire x1="54.0604" y1="77.8396" x2="54.7116" y2="78.4908" width="0.3" layer="1"/>
@@ -1935,7 +2028,6 @@ design rules under a new name.</description>
 <wire x1="16.6116" y1="61.722" x2="19.2024" y2="59.1312" width="0.3" layer="1"/>
 <wire x1="16.1544" y1="61.722" x2="16.6116" y2="61.722" width="0.3" layer="1"/>
 <wire x1="54.7116" y1="79.248" x2="54.755" y2="79.32" width="0.3" layer="1"/>
-<wire x1="16.1544" y1="61.722" x2="16.13" y2="61.86" width="0.3" layer="1"/>
 <wire x1="44.6324" y1="69.8324" x2="45.8" y2="71" width="0.3" layer="1"/>
 <via x="45.8" y="71" extent="1-16" drill="0.35"/>
 <wire x1="52.5" y1="77.2" x2="52" y2="77.2" width="0.3" layer="16"/>
@@ -1944,6 +2036,13 @@ design rules under a new name.</description>
 <wire x1="52.5" y1="77.2" x2="53.1396" y2="77.8396" width="0.3" layer="1"/>
 <wire x1="53.1396" y1="77.8396" x2="54.0604" y2="77.8396" width="0.3" layer="1"/>
 <wire x1="35.5852" y1="69.8324" x2="44.6324" y2="69.8324" width="0.3" layer="1"/>
+<contactref element="U$7" pad="1"/>
+<contactref element="LED3" pad="A"/>
+<wire x1="11.75" y1="64.6" x2="11.85" y2="64.7" width="0.3" layer="1"/>
+<wire x1="11.85" y1="64.7" x2="15.3" y2="64.7" width="0.3" layer="1"/>
+<wire x1="15.3" y1="64.7" x2="16.13" y2="63.87" width="0.3" layer="1"/>
+<wire x1="16.13" y1="63.87" x2="16.13" y2="61.86" width="0.3" layer="1"/>
+<wire x1="16.13" y1="61.86" x2="16.1544" y2="61.722" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="B3_KVCC">
 <contactref element="BSK1" pad="7"/>
@@ -2047,17 +2146,11 @@ design rules under a new name.</description>
 <contactref element="U$2" pad="P$1"/>
 <contactref element="U$2" pad="P$2"/>
 <wire x1="35.9664" y1="83.6676" x2="35.9664" y2="82.9056" width="0.3" layer="1"/>
-<wire x1="33.3756" y1="81.8388" x2="33.36" y2="81.74" width="0.3" layer="1"/>
 <wire x1="35.9664" y1="83.6676" x2="36.05" y2="83.76" width="0.3" layer="1"/>
-<wire x1="33.3756" y1="80.1624" x2="33.3756" y2="80.6" width="0.3" layer="1"/>
-<wire x1="33.3756" y1="80.6" x2="33.3756" y2="81.6864" width="0.3" layer="1"/>
-<wire x1="24.5364" y1="71.3232" x2="33.3756" y2="80.1624" width="0.3" layer="1"/>
-<wire x1="24.5364" y1="70.866" x2="24.5364" y2="71.3232" width="0.3" layer="1"/>
 <wire x1="33.3756" y1="81.6864" x2="33.36" y2="81.74" width="0.3" layer="1"/>
 <wire x1="24.6888" y1="66.5988" x2="20.2692" y2="66.5988" width="0.3" layer="1"/>
 <wire x1="20.2692" y1="66.5988" x2="20.143803125" y2="66.613553125" width="0.3" layer="1"/>
 <wire x1="24.6888" y1="66.5988" x2="24.74" y2="66.26" width="0.3" layer="1"/>
-<wire x1="24.5364" y1="70.866" x2="24.38644375" y2="70.85619375" width="0.3" layer="1"/>
 <wire x1="24.5364" y1="70.866" x2="24.74" y2="66.26" width="0.3" layer="1"/>
 <wire x1="24.9936" y1="65.9892" x2="24.9936" y2="65.8368" width="0.3" layer="1"/>
 <wire x1="24.9936" y1="65.8368" x2="24.9936" y2="61.722" width="0.3" layer="1"/>
@@ -2073,7 +2166,16 @@ design rules under a new name.</description>
 <wire x1="35.9664" y1="82.9056" x2="36.4296" y2="82.4424" width="0.3" layer="1"/>
 <wire x1="36.4296" y1="82.4424" x2="36.67525625" y2="82.4424" width="0.3" layer="1"/>
 <wire x1="36.8524" y1="80.91474375" x2="36.53765625" y2="80.6" width="0.3" layer="1"/>
-<wire x1="36.53765625" y1="80.6" x2="33.3756" y2="80.6" width="0.3" layer="1"/>
+<wire x1="33.3756" y1="80.6" x2="36.53765625" y2="80.6" width="0.3" layer="1"/>
+<contactref element="LED4" pad="A"/>
+<wire x1="24.74" y1="66.26" x2="24.74" y2="71.9644" width="1.2" layer="1"/>
+<wire x1="24.74" y1="71.9644" x2="30.2878" y2="77.5122" width="1.2" layer="1"/>
+<wire x1="30.2878" y1="77.5122" x2="33.3756" y2="80.6" width="1.2" layer="1"/>
+<wire x1="33.3756" y1="80.6" x2="33.3756" y2="81.7244" width="1.2" layer="1"/>
+<wire x1="33.3756" y1="81.7244" x2="33.36" y2="81.74" width="1.2" layer="1"/>
+<wire x1="31.3" y1="76.45" x2="30.2878" y2="77.4622" width="0.3" layer="1"/>
+<wire x1="30.2878" y1="77.4622" x2="30.2878" y2="77.5122" width="0.3" layer="1"/>
+<wire x1="24.5364" y1="70.866" x2="24.38644375" y2="70.85619375" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$8">
 <contactref element="U$14" pad="4"/>
@@ -2333,6 +2435,30 @@ design rules under a new name.</description>
 <vertex x="18.25" y="33.75"/>
 <vertex x="16.25" y="31.75"/>
 </polygon>
+</signal>
+<signal name="N$4">
+<contactref element="R81" pad="2"/>
+<contactref element="LED2" pad="C"/>
+<wire x1="63.85" y1="45.3" x2="65.3" y2="46.75" width="0.3" layer="1"/>
+<wire x1="65.3" y1="46.75" x2="65.3" y2="46.85" width="0.3" layer="1"/>
+</signal>
+<signal name="N$5">
+<contactref element="LED1" pad="A"/>
+<contactref element="R1" pad="2"/>
+<wire x1="63.85" y1="43.2" x2="64.3" y2="42.75" width="0.3" layer="1"/>
+<wire x1="64.3" y1="42.75" x2="65.3" y2="42.75" width="0.3" layer="1"/>
+</signal>
+<signal name="N$6">
+<contactref element="LED3" pad="C"/>
+<contactref element="R2" pad="1"/>
+<wire x1="9.9" y1="63.35" x2="10.25" y2="63.7" width="0.3" layer="1"/>
+<wire x1="10.25" y1="63.7" x2="10.25" y2="64.6" width="0.3" layer="1"/>
+</signal>
+<signal name="N$7">
+<contactref element="R3" pad="2"/>
+<contactref element="LED4" pad="C"/>
+<wire x1="33" y1="76.55" x2="31.4" y2="74.95" width="0.3" layer="1"/>
+<wire x1="31.4" y1="74.95" x2="31.3" y2="74.95" width="0.3" layer="1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>

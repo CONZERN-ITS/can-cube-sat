@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.05" altunitdist="mm" altunit="mm"/>
+<grid distance="50" unitdist="mil" unit="mm" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="16" fill="1" visible="no" active="yes"/>
@@ -461,34 +461,34 @@
 <text x="-2.794" y="-2.413" size="0.6096" layer="25" rot="R90">IRF7905PBF</text>
 </package>
 <package name="LTC3633">
-<smd name="1" x="-4.225" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="2" x="-3.575" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="3" x="-2.925" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="4" x="-2.275" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="5" x="-1.625" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="6" x="-0.975" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="7" x="-0.325" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="8" x="0.325" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="9" x="0.975" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="10" x="1.625" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="11" x="2.275" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="12" x="2.925" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="13" x="3.575" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="14" x="4.225" y="-2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="15" x="4.225" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="16" x="3.575" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="17" x="2.925" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="18" x="2.275" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="19" x="1.625" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="20" x="0.975" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="21" x="0.325" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="22" x="-0.325" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="23" x="-0.975" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="24" x="-1.625" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="25" x="-2.275" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="26" x="-2.925" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="27" x="-3.575" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
-<smd name="28" x="-4.225" y="2.775" dx="1.05" dy="0.45" layer="1" rot="R90"/>
+<smd name="1" x="-4.225" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="2" x="-3.575" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="3" x="-2.925" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="4" x="-2.275" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="5" x="-1.625" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="6" x="-0.975" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="7" x="-0.325" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="8" x="0.325" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="9" x="0.975" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="10" x="1.625" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="11" x="2.275" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="12" x="2.925" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="13" x="3.575" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="14" x="4.225" y="-2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="15" x="4.225" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="16" x="3.575" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="17" x="2.925" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="18" x="2.275" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="19" x="1.625" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="20" x="0.975" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="21" x="0.325" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="22" x="-0.325" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="23" x="-0.975" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="24" x="-1.625" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="25" x="-2.275" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="26" x="-2.925" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="27" x="-3.575" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
+<smd name="28" x="-4.225" y="2.775" dx="1.05" dy="0.4" layer="1" rot="R90"/>
 <smd name="HEAT" x="0" y="0" dx="4.75" dy="2.74" layer="1"/>
 <wire x1="-4.8" y1="2.2" x2="-4.8" y2="-2.2" width="0.127" layer="21"/>
 <wire x1="-4.8" y1="-2.2" x2="4.8" y2="-2.2" width="0.127" layer="21"/>
