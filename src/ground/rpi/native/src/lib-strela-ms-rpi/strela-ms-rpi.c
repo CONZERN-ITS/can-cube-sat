@@ -4,7 +4,7 @@
  *  Created on: Feb 21, 2020
  *      Author: developer
  */
-//#include "lis3mdl_reg.h"
+#include "unistd.h"
 #include "lis3mdl_STdC/driver/lis3mdl_reg.h"
 #include "lsm6ds3_STdC/driver/lsm6ds3_reg.h"
 typedef enum {
@@ -26,12 +26,12 @@ int32_t lis3mdl_init (stmdev_write_ptr read, stmdev_write_ptr write){
 	lis3mdl_context.handle = 0;
 
 	// Reset
-	error = lis3mdl_reset_set(&lis3mdl_context, PROPERTY_ENABLE);
+	// Reset
+	lsm6ds3_reg_t ctrl3c = {0};
+	ctrl3c.ctrl3_c.sw_reset = 1;
+	error = lsm6ds3_write_reg(&lsm6ds3_context, LSM6DS3_CTRL3_C, &ctrl3c.byte, 1);
 	if (error) return error;
-	while (reset){
-		error = lis3mdl_reset_get(&lis3mdl_context, &reset);
-		if (error) return error;
-	}
+	usleep(50*1000);
 
 	// Check id
 	error = lis3mdl_device_id_get(&lis3mdl_context, &id);
@@ -72,12 +72,11 @@ int32_t lsm6ds3_init(stmdev_write_ptr read, stmdev_write_ptr write){
 	lsm6ds3_context.handle = 0;
 
 	// Reset
-	error = lsm6ds3_reset_set(&lsm6ds3_context, PROPERTY_ENABLE);
+	lsm6ds3_reg_t reg = {0};
+	reg.ctrl3_c.sw_reset = 1;
+	error = lsm6ds3_write_reg(&lsm6ds3_context, LSM6DS3_CTRL3_C, &reg.byte, 1);
 	if (error) return error;
-	while (reset){
-		error = lsm6ds3_reset_get(&lsm6ds3_context, &reset);
-		if (error) return error;
-	}
+	usleep(50*1000);
 
 	// Check id
 	error = lsm6ds3_device_id_get(&lsm6ds3_context, &id);
@@ -101,11 +100,11 @@ int32_t lsm6ds3_init(stmdev_write_ptr read, stmdev_write_ptr write){
 	return error;
 }
 
+
 int32_t lsm6ds3_get_accel_data_mg(float* accel)
 {
 	uint8_t data_raw [6];
 	int32_t error;
-
 	error = lsm6ds3_acceleration_raw_get(&lsm6ds3_context, data_raw);
 	if (error) return error;
 	accel[0] = lsm6ds3_from_fs4g_to_mg((data_raw[1] << 8) | data_raw[0]);
