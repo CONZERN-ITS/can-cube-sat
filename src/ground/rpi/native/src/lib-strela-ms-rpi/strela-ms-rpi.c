@@ -44,9 +44,9 @@ int32_t lis3mdl_get_data_G (stmdev_ctx_t *lis3mdl_context, float* mag){
 
 	error = lis3mdl_magnetic_raw_get(lis3mdl_context, data_raw);
 	if (error) return error;
-	mag[0] = LIS3MDL_FROM_FS_16G_TO_G(((data_raw[1] << 8) | data_raw[0]));
-	mag[1] = LIS3MDL_FROM_FS_16G_TO_G(((data_raw[3] << 8) | data_raw[2]));
-	mag[2] = LIS3MDL_FROM_FS_16G_TO_G(((data_raw[5] << 8) | data_raw[4]));
+	mag[0] = LIS3MDL_FROM_FS_16G_TO_G((int16_t)((data_raw[1] << 8) | data_raw[0]));
+	mag[1] = LIS3MDL_FROM_FS_16G_TO_G((int16_t)((data_raw[3] << 8) | data_raw[2]));
+	mag[2] = LIS3MDL_FROM_FS_16G_TO_G((int16_t)((data_raw[5] << 8) | data_raw[4]));
 	return 0;
 }
 
