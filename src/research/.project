@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>esp32-i2c-host</name>
+	<name>esp-i2c-master</name>
 	<comment></comment>
 	<projects>
 	</projects>
