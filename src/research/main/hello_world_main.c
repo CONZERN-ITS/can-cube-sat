@@ -28,8 +28,7 @@ static gpio_num_t i2c_gpio_scl = 19;
 static uint32_t i2c_frequency = 50000;
 static i2c_port_t i2c_port = I2C_NUM_0;
 
-//#define I2C_LINK_PACKET_SIZE (279)
-#define I2C_LINK_PACKET_SIZE (282)
+#define I2C_LINK_PACKET_SIZE (279)
 
 
 void app_main(void)
@@ -63,11 +62,11 @@ void app_main(void)
 		i2c_master_write(cmd, message, I2C_LINK_PACKET_SIZE, 1);
 		i2c_master_stop(cmd);
 
-		err = i2c_master_cmd_begin(i2c_port, cmd, portMAX_DELAY);
+		err = i2c_master_cmd_begin(i2c_port, cmd, 500 / portTICK_PERIOD_MS);
 		i2c_cmd_link_delete(cmd);
 		printf("err_write = %d\n", (int)err);
 
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
+		//vTaskDelay(1000 / portTICK_PERIOD_MS);
 
 		cmd =  i2c_cmd_link_create();
 		i2c_master_start(cmd);
@@ -75,7 +74,7 @@ void app_main(void)
 		i2c_master_read(cmd, message_in, I2C_LINK_PACKET_SIZE, I2C_MASTER_LAST_NACK);
 		i2c_master_stop(cmd);
 
-		err = i2c_master_cmd_begin(i2c_port, cmd, portMAX_DELAY);
+		err = i2c_master_cmd_begin(i2c_port, cmd, 500 / portTICK_PERIOD_MS);
 		i2c_cmd_link_delete(cmd);
 		printf("err_read = %d\n", (int)err);
 
