@@ -33,13 +33,13 @@ int user_main()
 		i2c_link_stats(&stats);
 
 		printf(
-			"rx_done_cnt: %u, rx_dropped_cnt: %u, rx_errors_cnt: %u\n"
-			"tx_done_cnt: %u, tx_zeroes_cnt: %u, tx_errors_cnt: %u\n"
-			"listen_done_cnt: %u, last_error: %u\n"
+			"rx_done_cnt: %"PRIu16", rx_dropped_cnt: %"PRIu16", rx_errors_cnt: %"PRIu16"\n"
+			"tx_done_cnt: %"PRIu16", tx_zeroes_cnt: %"PRIu16", tx_errors_cnt: %"PRIu16"\n"
+			"listen_done_cnt: %"PRIu16", last_error: %"PRIu32", restarts: %"PRIu16"\n"
 			,
 			stats.rx_done_cnt, stats.rx_dropped_cnt, stats.rx_error_cnt,
 			stats.tx_done_cnt, stats.tx_zeroes_cnt, stats.tx_zeroes_cnt,
-			stats.listen_done_cnt, stats.last_error
+			stats.listen_done_cnt, stats.last_error, stats.restarts_cnt
 		);
 
 		HAL_Delay(500);

@@ -7,15 +7,16 @@
 
 typedef struct i2c_link_stats_t
 {
-	size_t rx_done_cnt;
-	size_t rx_dropped_cnt;
-	size_t rx_error_cnt;
+	uint16_t rx_done_cnt;
+	uint16_t rx_dropped_cnt;
+	uint16_t rx_error_cnt;
 
-	size_t tx_done_cnt;
-	size_t tx_zeroes_cnt;
-	size_t tx_error_cnt;
+	uint16_t tx_done_cnt;
+	uint16_t tx_zeroes_cnt;
+	uint16_t tx_error_cnt;
 
-	size_t listen_done_cnt;
+	uint16_t restarts_cnt;
+	uint16_t listen_done_cnt;
 	uint32_t last_error;
 } i2c_link_stats_t;
 

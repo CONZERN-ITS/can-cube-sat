@@ -15,6 +15,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/i2c.h"
+#include "driver/gpio.h"
+
 
 #ifdef CONFIG_IDF_TARGET_ESP32
 //#define CHIP_NAME "ESP32"
@@ -29,7 +31,7 @@ static uint32_t i2c_frequency = 50000;
 static i2c_port_t i2c_port = I2C_NUM_0;
 
 #define I2C_LINK_PACKET_SIZE (279)
-
+#define LED_GPIO (2)
 
 void app_main(void)
 {
@@ -44,16 +46,20 @@ void app_main(void)
 	i2c_param_config(i2c_port, &conf);
 	i2c_driver_install(i2c_port, I2C_MODE_MASTER, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, 0);
 
+	gpio_pad_select_gpio(LED_GPIO);
 	const uint8_t slave_addr = 0x68;
 
 	uint8_t message[I2C_LINK_PACKET_SIZE];
 	uint8_t message_in[I2C_LINK_PACKET_SIZE];
 
+	int led_value = 0;
 	for (int i = 1; ; i++)
 	{
 		esp_err_t err;
 		memset(message_in, i-1, I2C_LINK_PACKET_SIZE);
 		memset(message, i, I2C_LINK_PACKET_SIZE);
+
+		GPIO_OUTPUT_SET(LED_GPIO, led_value);
 
 		i2c_cmd_handle_t cmd =  i2c_cmd_link_create();
 
@@ -85,6 +91,7 @@ void app_main(void)
 			printf("memcmp res = %d\n", rc);
 		}
 
+		led_value = !led_value;
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
 

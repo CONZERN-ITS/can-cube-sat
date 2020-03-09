@@ -56,7 +56,7 @@ static i2c_link_pbuf_t _rx_fallback = {0};
 static i2c_link_pbuf_t _tx_fallback = {0};
 
 
-static i2c_link_pbuf_t * pbuf_queue_get_head(i2c_link_pbuf_queue_t * queue)
+static i2c_link_pbuf_t * _pbuf_queue_get_head(i2c_link_pbuf_queue_t * queue)
 {
 	if (queue->full)
 		return 0;
@@ -65,7 +65,7 @@ static i2c_link_pbuf_t * pbuf_queue_get_head(i2c_link_pbuf_queue_t * queue)
 }
 
 
-static void pbuf_queue_push_head(i2c_link_pbuf_queue_t * queue)
+static void _pbuf_queue_push_head(i2c_link_pbuf_queue_t * queue)
 {
 	assert(!queue->full);
 
@@ -80,7 +80,7 @@ static void pbuf_queue_push_head(i2c_link_pbuf_queue_t * queue)
 }
 
 
-static i2c_link_pbuf_t * pbuf_queue_get_tail(i2c_link_pbuf_queue_t * queue)
+static i2c_link_pbuf_t * _pbuf_queue_get_tail(i2c_link_pbuf_queue_t * queue)
 {
 	if (queue->tail == queue->head && !queue->full)
 		return 0;
@@ -89,7 +89,7 @@ static i2c_link_pbuf_t * pbuf_queue_get_tail(i2c_link_pbuf_queue_t * queue)
 }
 
 
-static void pbuf_queue_pop_tail(i2c_link_pbuf_queue_t * queue)
+static void _pbuf_queue_pop_tail(i2c_link_pbuf_queue_t * queue)
 {
 	assert(!(queue->head == queue->tail && !queue->full));
 
@@ -136,79 +136,6 @@ static int _hal_status_to_errno(HAL_StatusTypeDef status)
 }
 
 
-int i2c_link_start()
-{
-	HAL_StatusTypeDef hal_rc;
-	int rc;
-
-	rc = _ctx_construct(&_ctx);
-	if (0 != rc)
-		return rc;
-
-	__HAL_I2C_ENABLE(I2C_LINK_BUS_HANDLE);
-
-	hal_rc = HAL_I2C_EnableListen_IT(I2C_LINK_BUS_HANDLE);
-
-	rc = _hal_status_to_errno(hal_rc);
-	if (0 != rc)
-		return rc;
-
-	return 0;
-}
-
-
-int i2c_link_write(const void * data, size_t data_size)
-{
-	i2c_link_ctx_t * const ctx = &_ctx;
-
-	if (data_size > I2C_LINK_PACKET_SIZE)
-		return -EINVAL;
-
-	i2c_link_pbuf_t * buf = pbuf_queue_get_head(&ctx->tx_bufs_queue);
-	if (0 == buf)
-		return -EAGAIN;
-
-	memcpy(buf->packet_data, data, data_size);
-	// Все остальное зануляем, чтобы не гонять мусор с предыдиущих проходов мастеру
-	memset(buf->packet_data + data_size, 0, I2C_LINK_PACKET_SIZE - data_size);
-	pbuf_queue_push_head(&ctx->tx_bufs_queue);
-
-	return data_size;
-}
-
-
-int i2c_link_read(void * buffer_, size_t buffer_size)
-{
-	i2c_link_ctx_t * const ctx = &_ctx;
-
-	i2c_link_pbuf_t * buf = pbuf_queue_get_tail(&ctx->rx_bufs_queue);
-	if (0 == buf)
-		return -EAGAIN;
-
-	uint8_t * data = (uint8_t*)buffer_;
-	size_t portion_size;
-	if (buffer_size < I2C_LINK_PACKET_SIZE)
-		portion_size = buffer_size;
-	else
-		portion_size = I2C_LINK_PACKET_SIZE;
-
-	memcpy(data, buf->packet_data, portion_size);
-	// Очистим буфер, чтобы в следующем проходе в нем не было мусора
-	memset(buf->packet_data, 0, I2C_LINK_PACKET_SIZE);
-
-	pbuf_queue_pop_tail(&ctx->rx_bufs_queue);
-	return I2C_LINK_PACKET_SIZE;
-}
-
-
-void i2c_link_stats(i2c_link_stats_t * statsbuf)
-{
-	i2c_link_ctx_t * const ctx = &_ctx;
-
-	*statsbuf = ctx->stats;
-}
-
-
 static int _link_tx_start_zeroes(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 {
 	HAL_StatusTypeDef hal_rc;
@@ -234,7 +161,7 @@ static int _link_tx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 
 	// Мастер на шине что-то от нас хочет получить
 	// Нужно посмотреть что у нас лежит в очереди на отправку
-	i2c_link_pbuf_t * buf = pbuf_queue_get_tail(&ctx->tx_bufs_queue);
+	i2c_link_pbuf_t * buf = _pbuf_queue_get_tail(&ctx->tx_bufs_queue);
 	if (0 == buf)
 	{
 		// У нас ничего нет для отправки
@@ -265,7 +192,7 @@ static int _link_tx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	case I2C_LINK_STATE_TX:
 		// Мы успешно отправили пакет!
 		// выкидываем его из очереди на отправку
-		pbuf_queue_pop_tail(&ctx->tx_bufs_queue);
+		_pbuf_queue_pop_tail(&ctx->tx_bufs_queue);
 		ctx->stats.tx_done_cnt++;
 		break;
 
@@ -311,7 +238,7 @@ static int _link_rx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 
 	// Мастер на шине хочет что-то нам передать.
 	// Есть ли у нас буфер для приёма?
-	i2c_link_pbuf_t * buf = pbuf_queue_get_head(&ctx->rx_bufs_queue);
+	i2c_link_pbuf_t * buf = _pbuf_queue_get_head(&ctx->rx_bufs_queue);
 	if (0 == buf)
 	{
 		// Некуда класть, будем класть в мусорку
@@ -341,7 +268,7 @@ static int _link_rx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	case I2C_LINK_STATE_RX:
 		// Мы успешно получили пакет!
 		// сохраняем его как успешно принятый
-		pbuf_queue_push_head(&ctx->rx_bufs_queue);
+		_pbuf_queue_push_head(&ctx->rx_bufs_queue);
 		ctx->stats.rx_done_cnt++;
 		break;
 
@@ -359,6 +286,107 @@ static int _link_rx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	return _link_rx_start_drop(hi2c, ctx);
 	//ctx->state = I2C_LINK_STATE_RX_DONE;
 	//return 0;
+}
+
+
+void _antihang(i2c_link_ctx_t * ctx)
+{
+	HAL_StatusTypeDef hal_rc;
+	I2C_HandleTypeDef * h2ic = I2C_LINK_BUS_HANDLE;
+
+	// В ряде случае HAL забрасывает I2C перефирию в состояние SWRST
+	// Видимо из-за ошибки в силиконе, которая не позволяет адекватно
+	// восстановиться после той или иной ситуации
+	// Если такое обнаруживается - нужно перенициализировать модуль I2C
+	if (READ_BIT(h2ic->Instance->CR1, I2C_CR1_SWRST))
+	{
+		ctx->stats.restarts_cnt++;
+
+		CLEAR_BIT(I2C_LINK_BUS_HANDLE->Instance->CR1, I2C_CR1_SWRST);
+		__HAL_I2C_RESET_HANDLE_STATE(h2ic);
+
+		hal_rc = HAL_I2C_Init(h2ic);
+		assert(HAL_OK == hal_rc);
+
+		hal_rc = HAL_I2C_EnableListen_IT(I2C_LINK_BUS_HANDLE);
+		assert(HAL_OK == hal_rc);
+	}
+}
+
+
+int i2c_link_start()
+{
+	i2c_link_ctx_t * const ctx = &_ctx;
+
+	HAL_StatusTypeDef hal_rc;
+	int rc;
+
+	rc = _ctx_construct(ctx);
+	if (0 != rc)
+		return rc;
+
+	hal_rc = HAL_I2C_EnableListen_IT(I2C_LINK_BUS_HANDLE);
+	rc = _hal_status_to_errno(hal_rc);
+	if (0 != rc)
+		return rc;
+
+	return 0;
+}
+
+
+int i2c_link_write(const void * data, size_t data_size)
+{
+	i2c_link_ctx_t * const ctx = &_ctx;
+
+	_antihang(ctx);
+
+	if (data_size > I2C_LINK_PACKET_SIZE)
+		return -EINVAL;
+
+	i2c_link_pbuf_t * buf = _pbuf_queue_get_head(&ctx->tx_bufs_queue);
+	if (0 == buf)
+		return -EAGAIN;
+
+	memcpy(buf->packet_data, data, data_size);
+	// Все остальное зануляем, чтобы не гонять мусор с предыдиущих проходов мастеру
+	memset(buf->packet_data + data_size, 0, I2C_LINK_PACKET_SIZE - data_size);
+	_pbuf_queue_push_head(&ctx->tx_bufs_queue);
+
+	return data_size;
+}
+
+
+int i2c_link_read(void * buffer_, size_t buffer_size)
+{
+	i2c_link_ctx_t * const ctx = &_ctx;
+
+	_antihang(ctx);
+
+	i2c_link_pbuf_t * buf = _pbuf_queue_get_tail(&ctx->rx_bufs_queue);
+	if (0 == buf)
+		return -EAGAIN;
+
+	uint8_t * data = (uint8_t*)buffer_;
+	size_t portion_size;
+	if (buffer_size < I2C_LINK_PACKET_SIZE)
+		portion_size = buffer_size;
+	else
+		portion_size = I2C_LINK_PACKET_SIZE;
+
+	memcpy(data, buf->packet_data, portion_size);
+	// Очистим буфер, чтобы в следующем проходе в нем не было мусора
+	memset(buf->packet_data, 0, I2C_LINK_PACKET_SIZE);
+
+	_pbuf_queue_pop_tail(&ctx->rx_bufs_queue);
+	return I2C_LINK_PACKET_SIZE;
+}
+
+
+void i2c_link_stats(i2c_link_stats_t * statsbuf)
+{
+	i2c_link_ctx_t * const ctx = &_ctx;
+
+	*statsbuf = ctx->stats;
 }
 
 
@@ -421,7 +449,7 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
 		// Если у нас не вышло отправить пакет по какой-то причине
 		// не будем пытаться делать это вновь
 		ctx->stats.tx_error_cnt++;
-		pbuf_queue_pop_tail(&ctx->tx_bufs_queue);
+		_pbuf_queue_pop_tail(&ctx->tx_bufs_queue);
 		ctx->stats.last_error = error;
 
 		// обязательно уходим из этого состояния

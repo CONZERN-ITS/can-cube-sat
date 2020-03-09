@@ -3,6 +3,8 @@
 
 #include <stm32f1xx_hal.h>
 
+#include "main.h"
+
 #define I2C_LINK_PACKET_SIZE (279)
 #define I2C_LINK_RXBUF_COUNT (5)
 #define I2C_LINK_TXBUF_COUNT (5)
