@@ -16699,6 +16699,8 @@ Distributor Buerklin, 11G810</description>
 <part name="C43" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="10µ"/>
 <part name="C51" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="0,1µ"/>
 <part name="C52" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="10µ"/>
+<part name="R101" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="4k7"/>
+<part name="R102" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="4k7"/>
 </parts>
 <sheets>
 <sheet>
@@ -18372,9 +18374,9 @@ Distributor Buerklin, 11G810</description>
 <attribute name="NAME" x="565.404" y="332.232" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="563.245" y="332.232" size="1.778" layer="96" rot="R270"/>
 </instance>
-<instance part="LED2" gate="G$1" x="541.02" y="294.64" smashed="yes" rot="R270">
-<attribute name="NAME" x="536.448" y="291.084" size="1.778" layer="95"/>
-<attribute name="VALUE" x="536.448" y="288.925" size="1.778" layer="96"/>
+<instance part="LED2" gate="G$1" x="541.02" y="281.94" smashed="yes" rot="R270">
+<attribute name="NAME" x="536.448" y="278.384" size="1.778" layer="95"/>
+<attribute name="VALUE" x="536.448" y="276.225" size="1.778" layer="96"/>
 </instance>
 <instance part="R25" gate="G$1" x="490.22" y="281.94" smashed="yes">
 <attribute name="NAME" x="486.41" y="283.4386" size="1.778" layer="95"/>
@@ -18392,9 +18394,9 @@ Distributor Buerklin, 11G810</description>
 <attribute name="NAME" x="486.41" y="260.5786" size="1.778" layer="95"/>
 <attribute name="VALUE" x="486.41" y="255.778" size="1.778" layer="96"/>
 </instance>
-<instance part="R81" gate="G$1" x="530.86" y="294.64" smashed="yes">
-<attribute name="NAME" x="527.05" y="296.1386" size="1.778" layer="95"/>
-<attribute name="VALUE" x="527.05" y="291.338" size="1.778" layer="96"/>
+<instance part="R81" gate="G$1" x="530.86" y="281.94" smashed="yes">
+<attribute name="NAME" x="527.05" y="283.4386" size="1.778" layer="95"/>
+<attribute name="VALUE" x="527.05" y="278.638" size="1.778" layer="96"/>
 </instance>
 <instance part="R82" gate="G$1" x="558.8" y="330.2" smashed="yes" rot="R90">
 <attribute name="NAME" x="557.3014" y="326.39" size="1.778" layer="95" rot="R90"/>
@@ -18486,6 +18488,14 @@ Distributor Buerklin, 11G810</description>
 <instance part="C52" gate="G$1" x="685.8" y="114.3" smashed="yes">
 <attribute name="NAME" x="686.816" y="114.935" size="1.778" layer="95"/>
 <attribute name="VALUE" x="686.816" y="110.109" size="1.778" layer="96"/>
+</instance>
+<instance part="R101" gate="G$1" x="530.86" y="294.64" smashed="yes" rot="R90">
+<attribute name="NAME" x="529.3614" y="290.83" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="534.162" y="290.83" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="R102" gate="G$1" x="538.48" y="294.64" smashed="yes" rot="R90">
+<attribute name="NAME" x="536.9814" y="290.83" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="541.782" y="290.83" size="1.778" layer="96" rot="R90"/>
 </instance>
 </instances>
 <busses>
@@ -18734,6 +18744,36 @@ Distributor Buerklin, 11G810</description>
 <junction x="824.23" y="151.13"/>
 <wire x1="827.786" y1="151.13" x2="827.786" y2="132.08" width="0.1524" layer="91"/>
 <label x="827.532" y="136.398" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="LED4" gate="G$1" pin="C"/>
+<wire x1="109.22" y1="292.1" x2="96.52" y2="292.1" width="0.1524" layer="91"/>
+<label x="96.52" y="292.1" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LED5" gate="G$1" pin="C"/>
+<wire x1="109.22" y1="165.1" x2="96.52" y2="165.1" width="0.1524" layer="91"/>
+<label x="96.52" y="165.1" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LED7" gate="G$1" pin="C"/>
+<wire x1="106.68" y1="33.02" x2="93.98" y2="33.02" width="0.1524" layer="91"/>
+<label x="93.98" y="33.02" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LED8" gate="G$1" pin="C"/>
+<wire x1="289.56" y1="40.64" x2="276.86" y2="40.64" width="0.1524" layer="91"/>
+<label x="276.86" y="40.64" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LED6" gate="G$1" pin="C"/>
+<wire x1="292.1" y1="162.56" x2="279.4" y2="162.56" width="0.1524" layer="91"/>
+<label x="279.4" y="162.56" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LED3" gate="G$1" pin="C"/>
+<wire x1="292.1" y1="292.1" x2="279.4" y2="292.1" width="0.1524" layer="91"/>
+<label x="279.4" y="292.1" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$8" class="0">
@@ -20046,8 +20086,10 @@ Distributor Buerklin, 11G810</description>
 </segment>
 <segment>
 <pinref part="IC1" gate="MCU" pin="PB10"/>
-<wire x1="533.4" y1="312.42" x2="533.4" y2="304.8" width="0.1524" layer="91"/>
 <label x="533.4" y="304.8" size="1.778" layer="95" rot="R90"/>
+<pinref part="R101" gate="G$1" pin="2"/>
+<wire x1="533.4" y1="312.42" x2="533.4" y2="299.72" width="0.1524" layer="91"/>
+<wire x1="533.4" y1="299.72" x2="530.86" y2="299.72" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="SDA" class="0">
@@ -20079,8 +20121,10 @@ Distributor Buerklin, 11G810</description>
 </segment>
 <segment>
 <pinref part="IC1" gate="MCU" pin="PB11"/>
-<wire x1="535.94" y1="312.42" x2="535.94" y2="304.8" width="0.1524" layer="91"/>
 <label x="535.94" y="304.8" size="1.778" layer="95" rot="R90"/>
+<pinref part="R102" gate="G$1" pin="2"/>
+<wire x1="535.94" y1="312.42" x2="535.94" y2="299.72" width="0.1524" layer="91"/>
+<wire x1="535.94" y1="299.72" x2="538.48" y2="299.72" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$154" class="0">
@@ -20146,13 +20190,23 @@ Distributor Buerklin, 11G810</description>
 </segment>
 <segment>
 <pinref part="C48" gate="G$1" pin="1"/>
-<wire x1="568.96" y1="314.96" x2="568.96" y2="294.64" width="0.1524" layer="91"/>
-<wire x1="568.96" y1="294.64" x2="543.56" y2="294.64" width="0.1524" layer="91"/>
+<wire x1="568.96" y1="314.96" x2="568.96" y2="281.94" width="0.1524" layer="91"/>
+<wire x1="568.96" y1="281.94" x2="546.1" y2="281.94" width="0.1524" layer="91"/>
 <junction x="568.96" y="314.96"/>
+<wire x1="546.1" y1="281.94" x2="543.56" y2="281.94" width="0.1524" layer="91"/>
 <wire x1="568.96" y1="314.96" x2="568.96" y2="325.12" width="0.1524" layer="91"/>
-<label x="548.64" y="294.64" size="1.778" layer="95"/>
+<label x="548.64" y="281.94" size="1.778" layer="95"/>
 <pinref part="LED1" gate="G$1" pin="A"/>
 <pinref part="LED2" gate="G$1" pin="A"/>
+<pinref part="R101" gate="G$1" pin="1"/>
+<wire x1="530.86" y1="289.56" x2="530.86" y2="287.02" width="0.1524" layer="91"/>
+<wire x1="530.86" y1="287.02" x2="538.48" y2="287.02" width="0.1524" layer="91"/>
+<wire x1="538.48" y1="287.02" x2="546.1" y2="287.02" width="0.1524" layer="91"/>
+<wire x1="546.1" y1="287.02" x2="546.1" y2="281.94" width="0.1524" layer="91"/>
+<junction x="546.1" y="281.94"/>
+<pinref part="R102" gate="G$1" pin="1"/>
+<wire x1="538.48" y1="289.56" x2="538.48" y2="287.02" width="0.1524" layer="91"/>
+<junction x="538.48" y="287.02"/>
 </segment>
 <segment>
 <wire x1="482.6" y1="281.94" x2="482.6" y2="274.32" width="0.1524" layer="91"/>
@@ -20234,26 +20288,6 @@ Distributor Buerklin, 11G810</description>
 <wire x1="403.86" y1="213.36" x2="386.08" y2="213.36" width="0.1524" layer="91"/>
 <label x="386.08" y="213.36" size="1.778" layer="95"/>
 <pinref part="U$23" gate="G$1" pin="3V3/BUS"/>
-</segment>
-<segment>
-<pinref part="U$16" gate="G$1" pin="SVCC"/>
-<wire x1="731.52" y1="140.97" x2="726.44" y2="140.97" width="0.1524" layer="91"/>
-<wire x1="726.44" y1="140.97" x2="726.44" y2="129.54" width="0.1524" layer="91"/>
-<wire x1="726.44" y1="129.54" x2="746.76" y2="129.54" width="0.1524" layer="91"/>
-<pinref part="U$16" gate="G$1" pin="VCC"/>
-<wire x1="746.76" y1="129.54" x2="764.54" y2="129.54" width="0.1524" layer="91"/>
-<wire x1="764.54" y1="129.54" x2="764.54" y2="133.35" width="0.1524" layer="91"/>
-<wire x1="764.54" y1="133.35" x2="764.54" y2="135.89" width="0.1524" layer="91"/>
-<wire x1="764.54" y1="135.89" x2="762" y2="135.89" width="0.1524" layer="91"/>
-<wire x1="746.76" y1="127" x2="746.76" y2="129.54" width="0.1524" layer="91"/>
-<junction x="746.76" y="129.54"/>
-<pinref part="C31" gate="G$1" pin="1"/>
-<pinref part="U$16" gate="G$1" pin="MPPC"/>
-<wire x1="762" y1="133.35" x2="764.54" y2="133.35" width="0.1524" layer="91"/>
-<junction x="764.54" y="133.35"/>
-<wire x1="726.44" y1="116.84" x2="726.44" y2="129.54" width="0.1524" layer="91"/>
-<junction x="726.44" y="129.54"/>
-<label x="726.44" y="116.84" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="N$133" class="0">
@@ -20339,8 +20373,8 @@ Distributor Buerklin, 11G810</description>
 </net>
 <net name="N$161" class="0">
 <segment>
-<wire x1="520.7" y1="312.42" x2="520.7" y2="294.64" width="0.1524" layer="91"/>
-<wire x1="520.7" y1="294.64" x2="525.78" y2="294.64" width="0.1524" layer="91"/>
+<wire x1="520.7" y1="312.42" x2="520.7" y2="281.94" width="0.1524" layer="91"/>
+<wire x1="520.7" y1="281.94" x2="525.78" y2="281.94" width="0.1524" layer="91"/>
 <pinref part="IC1" gate="MCU" pin="PB5"/>
 <pinref part="R81" gate="G$1" pin="1"/>
 </segment>
@@ -20841,9 +20875,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="223.52" y1="327.66" x2="210.82" y2="327.66" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA6"/>
-<wire x1="480.06" y1="312.42" x2="480.06" y2="302.26" width="0.1524" layer="91"/>
-<label x="480.06" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC1" gate="MCU" pin="PA2"/>
+<wire x1="469.9" y1="312.42" x2="469.9" y2="302.26" width="0.1524" layer="91"/>
+<label x="469.9" y="302.26" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="BMS5" class="0">
@@ -20857,9 +20891,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="40.64" y1="327.66" x2="27.94" y2="327.66" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA5"/>
-<wire x1="477.52" y1="312.42" x2="477.52" y2="302.26" width="0.1524" layer="91"/>
-<label x="477.52" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC1" gate="MCU" pin="PA1"/>
+<wire x1="467.36" y1="312.42" x2="467.36" y2="302.26" width="0.1524" layer="91"/>
+<label x="467.36" y="302.26" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="BMS3" class="0">
@@ -20905,9 +20939,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="40.64" y1="68.58" x2="27.94" y2="68.58" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA1"/>
-<wire x1="467.36" y1="312.42" x2="467.36" y2="302.26" width="0.1524" layer="91"/>
-<label x="467.36" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC1" gate="MCU" pin="PA5"/>
+<wire x1="477.52" y1="312.42" x2="477.52" y2="302.26" width="0.1524" layer="91"/>
+<label x="477.52" y="302.26" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="BMS2" class="0">
@@ -20921,9 +20955,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="223.52" y1="76.2" x2="210.82" y2="76.2" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA2"/>
-<wire x1="469.9" y1="312.42" x2="469.9" y2="302.26" width="0.1524" layer="91"/>
-<label x="469.9" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC1" gate="MCU" pin="PA6"/>
+<wire x1="480.06" y1="312.42" x2="480.06" y2="302.26" width="0.1524" layer="91"/>
+<label x="480.06" y="302.26" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -20942,36 +20976,6 @@ Distributor Buerklin, 11G810</description>
 <pinref part="S1" gate="1" pin="O"/>
 <wire x1="421.64" y1="345.44" x2="421.64" y2="360.68" width="0.1524" layer="91"/>
 <label x="421.64" y="347.98" size="1.778" layer="95" rot="R90"/>
-</segment>
-<segment>
-<pinref part="LED4" gate="G$1" pin="C"/>
-<wire x1="109.22" y1="292.1" x2="96.52" y2="292.1" width="0.1524" layer="91"/>
-<label x="96.52" y="292.1" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="LED3" gate="G$1" pin="C"/>
-<wire x1="292.1" y1="292.1" x2="279.4" y2="292.1" width="0.1524" layer="91"/>
-<label x="279.4" y="292.1" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="LED5" gate="G$1" pin="C"/>
-<wire x1="109.22" y1="165.1" x2="96.52" y2="165.1" width="0.1524" layer="91"/>
-<label x="96.52" y="165.1" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="LED6" gate="G$1" pin="C"/>
-<wire x1="292.1" y1="162.56" x2="279.4" y2="162.56" width="0.1524" layer="91"/>
-<label x="279.4" y="162.56" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="LED7" gate="G$1" pin="C"/>
-<wire x1="106.68" y1="33.02" x2="93.98" y2="33.02" width="0.1524" layer="91"/>
-<label x="93.98" y="33.02" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="LED8" gate="G$1" pin="C"/>
-<wire x1="289.56" y1="40.64" x2="276.86" y2="40.64" width="0.1524" layer="91"/>
-<label x="276.86" y="40.64" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="PGOOD1" class="0">
@@ -21147,6 +21151,26 @@ Distributor Buerklin, 11G810</description>
 <wire x1="546.1" y1="312.42" x2="546.1" y2="299.72" width="0.1524" layer="91"/>
 <label x="546.1" y="299.72" size="1.778" layer="95" rot="R90"/>
 <pinref part="IC1" gate="MCU" pin="PB15"/>
+</segment>
+</net>
+<net name="N$26" class="0">
+<segment>
+<wire x1="746.76" y1="127" x2="746.76" y2="129.54" width="0.1524" layer="91"/>
+<pinref part="C31" gate="G$1" pin="1"/>
+<label x="726.44" y="127" size="1.778" layer="95" rot="R90"/>
+<pinref part="U$16" gate="G$1" pin="VCC"/>
+<wire x1="762" y1="135.89" x2="764.54" y2="135.89" width="0.1524" layer="91"/>
+<wire x1="764.54" y1="133.35" x2="764.54" y2="129.54" width="0.1524" layer="91"/>
+<wire x1="764.54" y1="129.54" x2="746.76" y2="129.54" width="0.1524" layer="91"/>
+<pinref part="U$16" gate="G$1" pin="MPPC"/>
+<wire x1="762" y1="133.35" x2="764.54" y2="133.35" width="0.1524" layer="91"/>
+<wire x1="764.54" y1="133.35" x2="764.54" y2="135.89" width="0.1524" layer="91"/>
+<wire x1="746.76" y1="129.54" x2="726.44" y2="129.54" width="0.1524" layer="91"/>
+<junction x="746.76" y="129.54"/>
+<pinref part="U$16" gate="G$1" pin="SVCC"/>
+<wire x1="726.44" y1="129.54" x2="726.44" y2="140.97" width="0.1524" layer="91"/>
+<wire x1="726.44" y1="140.97" x2="731.52" y2="140.97" width="0.1524" layer="91"/>
+<junction x="764.54" y="133.35"/>
 </segment>
 </net>
 </nets>
