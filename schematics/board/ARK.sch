@@ -280,6 +280,114 @@
 <smd name="67" x="0" y="3" dx="1.05" dy="0.8" layer="1"/>
 <smd name="23" x="0" y="-3" dx="1.05" dy="0.8" layer="1"/>
 </package>
+<package name="LQFP48">
+<description>&lt;b&gt;LQFP48&lt;/b&gt;&lt;p&gt;
+7 x 7 mm, 48-pin low-profile quad flat package</description>
+<wire x1="-3.5" y1="-3.5" x2="-3.5" y2="-3.29" width="0.127" layer="21"/>
+<wire x1="-3.5" y1="-3.28" x2="-3.5" y2="3.5" width="0.127" layer="21"/>
+<wire x1="-3.5" y1="3.5" x2="3.5" y2="3.5" width="0.127" layer="21"/>
+<wire x1="3.5" y1="3.5" x2="3.5" y2="-3.5" width="0.127" layer="21"/>
+<wire x1="3.5" y1="-3.5" x2="-3.5" y2="-3.5" width="0.127" layer="21"/>
+<circle x="-2.93" y="-2.94" radius="0.306103125" width="0.127" layer="21"/>
+<text x="-2.84" y="1.35" size="1.27" layer="25">&gt;Name</text>
+<text x="-2.84" y="-1.85" size="1.27" layer="27">&gt;Value</text>
+<rectangle x1="-2.86" y1="-4.5" x2="-2.64" y2="-3.5" layer="51"/>
+<rectangle x1="-2.36" y1="-4.5" x2="-2.14" y2="-3.5" layer="51"/>
+<rectangle x1="-1.86" y1="-4.5" x2="-1.64" y2="-3.5" layer="51"/>
+<rectangle x1="-1.36" y1="-4.5" x2="-1.14" y2="-3.5" layer="51"/>
+<rectangle x1="-0.86" y1="-4.5" x2="-0.64" y2="-3.5" layer="51"/>
+<rectangle x1="-0.36" y1="-4.5" x2="-0.14" y2="-3.5" layer="51"/>
+<rectangle x1="0.14" y1="-4.5" x2="0.36" y2="-3.5" layer="51"/>
+<rectangle x1="0.64" y1="-4.5" x2="0.86" y2="-3.5" layer="51"/>
+<rectangle x1="1.14" y1="-4.5" x2="1.36" y2="-3.5" layer="51"/>
+<rectangle x1="1.64" y1="-4.5" x2="1.86" y2="-3.5" layer="51"/>
+<rectangle x1="2.14" y1="-4.5" x2="2.36" y2="-3.5" layer="51"/>
+<rectangle x1="2.64" y1="-4.5" x2="2.86" y2="-3.5" layer="51"/>
+<rectangle x1="3.89" y1="-3.25" x2="4.11" y2="-2.25" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="-2.75" x2="4.11" y2="-1.75" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="-2.25" x2="4.11" y2="-1.25" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="-1.75" x2="4.11" y2="-0.75" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="-1.25" x2="4.11" y2="-0.25" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="-0.75" x2="4.11" y2="0.25" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="-0.25" x2="4.11" y2="0.75" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="0.25" x2="4.11" y2="1.25" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="0.75" x2="4.11" y2="1.75" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="1.25" x2="4.11" y2="2.25" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="1.75" x2="4.11" y2="2.75" layer="51" rot="R90"/>
+<rectangle x1="3.89" y1="2.25" x2="4.11" y2="3.25" layer="51" rot="R90"/>
+<rectangle x1="2.64" y1="3.5" x2="2.86" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="2.14" y1="3.5" x2="2.36" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="1.64" y1="3.5" x2="1.86" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="1.14" y1="3.5" x2="1.36" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="0.64" y1="3.5" x2="0.86" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="0.14" y1="3.5" x2="0.36" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="-0.36" y1="3.5" x2="-0.14" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="-0.86" y1="3.5" x2="-0.64" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="-1.36" y1="3.5" x2="-1.14" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="-1.86" y1="3.5" x2="-1.64" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="-2.36" y1="3.5" x2="-2.14" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="-2.86" y1="3.5" x2="-2.64" y2="4.5" layer="51" rot="R180"/>
+<rectangle x1="-4.11" y1="2.25" x2="-3.89" y2="3.25" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="1.75" x2="-3.89" y2="2.75" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="1.25" x2="-3.89" y2="2.25" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="0.75" x2="-3.89" y2="1.75" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="0.25" x2="-3.89" y2="1.25" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="-0.25" x2="-3.89" y2="0.75" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="-0.75" x2="-3.89" y2="0.25" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="-1.25" x2="-3.89" y2="-0.25" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="-1.75" x2="-3.89" y2="-0.75" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="-2.25" x2="-3.89" y2="-1.25" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="-2.75" x2="-3.89" y2="-1.75" layer="51" rot="R270"/>
+<rectangle x1="-4.11" y1="-3.25" x2="-3.89" y2="-2.25" layer="51" rot="R270"/>
+<smd name="1" x="-2.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="2" x="-2.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="3" x="-1.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="4" x="-1.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="5" x="-0.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="6" x="-0.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="7" x="0.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="8" x="0.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="9" x="1.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="10" x="1.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="11" x="2.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="12" x="2.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
+<smd name="13" x="4.25" y="-2.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="14" x="4.25" y="-2.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="15" x="4.25" y="-1.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="16" x="4.25" y="-1.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="17" x="4.25" y="-0.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="18" x="4.25" y="-0.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="19" x="4.25" y="0.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="20" x="4.25" y="0.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="21" x="4.25" y="1.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="22" x="4.25" y="1.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="23" x="4.25" y="2.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="24" x="4.25" y="2.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
+<smd name="25" x="2.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="26" x="2.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="27" x="1.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="28" x="1.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="29" x="0.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="30" x="0.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="31" x="-0.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="32" x="-0.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="33" x="-1.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="34" x="-1.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="35" x="-2.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="36" x="-2.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
+<smd name="37" x="-4.25" y="2.75" dx="1.2" dy="0.3" layer="1"/>
+<smd name="38" x="-4.25" y="2.25" dx="1.2" dy="0.3" layer="1"/>
+<smd name="39" x="-4.25" y="1.75" dx="1.2" dy="0.3" layer="1"/>
+<smd name="40" x="-4.25" y="1.25" dx="1.2" dy="0.3" layer="1"/>
+<smd name="41" x="-4.25" y="0.75" dx="1.2" dy="0.3" layer="1"/>
+<smd name="42" x="-4.25" y="0.25" dx="1.2" dy="0.3" layer="1"/>
+<smd name="43" x="-4.25" y="-0.25" dx="1.2" dy="0.3" layer="1"/>
+<smd name="44" x="-4.25" y="-0.75" dx="1.2" dy="0.3" layer="1"/>
+<smd name="45" x="-4.25" y="-1.25" dx="1.2" dy="0.3" layer="1"/>
+<smd name="46" x="-4.25" y="-1.75" dx="1.2" dy="0.3" layer="1"/>
+<smd name="47" x="-4.25" y="-2.25" dx="1.2" dy="0.3" layer="1"/>
+<smd name="48" x="-4.25" y="-2.75" dx="1.2" dy="0.3" layer="1"/>
+</package>
 </packages>
 <symbols>
 <symbol name="HY2120">
@@ -436,6 +544,56 @@
 <pin name="G2" x="5.08" y="10.16" length="middle" rot="R270"/>
 <pin name="S2" x="12.7" y="0" length="middle" rot="R180"/>
 <text x="0.762" y="-7.366" size="1.6764" layer="95" font="vector">FS8205A</text>
+</symbol>
+<symbol name="STM32_48PIN_TYP3">
+<pin name="PA0-WKUP" x="22.86" y="-40.64" length="middle" rot="R180"/>
+<pin name="PA1" x="22.86" y="-38.1" length="middle" rot="R180"/>
+<pin name="PA2" x="22.86" y="-35.56" length="middle" rot="R180"/>
+<pin name="PA3" x="22.86" y="-33.02" length="middle" rot="R180"/>
+<pin name="PA4" x="22.86" y="-30.48" length="middle" rot="R180"/>
+<pin name="PA5" x="22.86" y="-27.94" length="middle" rot="R180"/>
+<pin name="PA6" x="22.86" y="-25.4" length="middle" rot="R180"/>
+<pin name="PA7" x="22.86" y="-22.86" length="middle" rot="R180"/>
+<pin name="PA9" x="22.86" y="-17.78" length="middle" rot="R180"/>
+<pin name="PA10" x="22.86" y="-15.24" length="middle" rot="R180"/>
+<pin name="PA13" x="22.86" y="-7.62" length="middle" rot="R180"/>
+<pin name="PA14" x="22.86" y="-5.08" length="middle" rot="R180"/>
+<pin name="PB0" x="22.86" y="2.54" length="middle" rot="R180"/>
+<pin name="VDDA" x="-22.86" y="-30.48" length="middle" direction="pwr"/>
+<pin name="BOOT0" x="-22.86" y="-40.64" length="middle" direction="in"/>
+<pin name="NRST" x="-22.86" y="-38.1" length="middle" function="dot"/>
+<pin name="OSC_IN" x="-22.86" y="-15.24" length="middle" function="clk"/>
+<pin name="OSC_OUT" x="-22.86" y="-20.32" length="middle" function="clk"/>
+<wire x1="-17.78" y1="-43.18" x2="-17.78" y2="43.18" width="0.254" layer="94"/>
+<wire x1="-17.78" y1="43.18" x2="17.78" y2="43.18" width="0.254" layer="94"/>
+<wire x1="17.78" y1="43.18" x2="17.78" y2="-43.18" width="0.254" layer="94"/>
+<wire x1="17.78" y1="-43.18" x2="-17.78" y2="-43.18" width="0.254" layer="94"/>
+<text x="-5.08" y="45.72" size="1.778" layer="95">&gt;Name</text>
+<text x="-5.08" y="-45.72" size="1.778" layer="96">&gt;Value</text>
+<pin name="PA8" x="22.86" y="-20.32" length="middle" rot="R180"/>
+<pin name="PA15" x="22.86" y="-2.54" length="middle" rot="R180"/>
+<pin name="PB1" x="22.86" y="5.08" length="middle" rot="R180"/>
+<pin name="PB2" x="22.86" y="7.62" length="middle" rot="R180"/>
+<pin name="PB3" x="22.86" y="10.16" length="middle" rot="R180"/>
+<pin name="PB4" x="22.86" y="12.7" length="middle" rot="R180"/>
+<pin name="PB5" x="22.86" y="15.24" length="middle" rot="R180"/>
+<pin name="PB6" x="22.86" y="17.78" length="middle" rot="R180"/>
+<pin name="PB7" x="22.86" y="20.32" length="middle" rot="R180"/>
+<pin name="PA11" x="22.86" y="-12.7" length="middle" rot="R180"/>
+<pin name="PA12" x="22.86" y="-10.16" length="middle" rot="R180"/>
+<pin name="PB8" x="22.86" y="22.86" length="middle" rot="R180"/>
+<pin name="PB9" x="22.86" y="25.4" length="middle" rot="R180"/>
+<pin name="PB10" x="22.86" y="27.94" length="middle" rot="R180"/>
+<pin name="PB11" x="22.86" y="30.48" length="middle" rot="R180"/>
+<pin name="PB12" x="22.86" y="33.02" length="middle" rot="R180"/>
+<pin name="PB13" x="22.86" y="35.56" length="middle" rot="R180"/>
+<pin name="PB14" x="22.86" y="38.1" length="middle" rot="R180"/>
+<pin name="PB15" x="22.86" y="40.64" length="middle" rot="R180"/>
+<pin name="PC13" x="-22.86" y="2.54" length="middle"/>
+<pin name="PC14" x="-22.86" y="5.08" length="middle"/>
+<pin name="PC15" x="-22.86" y="7.62" length="middle"/>
+<pin name="VSSA" x="-22.86" y="-33.02" length="middle" direction="pwr"/>
+<pin name="VBAT" x="-22.86" y="-27.94" length="middle" direction="pwr"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -666,6 +824,71 @@
 </connects>
 <technologies>
 <technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="STM32F103C*T" prefix="IC">
+<description>&lt;b&gt;ARM 32-bit Cortex™-M3 CPU&lt;/b&gt;&lt;p&gt;
+72 MHz maximum frequency&lt;br&gt;
+16 to 128 Kbytes of Flash memory&lt;br&gt;
+6 to 20 kbytes of SRAM&lt;br&gt;
+37 GPIOs&lt;br&gt;
+2.0 to 3.6 V application supply&lt;br&gt;</description>
+<gates>
+<gate name="MCU" symbol="STM32_48PIN_TYP3" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="LQFP48">
+<connects>
+<connect gate="MCU" pin="BOOT0" pad="44"/>
+<connect gate="MCU" pin="NRST" pad="7"/>
+<connect gate="MCU" pin="OSC_IN" pad="5"/>
+<connect gate="MCU" pin="OSC_OUT" pad="6"/>
+<connect gate="MCU" pin="PA0-WKUP" pad="10"/>
+<connect gate="MCU" pin="PA1" pad="11"/>
+<connect gate="MCU" pin="PA10" pad="31"/>
+<connect gate="MCU" pin="PA11" pad="32"/>
+<connect gate="MCU" pin="PA12" pad="33"/>
+<connect gate="MCU" pin="PA13" pad="34"/>
+<connect gate="MCU" pin="PA14" pad="37"/>
+<connect gate="MCU" pin="PA15" pad="38"/>
+<connect gate="MCU" pin="PA2" pad="12"/>
+<connect gate="MCU" pin="PA3" pad="13"/>
+<connect gate="MCU" pin="PA4" pad="14"/>
+<connect gate="MCU" pin="PA5" pad="15"/>
+<connect gate="MCU" pin="PA6" pad="16"/>
+<connect gate="MCU" pin="PA7" pad="17"/>
+<connect gate="MCU" pin="PA8" pad="29"/>
+<connect gate="MCU" pin="PA9" pad="30"/>
+<connect gate="MCU" pin="PB0" pad="18"/>
+<connect gate="MCU" pin="PB1" pad="19"/>
+<connect gate="MCU" pin="PB10" pad="21"/>
+<connect gate="MCU" pin="PB11" pad="22"/>
+<connect gate="MCU" pin="PB12" pad="25"/>
+<connect gate="MCU" pin="PB13" pad="26"/>
+<connect gate="MCU" pin="PB14" pad="27"/>
+<connect gate="MCU" pin="PB15" pad="28"/>
+<connect gate="MCU" pin="PB2" pad="20"/>
+<connect gate="MCU" pin="PB3" pad="39"/>
+<connect gate="MCU" pin="PB4" pad="40"/>
+<connect gate="MCU" pin="PB5" pad="41"/>
+<connect gate="MCU" pin="PB6" pad="42"/>
+<connect gate="MCU" pin="PB7" pad="43"/>
+<connect gate="MCU" pin="PB8" pad="45"/>
+<connect gate="MCU" pin="PB9" pad="46"/>
+<connect gate="MCU" pin="PC13" pad="2"/>
+<connect gate="MCU" pin="PC14" pad="3"/>
+<connect gate="MCU" pin="PC15" pad="4"/>
+<connect gate="MCU" pin="VBAT" pad="1"/>
+<connect gate="MCU" pin="VDDA" pad="9 24 36 48"/>
+<connect gate="MCU" pin="VSSA" pad="8 23 35 47"/>
+</connects>
+<technologies>
+<technology name="4"/>
+<technology name="6"/>
+<technology name="8"/>
+<technology name="B"/>
 </technologies>
 </device>
 </devices>
@@ -14111,257 +14334,6 @@ Source: http://www.vishay.com/docs/10129/hpc0201a.pdf</description>
 </deviceset>
 </devicesets>
 </library>
-<library name="micro-stm">
-<description>&lt;b&gt;ARM 32-bit Cortex™ MCUs&lt;/b&gt;&lt;p&gt;
-
-&lt;author&gt;Created by jb@jenszuhause.de&lt;/author&gt;&lt;p&gt;
-&lt;b&gt;You are using this libary by your own risk.&lt;/b&gt;&lt;br&gt;
-&lt;b&gt;Make sure to check everything well due to this libary before using it.&lt;/b&gt;</description>
-<packages>
-<package name="LQFP48">
-<description>&lt;b&gt;LQFP48&lt;/b&gt;&lt;p&gt;
-7 x 7 mm, 48-pin low-profile quad flat package</description>
-<wire x1="-3.5" y1="-3.5" x2="-3.5" y2="-3.29" width="0.127" layer="21"/>
-<wire x1="-3.5" y1="-3.28" x2="-3.5" y2="3.5" width="0.127" layer="21"/>
-<wire x1="-3.5" y1="3.5" x2="3.5" y2="3.5" width="0.127" layer="21"/>
-<wire x1="3.5" y1="3.5" x2="3.5" y2="-3.5" width="0.127" layer="21"/>
-<wire x1="3.5" y1="-3.5" x2="-3.5" y2="-3.5" width="0.127" layer="21"/>
-<circle x="-2.93" y="-2.94" radius="0.306103125" width="0.127" layer="21"/>
-<text x="-2.84" y="1.35" size="1.27" layer="25">&gt;Name</text>
-<text x="-2.84" y="-1.85" size="1.27" layer="27">&gt;Value</text>
-<rectangle x1="-2.86" y1="-4.5" x2="-2.64" y2="-3.5" layer="51"/>
-<rectangle x1="-2.36" y1="-4.5" x2="-2.14" y2="-3.5" layer="51"/>
-<rectangle x1="-1.86" y1="-4.5" x2="-1.64" y2="-3.5" layer="51"/>
-<rectangle x1="-1.36" y1="-4.5" x2="-1.14" y2="-3.5" layer="51"/>
-<rectangle x1="-0.86" y1="-4.5" x2="-0.64" y2="-3.5" layer="51"/>
-<rectangle x1="-0.36" y1="-4.5" x2="-0.14" y2="-3.5" layer="51"/>
-<rectangle x1="0.14" y1="-4.5" x2="0.36" y2="-3.5" layer="51"/>
-<rectangle x1="0.64" y1="-4.5" x2="0.86" y2="-3.5" layer="51"/>
-<rectangle x1="1.14" y1="-4.5" x2="1.36" y2="-3.5" layer="51"/>
-<rectangle x1="1.64" y1="-4.5" x2="1.86" y2="-3.5" layer="51"/>
-<rectangle x1="2.14" y1="-4.5" x2="2.36" y2="-3.5" layer="51"/>
-<rectangle x1="2.64" y1="-4.5" x2="2.86" y2="-3.5" layer="51"/>
-<rectangle x1="3.89" y1="-3.25" x2="4.11" y2="-2.25" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="-2.75" x2="4.11" y2="-1.75" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="-2.25" x2="4.11" y2="-1.25" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="-1.75" x2="4.11" y2="-0.75" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="-1.25" x2="4.11" y2="-0.25" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="-0.75" x2="4.11" y2="0.25" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="-0.25" x2="4.11" y2="0.75" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="0.25" x2="4.11" y2="1.25" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="0.75" x2="4.11" y2="1.75" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="1.25" x2="4.11" y2="2.25" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="1.75" x2="4.11" y2="2.75" layer="51" rot="R90"/>
-<rectangle x1="3.89" y1="2.25" x2="4.11" y2="3.25" layer="51" rot="R90"/>
-<rectangle x1="2.64" y1="3.5" x2="2.86" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="2.14" y1="3.5" x2="2.36" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="1.64" y1="3.5" x2="1.86" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="1.14" y1="3.5" x2="1.36" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="0.64" y1="3.5" x2="0.86" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="0.14" y1="3.5" x2="0.36" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="-0.36" y1="3.5" x2="-0.14" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="-0.86" y1="3.5" x2="-0.64" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="-1.36" y1="3.5" x2="-1.14" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="-1.86" y1="3.5" x2="-1.64" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="-2.36" y1="3.5" x2="-2.14" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="-2.86" y1="3.5" x2="-2.64" y2="4.5" layer="51" rot="R180"/>
-<rectangle x1="-4.11" y1="2.25" x2="-3.89" y2="3.25" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="1.75" x2="-3.89" y2="2.75" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="1.25" x2="-3.89" y2="2.25" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="0.75" x2="-3.89" y2="1.75" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="0.25" x2="-3.89" y2="1.25" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="-0.25" x2="-3.89" y2="0.75" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="-0.75" x2="-3.89" y2="0.25" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="-1.25" x2="-3.89" y2="-0.25" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="-1.75" x2="-3.89" y2="-0.75" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="-2.25" x2="-3.89" y2="-1.25" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="-2.75" x2="-3.89" y2="-1.75" layer="51" rot="R270"/>
-<rectangle x1="-4.11" y1="-3.25" x2="-3.89" y2="-2.25" layer="51" rot="R270"/>
-<smd name="1" x="-2.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="2" x="-2.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="3" x="-1.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="4" x="-1.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="5" x="-0.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="6" x="-0.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="7" x="0.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="8" x="0.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="9" x="1.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="10" x="1.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="11" x="2.25" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="12" x="2.75" y="-4.25" dx="1.2" dy="0.3" layer="1" rot="R90"/>
-<smd name="13" x="4.25" y="-2.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="14" x="4.25" y="-2.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="15" x="4.25" y="-1.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="16" x="4.25" y="-1.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="17" x="4.25" y="-0.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="18" x="4.25" y="-0.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="19" x="4.25" y="0.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="20" x="4.25" y="0.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="21" x="4.25" y="1.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="22" x="4.25" y="1.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="23" x="4.25" y="2.25" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="24" x="4.25" y="2.75" dx="1.2" dy="0.3" layer="1" rot="R180"/>
-<smd name="25" x="2.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="26" x="2.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="27" x="1.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="28" x="1.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="29" x="0.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="30" x="0.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="31" x="-0.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="32" x="-0.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="33" x="-1.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="34" x="-1.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="35" x="-2.25" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="36" x="-2.75" y="4.25" dx="1.2" dy="0.3" layer="1" rot="R270"/>
-<smd name="37" x="-4.25" y="2.75" dx="1.2" dy="0.3" layer="1"/>
-<smd name="38" x="-4.25" y="2.25" dx="1.2" dy="0.3" layer="1"/>
-<smd name="39" x="-4.25" y="1.75" dx="1.2" dy="0.3" layer="1"/>
-<smd name="40" x="-4.25" y="1.25" dx="1.2" dy="0.3" layer="1"/>
-<smd name="41" x="-4.25" y="0.75" dx="1.2" dy="0.3" layer="1"/>
-<smd name="42" x="-4.25" y="0.25" dx="1.2" dy="0.3" layer="1"/>
-<smd name="43" x="-4.25" y="-0.25" dx="1.2" dy="0.3" layer="1"/>
-<smd name="44" x="-4.25" y="-0.75" dx="1.2" dy="0.3" layer="1"/>
-<smd name="45" x="-4.25" y="-1.25" dx="1.2" dy="0.3" layer="1"/>
-<smd name="46" x="-4.25" y="-1.75" dx="1.2" dy="0.3" layer="1"/>
-<smd name="47" x="-4.25" y="-2.25" dx="1.2" dy="0.3" layer="1"/>
-<smd name="48" x="-4.25" y="-2.75" dx="1.2" dy="0.3" layer="1"/>
-</package>
-</packages>
-<symbols>
-<symbol name="STM32_48PIN_TYP3">
-<pin name="PA0-WKUP" x="22.86" y="-40.64" length="middle" rot="R180"/>
-<pin name="PA1" x="22.86" y="-38.1" length="middle" rot="R180"/>
-<pin name="PA2" x="22.86" y="-35.56" length="middle" rot="R180"/>
-<pin name="PA3" x="22.86" y="-33.02" length="middle" rot="R180"/>
-<pin name="PA4" x="22.86" y="-30.48" length="middle" rot="R180"/>
-<pin name="PA5" x="22.86" y="-27.94" length="middle" rot="R180"/>
-<pin name="PA6" x="22.86" y="-25.4" length="middle" rot="R180"/>
-<pin name="PA7" x="22.86" y="-22.86" length="middle" rot="R180"/>
-<pin name="PA9" x="22.86" y="-17.78" length="middle" rot="R180"/>
-<pin name="PA10" x="22.86" y="-15.24" length="middle" rot="R180"/>
-<pin name="PA13" x="22.86" y="-7.62" length="middle" rot="R180"/>
-<pin name="PA14" x="22.86" y="-5.08" length="middle" rot="R180"/>
-<pin name="PB0" x="22.86" y="2.54" length="middle" rot="R180"/>
-<pin name="VDDA" x="-22.86" y="-30.48" length="middle" direction="pwr"/>
-<pin name="BOOT0" x="-22.86" y="-40.64" length="middle" direction="in"/>
-<pin name="NRST" x="-22.86" y="-38.1" length="middle" function="dot"/>
-<pin name="OSC_IN" x="-22.86" y="-15.24" length="middle" function="clk"/>
-<pin name="OSC_OUT" x="-22.86" y="-20.32" length="middle" function="clk"/>
-<wire x1="-17.78" y1="-43.18" x2="-17.78" y2="43.18" width="0.254" layer="94"/>
-<wire x1="-17.78" y1="43.18" x2="17.78" y2="43.18" width="0.254" layer="94"/>
-<wire x1="17.78" y1="43.18" x2="17.78" y2="-43.18" width="0.254" layer="94"/>
-<wire x1="17.78" y1="-43.18" x2="-17.78" y2="-43.18" width="0.254" layer="94"/>
-<text x="-5.08" y="45.72" size="1.778" layer="95">&gt;Name</text>
-<text x="-5.08" y="-45.72" size="1.778" layer="96">&gt;Value</text>
-<pin name="PA8" x="22.86" y="-20.32" length="middle" rot="R180"/>
-<pin name="PA15" x="22.86" y="-2.54" length="middle" rot="R180"/>
-<pin name="PB1" x="22.86" y="5.08" length="middle" rot="R180"/>
-<pin name="PB2" x="22.86" y="7.62" length="middle" rot="R180"/>
-<pin name="PB3" x="22.86" y="10.16" length="middle" rot="R180"/>
-<pin name="PB4" x="22.86" y="12.7" length="middle" rot="R180"/>
-<pin name="PB5" x="22.86" y="15.24" length="middle" rot="R180"/>
-<pin name="PB6" x="22.86" y="17.78" length="middle" rot="R180"/>
-<pin name="PB7" x="22.86" y="20.32" length="middle" rot="R180"/>
-<pin name="PA11" x="22.86" y="-12.7" length="middle" rot="R180"/>
-<pin name="PA12" x="22.86" y="-10.16" length="middle" rot="R180"/>
-<pin name="PB8" x="22.86" y="22.86" length="middle" rot="R180"/>
-<pin name="PB9" x="22.86" y="25.4" length="middle" rot="R180"/>
-<pin name="PB10" x="22.86" y="27.94" length="middle" rot="R180"/>
-<pin name="PB11" x="22.86" y="30.48" length="middle" rot="R180"/>
-<pin name="PB12" x="22.86" y="33.02" length="middle" rot="R180"/>
-<pin name="PB13" x="22.86" y="35.56" length="middle" rot="R180"/>
-<pin name="PB14" x="22.86" y="38.1" length="middle" rot="R180"/>
-<pin name="PB15" x="22.86" y="40.64" length="middle" rot="R180"/>
-<pin name="PC13" x="-22.86" y="2.54" length="middle"/>
-<pin name="PC14" x="-22.86" y="5.08" length="middle"/>
-<pin name="PC15" x="-22.86" y="7.62" length="middle"/>
-<pin name="VSSA" x="-22.86" y="-33.02" length="middle" direction="pwr"/>
-<pin name="VBAT" x="-22.86" y="-27.94" length="middle" direction="pwr"/>
-</symbol>
-<symbol name="PWR_VDD3_VSS3">
-<pin name="VDD@1" x="-5.08" y="17.78" length="middle" direction="pwr" rot="R270"/>
-<pin name="VSS@1" x="-5.08" y="-17.78" length="middle" direction="pwr" rot="R90"/>
-<pin name="VDD@2" x="0" y="17.78" length="middle" direction="pwr" rot="R270"/>
-<pin name="VSS@2" x="0" y="-17.78" length="middle" direction="pwr" rot="R90"/>
-<pin name="VDD@3" x="5.08" y="17.78" length="middle" direction="pwr" rot="R270"/>
-<pin name="VSS@3" x="5.08" y="-17.78" length="middle" direction="pwr" rot="R90"/>
-</symbol>
-</symbols>
-<devicesets>
-<deviceset name="STM32F103C*T" prefix="IC">
-<description>&lt;b&gt;ARM 32-bit Cortex™-M3 CPU&lt;/b&gt;&lt;p&gt;
-72 MHz maximum frequency&lt;br&gt;
-16 to 128 Kbytes of Flash memory&lt;br&gt;
-6 to 20 kbytes of SRAM&lt;br&gt;
-37 GPIOs&lt;br&gt;
-2.0 to 3.6 V application supply&lt;br&gt;</description>
-<gates>
-<gate name="MCU" symbol="STM32_48PIN_TYP3" x="0" y="0"/>
-<gate name="PWR" symbol="PWR_VDD3_VSS3" x="43.18" y="0" addlevel="request"/>
-</gates>
-<devices>
-<device name="" package="LQFP48">
-<connects>
-<connect gate="MCU" pin="BOOT0" pad="44"/>
-<connect gate="MCU" pin="NRST" pad="7"/>
-<connect gate="MCU" pin="OSC_IN" pad="5"/>
-<connect gate="MCU" pin="OSC_OUT" pad="6"/>
-<connect gate="MCU" pin="PA0-WKUP" pad="10"/>
-<connect gate="MCU" pin="PA1" pad="11"/>
-<connect gate="MCU" pin="PA10" pad="31"/>
-<connect gate="MCU" pin="PA11" pad="32"/>
-<connect gate="MCU" pin="PA12" pad="33"/>
-<connect gate="MCU" pin="PA13" pad="34"/>
-<connect gate="MCU" pin="PA14" pad="37"/>
-<connect gate="MCU" pin="PA15" pad="38"/>
-<connect gate="MCU" pin="PA2" pad="12"/>
-<connect gate="MCU" pin="PA3" pad="13"/>
-<connect gate="MCU" pin="PA4" pad="14"/>
-<connect gate="MCU" pin="PA5" pad="15"/>
-<connect gate="MCU" pin="PA6" pad="16"/>
-<connect gate="MCU" pin="PA7" pad="17"/>
-<connect gate="MCU" pin="PA8" pad="29"/>
-<connect gate="MCU" pin="PA9" pad="30"/>
-<connect gate="MCU" pin="PB0" pad="18"/>
-<connect gate="MCU" pin="PB1" pad="19"/>
-<connect gate="MCU" pin="PB10" pad="21"/>
-<connect gate="MCU" pin="PB11" pad="22"/>
-<connect gate="MCU" pin="PB12" pad="25"/>
-<connect gate="MCU" pin="PB13" pad="26"/>
-<connect gate="MCU" pin="PB14" pad="27"/>
-<connect gate="MCU" pin="PB15" pad="28"/>
-<connect gate="MCU" pin="PB2" pad="20"/>
-<connect gate="MCU" pin="PB3" pad="39"/>
-<connect gate="MCU" pin="PB4" pad="40"/>
-<connect gate="MCU" pin="PB5" pad="41"/>
-<connect gate="MCU" pin="PB6" pad="42"/>
-<connect gate="MCU" pin="PB7" pad="43"/>
-<connect gate="MCU" pin="PB8" pad="45"/>
-<connect gate="MCU" pin="PB9" pad="46"/>
-<connect gate="MCU" pin="PC13" pad="2"/>
-<connect gate="MCU" pin="PC14" pad="3"/>
-<connect gate="MCU" pin="PC15" pad="4"/>
-<connect gate="MCU" pin="VBAT" pad="1"/>
-<connect gate="MCU" pin="VDDA" pad="9"/>
-<connect gate="MCU" pin="VSSA" pad="8"/>
-<connect gate="PWR" pin="VDD@1" pad="24"/>
-<connect gate="PWR" pin="VDD@2" pad="36"/>
-<connect gate="PWR" pin="VDD@3" pad="48"/>
-<connect gate="PWR" pin="VSS@1" pad="23"/>
-<connect gate="PWR" pin="VSS@2" pad="35"/>
-<connect gate="PWR" pin="VSS@3" pad="47"/>
-</connects>
-<technologies>
-<technology name="4"/>
-<technology name="6"/>
-<technology name="8"/>
-<technology name="B"/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-</devicesets>
-</library>
 <library name="led" urn="urn:adsk.eagle:library:259">
 <description>&lt;b&gt;LEDs&lt;/b&gt;&lt;p&gt;
 &lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;&lt;br&gt;
@@ -16614,7 +16586,6 @@ Distributor Buerklin, 11G810</description>
 <part name="C38" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="3,3n"/>
 <part name="C35" library="CanCubeSat" deviceset="ECAP" device="ECAP150" value="150µ"/>
 <part name="C37" library="CanCubeSat" deviceset="ECAP" device="ECAP220" value="220µ"/>
-<part name="IC1" library="micro-stm" deviceset="STM32F103C*T" device="" technology="8"/>
 <part name="C44" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="27pF"/>
 <part name="C45" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="27pF"/>
 <part name="Q5" library="9C-8.000MEEJ-T" deviceset="9C-8.000MEEJ-T" device="" value="8MHz"/>
@@ -16699,8 +16670,9 @@ Distributor Buerklin, 11G810</description>
 <part name="C43" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="10µ"/>
 <part name="C51" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="0,1µ"/>
 <part name="C52" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="10µ"/>
-<part name="R101" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="4k7"/>
-<part name="R102" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="4k7"/>
+<part name="R101" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
+<part name="R102" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
+<part name="IC2" library="CanCubeSat" deviceset="STM32F103C*T" device="" technology="8"/>
 </parts>
 <sheets>
 <sheet>
@@ -18183,10 +18155,6 @@ Distributor Buerklin, 11G810</description>
 <attribute name="NAME" x="550.164" y="135.001" size="1.778" layer="95"/>
 <attribute name="VALUE" x="550.164" y="129.921" size="1.778" layer="96"/>
 </instance>
-<instance part="IC1" gate="MCU" x="505.46" y="335.28" smashed="yes" rot="R270">
-<attribute name="NAME" x="551.18" y="340.36" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="459.74" y="340.36" size="1.778" layer="96" rot="R270"/>
-</instance>
 <instance part="C44" gate="G$1" x="485.14" y="388.62" smashed="yes" rot="R180">
 <attribute name="NAME" x="483.616" y="388.239" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="483.616" y="393.319" size="1.778" layer="96" rot="R180"/>
@@ -18496,6 +18464,10 @@ Distributor Buerklin, 11G810</description>
 <instance part="R102" gate="G$1" x="538.48" y="294.64" smashed="yes" rot="R90">
 <attribute name="NAME" x="536.9814" y="290.83" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="541.782" y="290.83" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="IC2" gate="MCU" x="505.46" y="335.28" smashed="yes" rot="R270">
+<attribute name="NAME" x="551.18" y="340.36" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="459.74" y="340.36" size="1.778" layer="96" rot="R270"/>
 </instance>
 </instances>
 <busses>
@@ -19698,9 +19670,9 @@ Distributor Buerklin, 11G810</description>
 <label x="477.52" y="398.78" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="VSSA"/>
 <wire x1="472.44" y1="358.14" x2="472.44" y2="365.76" width="0.1524" layer="91"/>
 <label x="472.44" y="360.68" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="VSSA"/>
 </segment>
 <segment>
 <wire x1="45.72" y1="43.18" x2="35.56" y2="43.18" width="0.1524" layer="91"/>
@@ -19969,9 +19941,9 @@ Distributor Buerklin, 11G810</description>
 </net>
 <net name="1W" class="0">
 <segment>
-<pinref part="IC1" gate="MCU" pin="PB0"/>
 <wire x1="508" y1="312.42" x2="508" y2="304.8" width="0.1524" layer="91"/>
 <label x="508" y="304.8" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PB0"/>
 </segment>
 <segment>
 <pinref part="VAR5A" gate="A" pin="5"/>
@@ -20085,11 +20057,11 @@ Distributor Buerklin, 11G810</description>
 <label x="789.94" y="269.24" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PB10"/>
 <label x="533.4" y="304.8" size="1.778" layer="95" rot="R90"/>
 <pinref part="R101" gate="G$1" pin="2"/>
 <wire x1="533.4" y1="312.42" x2="533.4" y2="299.72" width="0.1524" layer="91"/>
 <wire x1="533.4" y1="299.72" x2="530.86" y2="299.72" width="0.1524" layer="91"/>
+<pinref part="IC2" gate="MCU" pin="PB10"/>
 </segment>
 </net>
 <net name="SDA" class="0">
@@ -20120,11 +20092,11 @@ Distributor Buerklin, 11G810</description>
 <label x="795.02" y="264.16" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PB11"/>
 <label x="535.94" y="304.8" size="1.778" layer="95" rot="R90"/>
 <pinref part="R102" gate="G$1" pin="2"/>
 <wire x1="535.94" y1="312.42" x2="535.94" y2="299.72" width="0.1524" layer="91"/>
 <wire x1="535.94" y1="299.72" x2="538.48" y2="299.72" width="0.1524" layer="91"/>
+<pinref part="IC2" gate="MCU" pin="PB11"/>
 </segment>
 </net>
 <net name="N$154" class="0">
@@ -20143,9 +20115,9 @@ Distributor Buerklin, 11G810</description>
 <label x="719.582" y="143.764" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PB2"/>
 <wire x1="513.08" y1="312.42" x2="513.08" y2="302.26" width="0.1524" layer="91"/>
 <label x="513.08" y="300.736" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PB2"/>
 </segment>
 </net>
 <net name="N$129" class="0">
@@ -20227,9 +20199,9 @@ Distributor Buerklin, 11G810</description>
 <junction x="482.6" y="259.08"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="VDDA"/>
 <wire x1="474.98" y1="358.14" x2="474.98" y2="365.76" width="0.1524" layer="91"/>
 <label x="474.98" y="360.68" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="VDDA"/>
 </segment>
 <segment>
 <wire x1="535.94" y1="254" x2="535.94" y2="223.52" width="0.1524" layer="91"/>
@@ -20297,10 +20269,10 @@ Distributor Buerklin, 11G810</description>
 <junction x="485.14" y="378.46"/>
 <wire x1="485.14" y1="358.14" x2="485.14" y2="370.84" width="0.1524" layer="91"/>
 <pinref part="Q5" gate="G$1" pin="1"/>
-<pinref part="IC1" gate="MCU" pin="OSC_OUT"/>
 <pinref part="R78" gate="G$1" pin="1"/>
 <wire x1="485.14" y1="370.84" x2="485.14" y2="378.46" width="0.1524" layer="91"/>
 <junction x="485.14" y="370.84"/>
+<pinref part="IC2" gate="MCU" pin="OSC_OUT"/>
 </segment>
 </net>
 <net name="N$145" class="0">
@@ -20311,35 +20283,35 @@ Distributor Buerklin, 11G810</description>
 <junction x="495.3" y="378.46"/>
 <pinref part="C45" gate="G$1" pin="1"/>
 <pinref part="Q5" gate="G$1" pin="2"/>
-<pinref part="IC1" gate="MCU" pin="OSC_IN"/>
 <wire x1="490.22" y1="358.14" x2="490.22" y2="365.76" width="0.1524" layer="91"/>
 <wire x1="490.22" y1="365.76" x2="495.3" y2="365.76" width="0.1524" layer="91"/>
 <pinref part="R78" gate="G$1" pin="2"/>
 <junction x="495.3" y="370.84"/>
+<pinref part="IC2" gate="MCU" pin="OSC_IN"/>
 </segment>
 </net>
 <net name="N$148" class="0">
 <segment>
 <pinref part="C47" gate="G$1" pin="1"/>
 <wire x1="520.7" y1="386.08" x2="520.7" y2="378.46" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="MCU" pin="PC15"/>
 <wire x1="520.7" y1="378.46" x2="520.7" y2="370.84" width="0.1524" layer="91"/>
 <wire x1="513.08" y1="358.14" x2="513.08" y2="370.84" width="0.1524" layer="91"/>
 <wire x1="513.08" y1="370.84" x2="520.7" y2="370.84" width="0.1524" layer="91"/>
 <pinref part="C005R" gate="G$1" pin="2"/>
 <wire x1="518.16" y1="378.46" x2="520.7" y2="378.46" width="0.1524" layer="91"/>
 <junction x="520.7" y="378.46"/>
+<pinref part="IC2" gate="MCU" pin="PC15"/>
 </segment>
 </net>
 <net name="N$152" class="0">
 <segment>
-<pinref part="IC1" gate="MCU" pin="PC14"/>
 <wire x1="510.54" y1="358.14" x2="510.54" y2="378.46" width="0.1524" layer="91"/>
 <pinref part="C46" gate="G$1" pin="1"/>
 <pinref part="C005R" gate="G$1" pin="1"/>
 <wire x1="510.54" y1="378.46" x2="510.54" y2="386.08" width="0.1524" layer="91"/>
 <wire x1="513.08" y1="378.46" x2="510.54" y2="378.46" width="0.1524" layer="91"/>
 <junction x="510.54" y="378.46"/>
+<pinref part="IC2" gate="MCU" pin="PC14"/>
 </segment>
 </net>
 <net name="N$156" class="0">
@@ -20347,9 +20319,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="505.46" y1="281.94" x2="505.46" y2="302.26" width="0.1524" layer="91"/>
 <wire x1="505.46" y1="302.26" x2="502.92" y2="302.26" width="0.1524" layer="91"/>
 <wire x1="505.46" y1="281.94" x2="495.3" y2="281.94" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="MCU" pin="PA15"/>
 <wire x1="502.92" y1="302.26" x2="502.92" y2="312.42" width="0.1524" layer="91"/>
 <pinref part="R25" gate="G$1" pin="2"/>
+<pinref part="IC2" gate="MCU" pin="PA15"/>
 </segment>
 </net>
 <net name="N$157" class="0">
@@ -20357,9 +20329,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="502.92" y1="274.32" x2="502.92" y2="299.72" width="0.1524" layer="91"/>
 <wire x1="502.92" y1="299.72" x2="515.62" y2="299.72" width="0.1524" layer="91"/>
 <wire x1="502.92" y1="274.32" x2="495.3" y2="274.32" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="MCU" pin="PB3"/>
 <wire x1="515.62" y1="299.72" x2="515.62" y2="312.42" width="0.1524" layer="91"/>
 <pinref part="R26" gate="G$1" pin="2"/>
+<pinref part="IC2" gate="MCU" pin="PB3"/>
 </segment>
 </net>
 <net name="N$159" class="0">
@@ -20375,8 +20347,8 @@ Distributor Buerklin, 11G810</description>
 <segment>
 <wire x1="520.7" y1="312.42" x2="520.7" y2="281.94" width="0.1524" layer="91"/>
 <wire x1="520.7" y1="281.94" x2="525.78" y2="281.94" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="MCU" pin="PB5"/>
 <pinref part="R81" gate="G$1" pin="1"/>
+<pinref part="IC2" gate="MCU" pin="PB5"/>
 </segment>
 </net>
 <net name="SDATM" class="0">
@@ -20386,9 +20358,9 @@ Distributor Buerklin, 11G810</description>
 <pinref part="VAR4" gate="A" pin="4"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PB9"/>
 <wire x1="530.86" y1="312.42" x2="530.86" y2="304.8" width="0.1524" layer="91"/>
 <label x="530.86" y="304.8" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PB9"/>
 </segment>
 </net>
 <net name="SCLTM" class="0">
@@ -20398,9 +20370,9 @@ Distributor Buerklin, 11G810</description>
 <pinref part="VAR4" gate="A" pin="5"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PB8"/>
 <wire x1="528.32" y1="312.42" x2="528.32" y2="304.8" width="0.1524" layer="91"/>
 <label x="528.32" y="304.8" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PB8"/>
 </segment>
 </net>
 <net name="B-1" class="0">
@@ -20654,9 +20626,9 @@ Distributor Buerklin, 11G810</description>
 <label x="462.28" y="266.7" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PB6"/>
 <wire x1="523.24" y1="312.42" x2="523.24" y2="304.8" width="0.1524" layer="91"/>
 <label x="523.24" y="304.8" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PB6"/>
 </segment>
 </net>
 <net name="I2CINT" class="0">
@@ -20666,9 +20638,9 @@ Distributor Buerklin, 11G810</description>
 <pinref part="VAR4" gate="A" pin="3"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PB7"/>
 <wire x1="525.78" y1="312.42" x2="525.78" y2="304.8" width="0.1524" layer="91"/>
 <label x="525.78" y="304.8" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PB7"/>
 </segment>
 </net>
 <net name="N$11" class="0">
@@ -20875,9 +20847,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="223.52" y1="327.66" x2="210.82" y2="327.66" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA2"/>
 <wire x1="469.9" y1="312.42" x2="469.9" y2="302.26" width="0.1524" layer="91"/>
 <label x="469.9" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA2"/>
 </segment>
 </net>
 <net name="BMS5" class="0">
@@ -20891,9 +20863,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="40.64" y1="327.66" x2="27.94" y2="327.66" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA1"/>
 <wire x1="467.36" y1="312.42" x2="467.36" y2="302.26" width="0.1524" layer="91"/>
 <label x="467.36" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA1"/>
 </segment>
 </net>
 <net name="BMS3" class="0">
@@ -20907,9 +20879,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="40.64" y1="200.66" x2="27.94" y2="200.66" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA3"/>
 <wire x1="472.44" y1="312.42" x2="472.44" y2="302.26" width="0.1524" layer="91"/>
 <label x="472.44" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA3"/>
 </segment>
 </net>
 <net name="BMS4" class="0">
@@ -20923,9 +20895,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="223.52" y1="200.66" x2="210.82" y2="200.66" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA4"/>
 <wire x1="474.98" y1="312.42" x2="474.98" y2="302.26" width="0.1524" layer="91"/>
 <label x="474.98" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA4"/>
 </segment>
 </net>
 <net name="BMS1" class="0">
@@ -20939,9 +20911,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="40.64" y1="68.58" x2="27.94" y2="68.58" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA5"/>
 <wire x1="477.52" y1="312.42" x2="477.52" y2="302.26" width="0.1524" layer="91"/>
 <label x="477.52" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA5"/>
 </segment>
 </net>
 <net name="BMS2" class="0">
@@ -20955,9 +20927,9 @@ Distributor Buerklin, 11G810</description>
 <wire x1="223.52" y1="76.2" x2="210.82" y2="76.2" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA6"/>
 <wire x1="480.06" y1="312.42" x2="480.06" y2="302.26" width="0.1524" layer="91"/>
 <label x="480.06" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA6"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -20982,7 +20954,7 @@ Distributor Buerklin, 11G810</description>
 <segment>
 <wire x1="510.54" y1="312.42" x2="510.54" y2="302.006" width="0.1524" layer="91"/>
 <label x="510.54" y="300.736" size="1.778" layer="95" rot="R90"/>
-<pinref part="IC1" gate="MCU" pin="PB1"/>
+<pinref part="IC2" gate="MCU" pin="PB1"/>
 </segment>
 <segment>
 <pinref part="U$59" gate="G$1" pin="PGOOD"/>
@@ -20994,9 +20966,9 @@ Distributor Buerklin, 11G810</description>
 <segment>
 <wire x1="500.38" y1="266.7" x2="500.38" y2="312.42" width="0.1524" layer="91"/>
 <wire x1="500.38" y1="266.7" x2="495.3" y2="266.7" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="MCU" pin="PA14"/>
 <pinref part="R27" gate="G$1" pin="2"/>
 <label x="500.38" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA14"/>
 </segment>
 <segment>
 <label x="454.66" y="218.44" size="1.778" layer="95"/>
@@ -21008,9 +20980,9 @@ Distributor Buerklin, 11G810</description>
 <segment>
 <wire x1="497.84" y1="259.08" x2="497.84" y2="312.42" width="0.1524" layer="91"/>
 <wire x1="497.84" y1="259.08" x2="495.3" y2="259.08" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="MCU" pin="PA13"/>
 <pinref part="R64" gate="G$1" pin="2"/>
 <label x="497.84" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA13"/>
 </segment>
 <segment>
 <wire x1="439.42" y1="220.98" x2="459.74" y2="220.98" width="0.1524" layer="91"/>
@@ -21020,9 +20992,9 @@ Distributor Buerklin, 11G810</description>
 </net>
 <net name="TX-C" class="0">
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA9"/>
 <wire x1="487.68" y1="312.42" x2="487.68" y2="302.26" width="0.1524" layer="91"/>
 <label x="487.68" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA9"/>
 </segment>
 <segment>
 <wire x1="459.74" y1="213.36" x2="439.42" y2="213.36" width="0.1524" layer="91"/>
@@ -21032,9 +21004,9 @@ Distributor Buerklin, 11G810</description>
 </net>
 <net name="RX-C" class="0">
 <segment>
-<pinref part="IC1" gate="MCU" pin="PA10"/>
 <wire x1="490.22" y1="312.42" x2="490.22" y2="302.26" width="0.1524" layer="91"/>
 <label x="490.22" y="302.26" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA10"/>
 </segment>
 <segment>
 <wire x1="386.08" y1="215.9" x2="403.86" y2="215.9" width="0.1524" layer="91"/>
@@ -21044,12 +21016,12 @@ Distributor Buerklin, 11G810</description>
 </net>
 <net name="NRST" class="0">
 <segment>
-<pinref part="IC1" gate="MCU" pin="NRST"/>
 <wire x1="467.36" y1="358.14" x2="467.36" y2="368.3" width="0.1524" layer="91"/>
 <pinref part="R79" gate="G$1" pin="2"/>
 <wire x1="467.36" y1="368.3" x2="467.36" y2="383.54" width="0.1524" layer="91"/>
 <junction x="467.36" y="368.3"/>
 <label x="467.36" y="375.92" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="NRST"/>
 </segment>
 <segment>
 <wire x1="386.08" y1="218.44" x2="403.86" y2="218.44" width="0.1524" layer="91"/>
@@ -21136,9 +21108,9 @@ Distributor Buerklin, 11G810</description>
 <label x="388.62" y="116.84" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="MCU" pin="PB14"/>
 <wire x1="543.56" y1="312.42" x2="543.56" y2="299.72" width="0.1524" layer="91"/>
 <label x="543.56" y="299.72" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PB14"/>
 </segment>
 </net>
 <net name="DPD_RST" class="0">
@@ -21150,7 +21122,7 @@ Distributor Buerklin, 11G810</description>
 <segment>
 <wire x1="546.1" y1="312.42" x2="546.1" y2="299.72" width="0.1524" layer="91"/>
 <label x="546.1" y="299.72" size="1.778" layer="95" rot="R90"/>
-<pinref part="IC1" gate="MCU" pin="PB15"/>
+<pinref part="IC2" gate="MCU" pin="PB15"/>
 </segment>
 </net>
 <net name="N$26" class="0">
