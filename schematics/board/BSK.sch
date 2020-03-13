@@ -238,6 +238,8 @@
 <smd name="37" x="8.5" y="3.99" dx="2" dy="0.9" layer="1" rot="R180"/>
 <smd name="38" x="8.5" y="5.26" dx="2" dy="0.9" layer="1" rot="R180"/>
 <smd name="HEAT" x="-1.01" y="-2.24" dx="5.01" dy="5.01" layer="1"/>
+<rectangle x1="-8.89" y1="6.35" x2="8.89" y2="12.7" layer="41"/>
+<rectangle x1="-8.89" y1="6.35" x2="8.89" y2="12.7" layer="42"/>
 </package>
 <package name="74HC595">
 <smd name="1" x="-2.9" y="2.275" dx="1.26" dy="0.36" layer="1"/>
@@ -13451,9 +13453,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B2_KEM+" class="0">
 <segment>
-<pinref part="74HC595#1" gate="G$1" pin="Q6"/>
-<wire x1="104.14" y1="264.16" x2="91.44" y2="264.16" width="0.1524" layer="91"/>
-<label x="91.44" y="264.16" size="1.778" layer="95"/>
+<label x="91.44" y="182.88" size="1.778" layer="95"/>
+<wire x1="104.14" y1="182.88" x2="91.44" y2="182.88" width="0.1524" layer="91"/>
+<pinref part="74HC595#3" gate="G$1" pin="Q6"/>
 </segment>
 <segment>
 <wire x1="391.16" y1="175.26" x2="391.16" y2="187.96" width="0.1524" layer="91"/>
@@ -13463,9 +13465,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B2_KEM-" class="0">
 <segment>
-<pinref part="74HC595#1" gate="G$1" pin="Q7"/>
-<wire x1="104.14" y1="261.62" x2="91.44" y2="261.62" width="0.1524" layer="91"/>
-<label x="91.44" y="261.62" size="1.778" layer="95"/>
+<label x="91.44" y="180.34" size="1.778" layer="95"/>
+<wire x1="104.14" y1="180.34" x2="91.44" y2="180.34" width="0.1524" layer="91"/>
+<pinref part="74HC595#3" gate="G$1" pin="Q7"/>
 </segment>
 <segment>
 <wire x1="393.7" y1="175.26" x2="393.7" y2="187.96" width="0.1524" layer="91"/>
@@ -13475,9 +13477,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B2_KHEAT" class="0">
 <segment>
-<pinref part="74HC595#1" gate="G$1" pin="Q5"/>
-<wire x1="104.14" y1="266.7" x2="91.44" y2="266.7" width="0.1524" layer="91"/>
-<label x="91.44" y="266.7" size="1.778" layer="95"/>
+<label x="91.44" y="185.42" size="1.778" layer="95"/>
+<wire x1="104.14" y1="185.42" x2="91.44" y2="185.42" width="0.1524" layer="91"/>
+<pinref part="74HC595#3" gate="G$1" pin="Q5"/>
 </segment>
 <segment>
 <wire x1="388.62" y1="175.26" x2="388.62" y2="187.96" width="0.1524" layer="91"/>
@@ -13487,9 +13489,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B2A_KEM+" class="0">
 <segment>
-<pinref part="74HC595#2" gate="G$1" pin="Q2"/>
-<wire x1="104.14" y1="233.68" x2="91.44" y2="233.68" width="0.1524" layer="91"/>
-<label x="91.44" y="233.68" size="1.778" layer="95"/>
+<label x="91.44" y="193.04" size="1.778" layer="95"/>
+<wire x1="104.14" y1="193.04" x2="91.44" y2="193.04" width="0.1524" layer="91"/>
+<pinref part="74HC595#3" gate="G$1" pin="Q2"/>
 </segment>
 <segment>
 <wire x1="391.16" y1="144.78" x2="391.16" y2="157.48" width="0.1524" layer="91"/>
@@ -13499,9 +13501,11 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B2A_KEM-" class="0">
 <segment>
-<pinref part="74HC595#2" gate="G$1" pin="Q3"/>
-<wire x1="104.14" y1="231.14" x2="91.44" y2="231.14" width="0.1524" layer="91"/>
-<label x="91.44" y="231.14" size="1.778" layer="95"/>
+<label x="91.44" y="190.5" size="1.778" layer="95"/>
+<wire x1="101.6" y1="190.5" x2="99.06" y2="190.5" width="0.1524" layer="91"/>
+<pinref part="74HC595#3" gate="G$1" pin="Q3"/>
+<wire x1="99.06" y1="190.5" x2="91.44" y2="190.5" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="190.5" x2="104.14" y2="190.5" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <wire x1="393.7" y1="144.78" x2="393.7" y2="157.48" width="0.1524" layer="91"/>
@@ -13511,9 +13515,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B2A_KHEAT" class="0">
 <segment>
-<pinref part="74HC595#2" gate="G$1" pin="Q1"/>
-<wire x1="104.14" y1="236.22" x2="91.44" y2="236.22" width="0.1524" layer="91"/>
-<label x="91.44" y="236.22" size="1.778" layer="95"/>
+<label x="91.44" y="195.58" size="1.778" layer="95"/>
+<wire x1="104.14" y1="195.58" x2="91.44" y2="195.58" width="0.1524" layer="91"/>
+<pinref part="74HC595#3" gate="G$1" pin="Q1"/>
 </segment>
 <segment>
 <wire x1="388.62" y1="144.78" x2="388.62" y2="157.48" width="0.1524" layer="91"/>
@@ -13528,9 +13532,11 @@ Source: www.kingbright.com</description>
 <label x="391.16" y="116.84" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
-<pinref part="74HC595#3" gate="G$1" pin="Q6"/>
-<wire x1="104.14" y1="182.88" x2="91.44" y2="182.88" width="0.1524" layer="91"/>
-<label x="91.44" y="182.88" size="1.778" layer="95"/>
+<label x="91.44" y="223.52" size="1.778" layer="95"/>
+<wire x1="101.6" y1="223.52" x2="99.06" y2="223.52" width="0.1524" layer="91"/>
+<pinref part="74HC595#2" gate="G$1" pin="Q6"/>
+<wire x1="99.06" y1="223.52" x2="91.44" y2="223.52" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="223.52" x2="101.6" y2="223.52" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="B3_KEM-" class="0">
@@ -13540,9 +13546,9 @@ Source: www.kingbright.com</description>
 <label x="393.7" y="116.84" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
-<pinref part="74HC595#3" gate="G$1" pin="Q7"/>
-<wire x1="104.14" y1="180.34" x2="91.44" y2="180.34" width="0.1524" layer="91"/>
-<label x="91.44" y="180.34" size="1.778" layer="95"/>
+<label x="91.44" y="220.98" size="1.778" layer="95"/>
+<wire x1="104.14" y1="220.98" x2="91.44" y2="220.98" width="0.1524" layer="91"/>
+<pinref part="74HC595#2" gate="G$1" pin="Q7"/>
 </segment>
 </net>
 <net name="B3_KHEAT" class="0">
@@ -13552,9 +13558,9 @@ Source: www.kingbright.com</description>
 <label x="388.62" y="116.84" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
-<pinref part="74HC595#3" gate="G$1" pin="Q5"/>
-<wire x1="104.14" y1="185.42" x2="91.44" y2="185.42" width="0.1524" layer="91"/>
-<label x="91.44" y="185.42" size="1.778" layer="95"/>
+<label x="91.44" y="226.06" size="1.778" layer="95"/>
+<wire x1="104.14" y1="226.06" x2="91.44" y2="226.06" width="0.1524" layer="91"/>
+<pinref part="74HC595#2" gate="G$1" pin="Q5"/>
 </segment>
 </net>
 <net name="B4_KHEAT" class="0">
@@ -13564,16 +13570,16 @@ Source: www.kingbright.com</description>
 <pinref part="BSK4" gate="A" pin="12"/>
 </segment>
 <segment>
-<pinref part="74HC595#2" gate="G$1" pin="Q5"/>
-<wire x1="104.14" y1="226.06" x2="91.44" y2="226.06" width="0.1524" layer="91"/>
-<label x="91.44" y="226.06" size="1.778" layer="95"/>
+<label x="91.44" y="266.7" size="1.778" layer="95"/>
+<wire x1="104.14" y1="266.7" x2="91.44" y2="266.7" width="0.1524" layer="91"/>
+<pinref part="74HC595#1" gate="G$1" pin="Q5"/>
 </segment>
 </net>
 <net name="B5_KEM+" class="0">
 <segment>
-<pinref part="74HC595#3" gate="G$1" pin="Q2"/>
-<wire x1="104.14" y1="193.04" x2="91.44" y2="193.04" width="0.1524" layer="91"/>
-<label x="91.44" y="193.04" size="1.778" layer="95"/>
+<label x="91.44" y="233.68" size="1.778" layer="95"/>
+<wire x1="104.14" y1="233.68" x2="91.44" y2="233.68" width="0.1524" layer="91"/>
+<pinref part="74HC595#2" gate="G$1" pin="Q2"/>
 </segment>
 <segment>
 <pinref part="BSK3" gate="G$1" pin="2"/>
@@ -13583,9 +13589,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B5_KEM-" class="0">
 <segment>
-<pinref part="74HC595#3" gate="G$1" pin="Q3"/>
-<wire x1="104.14" y1="190.5" x2="91.44" y2="190.5" width="0.1524" layer="91"/>
-<label x="91.44" y="190.5" size="1.778" layer="95"/>
+<label x="91.44" y="231.14" size="1.778" layer="95"/>
+<wire x1="104.14" y1="231.14" x2="91.44" y2="231.14" width="0.1524" layer="91"/>
+<pinref part="74HC595#2" gate="G$1" pin="Q3"/>
 </segment>
 <segment>
 <pinref part="BSK3" gate="G$1" pin="1"/>
@@ -13595,9 +13601,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B5_KHEAT" class="0">
 <segment>
-<pinref part="74HC595#3" gate="G$1" pin="Q1"/>
-<wire x1="104.14" y1="195.58" x2="91.44" y2="195.58" width="0.1524" layer="91"/>
-<label x="91.44" y="195.58" size="1.778" layer="95"/>
+<label x="91.44" y="236.22" size="1.778" layer="95"/>
+<wire x1="104.14" y1="236.22" x2="91.44" y2="236.22" width="0.1524" layer="91"/>
+<pinref part="74HC595#2" gate="G$1" pin="Q1"/>
 </segment>
 <segment>
 <pinref part="BSK3" gate="G$1" pin="11"/>
@@ -13770,9 +13776,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B2_KVCC" class="0">
 <segment>
-<pinref part="74HC595#1" gate="G$1" pin="Q4"/>
-<wire x1="104.14" y1="269.24" x2="91.44" y2="269.24" width="0.1524" layer="91"/>
-<label x="91.44" y="269.24" size="1.778" layer="95"/>
+<label x="91.44" y="187.96" size="1.778" layer="95"/>
+<wire x1="104.14" y1="187.96" x2="91.44" y2="187.96" width="0.1524" layer="91"/>
+<pinref part="74HC595#3" gate="G$1" pin="Q4"/>
 </segment>
 <segment>
 <wire x1="386.08" y1="175.26" x2="386.08" y2="187.96" width="0.1524" layer="91"/>
@@ -13782,9 +13788,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="B2A_KVCC" class="0">
 <segment>
-<pinref part="74HC595#2" gate="G$1" pin="Q0"/>
-<wire x1="129.54" y1="233.68" x2="142.24" y2="233.68" width="0.1524" layer="91"/>
-<label x="134.62" y="233.68" size="1.778" layer="95"/>
+<label x="134.62" y="193.04" size="1.778" layer="95"/>
+<wire x1="129.54" y1="193.04" x2="142.24" y2="193.04" width="0.1524" layer="91"/>
+<pinref part="74HC595#3" gate="G$1" pin="Q0"/>
 </segment>
 <segment>
 <wire x1="386.08" y1="144.78" x2="386.08" y2="157.48" width="0.1524" layer="91"/>
@@ -13799,16 +13805,16 @@ Source: www.kingbright.com</description>
 <label x="386.08" y="116.84" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
-<pinref part="74HC595#3" gate="G$1" pin="Q4"/>
-<wire x1="104.14" y1="187.96" x2="91.44" y2="187.96" width="0.1524" layer="91"/>
-<label x="91.44" y="187.96" size="1.778" layer="95"/>
+<label x="91.44" y="228.6" size="1.778" layer="95"/>
+<wire x1="104.14" y1="228.6" x2="91.44" y2="228.6" width="0.1524" layer="91"/>
+<pinref part="74HC595#2" gate="G$1" pin="Q4"/>
 </segment>
 </net>
 <net name="B5_KVCC" class="0">
 <segment>
-<pinref part="74HC595#3" gate="G$1" pin="Q0"/>
-<wire x1="129.54" y1="193.04" x2="142.24" y2="193.04" width="0.1524" layer="91"/>
-<label x="134.62" y="193.04" size="1.778" layer="95"/>
+<label x="134.62" y="233.68" size="1.778" layer="95"/>
+<wire x1="129.54" y1="233.68" x2="142.24" y2="233.68" width="0.1524" layer="91"/>
+<pinref part="74HC595#2" gate="G$1" pin="Q0"/>
 </segment>
 <segment>
 <pinref part="BSK3" gate="G$1" pin="12"/>
@@ -13823,9 +13829,9 @@ Source: www.kingbright.com</description>
 <pinref part="BSK4" gate="A" pin="13"/>
 </segment>
 <segment>
-<pinref part="74HC595#2" gate="G$1" pin="Q4"/>
-<wire x1="104.14" y1="228.6" x2="91.44" y2="228.6" width="0.1524" layer="91"/>
-<label x="91.44" y="228.6" size="1.778" layer="95"/>
+<label x="91.44" y="269.24" size="1.778" layer="95"/>
+<wire x1="104.14" y1="269.24" x2="91.44" y2="269.24" width="0.1524" layer="91"/>
+<pinref part="74HC595#1" gate="G$1" pin="Q4"/>
 </segment>
 </net>
 <net name="N$24" class="0">
@@ -14008,9 +14014,9 @@ Source: www.kingbright.com</description>
 <junction x="223.52" y="88.9"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="P$1"/>
-<wire x1="297.18" y1="116.84" x2="287.02" y2="116.84" width="0.1524" layer="91"/>
-<label x="287.02" y="116.84" size="1.778" layer="95"/>
+<label x="287.02" y="106.68" size="1.778" layer="95"/>
+<wire x1="297.18" y1="106.68" x2="287.02" y2="106.68" width="0.1524" layer="91"/>
+<pinref part="U$4" gate="G$1" pin="P$1"/>
 </segment>
 </net>
 <net name="N$8" class="0">
@@ -14130,9 +14136,9 @@ Source: www.kingbright.com</description>
 <pinref part="BSK4" gate="A" pin="11"/>
 </segment>
 <segment>
-<pinref part="74HC595#2" gate="G$1" pin="Q6"/>
-<wire x1="104.14" y1="223.52" x2="91.44" y2="223.52" width="0.1524" layer="91"/>
-<label x="91.44" y="223.52" size="1.778" layer="95"/>
+<label x="91.44" y="264.16" size="1.778" layer="95"/>
+<wire x1="104.14" y1="264.16" x2="91.44" y2="264.16" width="0.1524" layer="91"/>
+<pinref part="74HC595#1" gate="G$1" pin="Q6"/>
 </segment>
 </net>
 <net name="B4_KEM-" class="0">
@@ -14142,9 +14148,9 @@ Source: www.kingbright.com</description>
 <pinref part="BSK4" gate="A" pin="10"/>
 </segment>
 <segment>
-<pinref part="74HC595#2" gate="G$1" pin="Q7"/>
-<wire x1="104.14" y1="220.98" x2="91.44" y2="220.98" width="0.1524" layer="91"/>
-<label x="91.44" y="220.98" size="1.778" layer="95"/>
+<label x="91.44" y="261.62" size="1.778" layer="95"/>
+<wire x1="104.14" y1="261.62" x2="91.44" y2="261.62" width="0.1524" layer="91"/>
+<pinref part="74HC595#1" gate="G$1" pin="Q7"/>
 </segment>
 </net>
 <net name="TIME" class="0">
@@ -14257,9 +14263,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="BUS-1" class="0">
 <segment>
-<pinref part="U$4" gate="G$1" pin="P$1"/>
-<wire x1="297.18" y1="106.68" x2="287.02" y2="106.68" width="0.1524" layer="91"/>
-<label x="287.02" y="106.68" size="1.778" layer="95"/>
+<label x="287.02" y="116.84" size="1.778" layer="95"/>
+<wire x1="297.18" y1="116.84" x2="287.02" y2="116.84" width="0.1524" layer="91"/>
+<pinref part="U$2" gate="G$1" pin="P$1"/>
 </segment>
 </net>
 <net name="BUS-2" class="0">
