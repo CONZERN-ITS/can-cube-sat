@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.1">
+<eagle version="9.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -36,7 +36,7 @@
 <layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
-<layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="yes" active="yes"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
 <layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
@@ -116,7 +116,6 @@
 <wire x1="22.782" y1="28.792" x2="24.196" y2="30.206" width="0.05" layer="20"/>
 <wire x1="24.196" y1="30.206" x2="30.206" y2="24.196" width="0.05" layer="20"/>
 <wire x1="30.206" y1="24.196" x2="28.792" y2="22.782" width="0.05" layer="20"/>
-<hole x="46.98" y="47" drill="30.5"/>
 <circle x="47" y="47" radius="16.375" width="2.25" layer="29"/>
 <rectangle x1="16.528" y1="36.862" x2="28.528" y2="53.862" layer="29"/>
 <text x="19.9" y="65.1" size="1.4224" layer="26" rot="MR45">BUS+</text>
@@ -142,8 +141,7 @@
 <text x="36.96" y="69.51" size="1" layer="25" rot="R90" align="center">BUS</text>
 <text x="69.02" y="61.59" size="1" layer="25" rot="R90" align="center">EM</text>
 <text x="35" y="92.8" size="1.778" layer="25" rot="MR180">BSK1 "Концерн ИТС"</text>
-<circle x="47" y="47" radius="16.375" width="2.25" layer="1"/>
-<rectangle x1="16.6" y1="36.9" x2="28.5" y2="53.8" layer="1"/>
+<circle x="47" y="47" radius="15.25" width="0.2" layer="20"/>
 </plain>
 <libraries>
 <library name="CanCubeSat">

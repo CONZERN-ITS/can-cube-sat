@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.1">
+<eagle version="9.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -89,7 +89,6 @@
 <wire x1="75" y1="0" x2="7" y2="0" width="0.1524" layer="20"/>
 <wire x1="7" y1="0" x2="7" y2="8.5" width="0.1524" layer="20"/>
 <wire x1="7" y1="8.5" x2="0" y2="8.5" width="0.1524" layer="20"/>
-<hole x="41" y="50" drill="30.5"/>
 <hole x="11" y="4" drill="6"/>
 <wire x1="57.79" y1="27.2" x2="63.8" y2="33.21" width="0.05" layer="20"/>
 <wire x1="63.8" y1="33.21" x2="65.22" y2="31.79" width="0.05" layer="20"/>
@@ -125,6 +124,7 @@
 <text x="52.3" y="32.3" size="1.4224" layer="26" rot="MR225">BUS-</text>
 <text x="26.2" y="28.6" size="1.4224" layer="26" rot="MR135">BUS-</text>
 <text x="53.3" y="9.1" size="1.778" layer="26" rot="MR0">BSK3 "Концерн ИТС"</text>
+<circle x="41" y="50" radius="15.25" width="0.2" layer="20"/>
 </plain>
 <libraries>
 <library name="resistor" urn="urn:adsk.eagle:library:348">
