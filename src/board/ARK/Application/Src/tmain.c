@@ -5,10 +5,14 @@
 
 #include "ds18b20.h"
 #include "i2c.h"
-
+#include "its-i2c-link.h"
+#include "mavlink/its/mavlink.h"
 
 int tmain(void) {
 
+    its_i2c_link_start();
+
+    its_i2c_link_write(data, data_size)
     printf("tmain start\n");
 
     ina219_t hina = {0};
