@@ -6744,7 +6744,7 @@ Source: www.kingbright.com</description>
 <part name="U$10" library="CanCubeSat" deviceset="KCONNECT" device=""/>
 <part name="U$11" library="CanCubeSat" deviceset="KCONNECT" device=""/>
 <part name="U$12" library="CanCubeSat" deviceset="KCONNECT" device=""/>
-<part name="BSK1" library="pinheadCS" deviceset="PINHD-1X8" device=""/>
+<part name="TO_BSK1" library="pinheadCS" deviceset="PINHD-1X8" device=""/>
 <part name="LED2" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R81" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="R1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
@@ -7882,7 +7882,7 @@ Source: www.kingbright.com</description>
 <instance part="U$12" gate="G$1" x="142.24" y="99.06" smashed="yes">
 <attribute name="NAME" x="140.462" y="102.362" size="1.27" layer="95"/>
 </instance>
-<instance part="BSK1" gate="A" x="154.94" y="175.26" smashed="yes" rot="R270">
+<instance part="TO_BSK1" gate="A" x="154.94" y="175.26" smashed="yes" rot="R270">
 <attribute name="NAME" x="168.275" y="181.61" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="142.24" y="181.61" size="1.778" layer="96" rot="R270"/>
 </instance>
@@ -7949,7 +7949,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="165.1" y1="177.8" x2="165.1" y2="190.5" width="0.1524" layer="91"/>
 <label x="165.1" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="BSK1" gate="A" pin="1"/>
+<pinref part="TO_BSK1" gate="A" pin="1"/>
 </segment>
 </net>
 <net name="5V" class="0">
@@ -7976,7 +7976,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="149.86" y1="177.8" x2="149.86" y2="190.5" width="0.1524" layer="91"/>
 <label x="149.86" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="BSK1" gate="A" pin="7"/>
+<pinref part="TO_BSK1" gate="A" pin="7"/>
 </segment>
 <segment>
 <pinref part="U$5" gate="G$1" pin="VDD"/>
@@ -7998,14 +7998,14 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="152.4" y1="177.8" x2="152.4" y2="190.5" width="0.1524" layer="91"/>
 <label x="152.4" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="BSK1" gate="A" pin="6"/>
+<pinref part="TO_BSK1" gate="A" pin="6"/>
 </segment>
 </net>
 <net name="B2_KEM+" class="0">
 <segment>
 <wire x1="160.02" y1="177.8" x2="160.02" y2="190.5" width="0.1524" layer="91"/>
 <label x="160.02" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="BSK1" gate="A" pin="3"/>
+<pinref part="TO_BSK1" gate="A" pin="3"/>
 </segment>
 <segment>
 <pinref part="U$8" gate="G$1" pin="IN1"/>
@@ -8017,7 +8017,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="162.56" y1="177.8" x2="162.56" y2="190.5" width="0.1524" layer="91"/>
 <label x="162.56" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="BSK1" gate="A" pin="2"/>
+<pinref part="TO_BSK1" gate="A" pin="2"/>
 </segment>
 <segment>
 <pinref part="U$8" gate="G$1" pin="IN2"/>
@@ -8029,7 +8029,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="157.48" y1="177.8" x2="157.48" y2="190.5" width="0.1524" layer="91"/>
 <label x="157.48" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="BSK1" gate="A" pin="4"/>
+<pinref part="TO_BSK1" gate="A" pin="4"/>
 </segment>
 <segment>
 <pinref part="U$8" gate="G$1" pin="IN4"/>
@@ -8085,7 +8085,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="154.94" y1="177.8" x2="154.94" y2="190.5" width="0.1524" layer="91"/>
 <label x="154.94" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="BSK1" gate="A" pin="5"/>
+<pinref part="TO_BSK1" gate="A" pin="5"/>
 </segment>
 <segment>
 <pinref part="R10" gate="G$1" pin="1"/>
@@ -8113,7 +8113,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="147.32" y1="177.8" x2="147.32" y2="190.5" width="0.1524" layer="91"/>
 <label x="147.32" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="BSK1" gate="A" pin="8"/>
+<pinref part="TO_BSK1" gate="A" pin="8"/>
 </segment>
 <segment>
 <pinref part="U$3" gate="G$1" pin="P$1"/>
