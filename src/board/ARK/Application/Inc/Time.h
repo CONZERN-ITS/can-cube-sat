@@ -22,4 +22,10 @@ inline __attribute__((always_inline)) void delay_us(uint32_t us)
 	while (DWT->CYCCNT - startTick < delayTicks);
 }
 
+struct Time {
+    uint32_t ms;
+};
+
+struct Time gettime();
+
 #endif /* TIME_H_ */
