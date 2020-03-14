@@ -140,7 +140,6 @@
 <text x="47" y="92" size="1.5" layer="26" rot="SMR180" align="center">to BSK4</text>
 <text x="36.96" y="69.51" size="1" layer="25" rot="R90" align="center">BUS</text>
 <text x="69.02" y="61.59" size="1" layer="25" rot="R90" align="center">EM</text>
-<text x="35" y="92.8" size="1.778" layer="25" rot="MR180">BSK1 "Концерн ИТС"</text>
 <circle x="47" y="47" radius="15.25" width="0.2" layer="20"/>
 </plain>
 <libraries>

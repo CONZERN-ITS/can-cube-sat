@@ -107,6 +107,8 @@
 <text x="26.2" y="28.6" size="1.4224" layer="26" rot="MR135">BUS-</text>
 <text x="54.1" y="4.9" size="1.778" layer="26" rot="MR0">BSK4 "Концерн ИТС"</text>
 <circle x="41" y="50" radius="15.25" width="0.2" layer="20"/>
+<text x="32" y="95" size="1.778" layer="26" rot="MR0">to BSK1</text>
+<text x="45" y="26" size="1.778" layer="26" rot="MR0">to PAYLOAD</text>
 </plain>
 <libraries>
 <library name="resistor" urn="urn:adsk.eagle:library:348">

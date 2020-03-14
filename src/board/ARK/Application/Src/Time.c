@@ -6,6 +6,7 @@
  */
 
 #include "Time.h"
+#include "time.h"
 
 __IO uint32_t uTick;
 
@@ -17,4 +18,9 @@ void delay_us_init(void)
 		DWT->CYCCNT = 0;
 		DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 	}
+}
+
+struct Time gettime() {
+    struct Time t = { uTick };
+    return t;
 }
