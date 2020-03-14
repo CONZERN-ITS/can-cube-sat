@@ -165,38 +165,32 @@ int UpdateDataAll(void)
 	float magn[3] = {0, 0, 0};
 
 	error = lsm6ds3_get_xl_data_g(accel);
-//	trace_printf("accel %d :\t%f\n", 0, accel[0]);
 	error |= lsm6ds3_get_g_data_rps(gyro);
-	if (error)
+	/*if (error)
 	{
 		state_system.lsm6ds3_state = error;
 		goto end;
 	}
-
+*/
 	error = lis3mdl_get_m_data_mG(magn);
-	if (error)
+	/*if (error)
 	{
 		state_system.lis3mdl_state = error;
 		goto end;
 	}
-
+*/
 	__disable_irq();
 	float _time = (float)HAL_GetTick() / 1000;
 	state_system.time = _time;
 	//	пересчитываем их и записываем в структуры
 	for (int k = 0; k < 3; k++) {
-//		trace_printf("accel %d :\t%f\n", k, accel[k]);
 		stateSINS_rsc.accel[k] = accel[k];
 		gyro[k] -= state_zero.gyro_staticShift[k];
 		stateSINS_rsc.gyro[k] = gyro[k];
 		stateSINS_rsc.magn[k] = magn[k];
 	}
 	__enable_irq();
-
-	for (int k = 0; k < 3; k++) {
-			trace_printf("accel %d :\t%f\n", k, accel[k]);
-	}
-
+	trace_printf("_time\t%f\n", _time);
 	/////////////////////////////////////////////////////
 	/////////////	UPDATE QUATERNION  //////////////////
 	/////////////////////////////////////////////////////
@@ -240,13 +234,10 @@ int UpdateDataAll(void)
 		stateSINS_isc.magn[2] = magn[2];
 
 		delta_time = _time - HAL_GetTick() / 1000;
+		trace_printf("dt_ \t%f\n", dt);
+		trace_printf("delta_time\t%f\n", delta_time);
 		transfer_time += delta_time;
 		__enable_irq();
-
-		if (error)														//FIXME: change on GPIOC and port 12
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
-		else
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
 
 end:
 //	if (error)
@@ -324,10 +315,28 @@ int32_t bus_spi_init(void* handle)
 }
 
 
-void uartInit(UART_HandleTypeDef * uart){
+void uartTransferInit(UART_HandleTypeDef * uart){
 	uint8_t error = 0;
 
-	uart->Instance = USART1;
+	uart->Instance = USART1;					//uart для отправки данных на МК
+	uart->Init.BaudRate = 11520;
+	uart->Init.WordLength = UART_WORDLENGTH_8B;
+	uart->Init.StopBits = UART_STOPBITS_1;
+	uart->Init.Parity = UART_PARITY_NONE;
+	uart->Init.Mode = UART_MODE_TX_RX;
+	uart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	uart->Init.OverSampling = UART_OVERSAMPLING_16;
+
+	error = HAL_UART_Init(uart);
+	trace_printf("UART init error: %d\n", error);
+
+}
+
+
+void uartGPSInit(UART_HandleTypeDef * uart){
+	uint8_t error = 0;
+
+	uart->Instance = USART2;					//uart для приема GPS
 	uart->Init.BaudRate = 115200;
 	uart->Init.WordLength = UART_WORDLENGTH_8B;
 	uart->Init.StopBits = UART_STOPBITS_1;
@@ -340,6 +349,7 @@ void uartInit(UART_HandleTypeDef * uart){
 	trace_printf("UART init error: %d\n", error);
 
 }
+
 /*
 void USART1_IRQHandler(void)
 {
@@ -372,7 +382,7 @@ int main(int argc, char* argv[])
 	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
 	init_led();
-	uartInit(&uartTransfer_data);
+	uartTransferInit(&uartTransfer_data);
 	bus_i2c_init(&i2c);
 	SENSORS_Init();
 
@@ -380,18 +390,26 @@ int main(int argc, char* argv[])
 
 	get_accel_staticShift(state_zero.accel_staticShift);
 
+	uint16_t flag = 0xFEFF;
+
+
 	for (; ; )
 	{
 		UpdateDataAll();
 		SINS_updatePrevData();
 
-		float accel[3] = {0};
-		float gyro[3] = {0};
+//		float accel[3] = {0};
+//		float gyro[3] = {0};
+//		for (int i = 0; i < 3; i++){
 //			gyro[i] = stateSINS_rsc.gyro[i];
+//			trace_printf("accel %d:\t%f\n", i, stateSINS_rsc.accel[i]);
+//			accel[i] = stateSINS_rsc.accel[i];
+//		}
 
 
 
-//		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&accel, sizeof(accel), 10);
+		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&flag, sizeof(flag), 3);
+		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&stateSINS_rsc, sizeof(stateSINS_rsc), 7);
 //		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&gyro, sizeof(gyro), 10);
 
 //		HAL_Delay(10);

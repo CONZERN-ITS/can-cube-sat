@@ -80,8 +80,6 @@ int32_t lsm6ds3_init(void)
 //	{
 		error |= lsm6ds3_device_id_get(&lsm6ds3_dev_ctx, &whoamI);
 		trace_printf("whoami\t0x%02X\n", (int)whoamI);
-		error |= lsm6ds3_device_id_get(&lsm6ds3_dev_ctx, &whoamI);
-		trace_printf("whoami\t0x%02X\n", (int)whoamI);
 
 //		HAL_Delay(1000);
 //	}
