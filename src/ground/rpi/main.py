@@ -21,6 +21,14 @@ class stmdev_ctx_t(ctypes.Structure):
                 ('read_reg', stmdev_ctx_func_type),
                 ('handle', ctypes.c_void_p)]
 
+class location_data_t(ctypes.Structure):
+    _fields_ = [('latitude', ctypes.c_double),
+                ('longitude', ctypes.c_double),
+                ('altitude', ctypes.c_double),
+                ('day', ctypes.c_int),
+                ('month', ctypes.c_int),
+                ('year', ctypes.c_int)]
+
 srtela_ms_rpi_c.lis3mdl_init.argtypes = (ctypes.POINTER(stmdev_ctx_t),)
 srtela_ms_rpi_c.lis3mdl_init.restype = ctypes.c_int32
 
@@ -33,6 +41,8 @@ srtela_ms_rpi_c.lsm6ds3_init.restype = ctypes.c_int32
 srtela_ms_rpi_c.lsm6ds3_get_accel_data_mg.argtypes = (ctypes.POINTER(stmdev_ctx_t), ctypes.POINTER(ctypes.c_float),)
 srtela_ms_rpi_c.lsm6ds3_get_accel_data_mg.restype = ctypes.c_int32
 
+srtela_ms_rpi_c.find_true_north.argtypes = (location_data_t, ctypes.POINTER(ctypes.c_double),)
+srtela_ms_rpi_c.find_true_north.restype = ctypes.c_int32
 
 class Stmdev_i2c_context():
     def __init__(self, i2c, i2c_addr):
@@ -97,26 +107,55 @@ class Lsm6ds3(Stmdev_i2c_context):
             raise RuntimeError("lsm6ds3_get_accel_data_mg returned nonzero error: %d" % error) from self.last_error
         return list(accel_buf)
 
-if __name__ == '__main__':
-    i2c = i2cdev.I2C(PORT_I2C)
-    i2c.set_timeout(I2C_TIMEOUT)
+class WMM2020():
+    def __init__(self):
+        self.location = location_data_t(0, 0, 0, 1, 1, 2020)
 
-    lis3mdl = Lis3mdl(i2c, LIS3MDL_ADRESS)
-    lis3mdl.setup()    
+    def setup_date(self, day, month, year):
+        self.location['day'] = day
+        self.location['month'] = month
+        self.location['year'] = year
+
+    def setup_coord(self, lat, lon, height):
+        self.location['latitude'] = lat
+        self.location['longitude'] = lon
+        self.location['altitude'] = height
+
+    def setup_location(self, location):
+        self.location = location
+
+    def get_declination(self):
+        decl = ctypes.c_double()
+        error = srtela_ms_rpi_c.find_true_north(self.location, ctypes.pointer(decl))
+        if error:
+            raise RuntimeError("find_true_north returned nonzero error: %d" % error)
+        return decl.value
+
+
+if __name__ == '__main__':
+    #i2c = i2cdev.I2C(PORT_I2C)
+    #i2c.set_timeout(I2C_TIMEOUT)
+
+    #lis3mdl = Lis3mdl(i2c, LIS3MDL_ADRESS)
+    #lis3mdl.setup()    
 
     #lsm6ds3 = Lsm6ds3(i2c, LSM6DS3_ADRESS)
-    #lsm6ds3.setup()    
+    #lsm6ds3.setup()  
+    wwm = WMM2020()
+    wwm.setup_location(location_data_t(37.825, 55.914, 100, 14, 3, 2020))  
 
     while True:
-        mag_buf = lis3mdl.get_mag_data_G()
+        #mag_buf = lis3mdl.get_mag_data_G()
         #accel_buf = lsm6ds3.get_accel_data_mg()
 
-        time.sleep(0.5)
+        #time.sleep(0.5)
+       
+        print(wwm.get_declination())
 
-        print("Mag  :")
-        print(mag_buf)
+        #print("Mag  :")
+        #print(mag_buf)
         #print("Accel:")
         #print(accel_buf)
 
 
-    i2c.close()
+    #i2c.close()

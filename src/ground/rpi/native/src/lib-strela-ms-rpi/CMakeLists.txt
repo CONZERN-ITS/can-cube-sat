@@ -11,5 +11,7 @@ add_library(strela-ms-rpi SHARED
 	${SRCDIR}/lis3mdl_STdC/driver/lis3mdl_reg.c
 	${SRCDIR}/lsm6ds3_STdC/driver/lsm6ds3_reg.h
 	${SRCDIR}/lsm6ds3_STdC/driver/lsm6ds3_reg.c
+	${SRCDIR}/WMM2020_Linux/src/GeomagnetismHeader.h
+	${SRCDIR}/WMM2020_Linux/src/GeomagnetismLibrary.c
 	${SRCDIR}/strela-ms-rpi.c
 )
