@@ -144,6 +144,7 @@ void SENSORS_Init(void)
 	trace_printf("lsm6ds3 init error: %d\n", error);
 	state_system.lsm6ds3_state = error;
 
+	error = 0;
 	//	LIS3MDL init
 	error = lis3mdl_init();
 	trace_printf("lis3mdl init error: %d\n", error);
@@ -180,37 +181,37 @@ int UpdateDataAll(void)
 	}
 */
 	__disable_irq();
-	float _time = (float)HAL_GetTick() / 1000;
-	state_system.time = _time;
-	//	пересчитываем их и записываем в структуры
-	for (int k = 0; k < 3; k++) {
-		stateSINS_rsc.accel[k] = accel[k];
-		gyro[k] -= state_zero.gyro_staticShift[k];
-		stateSINS_rsc.gyro[k] = gyro[k];
-		stateSINS_rsc.magn[k] = magn[k];
-	}
+		float _time = (float)HAL_GetTick() / 1000;
+		state_system.time = _time;
+		//	пересчитываем их и записываем в структуры
+		for (int k = 0; k < 3; k++) {
+			stateSINS_rsc.accel[k] = accel[k];
+			gyro[k] -= state_zero.gyro_staticShift[k];
+			stateSINS_rsc.gyro[k] = gyro[k];
+			stateSINS_rsc.magn[k] = magn[k];
+		}
 	__enable_irq();
-	trace_printf("_time\t%f\n", _time);
+
 	/////////////////////////////////////////////////////
 	/////////////	UPDATE QUATERNION  //////////////////
 	/////////////////////////////////////////////////////
-		float quaternion[4] = {0, 0, 0, 0};
+	float quaternion[4] = {0, 0, 0, 0};
 
 //	taskENTER_CRITICAL();
-		float dt = _time - state_system_prev.time;
+	float dt = _time - state_system_prev.time;
 //	taskEXIT_CRITICAL();
 
-		float beta = 0.041;
-		MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
+	float beta = 0.041;
+	MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
 
 		//	копируем кватернион в глобальную структуру
 //	taskENTER_CRITICAL();
-		__disable_irq();
+	__disable_irq();
 		stateSINS_isc.quaternion[0] = quaternion[0];
 		stateSINS_isc.quaternion[1] = quaternion[1];
 		stateSINS_isc.quaternion[2] = quaternion[2];
 		stateSINS_isc.quaternion[3] = quaternion[3];
-		__enable_irq();
+	__enable_irq();
 //	taskEXIT_CRITICAL();
 
 
@@ -218,11 +219,11 @@ int UpdateDataAll(void)
 	///////////  ROTATE VECTORS TO ISC  /////////////////
 	/////////////////////////////////////////////////////
 
-		float accel_ISC[3] = {0, 0, 0};
-		vect_rotate(accel, quaternion, accel_ISC);
+	float accel_ISC[3] = {0, 0, 0};
+	vect_rotate(accel, quaternion, accel_ISC);
 
-		//	Copy vectors to global structure
-		__disable_irq();
+	//	Copy vectors to global structure
+	__disable_irq();
 		for (int i = 0; i < 3; i++)
 			accel_ISC[i] -= state_zero.accel_staticShift[i];
 
@@ -234,10 +235,10 @@ int UpdateDataAll(void)
 		stateSINS_isc.magn[2] = magn[2];
 
 		delta_time = _time - HAL_GetTick() / 1000;
-		trace_printf("dt_ \t%f\n", dt);
-		trace_printf("delta_time\t%f\n", delta_time);
+	//		trace_printf("dt_ \t%f\n", dt);
+	//		trace_printf("delta_time\t%f\n", delta_time);
 		transfer_time += delta_time;
-		__enable_irq();
+	__enable_irq();
 
 end:
 //	if (error)
@@ -405,8 +406,6 @@ int main(int argc, char* argv[])
 //			trace_printf("accel %d:\t%f\n", i, stateSINS_rsc.accel[i]);
 //			accel[i] = stateSINS_rsc.accel[i];
 //		}
-
-
 
 		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&flag, sizeof(flag), 3);
 		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&stateSINS_rsc, sizeof(stateSINS_rsc), 7);

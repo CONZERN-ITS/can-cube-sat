@@ -20,12 +20,12 @@
 #define MDPS_TO_RAD	M_PI / 180 / 1000
 
 //	Magnetometer bias & transform matrix
-#define X_MAGN_OFFSET		 1.000000
-#define Y_MAGN_OFFSET		 1.000000
-#define Z_MAGN_OFFSET		 1.000000
-#define XX_MAGN_TRANSFORM_MATIX	 0.000000
-#define YY_MAGN_TRANSFORM_MATIX	 0.000000
-#define ZZ_MAGN_TRANSFORM_MATIX	 0.000000
+#define X_MAGN_OFFSET		 0.000000
+#define Y_MAGN_OFFSET		 0.000000
+#define Z_MAGN_OFFSET		 0.000000
+#define XX_MAGN_TRANSFORM_MATIX	 1.000000
+#define YY_MAGN_TRANSFORM_MATIX	 1.000000
+#define ZZ_MAGN_TRANSFORM_MATIX	 1.000000
 #define XY_MAGN_TRANSFORM_MATIX	 0.000000
 #define XZ_MAGN_TRANSFORM_MATIX	 0.000000
 #define YZ_MAGN_TRANSFORM_MATIX	 0.000000
@@ -62,7 +62,7 @@ int lis3mdl_init(void)
 
 	lis3mdl_dev_ctx.write_reg = lis3mdl_write;
 	lis3mdl_dev_ctx.read_reg = lis3mdl_read;
-	lis3mdl_dev_ctx.handle = &spi;
+	lis3mdl_dev_ctx.handle = &i2c;
 
 	// Reset to defaults
 	error |= lis3mdl_reset_set(&lis3mdl_dev_ctx, PROPERTY_ENABLE);
