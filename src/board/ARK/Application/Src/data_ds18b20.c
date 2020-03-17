@@ -9,7 +9,7 @@
 #include "i2c.h"
 #include "its-i2c-link.h"
 
-#define DS18B20_COUNT 2
+#define DS18B20_COUNT BATTERY_PACK_COUNT * BATTERY_COUNT_IN_PACK
 
 static onewire_t how = {0};
 static ds18b20_config_t hds[DS18B20_COUNT];

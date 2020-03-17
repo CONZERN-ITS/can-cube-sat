@@ -1,9 +1,9 @@
 #include "main.h"
 
 enum ad527x_i2c_address {
-    AD527X_I2CADDR_ADDR_VDD = 0101100,
-    AD527X_I2CADDR_ADDR_GND = 0101111,
-    AD527X_I2CADDR_ADDR_NC = 0101110,
+    AD527X_I2CADDR_ADDR_VDD = 0b101100,
+    AD527X_I2CADDR_ADDR_GND = 0b101111,
+    AD527X_I2CADDR_ADDR_NC = 0b101110,
 };
 
 struct ad527x_cfg {
@@ -23,7 +23,7 @@ enum ad527x_type {
 struct ad527x_t {
     I2C_HandleTypeDef *hi2c;
     uint8_t address;
-    const struct ad527x_cfg cfg;
+    struct ad527x_cfg cfg;
     uint8_t buf[2];
 };
 
