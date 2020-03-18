@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.1">
+<eagle version="9.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -4430,6 +4430,16 @@ design rules under a new name.</description>
 </signal>
 <signal name="N$49">
 <via x="11.1" y="80.049" extent="1-16" drill="1"/>
+</signal>
+<signal name="RX-ES">
+<contactref element="U$13" pad="36"/>
+<contactref element="U1" pad="62"/>
+<wire x1="-14.36" y1="16.69" x2="-53.55" y2="17.1" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="TX-ES">
+<contactref element="U$13" pad="37"/>
+<contactref element="U1" pad="29"/>
+<wire x1="-14.36" y1="17.96" x2="-48.55" y2="5.76" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>
