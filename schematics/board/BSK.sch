@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.1">
+<eagle version="9.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -81,13 +81,13 @@
 <packages>
 <package name="DS18B20Z">
 <description>&lt;b&gt;Small Outline IC&lt;/b&gt;</description>
-<wire x1="2.4" y1="1.9" x2="2.4" y2="-1.4" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.4" x2="2.4" y2="-1.9" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.9" x2="-2.4" y2="-1.9" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="-1.9" x2="-2.4" y2="-1.4" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="-1.4" x2="-2.4" y2="1.9" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="1.9" x2="2.4" y2="1.9" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.4" x2="-2.4" y2="-1.4" width="0.2032" layer="51"/>
+<wire x1="2.4" y1="1.9" x2="2.4" y2="-1.4" width="0.2032" layer="21"/>
+<wire x1="2.4" y1="-1.4" x2="2.4" y2="-1.9" width="0.2032" layer="21"/>
+<wire x1="2.4" y1="-1.9" x2="-2.4" y2="-1.9" width="0.2032" layer="21"/>
+<wire x1="-2.4" y1="-1.9" x2="-2.4" y2="-1.4" width="0.2032" layer="21"/>
+<wire x1="-2.4" y1="-1.4" x2="-2.4" y2="1.9" width="0.2032" layer="21"/>
+<wire x1="-2.4" y1="1.9" x2="2.4" y2="1.9" width="0.2032" layer="21"/>
+<wire x1="2.4" y1="-1.4" x2="-2.4" y2="-1.4" width="0.2032" layer="21"/>
 <smd name="2" x="-0.635" y="-2.6" dx="0.6" dy="2.2" layer="1"/>
 <smd name="7" x="-0.635" y="2.6" dx="0.6" dy="2.2" layer="1"/>
 <smd name="1" x="-1.905" y="-2.6" dx="0.6" dy="2.2" layer="1"/>
@@ -344,6 +344,23 @@
 <smd name="23" x="0" y="-3" dx="1.05" dy="0.8" layer="1"/>
 <smd name="HEAT" x="0" y="0" dx="2.5" dy="2.5" layer="1"/>
 <circle x="-0.9652" y="-1.7272" radius="0.1" width="0.2" layer="21"/>
+</package>
+<package name="KCONNECT-">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
+<wire x1="-4" y1="-4.5" x2="-4" y2="4.5" width="0.254" layer="21"/>
+<wire x1="-4" y1="4.5" x2="4" y2="4.5" width="0.254" layer="21"/>
+<wire x1="4" y1="4.5" x2="4" y2="-4.5" width="0.254" layer="21"/>
+<wire x1="-4" y1="-4.5" x2="4" y2="-4.5" width="0.254" layer="21"/>
+<pad name="1" x="-3" y="-3.5" drill="1" diameter="1.4" shape="square"/>
+<pad name="2" x="-3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<pad name="3" x="3" y="-3.5" drill="1" diameter="1.4" shape="octagon"/>
+<pad name="4" x="3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<text x="-3.54" y="5.175" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.54" y="-6.445" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-3.254" y1="-3.754" x2="-2.746" y2="-3.246" layer="51"/>
+<rectangle x1="-3.254" y1="3.246" x2="-2.746" y2="3.754" layer="51"/>
+<rectangle x1="2.746" y1="3.246" x2="3.254" y2="3.754" layer="51"/>
+<rectangle x1="2.746" y1="-3.754" x2="3.254" y2="-3.246" layer="51"/>
 </package>
 </packages>
 <symbols>
@@ -671,7 +688,7 @@
 <connect gate="G$1" pin="CLK" pad="20"/>
 <connect gate="G$1" pin="CMD" pad="19"/>
 <connect gate="G$1" pin="EN" pad="3"/>
-<connect gate="G$1" pin="GND" pad="1 15 32 38" route="any"/>
+<connect gate="G$1" pin="GND" pad="1 15 38"/>
 <connect gate="G$1" pin="HEAT" pad="HEAT"/>
 <connect gate="G$1" pin="IO0" pad="25"/>
 <connect gate="G$1" pin="IO12" pad="14"/>
@@ -748,6 +765,14 @@
 <device name="" package="KCONNECT">
 <connects>
 <connect gate="G$1" pin="P$1" pad="1 2 3 4 P$1 P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-" package="KCONNECT-">
+<connects>
+<connect gate="G$1" pin="P$1" pad="1 2 3 4"/>
 </connects>
 <technologies>
 <technology name=""/>
