@@ -283,6 +283,7 @@ UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/resistor.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/stm32f4.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/SparkFun-Switches.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/cansat-lib.lbr"
+UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/untitled.lbr"
 
 [Win_1]
 Type="Control Panel"
