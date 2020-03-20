@@ -76,6 +76,10 @@ typedef struct {
 extern SPI_HandleTypeDef spi;
 extern I2C_HandleTypeDef i2c;
 
+extern UART_HandleTypeDef uartTransfer_data;
+extern UART_HandleTypeDef uartGPS;
+
+
 extern stmdev_ctx_t lsm6ds3_dev_ctx;
 extern stmdev_ctx_t lis3mdl_dev_ctx;
 extern stateSINS_rsc_t stateSINS_rsc;

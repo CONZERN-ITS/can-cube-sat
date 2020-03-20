@@ -43,12 +43,13 @@
 #include "MadgwickAHRS.h"
 #include "vector.h"
 #include "quaternion.h"
+#include "drivers/gps.h"
 
-
+// Interfaces
 SPI_HandleTypeDef spi;
 I2C_HandleTypeDef i2c;
 UART_HandleTypeDef uartTransfer_data;
-
+UART_HandleTypeDef uartGPS;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -169,14 +170,14 @@ int UpdateDataAll(void)
 	error |= lsm6ds3_get_g_data_rps(gyro);
 	/*if (error)
 	{
-		state_system.lsm6ds3_state = error;
+		state_system.lsm6ds3_state = error;				//FIXME: подумать, надо ли возвращать
 		goto end;
 	}
 */
 	error = lis3mdl_get_m_data_mG(magn);
 	/*if (error)
 	{
-		state_system.lis3mdl_state = error;
+		state_system.lis3mdl_state = error;				//FIXME: подумать, надо ли возвращать
 		goto end;
 	}
 */
@@ -316,10 +317,11 @@ int32_t bus_spi_init(void* handle)
 }
 
 
-void uartTransferInit(UART_HandleTypeDef * uart){
+void uartTransferInit(UART_HandleTypeDef * uart)
+{
 	uint8_t error = 0;
 
-	uart->Instance = USART1;					//uart для отправки данных на МК
+	uart->Instance = USART1;					//uart для отправки данных на ESP
 	uart->Init.BaudRate = 11520;
 	uart->Init.WordLength = UART_WORDLENGTH_8B;
 	uart->Init.StopBits = UART_STOPBITS_1;
@@ -329,12 +331,13 @@ void uartTransferInit(UART_HandleTypeDef * uart){
 	uart->Init.OverSampling = UART_OVERSAMPLING_16;
 
 	error = HAL_UART_Init(uart);
-	trace_printf("UART init error: %d\n", error);
+	trace_printf("Transfer UART init error: %d\n", error);
 
 }
 
 
-void uartGPSInit(UART_HandleTypeDef * uart){
+void uartGPSInit(UART_HandleTypeDef * uart)
+{
 	uint8_t error = 0;
 
 	uart->Instance = USART2;					//uart для приема GPS
@@ -347,7 +350,7 @@ void uartGPSInit(UART_HandleTypeDef * uart){
 	uart->Init.OverSampling = UART_OVERSAMPLING_16;
 
 	error = HAL_UART_Init(uart);
-	trace_printf("UART init error: %d\n", error);
+	trace_printf("GPS UART init error: %d\n", error);
 
 }
 
@@ -383,7 +386,9 @@ int main(int argc, char* argv[])
 	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
 	init_led();
+	initInterruptPin();
 	uartTransferInit(&uartTransfer_data);
+	uartGPSInit(&uartGPS);
 	bus_i2c_init(&i2c);
 	SENSORS_Init();
 
@@ -427,14 +432,15 @@ int main(int argc, char* argv[])
 }
 
 
-void init_led(void){
+void init_led(void)
+{
 	GPIO_InitTypeDef gpioc;
 	gpioc.Mode = GPIO_MODE_OUTPUT_PP;
-	gpioc.Pin = GPIO_PIN_6;
+	gpioc.Pin = GPIO_PIN_12;
 	gpioc.Pull = GPIO_NOPULL;
 	gpioc.Speed = GPIO_SPEED_HIGH;
-	HAL_GPIO_Init(GPIOA, &gpioc);  //FIXME: on GPIOC and port 12
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, SET);
+	HAL_GPIO_Init(GPIOC, &gpioc);  //FIXME: on GPIOC and port 12
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
 }
 #pragma GCC diagnostic pop
 

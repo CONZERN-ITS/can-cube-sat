@@ -8,9 +8,10 @@
 #ifndef DRIVERS_GPS_H_
 #define DRIVERS_GPS_H_
 
+#include "state.h"
 
-
-
+extern void initInterruptPin();
+//extern void EXTI0_IRQHandler();
 
 
 #endif /* DRIVERS_GPS_H_ */
