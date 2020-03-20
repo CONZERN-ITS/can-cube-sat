@@ -8,7 +8,11 @@
 #ifndef DRIVERS_GPS_H_
 #define DRIVERS_GPS_H_
 
+#define GPS_BUFFER_SIZE 100
+
 #include "state.h"
+
+
 
 extern void initInterruptPin();
 //extern void EXTI0_IRQHandler();

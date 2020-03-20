@@ -50,6 +50,7 @@ SPI_HandleTypeDef spi;
 I2C_HandleTypeDef i2c;
 UART_HandleTypeDef uartTransfer_data;
 UART_HandleTypeDef uartGPS;
+//DMA_HandleTypeDef dmaGPS;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -73,6 +74,8 @@ static uint8_t	get_accel_staticShift(float* accel_staticShift);
 float transfer_time	= 0.0;
 float delta_time = 0.0;
 uint8_t need_transfer_data = 0;
+
+
 
 
 /**
@@ -336,38 +339,8 @@ void uartTransferInit(UART_HandleTypeDef * uart)
 }
 
 
-void uartGPSInit(UART_HandleTypeDef * uart)
-{
-	uint8_t error = 0;
 
-	uart->Instance = USART2;					//uart для приема GPS
-	uart->Init.BaudRate = 115200;
-	uart->Init.WordLength = UART_WORDLENGTH_8B;
-	uart->Init.StopBits = UART_STOPBITS_1;
-	uart->Init.Parity = UART_PARITY_NONE;
-	uart->Init.Mode = UART_MODE_TX_RX;
-	uart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	uart->Init.OverSampling = UART_OVERSAMPLING_16;
 
-	error = HAL_UART_Init(uart);
-	trace_printf("GPS UART init error: %d\n", error);
-
-}
-
-/*
-void USART1_IRQHandler(void)
-{
-	uint8_t tmp;
-	//Проверка флага о приеме байтика по USART
-	if ((USART3->SR & USART_SR_RXNE) != 0)
-	{
-		//Сохранение принятого байтика
-		tmp = USART3->DR;
-		if (tmp == 1)
-			need_transfer_data = 1;
-	}
-}
-*/
 //FIXME: реализовать таймер для отправки пакетов с мк по uart
 
 int main(int argc, char* argv[])
