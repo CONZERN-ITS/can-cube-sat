@@ -21,6 +21,7 @@ enum TEMP_STATE {
 
 int tmain(void) {
 
+
     its_i2c_link_start();
 
     //----------------ds18b20 init--------------------
