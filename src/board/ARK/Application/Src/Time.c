@@ -21,6 +21,6 @@ void delay_us_init(void)
 }
 
 struct Time gettime() {
-    struct Time t = { uTick };
+    struct Time t = { uTick / 1000 };
     return t;
 }

@@ -83,8 +83,11 @@
 							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec.1724881959" name="MCU Output Converter Motorola S-rec with symbols" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec"/>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1446128131.1864197877" name="data_ds18b20.h" rcbsApplicability="disable" resourcePath="Application/Inc/data_ds18b20.h" toolsToInvoke=""/>
+					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1446128131.1674180438" name="data_ina219.h" rcbsApplicability="disable" resourcePath="Application/Inc/data_ina219.h" toolsToInvoke=""/>
+					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1446128131.377919636" name="process_ad527x.h" rcbsApplicability="disable" resourcePath="Application/Inc/process_ad527x.h" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Application"/>
+						<entry excluding="Src/data_ds18b20.c|Inc/process_ad527x.h|Inc/data_ds18b20.h|Src/process_ad527x.c|Src/data_ina219.c|Inc/data_ina219.h|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Application"/>
 						<entry excluding="Src/syscalls.c|syscalls.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 					</sourceEntries>
