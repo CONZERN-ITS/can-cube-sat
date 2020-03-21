@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="16" fill="1" visible="no" active="yes"/>
@@ -935,6 +935,31 @@
 <pad name="PPS" x="-18.2" y="-5.08" drill="0.6" shape="square" rot="R180"/>
 <text x="12.7" y="10.16" size="1.27" layer="25">&gt;NAME</text>
 </package>
+<package name="RADIO">
+<wire x1="-25" y1="40.5" x2="-25" y2="0" width="0.127" layer="21"/>
+<wire x1="-25" y1="0" x2="0" y2="0" width="0.127" layer="21"/>
+<wire x1="0" y1="0" x2="0" y2="40.5" width="0.127" layer="21"/>
+<wire x1="0" y1="40.5" x2="-25" y2="40.5" width="0.127" layer="21"/>
+<smd name="P$1" x="-24.75" y="20.8" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$2" x="-24.75" y="23.34" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$3" x="-24.75" y="25.88" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$4" x="-24.75" y="28.42" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$5" x="-24.75" y="30.96" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$6" x="-24.75" y="33.5" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$7" x="-24.75" y="36.04" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$15" x="-5.73" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
+<smd name="P$16" x="-8.27" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
+<smd name="P$17" x="-16.73" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
+<smd name="P$18" x="-19.27" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
+<smd name="P$14" x="-0.25" y="20.8" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$13" x="-0.25" y="23.34" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$12" x="-0.25" y="25.88" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$11" x="-0.25" y="28.42" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$10" x="-0.25" y="30.96" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$9" x="-0.25" y="33.5" dx="2.2" dy="1.8" layer="1"/>
+<smd name="P$8" x="-0.25" y="36.04" dx="2.2" dy="1.8" layer="1"/>
+<text x="-17" y="41" size="1.27" layer="25">&gt;NAME</text>
+</package>
 </packages>
 <packages3d>
 <package3d name="SOIC8" urn="urn:adsk.eagle:package:8087957/1" type="box">
@@ -1539,6 +1564,20 @@
 <wire x1="7.62" y1="10.16" x2="7.62" y2="-10.16" width="0.254" layer="94"/>
 <text x="-7.62" y="10.922" size="1.778" layer="95">&gt;NAME</text>
 <pin name="PPS" x="12.7" y="-5.08" length="middle" rot="R180"/>
+</symbol>
+<symbol name="RADIO">
+<wire x1="5.08" y1="-10.16" x2="5.08" y2="10.16" width="0.254" layer="94"/>
+<wire x1="5.08" y1="10.16" x2="-5.08" y2="10.16" width="0.254" layer="94"/>
+<wire x1="-5.08" y1="10.16" x2="-5.08" y2="-10.16" width="0.254" layer="94"/>
+<pin name="M0" x="-10.16" y="7.62" length="middle"/>
+<pin name="M1" x="-10.16" y="5.08" length="middle"/>
+<pin name="RXD" x="-10.16" y="2.54" length="middle"/>
+<pin name="TXD" x="-10.16" y="0" length="middle"/>
+<pin name="AUX" x="-10.16" y="-2.54" length="middle"/>
+<pin name="VCC" x="-10.16" y="-5.08" length="middle"/>
+<pin name="GND" x="-10.16" y="-7.62" length="middle"/>
+<wire x1="-5.08" y1="-10.16" x2="5.08" y2="-10.16" width="0.254" layer="94"/>
+<text x="-4.572" y="10.922" size="1.778" layer="95">&gt;NAME</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -2389,6 +2428,27 @@
 <connect gate="G$1" pin="RX" pad="RX"/>
 <connect gate="G$1" pin="TX" pad="TX"/>
 <connect gate="G$1" pin="UCC" pad="UCC"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="RADIO">
+<gates>
+<gate name="G$1" symbol="RADIO" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="RADIO">
+<connects>
+<connect gate="G$1" pin="AUX" pad="P$5"/>
+<connect gate="G$1" pin="GND" pad="P$7 P$9 P$15 P$16 P$17"/>
+<connect gate="G$1" pin="M0" pad="P$1"/>
+<connect gate="G$1" pin="M1" pad="P$2"/>
+<connect gate="G$1" pin="RXD" pad="P$3"/>
+<connect gate="G$1" pin="TXD" pad="P$4"/>
+<connect gate="G$1" pin="VCC" pad="P$6"/>
 </connects>
 <technologies>
 <technology name=""/>
