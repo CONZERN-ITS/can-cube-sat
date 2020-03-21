@@ -6,6 +6,7 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 #include <stm32f4xx.h>
 #include <diag/Trace.h>
 
@@ -14,14 +15,15 @@
 #include "gps.h"
 
 uint8_t *head, *next_head, *tail, *next_tail, *begin, *end, first, second;
-//			описание UBX пакета			//
-uint8_t sync_char_1 = 0xB5, sync_char_2 = 0x62;
-uint8_t class, id;
-uint16_t lenght;
-uint8_t crc_1, crc_2;
 
 uint8_t uart_GPS_buffer[GPS_BUFFER_SIZE] = {0};		// циклический буффер для приема байт по uart
 uint8_t packet_buffer[GPS_BUFFER_SIZE] = {0};			// буфер для храниения пакетов
+
+
+uint64_t epoch_time_ms = 0;
+uint64_t next_pps_time_ms = 0;
+
+gps_ctx_t gps;
 
 
 void uartGPSInit(UART_HandleTypeDef * uart)
@@ -29,7 +31,7 @@ void uartGPSInit(UART_HandleTypeDef * uart)
 	uint8_t error = 0;
 
 	uart->Instance = USART2;					//uart для приема GPS
-	uart->Init.BaudRate = 115200;
+	uart->Init.BaudRate = 9600;
 	uart->Init.WordLength = UART_WORDLENGTH_8B;
 	uart->Init.StopBits = UART_STOPBITS_1;
 	uart->Init.Parity = UART_PARITY_NONE;
@@ -100,6 +102,7 @@ void USART2_IRQHandler(void)
 	}
 }
 
+
 void initInterruptPin()
 {
 	__GPIOA_CLK_ENABLE();
@@ -115,6 +118,7 @@ void initInterruptPin()
 
 }
 
+
 void EXTI0_IRQHandler()
 {
 	HAL_NVIC_ClearPendingIRQ(EXTI0_IRQn);
@@ -122,49 +126,154 @@ void EXTI0_IRQHandler()
 }
 
 
-void gps()
+int parse_ubx_nav_sol(uint8_t * payload)		//TODO: дописать
 {
+	// обрезание пакета до 48 байт т.к. дальше идут зарезервированные поля
+	//сбор mavlink пакета
+	return 0;
+}
+
+
+int parse_ubx_tim_tp(uint8_t * payload)			// время GPS
+{
+	uint32_t tow_ms = *(uint32_t * )payload;
+	uint16_t week = (uint16_t)(*(int16_t * )(payload + 12));		// +12 т.к. время в неделях с 12 по 14 байт
+
+	next_pps_time_ms = (uint64_t)week * 604800000 + (uint64_t)tow_ms;			//	604800000 - кол-во миллисекунд в неделе
+
+	return 0;
+}
+
+
+int parse_ubx_nav_timegps(uint8_t * payload)
+{
+	uint32_t tow_ms = *(uint32_t * )payload;
+	uint16_t week = (uint16_t)(*(int16_t * )(payload + 8));		// +8 т.к. время в неделях с 8 по 10 байт
+
+	epoch_time_ms = (uint64_t)week * 604800000 + (uint64_t)tow_ms;			//	604800000 - кол-во миллисекунд в неделе
+
+	return 0;
+}
+
+
+void gps_init(gps_ctx_t * ctx)
+{
+	memset(ctx, 0, sizeof(*ctx));
+	ctx->state = GPS_STATE_SYNC_SEARCH;
+
 	head = &uart_GPS_buffer[0];
 	tail = &uart_GPS_buffer[0];
 	begin = &uart_GPS_buffer[0];
 	end = begin + GPS_BUFFER_SIZE;
 	first = 0;
 	second = 0;
+
+	initInterruptPin();
 }
 
-uint8_t read_GPS_buffer()
+int read_gps_buffer()
 {
-	uint8_t parse = 1;
-	uint8_t * number_now_element = &packet_buffer[0];
-	second = *tail;
-
-	while (parse)
+	next_tail = tail + 1;
+	for (int i = 0; i < 15; i++)
 	{
-		uint8_t distance_to_end = end - tail;
-		if (distance_to_end < 5)						// выполняем проверку на то, что весь пакет находится в буфере
-		{
-			lenght = *(begin + (4 - (end - tail)));
-		}
+		if (next_tail == end)	next_tail = begin;
+		if (next_tail == head)	return -3;
+		gps_consume_byte(&gps, *tail);
+		tail = next_tail;
+	}
+	return 0;
+}
 
-		while ((first != sync_char_1) && (second != sync_char_2))
-		{
-			first = second;
-			next_tail = tail + 1;
-			if (next_tail == end) next_tail = begin;
-			if (next_tail == head) return 0;
-			second = *next_tail;
-			tail = next_tail;
-		}
-		uint8_t * start = number_now_element;		//указатель на начало пакета
-		*number_now_element = first;				//запись синхрослов
-		*(number_now_element + 1) = second;
-		number_now_element += 2;
+/*  Функция для разбора пакетов
+ *	packet - указатель на начало буфера пакета
+ *	packet_size - длина пакета
+ */
+int process_gps_packet(uint8_t * packet, size_t packet_size)
+{
+	uint16_t class_id = *(uint16_t *)packet;
+	uint8_t * packet_payload = packet + 4;			//указатель на начало полезных данных // +4 - пропуск заголовка
+
+	//check crc
+	uint8_t crc_a = 0, crc_b = 0;
+	int crc_check_len = packet_size - 2;
+	for (int i = 0; i < crc_check_len; i++)		//алгоритм подсчета контрольной суммы
+	{
+		crc_a += *(packet + i);
+		crc_b += crc_a;
+	}
+	if (*(packet + packet_size - 2) != crc_a && *(packet + packet_size -1) != crc_b)	return -5;		//проверка контрольной суммы
+
+	int parse_error = 0;
+	if (class_id == CLASS_ID_UBX_NAV_TIMEGPS)	parse_error = parse_ubx_nav_timegps(packet_payload);
+	if (class_id == CLASS_ID_UBX_TIM_TP)	parse_error |= parse_ubx_tim_tp(packet_payload);
+	parse_error |= parse_ubx_nav_sol(packet_payload);
+
+	return parse_error;
+}
 
 
+uint8_t header_invalid(uint16_t class_id, uint16_t lenght)
+{
+	if (class_id == CLASS_ID_UBX_NAV_TIMEGPS && lenght == LEN_UBX_NAV_TIMEGPS)	return 0;
+	if (class_id == CLASS_ID_UBX_TIM_TP && lenght == LEN_UBX_TIM_TP)	return 0;
+	if (class_id == CLASS_ID_UBX_NAV_SOL && lenght == LEN_UBX_NAV_SOL)	return 0;
+
+	//если дошли сюда, то какая-то лажа с заголовком пакета
+	return 1;
+}
 
 
+void gps_consume_byte(gps_ctx_t * ctx, uint8_t byte)
+{
+	switch (ctx->state)
+	{
+		case GPS_STATE_SYNC_SEARCH:
+			ctx->sw_buffer = (ctx->sw_buffer << 8) | byte;		//записываем синхрослово
+			if (ctx->sw_buffer == UBX_SYNCWORD_VALUE)
+			{
+				ctx->bytes_accum = 0;
+				ctx->state = GPS_STATE_HEADER_ACCUM;
+			}
+		break;
+
+		case GPS_STATE_HEADER_ACCUM:
+			if (ctx->bytes_accum < sizeof(ctx->packet_buffer))
+			{
+				ctx->packet_buffer[ctx->bytes_accum] = byte;
+				ctx->bytes_accum++;
+			}
+			else
+			{
+//				assert(false);
+				int i = 0;
+			}
+
+			if (ctx->bytes_accum == 4)
+			{
+
+				ctx->expected_packet_size = *(uint16_t * )(&ctx->packet_buffer[2] + 4 + 2);		// [2] - звятие длины пакета, +4 - длина заголовка, +2 - длина контрольной суммы
+				ctx->state = GPS_STATE_PACKET_ACCUM;
+				if (header_invalid(*(uint16_t * )&ctx->packet_buffer[0], *(uint16_t * )&ctx->packet_buffer[2]))
+				{
+					ctx->state = GPS_STATE_SYNC_SEARCH;
+					ctx->sw_buffer = 0;
+				}
+			}
+		break;
+
+		case GPS_STATE_PACKET_ACCUM:
+			if (ctx->bytes_accum < sizeof(ctx->packet_buffer))
+			{
+				ctx->packet_buffer[ctx->bytes_accum] = byte;
+			}
+
+			if (ctx->bytes_accum == ctx->expected_packet_size)
+			{
+				process_gps_packet(ctx->packet_buffer, ctx->expected_packet_size);
+				ctx->state = GPS_STATE_SYNC_SEARCH;
+			}
+		break;
 	}
 
 }
-
 

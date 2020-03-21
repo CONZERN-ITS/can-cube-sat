@@ -39,11 +39,12 @@
 
 #include "drivers/lis3mdl.h"
 #include "drivers/lsm6ds3.h"
+#include "drivers/gps.h"
 
 #include "MadgwickAHRS.h"
 #include "vector.h"
 #include "quaternion.h"
-#include "drivers/gps.h"
+
 
 // Interfaces
 SPI_HandleTypeDef spi;
@@ -74,8 +75,6 @@ static uint8_t	get_accel_staticShift(float* accel_staticShift);
 float transfer_time	= 0.0;
 float delta_time = 0.0;
 uint8_t need_transfer_data = 0;
-
-
 
 
 /**
@@ -153,6 +152,10 @@ void SENSORS_Init(void)
 	error = lis3mdl_init();
 	trace_printf("lis3mdl init error: %d\n", error);
 	state_system.lis3mdl_state = error; //FIXME: вернуть
+
+	error = 0;
+	gps_init(&gps);
+	state_system.GPS_state = error;
 }
 
 
@@ -376,6 +379,9 @@ int main(int argc, char* argv[])
 	{
 		UpdateDataAll();
 		SINS_updatePrevData();
+
+		int error = read_gps_buffer();
+		trace_printf("error read gps buffer:\t%d\n", error);
 
 //		float accel[3] = {0};
 //		float gyro[3] = {0};
