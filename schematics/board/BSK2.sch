@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.1">
+<eagle version="9.4.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -115,7 +115,7 @@
 <wire x1="3" y1="2" x2="3" y2="-2" width="0.127" layer="21"/>
 <wire x1="3" y1="-2" x2="-3" y2="-2" width="0.127" layer="21"/>
 <wire x1="-3" y1="-2" x2="-3" y2="2" width="0.127" layer="21"/>
-<text x="-2.937" y="2.413" size="0.8128" layer="25">EM_HEAT</text>
+<text x="-2.937" y="2.413" size="1" layer="25">&gt;NAME</text>
 </package>
 <package name="L293DD">
 <smd name="1" x="-5.715" y="-4.8" dx="2" dy="0.7" layer="1" rot="R90"/>
@@ -179,6 +179,23 @@
 <rectangle x1="2.746" y1="-3.754" x2="3.254" y2="-3.246" layer="51"/>
 <smd name="P$2" x="0" y="0" dx="8" dy="9" layer="1"/>
 <pad name="P$1" x="0" y="0" drill="6"/>
+</package>
+<package name="KCONNECT-">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
+<wire x1="-4" y1="-4.5" x2="-4" y2="4.5" width="0.254" layer="21"/>
+<wire x1="-4" y1="4.5" x2="4" y2="4.5" width="0.254" layer="21"/>
+<wire x1="4" y1="4.5" x2="4" y2="-4.5" width="0.254" layer="21"/>
+<wire x1="-4" y1="-4.5" x2="4" y2="-4.5" width="0.254" layer="21"/>
+<pad name="1" x="-3" y="-3.5" drill="1" diameter="1.4" shape="square"/>
+<pad name="2" x="-3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<pad name="3" x="3" y="-3.5" drill="1" diameter="1.4" shape="octagon"/>
+<pad name="4" x="3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<text x="-3.54" y="5.175" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.54" y="-6.445" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-3.254" y1="-3.754" x2="-2.746" y2="-3.246" layer="51"/>
+<rectangle x1="-3.254" y1="3.246" x2="-2.746" y2="3.754" layer="51"/>
+<rectangle x1="2.746" y1="3.246" x2="3.254" y2="3.754" layer="51"/>
+<rectangle x1="2.746" y1="-3.754" x2="3.254" y2="-3.246" layer="51"/>
 </package>
 </packages>
 <symbols>
@@ -334,6 +351,14 @@
 <device name="" package="KCONNECT">
 <connects>
 <connect gate="G$1" pin="P$1" pad="1 2 3 4 P$1 P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-" package="KCONNECT-">
+<connects>
+<connect gate="G$1" pin="P$1" pad="1 2 3 4"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -6746,7 +6771,7 @@ Source: www.kingbright.com</description>
 <part name="U$10" library="CanCubeSat" deviceset="KCONNECT" device=""/>
 <part name="U$11" library="CanCubeSat" deviceset="KCONNECT" device=""/>
 <part name="U$12" library="CanCubeSat" deviceset="KCONNECT" device=""/>
-<part name="TO_BSK1" library="pinheadCS" deviceset="PINHD-1X8" device=""/>
+<part name="BSK1" library="pinheadCS" deviceset="PINHD-1X8" device=""/>
 <part name="LED2" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R81" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="R1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
@@ -7884,7 +7909,7 @@ Source: www.kingbright.com</description>
 <instance part="U$12" gate="G$1" x="142.24" y="99.06" smashed="yes">
 <attribute name="NAME" x="140.462" y="102.362" size="1.27" layer="95"/>
 </instance>
-<instance part="TO_BSK1" gate="A" x="154.94" y="175.26" smashed="yes" rot="R270">
+<instance part="BSK1" gate="A" x="154.94" y="175.26" smashed="yes" rot="R270">
 <attribute name="NAME" x="168.275" y="181.61" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="142.24" y="181.61" size="1.778" layer="96" rot="R270"/>
 </instance>
@@ -7951,7 +7976,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="165.1" y1="177.8" x2="165.1" y2="190.5" width="0.1524" layer="91"/>
 <label x="165.1" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="TO_BSK1" gate="A" pin="1"/>
+<pinref part="BSK1" gate="A" pin="1"/>
 </segment>
 <segment>
 <pinref part="L293DD" gate="G$1" pin="HEAT"/>
@@ -7994,7 +8019,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="149.86" y1="177.8" x2="149.86" y2="190.5" width="0.1524" layer="91"/>
 <label x="149.86" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="TO_BSK1" gate="A" pin="7"/>
+<pinref part="BSK1" gate="A" pin="7"/>
 </segment>
 <segment>
 <pinref part="DS18B20Z" gate="G$1" pin="VDD"/>
@@ -8016,14 +8041,14 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="152.4" y1="177.8" x2="152.4" y2="190.5" width="0.1524" layer="91"/>
 <label x="152.4" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="TO_BSK1" gate="A" pin="6"/>
+<pinref part="BSK1" gate="A" pin="6"/>
 </segment>
 </net>
 <net name="B2_KEM+" class="0">
 <segment>
 <wire x1="160.02" y1="177.8" x2="160.02" y2="190.5" width="0.1524" layer="91"/>
 <label x="160.02" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="TO_BSK1" gate="A" pin="3"/>
+<pinref part="BSK1" gate="A" pin="3"/>
 </segment>
 <segment>
 <pinref part="L293DD" gate="G$1" pin="IN1"/>
@@ -8035,7 +8060,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="162.56" y1="177.8" x2="162.56" y2="190.5" width="0.1524" layer="91"/>
 <label x="162.56" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="TO_BSK1" gate="A" pin="2"/>
+<pinref part="BSK1" gate="A" pin="2"/>
 </segment>
 <segment>
 <pinref part="L293DD" gate="G$1" pin="IN2"/>
@@ -8047,7 +8072,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="157.48" y1="177.8" x2="157.48" y2="190.5" width="0.1524" layer="91"/>
 <label x="157.48" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="TO_BSK1" gate="A" pin="4"/>
+<pinref part="BSK1" gate="A" pin="4"/>
 </segment>
 <segment>
 <pinref part="L293DD" gate="G$1" pin="IN4"/>
@@ -8103,7 +8128,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="154.94" y1="177.8" x2="154.94" y2="190.5" width="0.1524" layer="91"/>
 <label x="154.94" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="TO_BSK1" gate="A" pin="5"/>
+<pinref part="BSK1" gate="A" pin="5"/>
 </segment>
 <segment>
 <pinref part="R10" gate="G$1" pin="1"/>
@@ -8131,7 +8156,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="147.32" y1="177.8" x2="147.32" y2="190.5" width="0.1524" layer="91"/>
 <label x="147.32" y="182.88" size="1.778" layer="95" rot="R90"/>
-<pinref part="TO_BSK1" gate="A" pin="8"/>
+<pinref part="BSK1" gate="A" pin="8"/>
 </segment>
 <segment>
 <pinref part="U$3" gate="G$1" pin="P$1"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.0">
+<eagle version="9.4.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -261,61 +261,68 @@
 <instance part="RADIO" gate="G$1" x="10.16" y="20.32" smashed="yes">
 <attribute name="NAME" x="5.588" y="31.242" size="1.778" layer="95"/>
 </instance>
-<instance part="JP1" gate="A" x="-15.24" y="20.32" smashed="yes" rot="R180">
-<attribute name="NAME" x="-8.89" y="9.525" size="1.778" layer="95" rot="R180"/>
-<attribute name="VALUE" x="-8.89" y="33.02" size="1.778" layer="96" rot="R180"/>
+<instance part="JP1" gate="A" x="-17.78" y="20.32" smashed="yes" rot="R180">
+<attribute name="NAME" x="-11.43" y="9.525" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="-11.43" y="33.02" size="1.778" layer="96" rot="R180"/>
 </instance>
 </instances>
 <busses>
 </busses>
 <nets>
-<net name="N$1" class="0">
+<net name="GND" class="0">
 <segment>
 <pinref part="RADIO" gate="G$1" pin="GND"/>
 <pinref part="JP1" gate="A" pin="1"/>
-<wire x1="-12.7" y1="12.7" x2="0" y2="12.7" width="0.1524" layer="91"/>
+<wire x1="-15.24" y1="12.7" x2="0" y2="12.7" width="0.1524" layer="91"/>
+<label x="-10.16" y="12.7" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$2" class="0">
+<net name="5V" class="0">
 <segment>
 <pinref part="RADIO" gate="G$1" pin="VCC"/>
 <pinref part="JP1" gate="A" pin="2"/>
-<wire x1="-12.7" y1="15.24" x2="0" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="-15.24" y1="15.24" x2="0" y2="15.24" width="0.1524" layer="91"/>
+<label x="-10.16" y="15.24" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$3" class="0">
+<net name="AUX" class="0">
 <segment>
 <pinref part="RADIO" gate="G$1" pin="AUX"/>
 <pinref part="JP1" gate="A" pin="3"/>
-<wire x1="-12.7" y1="17.78" x2="0" y2="17.78" width="0.1524" layer="91"/>
+<wire x1="-15.24" y1="17.78" x2="0" y2="17.78" width="0.1524" layer="91"/>
+<label x="-10.16" y="17.78" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$4" class="0">
+<net name="TXD" class="0">
 <segment>
 <pinref part="RADIO" gate="G$1" pin="TXD"/>
 <pinref part="JP1" gate="A" pin="4"/>
-<wire x1="-12.7" y1="20.32" x2="0" y2="20.32" width="0.1524" layer="91"/>
+<wire x1="-15.24" y1="20.32" x2="0" y2="20.32" width="0.1524" layer="91"/>
+<label x="-10.16" y="20.32" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$5" class="0">
+<net name="RXD" class="0">
 <segment>
 <pinref part="RADIO" gate="G$1" pin="RXD"/>
 <pinref part="JP1" gate="A" pin="5"/>
-<wire x1="-12.7" y1="22.86" x2="0" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="-15.24" y1="22.86" x2="0" y2="22.86" width="0.1524" layer="91"/>
+<label x="-10.16" y="22.86" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$6" class="0">
+<net name="M1" class="0">
 <segment>
 <pinref part="RADIO" gate="G$1" pin="M1"/>
 <pinref part="JP1" gate="A" pin="6"/>
-<wire x1="-12.7" y1="25.4" x2="0" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="-15.24" y1="25.4" x2="0" y2="25.4" width="0.1524" layer="91"/>
+<label x="-10.16" y="25.4" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$7" class="0">
+<net name="M0" class="0">
 <segment>
 <pinref part="RADIO" gate="G$1" pin="M0"/>
 <pinref part="JP1" gate="A" pin="7"/>
-<wire x1="-12.7" y1="27.94" x2="0" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="-15.24" y1="27.94" x2="0" y2="27.94" width="0.1524" layer="91"/>
+<label x="-10.16" y="27.94" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>

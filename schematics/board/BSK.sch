@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.0">
+<eagle version="9.4.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -347,10 +347,6 @@
 </package>
 <package name="KCONNECT-">
 <description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
-<wire x1="-4" y1="-4.5" x2="-4" y2="4.5" width="0.254" layer="21"/>
-<wire x1="-4" y1="4.5" x2="4" y2="4.5" width="0.254" layer="21"/>
-<wire x1="4" y1="4.5" x2="4" y2="-4.5" width="0.254" layer="21"/>
-<wire x1="-4" y1="-4.5" x2="4" y2="-4.5" width="0.254" layer="21"/>
 <pad name="1" x="-3" y="-3.5" drill="1" diameter="1.4" shape="square"/>
 <pad name="2" x="-3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
 <pad name="3" x="3" y="-3.5" drill="1" diameter="1.4" shape="octagon"/>

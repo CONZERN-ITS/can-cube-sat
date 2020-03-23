@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.0">
+<eagle version="9.4.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -9,6 +9,20 @@
 <grid distance="0.1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.001" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
+<layer number="2" name="Route2" color="16" fill="1" visible="no" active="yes"/>
+<layer number="3" name="Route3" color="17" fill="1" visible="no" active="yes"/>
+<layer number="4" name="Route4" color="18" fill="1" visible="no" active="yes"/>
+<layer number="5" name="Route5" color="19" fill="1" visible="no" active="yes"/>
+<layer number="6" name="Route6" color="25" fill="1" visible="no" active="yes"/>
+<layer number="7" name="Route7" color="26" fill="1" visible="no" active="yes"/>
+<layer number="8" name="Route8" color="27" fill="1" visible="no" active="yes"/>
+<layer number="9" name="Route9" color="28" fill="1" visible="no" active="yes"/>
+<layer number="10" name="Route10" color="29" fill="1" visible="no" active="yes"/>
+<layer number="11" name="Route11" color="30" fill="1" visible="no" active="yes"/>
+<layer number="12" name="Route12" color="20" fill="1" visible="no" active="yes"/>
+<layer number="13" name="Route13" color="21" fill="1" visible="no" active="yes"/>
+<layer number="14" name="Route14" color="22" fill="1" visible="no" active="yes"/>
+<layer number="15" name="Route15" color="23" fill="1" visible="no" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
@@ -63,14 +77,6 @@
 </layers>
 <board>
 <plain>
-<text x="7.2" y="79.9" size="1.4224" layer="26" rot="MR315">BUS+</text>
-<text x="61.1" y="81.3" size="1.4224" layer="26" rot="MR225">BUS+</text>
-<text x="60.7" y="19.3" size="1.4224" layer="26" rot="MR135">BUS+</text>
-<text x="6.8" y="18.7" size="1.4224" layer="26" rot="MR45">BUS+</text>
-<text x="15.8" y="71.7" size="1.4224" layer="26" rot="MR315">BUS-</text>
-<text x="53" y="72.2" size="1.4224" layer="26" rot="MR225">BUS-</text>
-<text x="51.6" y="28.3" size="1.4224" layer="26" rot="MR135">BUS-</text>
-<text x="15.3" y="27.2" size="1.4224" layer="26" rot="MR45">BUS-</text>
 <hole x="4" y="4" drill="6"/>
 <hole x="64" y="4" drill="6"/>
 <hole x="64" y="96" drill="6"/>
@@ -86,8 +92,9 @@
 <wire x1="60" y1="100" x2="60" y2="83.72806875" width="0.1" layer="20"/>
 <wire x1="60" y1="83.72806875" x2="58.535534375" y2="80.192534375" width="0.1" layer="20" curve="-45"/>
 <wire x1="58.535534375" y1="80.192534375" x2="46.138196875" y2="67.7950625" width="0.1" layer="20"/>
-<wire x1="68" y1="100" x2="68" y2="78.343" width="0.1" layer="20"/>
-<wire x1="68" y1="78.343" x2="51.795059375" y2="62.1382" width="0.1" layer="20"/>
+<wire x1="68" y1="100" x2="68" y2="80.41408125" width="0.1" layer="20"/>
+<wire x1="68" y1="80.41408125" x2="66.53551875" y2="76.87853125" width="0.1" layer="20" curve="-45.000253"/>
+<wire x1="66.53551875" y1="76.87853125" x2="51.795059375" y2="62.1382" width="0.1" layer="20"/>
 <wire x1="68" y1="0" x2="60" y2="0" width="0.1" layer="20"/>
 <wire x1="60" y1="0" x2="60" y2="16.27193125" width="0.1" layer="20"/>
 <wire x1="60" y1="16.27193125" x2="58.535534375" y2="19.807465625" width="0.1" layer="20" curve="45"/>
@@ -121,10 +128,6 @@
 <packages>
 <package name="KCONNECT-">
 <description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
-<wire x1="-4" y1="-4.5" x2="-4" y2="4.5" width="0.254" layer="21"/>
-<wire x1="-4" y1="4.5" x2="4" y2="4.5" width="0.254" layer="21"/>
-<wire x1="4" y1="4.5" x2="4" y2="-4.5" width="0.254" layer="21"/>
-<wire x1="-4" y1="-4.5" x2="4" y2="-4.5" width="0.254" layer="21"/>
 <pad name="1" x="-3" y="-3.5" drill="1" diameter="1.4" shape="square"/>
 <pad name="2" x="-3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
 <pad name="3" x="3" y="-3.5" drill="1" diameter="1.4" shape="octagon"/>
@@ -358,7 +361,7 @@ design rules under a new name.</description>
 <contactref element="U$20" pad="2"/>
 <contactref element="U$20" pad="3"/>
 <contactref element="U$20" pad="4"/>
-<polygon width="0.1" layer="16" spacing="0.5" thermals="no">
+<polygon width="0.1" layer="16" spacing="0.5" isolate="0.5" thermals="no">
 <vertex x="0" y="100"/>
 <vertex x="8" y="100"/>
 <vertex x="8" y="83.5"/>
@@ -504,7 +507,7 @@ design rules under a new name.</description>
 <contactref element="U$21" pad="2"/>
 <contactref element="U$21" pad="3"/>
 <contactref element="U$21" pad="4"/>
-<polygon width="0.1" layer="1" spacing="0.5" thermals="no">
+<polygon width="0.1" layer="1" spacing="0.5" isolate="0.5" thermals="no">
 <vertex x="0" y="100"/>
 <vertex x="8" y="100"/>
 <vertex x="8" y="83.5"/>
