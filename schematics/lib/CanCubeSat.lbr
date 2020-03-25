@@ -909,7 +909,7 @@
 <wire x1="12.96" y1="-1.29" x2="12.96" y2="0" width="0.127" layer="20"/>
 <text x="4" y="-3" size="1.27" layer="25">&gt;NAME</text>
 </package>
-<package name="GPS">
+<package name="GPS-OLD">
 <wire x1="-19.5" y1="-12.75" x2="19.5" y2="-12.75" width="0.127" layer="21"/>
 <wire x1="19.5" y1="-12.75" x2="19.5" y2="12.75" width="0.127" layer="21"/>
 <wire x1="19.5" y1="12.75" x2="-19.5" y2="12.75" width="0.127" layer="21"/>
@@ -946,7 +946,6 @@
 <smd name="P$15" x="-5.73" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
 <smd name="P$16" x="-8.27" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
 <smd name="P$17" x="-16.73" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
-<smd name="P$18" x="-19.27" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
 <smd name="P$14" x="-0.25" y="20.8" dx="2.2" dy="1.8" layer="1"/>
 <smd name="P$13" x="-0.25" y="23.34" dx="2.2" dy="1.8" layer="1"/>
 <smd name="P$12" x="-0.25" y="25.88" dx="2.2" dy="1.8" layer="1"/>
@@ -955,6 +954,23 @@
 <smd name="P$9" x="-0.25" y="33.5" dx="2.2" dy="1.8" layer="1"/>
 <smd name="P$8" x="-0.25" y="36.04" dx="2.2" dy="1.8" layer="1"/>
 <text x="-17" y="41" size="1.27" layer="25">&gt;NAME</text>
+</package>
+<package name="GPS-NEO6M">
+<wire x1="-12" y1="18" x2="-12" y2="-18" width="0.127" layer="21"/>
+<wire x1="-12" y1="-18" x2="12" y2="-18" width="0.127" layer="21"/>
+<wire x1="12" y1="-18" x2="12" y2="18" width="0.127" layer="21"/>
+<wire x1="12" y1="18" x2="-12" y2="18" width="0.127" layer="21"/>
+<hole x="-9" y="15" drill="3"/>
+<hole x="9" y="15" drill="3"/>
+<hole x="-9" y="-15" drill="3"/>
+<hole x="9" y="-15" drill="3"/>
+<hole x="-3" y="-15" drill="4"/>
+<pad name="P$1" x="-5.08" y="16" drill="1.016" shape="square"/>
+<pad name="P$2" x="-2.54" y="16" drill="1.016" shape="octagon"/>
+<pad name="P$3" x="0" y="16" drill="1.016" shape="octagon"/>
+<pad name="P$4" x="2.54" y="16" drill="1.016" shape="octagon"/>
+<pad name="P$5" x="5.08" y="16" drill="1.016" shape="octagon"/>
+<text x="-3" y="19" size="1.27" layer="21">&gt;NAME</text>
 </package>
 </packages>
 <packages3d>
@@ -2417,13 +2433,25 @@
 <gate name="G$1" symbol="GPS" x="0" y="0"/>
 </gates>
 <devices>
-<device name="" package="GPS">
+<device name="" package="GPS-OLD">
 <connects>
 <connect gate="G$1" pin="GND" pad="GND"/>
 <connect gate="G$1" pin="PPS" pad="PPS"/>
 <connect gate="G$1" pin="RX" pad="RX"/>
 <connect gate="G$1" pin="TX" pad="TX"/>
 <connect gate="G$1" pin="UCC" pad="UCC"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="NEO6M" package="GPS-NEO6M">
+<connects>
+<connect gate="G$1" pin="GND" pad="P$4"/>
+<connect gate="G$1" pin="PPS" pad="P$1"/>
+<connect gate="G$1" pin="RX" pad="P$2"/>
+<connect gate="G$1" pin="TX" pad="P$3"/>
+<connect gate="G$1" pin="UCC" pad="P$5"/>
 </connects>
 <technologies>
 <technology name=""/>
