@@ -15351,6 +15351,9 @@ Source: www.kingbright.com</description>
 <pinref part="U1" gate="G$1" pin="VSS"/>
 <wire x1="292.1" y1="73.66" x2="304.8" y2="73.66" width="0.1524" layer="91"/>
 <label x="299.72" y="73.66" size="1.778" layer="95"/>
+<pinref part="U1" gate="G$1" pin="VSSA"/>
+<wire x1="292.1" y1="71.12" x2="292.1" y2="73.66" width="0.1524" layer="91"/>
+<junction x="292.1" y="73.66"/>
 </segment>
 <segment>
 <pinref part="U1" gate="G$1" pin="BOOT0"/>
@@ -15579,6 +15582,9 @@ Source: www.kingbright.com</description>
 <wire x1="309.88" y1="175.26" x2="292.1" y2="175.26" width="0.1524" layer="91"/>
 <label x="299.72" y="175.26" size="1.778" layer="95"/>
 <pinref part="LED2" gate="G$1" pin="A"/>
+<pinref part="U1" gate="G$1" pin="VDDA"/>
+<wire x1="292.1" y1="172.72" x2="292.1" y2="175.26" width="0.1524" layer="91"/>
+<junction x="292.1" y="175.26"/>
 </segment>
 <segment>
 <wire x1="157.48" y1="142.24" x2="157.48" y2="149.86" width="0.1524" layer="91"/>
