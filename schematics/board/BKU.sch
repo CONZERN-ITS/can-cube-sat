@@ -342,7 +342,7 @@
 <wire x1="12.96" y1="-1.29" x2="12.96" y2="0" width="0.127" layer="20"/>
 <text x="4" y="-3" size="1.27" layer="25">&gt;NAME</text>
 </package>
-<package name="GPS">
+<package name="GPS-OLD">
 <wire x1="-19.5" y1="-12.75" x2="19.5" y2="-12.75" width="0.127" layer="21"/>
 <wire x1="19.5" y1="-12.75" x2="19.5" y2="12.75" width="0.127" layer="21"/>
 <wire x1="19.5" y1="12.75" x2="-19.5" y2="12.75" width="0.127" layer="21"/>
@@ -379,7 +379,6 @@
 <smd name="P$15" x="-5.73" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
 <smd name="P$16" x="-8.27" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
 <smd name="P$17" x="-16.73" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
-<smd name="P$18" x="-19.27" y="0.25" dx="2.2" dy="1.8" layer="1" rot="R90"/>
 <smd name="P$14" x="-0.25" y="20.8" dx="2.2" dy="1.8" layer="1"/>
 <smd name="P$13" x="-0.25" y="23.34" dx="2.2" dy="1.8" layer="1"/>
 <smd name="P$12" x="-0.25" y="25.88" dx="2.2" dy="1.8" layer="1"/>
@@ -388,6 +387,23 @@
 <smd name="P$9" x="-0.25" y="33.5" dx="2.2" dy="1.8" layer="1"/>
 <smd name="P$8" x="-0.25" y="36.04" dx="2.2" dy="1.8" layer="1"/>
 <text x="-17" y="41" size="1.27" layer="25">&gt;NAME</text>
+</package>
+<package name="GPS-NEO6M">
+<wire x1="-12" y1="18" x2="-12" y2="-18" width="0.127" layer="21"/>
+<wire x1="-12" y1="-18" x2="12" y2="-18" width="0.127" layer="21"/>
+<wire x1="12" y1="-18" x2="12" y2="18" width="0.127" layer="21"/>
+<wire x1="12" y1="18" x2="-12" y2="18" width="0.127" layer="21"/>
+<hole x="-9" y="15" drill="3"/>
+<hole x="9" y="15" drill="3"/>
+<hole x="-9" y="-15" drill="3"/>
+<hole x="9" y="-15" drill="3"/>
+<hole x="-3" y="-15" drill="4"/>
+<pad name="P$1" x="-5.08" y="16" drill="1.016" shape="square"/>
+<pad name="P$2" x="-2.54" y="16" drill="1.016" shape="octagon"/>
+<pad name="P$3" x="0" y="16" drill="1.016" shape="octagon"/>
+<pad name="P$4" x="2.54" y="16" drill="1.016" shape="octagon"/>
+<pad name="P$5" x="5.08" y="16" drill="1.016" shape="octagon"/>
+<text x="-3" y="19" size="1.27" layer="21">&gt;NAME</text>
 </package>
 </packages>
 <symbols>
@@ -888,13 +904,25 @@
 <gate name="G$1" symbol="GPS" x="0" y="0"/>
 </gates>
 <devices>
-<device name="" package="GPS">
+<device name="" package="GPS-OLD">
 <connects>
 <connect gate="G$1" pin="GND" pad="GND"/>
 <connect gate="G$1" pin="PPS" pad="PPS"/>
 <connect gate="G$1" pin="RX" pad="RX"/>
 <connect gate="G$1" pin="TX" pad="TX"/>
 <connect gate="G$1" pin="UCC" pad="UCC"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="NEO6M" package="GPS-NEO6M">
+<connects>
+<connect gate="G$1" pin="GND" pad="P$4"/>
+<connect gate="G$1" pin="PPS" pad="P$1"/>
+<connect gate="G$1" pin="RX" pad="P$2"/>
+<connect gate="G$1" pin="TX" pad="P$3"/>
+<connect gate="G$1" pin="UCC" pad="P$5"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -10943,7 +10971,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="5.08" y1="1.27" x2="5.08" y2="-1.27" width="0.254" layer="21"/>
 <wire x1="-5.08" y1="1.27" x2="-2.54" y2="1.27" width="0.254" layer="21"/>
 <wire x1="-2.54" y1="1.27" x2="5.08" y2="1.27" width="0.254" layer="21"/>
-<wire x1="-2.54" y1="1.27" x2="-2.54" y2="-1.27" width="0.254" layer="21"/>
 <pad name="1" x="-3.81" y="0" drill="1.016" shape="square" rot="R90"/>
 <pad name="2" x="-1.27" y="0" drill="1.016" shape="octagon" rot="R90"/>
 <pad name="3" x="1.27" y="0" drill="1.016" shape="octagon" rot="R90"/>
@@ -10954,6 +10981,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <rectangle x1="-1.524" y1="-0.254" x2="-1.016" y2="0.254" layer="51"/>
 <rectangle x1="-4.064" y1="-0.254" x2="-3.556" y2="0.254" layer="51"/>
 <rectangle x1="3.556" y1="-0.254" x2="4.064" y2="0.254" layer="51"/>
+<wire x1="-2.54" y1="1.27" x2="-2.54" y2="-1.27" width="0.254" layer="21"/>
 </package>
 <package name="1X04M">
 <description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 2MM"</description>
@@ -10971,6 +10999,50 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <rectangle x1="-3.25" y1="-0.25" x2="-2.75" y2="0.25" layer="51"/>
 <rectangle x1="2.75" y1="-0.25" x2="3.25" y2="0.25" layer="51" rot="R270"/>
 <rectangle x1="0.75" y1="-0.25" x2="1.25" y2="0.25" layer="51" rot="R270"/>
+</package>
+<package name="1X06">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
+<wire x1="-7.62" y1="1.27" x2="-7.62" y2="-1.27" width="0.254" layer="21"/>
+<wire x1="7.62" y1="1.27" x2="7.62" y2="-1.27" width="0.254" layer="21"/>
+<wire x1="7.62" y1="1.27" x2="-5.08" y2="1.27" width="0.254" layer="21"/>
+<wire x1="-5.08" y1="1.27" x2="-7.62" y2="1.27" width="0.254" layer="21"/>
+<wire x1="7.62" y1="-1.27" x2="-7.62" y2="-1.27" width="0.254" layer="21"/>
+<wire x1="-5.08" y1="1.27" x2="-5.08" y2="-1.27" width="0.254" layer="21"/>
+<pad name="1" x="-6.35" y="0" drill="1.016" shape="square" rot="R90"/>
+<pad name="2" x="-3.81" y="0" drill="1.016" shape="octagon" rot="R90"/>
+<pad name="3" x="-1.27" y="0" drill="1.016" shape="octagon" rot="R90"/>
+<pad name="4" x="1.27" y="0" drill="1.016" shape="octagon" rot="R90"/>
+<pad name="5" x="3.81" y="0" drill="1.016" shape="octagon" rot="R90"/>
+<pad name="6" x="6.35" y="0" drill="1.016" shape="octagon" rot="R90"/>
+<text x="-7.6962" y="1.8288" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-7.62" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="3.556" y1="-0.254" x2="4.064" y2="0.254" layer="51"/>
+<rectangle x1="1.016" y1="-0.254" x2="1.524" y2="0.254" layer="51"/>
+<rectangle x1="-1.524" y1="-0.254" x2="-1.016" y2="0.254" layer="51"/>
+<rectangle x1="-4.064" y1="-0.254" x2="-3.556" y2="0.254" layer="51"/>
+<rectangle x1="-6.604" y1="-0.254" x2="-6.096" y2="0.254" layer="51"/>
+<rectangle x1="6.096" y1="-0.254" x2="6.604" y2="0.254" layer="51"/>
+</package>
+<package name="1X06M">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 2MM"</description>
+<wire x1="6.25" y1="1.25" x2="6.25" y2="-1.25" width="0.2032" layer="21"/>
+<wire x1="6.25" y1="-1.25" x2="-6.25" y2="-1.25" width="0.2032" layer="21"/>
+<wire x1="-6.25" y1="-1.25" x2="-6.25" y2="1.25" width="0.2032" layer="21"/>
+<wire x1="-6.25" y1="1.25" x2="6.25" y2="1.25" width="0.2032" layer="21"/>
+<pad name="1" x="-5" y="0" drill="0.9144" shape="square"/>
+<pad name="2" x="-3" y="0" drill="0.9144"/>
+<pad name="3" x="-1" y="0" drill="0.9144" rot="R270"/>
+<pad name="4" x="1" y="0" drill="0.9144" rot="R270"/>
+<pad name="5" x="3" y="0" drill="0.9144" rot="R270"/>
+<pad name="6" x="5" y="0" drill="0.9144" rot="R270"/>
+<text x="-7" y="-1" size="1.016" layer="25" ratio="14" rot="R90">&gt;NAME</text>
+<text x="8" y="-1" size="0.8128" layer="27" ratio="10" rot="R90">&gt;VALUE</text>
+<rectangle x1="-3.25" y1="-0.25" x2="-2.75" y2="0.25" layer="51"/>
+<rectangle x1="-5.25" y1="-0.25" x2="-4.75" y2="0.25" layer="51"/>
+<rectangle x1="0.75" y1="-0.25" x2="1.25" y2="0.25" layer="51" rot="R270"/>
+<rectangle x1="-1.25" y1="-0.25" x2="-0.75" y2="0.25" layer="51" rot="R270"/>
+<rectangle x1="4.75" y1="-0.25" x2="5.25" y2="0.25" layer="51" rot="R270"/>
+<rectangle x1="2.75" y1="-0.25" x2="3.25" y2="0.25" layer="51" rot="R270"/>
 </package>
 </packages>
 <symbols>
@@ -11043,6 +11115,20 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pin name="2" x="-2.54" y="2.54" visible="pad" length="short" direction="pas" function="dot"/>
 <pin name="3" x="-2.54" y="0" visible="pad" length="short" direction="pas" function="dot"/>
 <pin name="4" x="-2.54" y="-2.54" visible="pad" length="short" direction="pas" function="dot"/>
+</symbol>
+<symbol name="PINHD6">
+<wire x1="-6.35" y1="-7.62" x2="1.27" y2="-7.62" width="0.4064" layer="94"/>
+<wire x1="1.27" y1="-7.62" x2="1.27" y2="10.16" width="0.4064" layer="94"/>
+<wire x1="1.27" y1="10.16" x2="-6.35" y2="10.16" width="0.4064" layer="94"/>
+<wire x1="-6.35" y1="10.16" x2="-6.35" y2="-7.62" width="0.4064" layer="94"/>
+<text x="-6.35" y="10.795" size="1.778" layer="95">&gt;NAME</text>
+<text x="-6.35" y="-10.16" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="1" x="-2.54" y="7.62" visible="pad" length="short" direction="pas" function="dot"/>
+<pin name="2" x="-2.54" y="5.08" visible="pad" length="short" direction="pas" function="dot"/>
+<pin name="3" x="-2.54" y="2.54" visible="pad" length="short" direction="pas" function="dot"/>
+<pin name="4" x="-2.54" y="0" visible="pad" length="short" direction="pas" function="dot"/>
+<pin name="5" x="-2.54" y="-2.54" visible="pad" length="short" direction="pas" function="dot"/>
+<pin name="6" x="-2.54" y="-5.08" visible="pad" length="short" direction="pas" function="dot"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -11203,6 +11289,40 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <connect gate="A" pin="2" pad="2"/>
 <connect gate="A" pin="3" pad="3"/>
 <connect gate="A" pin="4" pad="4"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="PINHD-1X6" prefix="JP" uservalue="yes">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>
+<gates>
+<gate name="A" symbol="PINHD6" x="0" y="-2.54"/>
+</gates>
+<devices>
+<device name="" package="1X06">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+<connect gate="A" pin="3" pad="3"/>
+<connect gate="A" pin="4" pad="4"/>
+<connect gate="A" pin="5" pad="5"/>
+<connect gate="A" pin="6" pad="6"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="M" package="1X06M">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+<connect gate="A" pin="3" pad="3"/>
+<connect gate="A" pin="4" pad="4"/>
+<connect gate="A" pin="5" pad="5"/>
+<connect gate="A" pin="6" pad="6"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -13629,7 +13749,7 @@ Source: www.kingbright.com</description>
 <part name="Q2" library="CanCubeSat" deviceset="C005R" device="" value="32,768KHz"/>
 <part name="C10" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="10pF"/>
 <part name="C11" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="10pF"/>
-<part name="GPS" library="CanCubeSat" deviceset="GPS" device=""/>
+<part name="GPS" library="CanCubeSat" deviceset="GPS" device="NEO6M" value="GPSNEO6M"/>
 <part name="SUPPLY4" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
 <part name="RADIO" library="CanCubeSat" deviceset="RADIO" device=""/>
 <part name="SUPPLY6" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
@@ -13652,7 +13772,6 @@ Source: www.kingbright.com</description>
 <part name="R2" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="LED1" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R7" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
-<part name="JTAG" library="pinheadCS" deviceset="PINHD-1X4" device=""/>
 <part name="MAG" library="pinheadCS" deviceset="PINHD-1X4" device=""/>
 <part name="R15" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="R17" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="1M"/>
@@ -13677,6 +13796,7 @@ Source: www.kingbright.com</description>
 <part name="R27" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="LED-B#2" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R29" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
+<part name="JTAG" library="pinheadCS" deviceset="PINHD-1X6" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -14894,10 +15014,6 @@ Source: www.kingbright.com</description>
 <attribute name="NAME" x="219.4814" y="166.37" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="224.282" y="166.37" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="JTAG" gate="A" x="48.26" y="114.3" smashed="yes" rot="R180">
-<attribute name="NAME" x="54.61" y="106.045" size="1.778" layer="95" rot="R180"/>
-<attribute name="VALUE" x="54.61" y="121.92" size="1.778" layer="96" rot="R180"/>
-</instance>
 <instance part="MAG" gate="A" x="-86.36" y="63.5" smashed="yes" rot="R90">
 <attribute name="NAME" x="-94.615" y="57.15" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="-78.74" y="57.15" size="1.778" layer="96" rot="R90"/>
@@ -14991,6 +15107,10 @@ Source: www.kingbright.com</description>
 <instance part="R29" gate="G$1" x="236.22" y="279.4" smashed="yes">
 <attribute name="NAME" x="232.41" y="280.8986" size="1.778" layer="95"/>
 <attribute name="VALUE" x="232.41" y="276.098" size="1.778" layer="96"/>
+</instance>
+<instance part="JTAG" gate="A" x="48.26" y="111.76" smashed="yes" rot="R180">
+<attribute name="NAME" x="52.07" y="100.965" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="54.61" y="119.38" size="1.778" layer="96" rot="R180"/>
 </instance>
 </instances>
 <busses>
@@ -15221,6 +15341,26 @@ Source: www.kingbright.com</description>
 <pinref part="R29" gate="G$1" pin="2"/>
 <wire x1="241.3" y1="279.4" x2="248.92" y2="279.4" width="0.1524" layer="91"/>
 <label x="248.92" y="279.4" size="1.778" layer="95" rot="R180"/>
+</segment>
+<segment>
+<pinref part="JTAG" gate="A" pin="1"/>
+<wire x1="50.8" y1="104.14" x2="66.04" y2="104.14" width="0.1524" layer="91"/>
+<label x="58.42" y="104.14" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="VSS"/>
+<wire x1="292.1" y1="73.66" x2="304.8" y2="73.66" width="0.1524" layer="91"/>
+<label x="299.72" y="73.66" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="BOOT0"/>
+<wire x1="231.14" y1="167.64" x2="231.14" y2="180.34" width="0.1524" layer="91"/>
+<label x="231.14" y="175.26" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="PB2/BOOT1"/>
+<wire x1="231.14" y1="111.76" x2="218.44" y2="111.76" width="0.1524" layer="91"/>
+<label x="218.44" y="111.76" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="5V" class="0">
@@ -15510,6 +15650,11 @@ Source: www.kingbright.com</description>
 <wire x1="-104.14" y1="170.18" x2="-121.92" y2="170.18" width="0.1524" layer="91"/>
 <label x="-121.92" y="170.18" size="1.778" layer="95"/>
 <pinref part="U$4" gate="G$1" pin="3V3/BUS"/>
+</segment>
+<segment>
+<pinref part="JTAG" gate="A" pin="2"/>
+<wire x1="50.8" y1="106.68" x2="66.04" y2="106.68" width="0.1524" layer="91"/>
+<label x="58.42" y="106.68" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$24" class="0">
@@ -16381,9 +16526,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="MTDI" class="0">
 <segment>
-<pinref part="JTAG" gate="A" pin="4"/>
 <wire x1="50.8" y1="116.84" x2="66.04" y2="116.84" width="0.1524" layer="91"/>
 <label x="58.42" y="116.84" size="1.778" layer="95"/>
+<pinref part="JTAG" gate="A" pin="6"/>
 </segment>
 <segment>
 <wire x1="53.34" y1="233.68" x2="53.34" y2="223.52" width="0.1524" layer="91"/>
@@ -16402,9 +16547,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="MTCK" class="0">
 <segment>
-<pinref part="JTAG" gate="A" pin="3"/>
 <wire x1="50.8" y1="114.3" x2="66.04" y2="114.3" width="0.1524" layer="91"/>
 <label x="58.42" y="114.3" size="1.778" layer="95"/>
+<pinref part="JTAG" gate="A" pin="5"/>
 </segment>
 <segment>
 <wire x1="55.88" y1="233.68" x2="55.88" y2="215.9" width="0.1524" layer="91"/>
@@ -16423,9 +16568,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="MTMS" class="0">
 <segment>
-<pinref part="JTAG" gate="A" pin="2"/>
 <wire x1="50.8" y1="111.76" x2="66.04" y2="111.76" width="0.1524" layer="91"/>
 <label x="58.42" y="111.76" size="1.778" layer="95"/>
+<pinref part="JTAG" gate="A" pin="4"/>
 </segment>
 <segment>
 <wire x1="63.5" y1="233.68" x2="63.5" y2="167.64" width="0.1524" layer="91"/>
@@ -16440,9 +16585,9 @@ Source: www.kingbright.com</description>
 </net>
 <net name="MTDO" class="0">
 <segment>
-<pinref part="JTAG" gate="A" pin="1"/>
 <wire x1="50.8" y1="109.22" x2="66.04" y2="109.22" width="0.1524" layer="91"/>
 <label x="58.42" y="109.22" size="1.778" layer="95"/>
+<pinref part="JTAG" gate="A" pin="3"/>
 </segment>
 <segment>
 <wire x1="58.42" y1="233.68" x2="58.42" y2="208.28" width="0.1524" layer="91"/>
