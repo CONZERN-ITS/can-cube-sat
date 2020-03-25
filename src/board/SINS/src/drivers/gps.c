@@ -14,6 +14,23 @@
 #include "state.h"
 #include "gps.h"
 
+/////////////////////////////////////
+//#define    DWT_CYCCNT    *(volatile uint32_t* )0xE0001004
+//#define    DWT_CONTROL   *(volatile uint32_t* )0xE0001000
+//#define    SCB_DEMCR     *(volatile uint32_t* )0xE000EDFC
+////FIXME: delete this or not
+//char str[16] = {0,};
+//uint32_t count_tic = 0;
+//
+//SCB_DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;// разрешаем использовать DWT
+//	DWT_CONTROL|= DWT_CTRL_CYCCNTENA_Msk; // включаем счётчик
+//
+//DWT_CYCCNT = 0;// обнуляем счётчик
+//count_tic = DWT_CYCCNT;
+//
+/////////////////////////////////////
+
+
 uint8_t *head, *next_head, *tail, *next_tail, *begin, *end, first, second;
 
 uint8_t uart_GPS_buffer[GPS_BUFFER_SIZE] = {0};		// циклический буффер для приема байт по uart
@@ -46,6 +63,8 @@ void uartGPSInit(UART_HandleTypeDef * uart)
 		USART2->CR1 |= USART_CR1_RXNEIE;
 		HAL_NVIC_SetPriority(USART2_IRQn, 6, 0);
 		HAL_NVIC_EnableIRQ(USART2_IRQn);
+
+	gps_init(&gps);
 
 }
 
@@ -96,8 +115,8 @@ void USART2_IRQHandler(void)
 
 		next_head = head + 1;
 		*head = tmp;
-		if (next_head == end) next_head = begin;
-		if (next_head == tail) return;
+		if (next_head == end) 	next_head = begin;
+		if (next_head == tail)	return;
 		head = next_head;
 	}
 }
@@ -137,7 +156,7 @@ int parse_ubx_nav_sol(uint8_t * payload)		//TODO: дописать
 int parse_ubx_tim_tp(uint8_t * payload)			// время GPS
 {
 	uint32_t tow_ms = *(uint32_t * )payload;
-	uint16_t week = (uint16_t)(*(int16_t * )(payload + 12));		// +12 т.к. время в неделях с 12 по 14 байт
+	uint16_t week = *(uint16_t * )(payload + 12);		// +12 т.к. время в неделях с 12 по 14 байт
 
 	next_pps_time_ms = (uint64_t)week * 604800000 + (uint64_t)tow_ms;			//	604800000 - кол-во миллисекунд в неделе
 
@@ -162,6 +181,7 @@ void gps_init(gps_ctx_t * ctx)
 	ctx->state = GPS_STATE_SYNC_SEARCH;
 
 	head = &uart_GPS_buffer[0];
+	trace_printf("%x", head);
 	tail = &uart_GPS_buffer[0];
 	begin = &uart_GPS_buffer[0];
 	end = begin + GPS_BUFFER_SIZE;
@@ -173,14 +193,18 @@ void gps_init(gps_ctx_t * ctx)
 
 int read_gps_buffer()
 {
-	next_tail = tail + 1;
-	for (int i = 0; i < 15; i++)
-	{
+
+//	for (int i = 0; i < 3; i++)
+//	{
+		next_tail = tail + 1;
 		if (next_tail == end)	next_tail = begin;
 		if (next_tail == head)	return -3;
 		gps_consume_byte(&gps, *tail);
+//		HAL_Delay(100);
 		tail = next_tail;
-	}
+//	}
+	int sta = gps.state;
+//	trace_printf("%d\n", sta);
 	return 0;
 }
 
@@ -206,7 +230,7 @@ int process_gps_packet(uint8_t * packet, size_t packet_size)
 	int parse_error = 0;
 	if (class_id == CLASS_ID_UBX_NAV_TIMEGPS)	parse_error = parse_ubx_nav_timegps(packet_payload);
 	if (class_id == CLASS_ID_UBX_TIM_TP)	parse_error |= parse_ubx_tim_tp(packet_payload);
-	parse_error |= parse_ubx_nav_sol(packet_payload);
+	if (class_id == CLASS_ID_UBX_NAV_SOL)	parse_error |= parse_ubx_nav_sol(packet_payload);
 
 	return parse_error;
 }
@@ -228,7 +252,7 @@ void gps_consume_byte(gps_ctx_t * ctx, uint8_t byte)
 	switch (ctx->state)
 	{
 		case GPS_STATE_SYNC_SEARCH:
-			ctx->sw_buffer = (ctx->sw_buffer << 8) | byte;		//записываем синхрослово
+			ctx->sw_buffer = (ctx->sw_buffer << 8 | byte);		//записываем синхрослово
 			if (ctx->sw_buffer == UBX_SYNCWORD_VALUE)
 			{
 				ctx->bytes_accum = 0;
@@ -250,21 +274,26 @@ void gps_consume_byte(gps_ctx_t * ctx, uint8_t byte)
 
 			if (ctx->bytes_accum == 4)
 			{
-
-				ctx->expected_packet_size = *(uint16_t * )(&ctx->packet_buffer[2] + 4 + 2);		// [2] - звятие длины пакета, +4 - длина заголовка, +2 - длина контрольной суммы
+				ctx->expected_packet_size = *(uint16_t * )(&ctx->packet_buffer[2]);		// [2] - звятие длины пакета, +4 - длина заголовка, +2 - длина контрольной суммы
 				ctx->state = GPS_STATE_PACKET_ACCUM;
 				if (header_invalid(*(uint16_t * )&ctx->packet_buffer[0], *(uint16_t * )&ctx->packet_buffer[2]))
 				{
 					ctx->state = GPS_STATE_SYNC_SEARCH;
 					ctx->sw_buffer = 0;
 				}
+				else
+				{
+					ctx->state = GPS_STATE_PACKET_ACCUM;
+				}
 			}
 		break;
 
 		case GPS_STATE_PACKET_ACCUM:
+//			trace_printf("im here");
 			if (ctx->bytes_accum < sizeof(ctx->packet_buffer))
 			{
 				ctx->packet_buffer[ctx->bytes_accum] = byte;
+				ctx->bytes_accum++;
 			}
 
 			if (ctx->bytes_accum == ctx->expected_packet_size)

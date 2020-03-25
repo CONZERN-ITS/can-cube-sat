@@ -14,9 +14,9 @@
 #define UBX_HEADER_LEN 4
 
 //		CLASS и ID используемых сообщений		//
-#define CLASS_ID_UBX_NAV_SOL		0x0106
-#define CLASS_ID_UBX_TIM_TP			0x0d01
-#define CLASS_ID_UBX_NAV_TIMEGPS	0x0120
+#define CLASS_ID_UBX_NAV_SOL		0x0601
+#define CLASS_ID_UBX_TIM_TP			0x010d
+#define CLASS_ID_UBX_NAV_TIMEGPS	0x2001
 
 #define LEN_UBX_NAV_SOL				52
 #define LEN_UBX_TIM_TP				16

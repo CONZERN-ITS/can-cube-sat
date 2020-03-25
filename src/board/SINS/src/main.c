@@ -348,6 +348,7 @@ void uartTransferInit(UART_HandleTypeDef * uart)
 
 int main(int argc, char* argv[])
 {
+	__disable_irq();
 	//	Global structures init
 	memset(&stateGPS, 				0x00, sizeof(stateGPS));
 	memset(&stateSINS_isc, 			0x00, sizeof(stateSINS_isc));
@@ -361,35 +362,36 @@ int main(int argc, char* argv[])
 
 	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
-	init_led();
-	initInterruptPin();
-	uartTransferInit(&uartTransfer_data);
+//	init_led();
+//	initInterruptPin();
+//	uartTransferInit(&uartTransfer_data);
 	uartGPSInit(&uartGPS);
-	bus_i2c_init(&i2c);
-	SENSORS_Init();
+//	bus_i2c_init(&i2c);
+//	SENSORS_Init();
 
-	get_gyro_staticShift(state_zero.gyro_staticShift);
+//	get_gyro_staticShift(state_zero.gyro_staticShift);
 
-	get_accel_staticShift(state_zero.accel_staticShift);
+//	get_accel_staticShift(state_zero.accel_staticShift);
 
+	__enable_irq();
 	uint16_t flag = 0xFEFF;
 
 
 	for (; ; )
 	{
-		UpdateDataAll();
-		SINS_updatePrevData();
+//		UpdateDataAll();
+//		SINS_updatePrevData();
 
 		int error = read_gps_buffer();
-		trace_printf("error read gps buffer:\t%d\n", error);
+//		trace_printf("error read gps buffer:\t%d\n", error);
 
-//		float accel[3] = {0};
-//		float gyro[3] = {0};
-//		for (int i = 0; i < 3; i++){
-//			gyro[i] = stateSINS_rsc.gyro[i];
+		float accel[3] = {0};
+		float gyro[3] = {0};
+		for (int i = 0; i < 3; i++){
+			gyro[i] = stateSINS_rsc.gyro[i];
 //			trace_printf("accel %d:\t%f\n", i, stateSINS_rsc.accel[i]);
-//			accel[i] = stateSINS_rsc.accel[i];
-//		}
+			accel[i] = stateSINS_rsc.accel[i];
+		}
 
 		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&flag, sizeof(flag), 3);
 		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&stateSINS_rsc, sizeof(stateSINS_rsc), 7);
