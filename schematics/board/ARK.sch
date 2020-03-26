@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.0">
+<eagle version="9.4.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -19731,6 +19731,16 @@ Distributor Buerklin, 11G810</description>
 <junction x="680.72" y="109.22"/>
 <label x="680.72" y="101.6" size="1.778" layer="95" rot="R90"/>
 </segment>
+<segment>
+<pinref part="IC2" gate="MCU" pin="BOOT0"/>
+<wire x1="464.82" y1="358.14" x2="454.66" y2="358.14" width="0.1524" layer="91"/>
+<label x="454.66" y="358.14" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="IC2" gate="MCU" pin="PB2"/>
+<wire x1="513.08" y1="312.42" x2="513.08" y2="302.26" width="0.1524" layer="91"/>
+<label x="513.08" y="302.26" size="1.778" layer="95" rot="R90"/>
+</segment>
 </net>
 <net name="INA_BUS+" class="0">
 <segment>
@@ -19830,11 +19840,6 @@ Distributor Buerklin, 11G810</description>
 </net>
 <net name="1W" class="0">
 <segment>
-<wire x1="508" y1="312.42" x2="508" y2="304.8" width="0.1524" layer="91"/>
-<label x="508" y="304.8" size="1.778" layer="95" rot="R90"/>
-<pinref part="IC2" gate="MCU" pin="PB0"/>
-</segment>
-<segment>
 <pinref part="AB1" gate="A" pin="5"/>
 <wire x1="205.74" y1="25.4" x2="205.74" y2="43.18" width="0.1524" layer="91"/>
 <label x="205.74" y="35.56" size="1.778" layer="95" rot="R90"/>
@@ -19848,6 +19853,11 @@ Distributor Buerklin, 11G810</description>
 <pinref part="AB3" gate="A" pin="5"/>
 <wire x1="198.12" y1="279.4" x2="198.12" y2="297.18" width="0.1524" layer="91"/>
 <label x="198.12" y="289.56" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<wire x1="482.6" y1="312.42" x2="482.6" y2="304.8" width="0.1524" layer="91"/>
+<label x="482.6" y="304.8" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PA7"/>
 </segment>
 </net>
 <net name="N$147" class="0">
@@ -20006,9 +20016,9 @@ Distributor Buerklin, 11G810</description>
 <label x="719.582" y="143.764" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="513.08" y1="312.42" x2="513.08" y2="302.26" width="0.1524" layer="91"/>
-<label x="513.08" y="300.736" size="1.778" layer="95" rot="R90"/>
-<pinref part="IC2" gate="MCU" pin="PB2"/>
+<wire x1="510.54" y1="312.42" x2="510.54" y2="302.26" width="0.1524" layer="91"/>
+<label x="510.54" y="300.736" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PB1"/>
 </segment>
 </net>
 <net name="N$129" class="0">
@@ -20690,14 +20700,14 @@ Distributor Buerklin, 11G810</description>
 </net>
 <net name="PGOOD1" class="0">
 <segment>
-<wire x1="510.54" y1="312.42" x2="510.54" y2="302.006" width="0.1524" layer="91"/>
-<label x="510.54" y="300.736" size="1.778" layer="95" rot="R90"/>
-<pinref part="IC2" gate="MCU" pin="PB1"/>
-</segment>
-<segment>
 <pinref part="U$59" gate="G$1" pin="PGOOD"/>
 <wire x1="485.14" y1="135.89" x2="474.218" y2="135.89" width="0.1524" layer="91"/>
 <label x="473.202" y="136.144" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="508" y1="312.42" x2="508" y2="302.006" width="0.1524" layer="91"/>
+<label x="508" y="300.736" size="1.778" layer="95" rot="R90"/>
+<pinref part="IC2" gate="MCU" pin="PB0"/>
 </segment>
 </net>
 <net name="SWC" class="0">
