@@ -17,6 +17,7 @@
 #include "driver/i2c.h"
 #include "driver/gpio.h"
 
+#include "ark.h"
 
 #ifdef CONFIG_IDF_TARGET_ESP32
 //#define CHIP_NAME "ESP32"
@@ -27,11 +28,13 @@
 
 static gpio_num_t i2c_gpio_sda = 18;
 static gpio_num_t i2c_gpio_scl = 19;
-static uint32_t i2c_frequency = 50000;
+static uint32_t i2c_frequency = 30000;
 static i2c_port_t i2c_port = I2C_NUM_0;
 
 #define I2C_LINK_PACKET_SIZE (279)
 #define LED_GPIO (2)
+
+
 
 void app_main(void)
 {
@@ -52,47 +55,41 @@ void app_main(void)
 	uint8_t message[I2C_LINK_PACKET_SIZE];
 	uint8_t message_in[I2C_LINK_PACKET_SIZE];
 
+	ark_t hark = {
+		.i2c_port = i2c_port,
+		.timeout = 100,
+		.address = slave_addr
+	};
+
 	int led_value = 0;
 	for (int i = 1; ; i++)
 	{
-		esp_err_t err;
+
+		printf("\ntick: = %d\n", i);
+		//esp_err_t err;
 		memset(message_in, i-1, I2C_LINK_PACKET_SIZE);
 		memset(message, i, I2C_LINK_PACKET_SIZE);
 
 		GPIO_OUTPUT_SET(LED_GPIO, led_value);
 
-		i2c_cmd_handle_t cmd =  i2c_cmd_link_create();
-
-		i2c_master_start(cmd);
-		i2c_master_write_byte(cmd, slave_addr << 1 | I2C_MASTER_WRITE, 1);
-		i2c_master_write(cmd, message, I2C_LINK_PACKET_SIZE, 1);
-		i2c_master_stop(cmd);
-
-		err = i2c_master_cmd_begin(i2c_port, cmd, 500 / portTICK_PERIOD_MS);
-		i2c_cmd_link_delete(cmd);
-		printf("err_write = %d\n", (int)err);
-
-		//vTaskDelay(1000 / portTICK_PERIOD_MS);
-
-		cmd =  i2c_cmd_link_create();
-		i2c_master_start(cmd);
-		i2c_master_write_byte(cmd, slave_addr << 1 | I2C_MASTER_READ, 1);
-		i2c_master_read(cmd, message_in, I2C_LINK_PACKET_SIZE, I2C_MASTER_LAST_NACK);
-		i2c_master_stop(cmd);
-
-		err = i2c_master_cmd_begin(i2c_port, cmd, 500 / portTICK_PERIOD_MS);
-		i2c_cmd_link_delete(cmd);
-		printf("err_read = %d\n", (int)err);
 
 
-		if (0 == err)
-		{
-			int rc = memcmp(message, message_in, I2C_LINK_PACKET_SIZE);
-			printf("memcmp res = %d\n", rc);
-		}
+		char str[I2C_LINK_PACKET_SIZE];
+		int size = snprintf(str, sizeof(str), "Hi! Tick = %d", i);
+		ark_msg_send(&hark, (uint8_t*) str, size + 1);
+
+		vTaskDelay(500 / portTICK_PERIOD_MS);
+
+		char str2[I2C_LINK_PACKET_SIZE] = {0};
+		ark_msg_recieve(&hark, (uint8_t*) str2, sizeof(str2));
+
+
+		printf("out: %s\n", str);
+		printf("in: %s\n", str2);
+
 
 		led_value = !led_value;
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
+		vTaskDelay(500 / portTICK_PERIOD_MS);
 	}
 
 	fflush(stdout);
