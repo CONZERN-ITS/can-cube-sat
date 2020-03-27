@@ -17,6 +17,7 @@ int app_main()
 	printf("hello stm32\n");
 	while(1)
 	{
+	   // clock_t t = clock();
 		printf("teak = %d\n", i++);
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 
@@ -44,6 +45,7 @@ int app_main()
 			stats.listen_done_cnt, stats.last_error, stats.restarts_cnt
 		);
 
+		//printf("time: %lu\n", clock() - t);
 		HAL_Delay(100);
 	}
 

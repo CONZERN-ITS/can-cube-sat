@@ -1,5 +1,7 @@
 #include "ark.h"
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 int ark_send_cmd(ark_t *hark, ark_cmd_t cmd) {
 	return my_i2c_send(hark->i2c_port, hark->address, (uint8_t*) &cmd, 1, hark->timeout);
@@ -17,9 +19,7 @@ int ark_msg_send(ark_t *hark, uint8_t *data, uint16_t size) {
 
 	i2c_master_start(cmd);
 	i2c_master_write_byte(cmd, hark->address << 1 | I2C_MASTER_WRITE, 1);
-	for (uint8_t i = 0; i < sizeof(size); i++) {
-		i2c_master_write_byte(cmd, ((uint8_t*) &size)[i], 1);
-	}
+	i2c_master_write(cmd, (uint8_t*) &size, sizeof(size), 1);
 	i2c_master_write(cmd, data, size, 1);
 	i2c_master_stop(cmd);
 	err = i2c_master_cmd_begin(hark->i2c_port, cmd, hark->timeout / portTICK_PERIOD_MS);
