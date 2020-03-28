@@ -1,5 +1,5 @@
 [Eagle]
-Version="09 06 00"
+Version="09 04 02"
 Platform="Windows"
 Globals="Globals"
 Desktop="Desktop"
@@ -276,13 +276,13 @@ UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/LSM6DS3.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/MAX809_.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/STM32F103C8T6.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/STM32F405RGT6.lbr"
+UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/SparkFun-Switches.lbr"
+UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/cansat-lib.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/idc_2x5.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/micro-stm.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/pinheadCS.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/resistor.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/stm32f4.lbr"
-UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/SparkFun-Switches.lbr"
-UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/cansat-lib.lbr"
 UsedLibrary="E:/CanSat/2019-2020/can-cube-sat/schematics/lib/untitled.lbr"
 
 [Win_1]

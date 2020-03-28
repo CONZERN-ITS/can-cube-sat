@@ -13,8 +13,6 @@
 #define STATE_H_
 
 
-
-
 //--------- SPI ---------------
 #define PORT				GPIOA
 #define CS_PIN_ACCEL		GPIO_PIN_4

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.0">
+<eagle version="9.4.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -10852,10 +10852,10 @@ Source: AVX .. aphvc.pdf</description>
 <part name="R1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="C10" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="0,1µ"/>
 <part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="0,1µ"/>
-<part name="JP2" library="pinheadCS" deviceset="PINHD-1X1" device=""/>
-<part name="JP3" library="pinheadCS" deviceset="PINHD-1X1" device=""/>
-<part name="JP4" library="pinheadCS" deviceset="PINHD-1X1" device=""/>
-<part name="JP5" library="pinheadCS" deviceset="PINHD-1X1" device=""/>
+<part name="GND" library="pinheadCS" deviceset="PINHD-1X1" device=""/>
+<part name="3V3" library="pinheadCS" deviceset="PINHD-1X1" device=""/>
+<part name="SDA" library="pinheadCS" deviceset="PINHD-1X1" device=""/>
+<part name="SCL" library="pinheadCS" deviceset="PINHD-1X1" device=""/>
 <part name="R101" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
 <part name="R102" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
 </parts>
@@ -10886,19 +10886,19 @@ Source: AVX .. aphvc.pdf</description>
 <attribute name="NAME" x="34.036" y="26.035" size="1.778" layer="95"/>
 <attribute name="VALUE" x="34.036" y="21.209" size="1.778" layer="96"/>
 </instance>
-<instance part="JP2" gate="G$1" x="-5.08" y="-38.1" smashed="yes" rot="R270">
+<instance part="GND" gate="G$1" x="-5.08" y="-38.1" smashed="yes" rot="R270">
 <attribute name="NAME" x="-1.905" y="-31.75" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-10.16" y="-31.75" size="1.778" layer="96" rot="R270"/>
 </instance>
-<instance part="JP3" gate="G$1" x="5.08" y="-38.1" smashed="yes" rot="R270">
+<instance part="3V3" gate="G$1" x="5.08" y="-38.1" smashed="yes" rot="R270">
 <attribute name="NAME" x="8.255" y="-31.75" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="0" y="-31.75" size="1.778" layer="96" rot="R270"/>
 </instance>
-<instance part="JP4" gate="G$1" x="15.24" y="-38.1" smashed="yes" rot="R270">
+<instance part="SDA" gate="G$1" x="15.24" y="-38.1" smashed="yes" rot="R270">
 <attribute name="NAME" x="18.415" y="-31.75" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="10.16" y="-31.75" size="1.778" layer="96" rot="R270"/>
 </instance>
-<instance part="JP5" gate="G$1" x="25.4" y="-38.1" smashed="yes" rot="R270">
+<instance part="SCL" gate="G$1" x="25.4" y="-38.1" smashed="yes" rot="R270">
 <attribute name="NAME" x="28.575" y="-31.75" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="20.32" y="-31.75" size="1.778" layer="96" rot="R270"/>
 </instance>
@@ -10945,7 +10945,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="5.08" y1="-35.56" x2="5.08" y2="-22.86" width="0.1524" layer="91"/>
 <label x="5.08" y="-27.94" size="1.778" layer="95" rot="R90"/>
-<pinref part="JP3" gate="G$1" pin="1"/>
+<pinref part="3V3" gate="G$1" pin="1"/>
 </segment>
 <segment>
 <pinref part="LSM6DS3" gate="G$1" pin="SA0"/>
@@ -10994,7 +10994,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="-5.08" y="-27.94" size="1.778" layer="95" rot="R90"/>
 <pinref part="R1" gate="G$1" pin="1"/>
 <wire x1="-7.62" y1="-20.32" x2="-5.08" y2="-20.32" width="0.1524" layer="91"/>
-<pinref part="JP2" gate="G$1" pin="1"/>
+<pinref part="GND" gate="G$1" pin="1"/>
 </segment>
 <segment>
 <pinref part="LSM6DS3" gate="G$1" pin="SDX"/>
@@ -11032,7 +11032,7 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="15.24" y1="-35.56" x2="15.24" y2="-17.78" width="0.1524" layer="91"/>
 <label x="15.24" y="-27.94" size="1.778" layer="95" rot="R90"/>
 <pinref part="R102" gate="G$1" pin="2"/>
-<pinref part="JP4" gate="G$1" pin="1"/>
+<pinref part="SDA" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="SCL" class="0">
@@ -11050,7 +11050,7 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="25.4" y1="-35.56" x2="25.4" y2="-17.78" width="0.1524" layer="91"/>
 <label x="25.4" y="-27.94" size="1.778" layer="95" rot="R90"/>
 <pinref part="R101" gate="G$1" pin="2"/>
-<pinref part="JP5" gate="G$1" pin="1"/>
+<pinref part="SCL" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="N$3" class="0">

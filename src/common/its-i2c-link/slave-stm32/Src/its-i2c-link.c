@@ -5,11 +5,13 @@
 #include <assert.h>
 #include <string.h>
 
+#define I2C_LINK_TIMEOUT 1000
+#define I2C_LINK_SEND_THD 10
 
 //! Буфер для пакета (а может быть и для нескольких?
 typedef struct its_i2c_link_pbuf_t
 {
-	//uint16_t packet_size; Не реализовано в этой версии
+	uint16_t packet_size;
 	uint8_t packet_data[I2C_LINK_PACKET_SIZE];
 } its_i2c_link_pbuf_t;
 
@@ -35,20 +37,27 @@ typedef struct i2c_link_pbuf_queue_t
 //! Состояние i2c линка
 typedef enum i2c_link_state_t
 {
-	//! Мы передаем пакет
-	I2C_LINK_STATE_RX,
-	//! Мы закончили (а то и никогда не начинали) передавть пакет
-	/*! И гоним вместо него нолики */
-	I2C_LINK_STATE_RX_DONE,
+    //! Мы передаем пакет
+    I2C_LINK_STATE_RX,
+    //! Мы закончили (а то и никогда не начинали) передавть пакет
+    /*! И гоним вместо него нолики */
+    I2C_LINK_STATE_RX_DONE,
 
-	I2C_LINK_STATE_TX,
+    I2C_LINK_STATE_TX,
 
-	//! Мы закончили (а то и никогда не начинали) получать пакет
-	/*! И все получаемые данные отправляем в помойку */
-	I2C_LINK_STATE_TX_DONE,
+    //! Мы закончили (а то и никогда не начинали) получать пакет
+    /*! И все получаемые данные отправляем в помойку */
+    I2C_LINK_STATE_TX_DONE,
 
 } its_i2c_link_state_t;
 
+typedef enum i2c_link_cmd_t
+{
+    I2C_LINK_CMD_NONE = 0x00,
+    I2C_LINK_CMD_GET_SIZE = 0x01,
+    I2C_LINK_CMD_GET_PACKET = 0x02,
+    I2C_LINK_CMD_SET_PACKET = 0x04,
+} its_i2c_link_cmd_t;
 
 struct i2c_link_ctx_t;
 typedef struct i2c_link_ctx_t i2c_link_ctx_t;
@@ -69,6 +78,11 @@ struct i2c_link_ctx_t
 	//! Состояние модуля
 	its_i2c_link_state_t state;
 
+    //! Выполняемая команда
+    its_i2c_link_cmd_t cur_cmd;
+    //! Выполняемая команда
+    its_i2c_link_cmd_t prev_cmd;
+
 	//! Статистика модуля (для телеметрии в основном)
 	its_i2c_link_stats_t stats;
 };
@@ -79,6 +93,8 @@ static i2c_link_ctx_t _ctx;
 
 static uint8_t _rx_fallback[I2C_LINK_RX_DUMP_SIZE] = {0};
 static uint8_t _tx_fallback[I2C_LINK_TX_ZEROS_SIZE] = {0};
+//static its_i2c_link_pbuf_t _tx_fallback_ = { 0 };
+//static its_i2c_link_pbuf_t _rx_fallback_ = { 0 };
 
 
 static its_i2c_link_pbuf_t * _pbuf_queue_get_head(i2c_link_pbuf_queue_t * queue)
@@ -158,13 +174,36 @@ static int _hal_status_to_errno(HAL_StatusTypeDef status)
 	}
 }
 
+/*
+ * Позволяет автоматически выбрать наиболее быстрый вариант
+ */
+inline static HAL_StatusTypeDef _i2c_send(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t Size, uint32_t XferOptions) {
+    if (Size < I2C_LINK_SEND_THD) {
+        return HAL_I2C_Slave_Seq_Transmit_IT(hi2c, pData, Size, XferOptions);
+    } else {
+        return HAL_I2C_Slave_Seq_Transmit_DMA(hi2c, pData, Size, XferOptions);
+    }
+}
+inline static HAL_StatusTypeDef _i2c_recieve(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t Size, uint32_t XferOptions) {
+    if (Size < I2C_LINK_SEND_THD) {
+        return HAL_I2C_Slave_Seq_Receive_IT(hi2c, pData, Size, XferOptions);
+    } else {
+        return HAL_I2C_Slave_Seq_Receive_DMA(hi2c, pData, Size, XferOptions);
+    }
+}
 
+
+/*
+ * Отправляет нули
+ */
 static int _link_tx_start_zeroes(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 {
 	HAL_StatusTypeDef hal_rc;
-	hal_rc = HAL_I2C_Slave_Seq_Transmit_DMA(
+
+	hal_rc = HAL_I2C_Slave_Seq_Transmit_IT(
 			hi2c,
-			_tx_fallback, sizeof(_tx_fallback),
+			_tx_fallback,
+			sizeof(_tx_fallback),
 			I2C_FIRST_AND_LAST_FRAME
 	);
 
@@ -176,8 +215,10 @@ static int _link_tx_start_zeroes(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	return 0;
 }
 
-
-static int _link_tx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
+/*
+ * Отправляет сообщение по i2c
+ */
+static int _link_tx_send(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 {
 	// Мастер на шине что-то от нас хочет получить
 	// Нужно посмотреть что у нас лежит в очереди на отправку
@@ -189,10 +230,10 @@ static int _link_tx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 		return _link_tx_start_zeroes(hi2c, ctx);
 	}
 
-	HAL_StatusTypeDef hal_rc;
-	hal_rc = HAL_I2C_Slave_Seq_Transmit_DMA(
+	int hal_rc = HAL_I2C_Slave_Seq_Transmit_DMA(
 			hi2c,
-			buf->packet_data, I2C_LINK_PACKET_SIZE,
+			(uint8_t*) buf->packet_data,
+			buf->packet_size,
 			I2C_FIRST_AND_LAST_FRAME
 	);
 
@@ -204,6 +245,42 @@ static int _link_tx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	return 0;
 }
 
+/*
+ * Обработка команды, полученной раннее
+ */
+static int _link_tx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx) {
+    int rc = 0;
+
+    switch (ctx->cur_cmd) {
+    case I2C_LINK_CMD_GET_PACKET:
+        rc = _link_tx_send(hi2c, ctx);
+        break;
+
+    case I2C_LINK_CMD_GET_SIZE: {
+        uint16_t size = 0;
+        its_i2c_link_pbuf_t * buf = _pbuf_queue_get_tail(&ctx->tx_bufs_queue);
+        if (buf != 0) {
+            size = buf->packet_size;
+        }
+        rc = _i2c_send(hi2c, (uint8_t*) &size, sizeof(size), I2C_FIRST_AND_LAST_FRAME);
+        rc = _hal_status_to_errno(rc);
+
+        ctx->state = I2C_LINK_STATE_TX;
+        break;
+    }
+    case I2C_LINK_CMD_NONE:
+        rc = _link_tx_start_zeroes(hi2c, ctx);
+        break;
+
+    default:
+        rc = _link_tx_start_zeroes(hi2c, ctx);
+        break;
+    }
+    ctx->prev_cmd = ctx->cur_cmd;
+    ctx->cur_cmd = I2C_LINK_CMD_NONE;
+
+    return rc;
+}
 
 static int _link_tx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 {
@@ -212,7 +289,9 @@ static int _link_tx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	case I2C_LINK_STATE_TX:
 		// Мы успешно отправили пакет!
 		// выкидываем его из очереди на отправку
-		_pbuf_queue_pop_tail(&ctx->tx_bufs_queue);
+	    if (ctx->prev_cmd == I2C_LINK_CMD_GET_PACKET) {
+	        _pbuf_queue_pop_tail(&ctx->tx_bufs_queue);
+	    }
 		ctx->stats.tx_done_cnt++;
 		break;
 
@@ -232,15 +311,19 @@ static int _link_tx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	//return 0;
 }
 
-
+/*
+ * Записывает нули в fallback. Вызывается, когда к нам приходит мусор
+ */
 static int _link_rx_start_drop(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 {
-	HAL_StatusTypeDef hal_rc;
+    HAL_StatusTypeDef hal_rc = 0;
+
 	hal_rc = HAL_I2C_Slave_Seq_Receive_DMA(
 			hi2c,
-			_rx_fallback, sizeof(_rx_fallback),
-			I2C_FIRST_AND_LAST_FRAME
-	);
+			_rx_fallback,
+			sizeof(_rx_fallback),
+            I2C_FIRST_AND_LAST_FRAME
+     );
 
 	int rc = _hal_status_to_errno(hal_rc);
 	if (0 != rc)
@@ -250,8 +333,7 @@ static int _link_rx_start_drop(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	return 0;
 }
 
-
-static int _link_rx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
+static int _link_rx_recieve(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 {
 	// Мастер на шине хочет что-то нам передать.
 	// Есть ли у нас буфер для приёма?
@@ -262,10 +344,12 @@ static int _link_rx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 		return _link_rx_start_drop(hi2c, ctx);
 	}
 
-	HAL_StatusTypeDef hal_rc;
+	HAL_StatusTypeDef hal_rc = 0;
+
 	hal_rc = HAL_I2C_Slave_Seq_Receive_DMA(
 			hi2c,
-			buf->packet_data, I2C_LINK_PACKET_SIZE,
+			(uint8_t*) buf,
+			sizeof(*buf),
 			I2C_FIRST_AND_LAST_FRAME
 	);
 
@@ -277,6 +361,26 @@ static int _link_rx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	return 0;
 }
 
+/*
+ * Обрабатывает команды и получает команду
+ */
+static int _link_rx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx) {
+    int rc = 0;
+    switch (ctx->cur_cmd) {
+    case I2C_LINK_CMD_SET_PACKET:
+        rc = _link_rx_recieve(hi2c, ctx);
+        break;
+
+    default:
+        rc = _i2c_recieve(hi2c, (uint8_t*) &ctx->cur_cmd, 1, I2C_FIRST_FRAME);
+        rc = _hal_status_to_errno(rc);
+        ctx->state = I2C_LINK_STATE_RX;
+    }
+    ctx->prev_cmd = ctx->cur_cmd;
+    ctx->cur_cmd = I2C_LINK_CMD_NONE;
+
+    return rc;
+}
 
 static int _link_rx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 {
@@ -285,7 +389,10 @@ static int _link_rx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	case I2C_LINK_STATE_RX:
 		// Мы успешно получили пакет!
 		// сохраняем его как успешно принятый
-		_pbuf_queue_push_head(&ctx->rx_bufs_queue);
+
+        if (ctx->prev_cmd == I2C_LINK_CMD_SET_PACKET) {
+            _pbuf_queue_push_head(&ctx->rx_bufs_queue);
+        }
 		ctx->stats.rx_done_cnt++;
 		break;
 
@@ -361,9 +468,10 @@ int its_i2c_link_write(const void * data, size_t data_size)
 	if (0 == buf)
 		return -EAGAIN;
 
+	buf->packet_size = data_size;
 	memcpy(buf->packet_data, data, data_size);
 	// Все остальное зануляем, чтобы не гонять мусор с предыдиущих проходов мастеру
-	memset(buf->packet_data + data_size, 0, I2C_LINK_PACKET_SIZE - data_size);
+	//memset(buf->packet_data + data_size, 0, I2C_LINK_PACKET_SIZE - data_size);
 	_pbuf_queue_push_head(&ctx->tx_bufs_queue);
 
 	return data_size;
@@ -382,17 +490,17 @@ int its_i2c_link_read(void * buffer_, size_t buffer_size)
 
 	uint8_t * data = (uint8_t*)buffer_;
 	size_t portion_size;
-	if (buffer_size < I2C_LINK_PACKET_SIZE)
+	if (buffer_size < buf->packet_size)
 		portion_size = buffer_size;
 	else
-		portion_size = I2C_LINK_PACKET_SIZE;
+		portion_size = buf->packet_size;
 
 	memcpy(data, buf->packet_data, portion_size);
 	// Очистим буфер, чтобы в следующем проходе в нем не было мусора
-	memset(buf->packet_data, 0, I2C_LINK_PACKET_SIZE);
+	//memset(buf->packet_data, 0, I2C_LINK_PACKET_SIZE);
 
 	_pbuf_queue_pop_tail(&ctx->rx_bufs_queue);
-	return I2C_LINK_PACKET_SIZE;
+	return buf->packet_size;
 }
 
 
