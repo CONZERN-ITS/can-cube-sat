@@ -16511,6 +16511,11 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <label x="393.7" y="81.28" size="1.778" layer="95" rot="R90"/>
 <pinref part="BSK4" gate="A" pin="2"/>
 </segment>
+<segment>
+<pinref part="RADIO" gate="G$1" pin="VCC"/>
+<wire x1="220.98" y1="264.16" x2="220.98" y2="271.78" width="0.1524" layer="91"/>
+<label x="220.98" y="266.7" size="1.778" layer="95" rot="R90"/>
+</segment>
 </net>
 <net name="1W" class="0">
 <segment>
@@ -16648,11 +16653,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <label x="78.74" y="231.14" size="1.778" layer="95"/>
 <pinref part="SD" gate="G$1" pin="VSS"/>
 <pinref part="C12" gate="G$1" pin="2"/>
-</segment>
-<segment>
-<pinref part="RADIO" gate="G$1" pin="VCC"/>
-<wire x1="220.98" y1="264.16" x2="220.98" y2="271.78" width="0.1524" layer="91"/>
-<label x="220.98" y="266.7" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
 <pinref part="GPS" gate="G$1" pin="UCC"/>
