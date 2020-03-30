@@ -8,7 +8,7 @@
 #ifndef DRIVERS_GPS_H_
 #define DRIVERS_GPS_H_
 
-#define GPS_BUFFER_SIZE 100
+#define GPS_BUFFER_SIZE 500
 
 #define UBX_SYNCWORD_VALUE 0xb562
 #define UBX_HEADER_LEN 4
@@ -47,23 +47,10 @@ typedef struct gps_ctx_t
 extern gps_ctx_t gps;
 
 
-extern void initInterruptPin();
 extern void uartGPSInit(UART_HandleTypeDef * uart);
-extern void initInterruptPin();
-extern void EXTI0_IRQHandler();
-extern int parse_ubx_nav_sol(uint8_t * payload);
-extern int parse_ubx_tim_tp(uint8_t * payload);
-extern int parse_ubx_nav_timegps(uint8_t * payload);
 extern void gps_init(gps_ctx_t * ctx);
-extern int process_gps_packet(uint8_t * packet, size_t packet_size);
-extern uint8_t header_invalid(uint16_t class_id, uint16_t lenght);
 extern void gps_consume_byte(gps_ctx_t * ctx, uint8_t byte);
 extern int read_gps_buffer();
-
-
-//extern void EXTI0_IRQHandler();
-
-
 
 
 #endif /* DRIVERS_GPS_H_ */

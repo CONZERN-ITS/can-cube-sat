@@ -196,13 +196,15 @@ int read_gps_buffer()
 
 //	for (int i = 0; i < 3; i++)
 //	{
+	while (1)
+	{
 		next_tail = tail + 1;
 		if (next_tail == end)	next_tail = begin;
 		if (next_tail == head)	return -3;
 		gps_consume_byte(&gps, *tail);
 //		HAL_Delay(100);
 		tail = next_tail;
-//	}
+	}
 	int sta = gps.state;
 //	trace_printf("%d\n", sta);
 	return 0;
@@ -219,7 +221,7 @@ int process_gps_packet(uint8_t * packet, size_t packet_size)
 
 	//check crc
 	uint8_t crc_a = 0, crc_b = 0;
-	int crc_check_len = packet_size - 2;
+	int crc_check_len = packet_size - 2;		//контрольная сумма считается без crc полей
 	for (int i = 0; i < crc_check_len; i++)		//алгоритм подсчета контрольной суммы
 	{
 		crc_a += *(packet + i);
@@ -274,7 +276,7 @@ void gps_consume_byte(gps_ctx_t * ctx, uint8_t byte)
 
 			if (ctx->bytes_accum == 4)
 			{
-				ctx->expected_packet_size = *(uint16_t * )(&ctx->packet_buffer[2]);		// [2] - звятие длины пакета, +4 - длина заголовка, +2 - длина контрольной суммы
+				ctx->expected_packet_size = *(uint16_t * )(&ctx->packet_buffer[2]) + 4 + 2;		// [2] - звятие длины пакета, +4 - длина заголовка, +2 - длина контрольной суммы
 				ctx->state = GPS_STATE_PACKET_ACCUM;
 				if (header_invalid(*(uint16_t * )&ctx->packet_buffer[0], *(uint16_t * )&ctx->packet_buffer[2]))
 				{
