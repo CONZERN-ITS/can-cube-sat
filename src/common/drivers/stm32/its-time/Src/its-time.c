@@ -41,6 +41,11 @@ struct Time gettime(void);
 
 //-------------------------------------------------------------------------------------
 
+
+/*
+ * Initializes DWT timer for microsecond clock and
+ * sets RTC prescaler value
+ */
 int its_time_init(void)
 {
     if (1) {
@@ -73,7 +78,12 @@ int its_time_init(void)
     return 0;
 }
 
-
+/*
+ * Reads time from the RTC.
+ * RTC resets prescaler counter after setting CNT. So
+ * we have to save microseconds in variable and add everytime
+ * when we want to get time
+ */
 void its_gettimeofday(its_time_t *time) {
     uint32_t cnt, div;
     _read_DIV_CNT_timesafe(its_time_h.RTCx, &div, &cnt);
@@ -83,6 +93,11 @@ void its_gettimeofday(its_time_t *time) {
     time->sec  = cnt + usec / 1000;
 }
 
+/*
+ * Sets time in the RTC
+ * We have to save microseconds because of reasons
+ * explained in comments for its_gettimeofday
+ */
 void its_settimeofday(its_time_t *time) {
     its_time_h.usec_shift = time->usec;
     LL_RTC_DisableWriteProtection(its_time_h.RTCx);
@@ -91,16 +106,20 @@ void its_settimeofday(its_time_t *time) {
 }
 
 
+/*
+ * Returns count of system ticks
+ * This clock ticks evey 1 / SystemCoreClock of seconds. So,
+ * to get microseconds divide it by (SystemCoreClock/1000000)
+ */
 uint32_t its_time_gettick(void) {
     return DWT->CYCCNT;
 }
 
 
 /*
- * Safes us from the situation, when one of the regs is overflowed while
- * we are reading them.
- * It would be bad because global time bias increases every time when
- * that happens
+ * Safes us from the situation, when one of the regs is overflowed
+ * in the moment between reading them. It would be bad because
+ * global time bias increases every time when that happens.
  */
 static void _read_DIV_CNT_timesafe(RTC_TypeDef *RTCx, uint32_t *div, uint32_t *cnt) {
     /*
@@ -134,6 +153,9 @@ static void _read_DIV_CNT_timesafe(RTC_TypeDef *RTCx, uint32_t *div, uint32_t *c
     *div = ((uint32_t)((((uint32_t) val[test][1] & 0x000F) << 16U) | val[test][0]));
 }
 
+/*
+ * Transfers ticks from DIV register to milliseconds
+ */
 static uint16_t _div_tick_to_usec(uint32_t tick, uint32_t max) {
     return (max - tick) * 1000 / max;
 }

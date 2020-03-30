@@ -28,6 +28,11 @@ void its_gettimeofday(its_time_t *time);
 void its_settimeofday(its_time_t *time);
 uint32_t its_time_gettick(void);
 
+
+/*
+ * Delay in microseconds (not milliseconds)
+ * us - count of microseconds
+ */
 inline __attribute__((always_inline)) void its_delay_us(uint32_t us)
 {
     volatile uint32_t startTick = DWT->CYCCNT;
