@@ -8,6 +8,7 @@
 #include "stm32f4xx_hal.h"
 #include "drivers/lis3mdl.h"
 #include "drivers/lsm6ds3.h"
+#include "drivers/gps.h"
 
 #ifndef STATE_H_
 #define STATE_H_
@@ -24,6 +25,8 @@
 
 #define CALIBRATION 0
 #define GPS			1
+#define LSM6DS3		0
+#define LIS3MDL		0
 
 // if error set value and go to end
 #define PROCESS_ERROR(x) if (0 != (error = (x))) { goto end; }
@@ -92,10 +95,11 @@ extern stateSINS_transfer_t stateSINS_transfer;
 extern stateGPS_t stateGPS;
 
 
-int32_t bus_spi_init(void * handle);
-void init_led(void);
-void SENSORS_Init(void);
-int UpdateDataAll(void);
-void SINS_updatePrevData(void);
+extern int32_t bus_spi_init(void * handle);
+extern void init_led(void);
+//void SENSORS_Init(void);
+extern void SensorsInit(void);
+extern int UpdateDataAll(void);
+extern void SINS_updatePrevData(void);
 
 #endif /* STATE_H_ */

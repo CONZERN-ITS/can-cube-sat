@@ -366,6 +366,7 @@ int main(int argc, char* argv[])
 //	initInterruptPin();
 //	uartTransferInit(&uartTransfer_data);
 	uartGPSInit(&uartGPS);
+	gps_init(&gps);
 //	bus_i2c_init(&i2c);
 //	SENSORS_Init();
 
@@ -382,7 +383,7 @@ int main(int argc, char* argv[])
 //		UpdateDataAll();
 //		SINS_updatePrevData();
 
-		int error = read_gps_buffer();
+
 //		trace_printf("error read gps buffer:\t%d\n", error);
 
 		float accel[3] = {0};
@@ -397,6 +398,10 @@ int main(int argc, char* argv[])
 		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&stateSINS_rsc, sizeof(stateSINS_rsc), 7);
 //		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&gyro, sizeof(gyro), 10);
 
+		HAL_Delay(3000);
+		__disable_irq();
+		int error = read_gps_buffer();
+		__enable_irq();
 //		HAL_Delay(10);
 /*
 		if (transfer_time > 1.0)
