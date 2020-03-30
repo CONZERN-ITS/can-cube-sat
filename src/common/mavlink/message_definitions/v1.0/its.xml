@@ -1,23 +1,63 @@
 <?xml version="1.0"?>
 <mavlink>
-  <!-- MAVLink standard messages -->
-  <include>common.xml</include>
+  <version>3</version>
   <dialect>0</dialect>
-  
-
   <enums>
   </enums>
-
   <messages>
     <message id="0" name="HEARTBEAT">
-    <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html</description>
-    <field type="uint8_t" name="type" enum="MAV_TYPE">Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.). This should be used in preference to component id for identifying the component type.</field>
-    <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.</field>
-    <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
-    <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
-    <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag.</field>
-    <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
+      <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html</description>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.). This should be used in preference to component id for identifying the component type.</field>
+      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
+      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag.</field>
+      <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
+    </message>
+
+    <message id="10" name="TERMAL_STATE">
+      <description></description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint16_t" name="area_id" >Observed area id</field>
+      <field type="float" name="temperature" units="degC">X Temperature</field>
+    </message>
+
+    <message id="11" name="ELECTRICAL_STATE">
+      <description></description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint16_t" name="area_id" >Observed area id</field>
+      <field type="float" name="current" units="A">X Current</field>
+      <field type="float" name="voltage" units="V">X Voltage</field>
+    </message>
+
+    <message id="12" name="GPS_UBX_NAV-SOL">
+      <description></description>
+      <field type="uint32_t" name="iTOW" units="ms">Time of week of the navigation epoch</field>
+      <field type="int32_t" name="fTOW" units="ns">Fractorial part of iTOW</field>
+      <field type="int16_t" name="week">GPS week number of the navigation epoch</field>
+      <field type="int8_t" name="gpsFix" units="">GPSfix type</field>
+      <field type="uint8_t" name="flags" units="">Fix status flags</field>
+      <field type="int32_t" name="ecefX" units="cm">ECEF X coordinate</field>
+      <field type="int32_t" name="ecefY" units="cm">ECEF Y coordinate</field>
+      <field type="int32_t" name="ecefZ" units="cm">ECEF Z coordinate</field>
+      <field type="uint32_t" name="pAcc" units="cm">3D position accuracy estimate</field>
+      <field type="int32_t" name="ecefVX" units="cm/s">ECEF X velocity</field>
+      <field type="int32_t" name="ecefVY" units="cm/s">ECEF Y velocity</field>
+      <field type="int32_t" name="ecefVZ" units="cm/s">ECEF Z velocity</field>
+      <field type="uint32_t" name="sAcc" units="cm/s">Speed accuracy estimate</field>
+      <field type="uint16_t" name="pDOP">Position DOP</field>
+      <field type="uint8_t" name="reserved1">Reserved</field>
+      <field type="uint8_t" name="numSV">Number of SVs used in Nav Solution</field>
+    </message>
+
+    <message id="13" name="GPS_UBX_NAV-TIMEGPS">
+      <description></description>
+      <field type="uint32_t" name="iTOW" units="ms">Time of week of the navigation epoch</field>
+      <field type="int32_t" name="fTOW" units="ns">Fractorial part of iTOW</field>
+      <field type="int16_t" name="week">GPS week number of the navigation epoch</field>
+      <field type="int8_t" name="leapS" units="s">GPS leap seconds</field>
+      <field type="uint8_t" name="flags">Validity flags</field>
+      <field type="uint32_t" name="tAcc" units="ns">Time accuracy estimate</field>
     </message>
   </messages>
-
 </mavlink>
