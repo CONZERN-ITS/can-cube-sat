@@ -4,9 +4,11 @@
 
 #include <stm32f1xx_hal.h>
 #include <its-i2c-link.h>
+#include <its-time.h>
 
 #include "main.h"
-#include "time.h"
+#include "sys/time.h"
+
 
 
 
@@ -15,9 +17,22 @@ int app_main()
 	its_i2c_link_start();
 	int i = 0;
 	printf("hello stm32\n");
-	while(1)
+
+
+	its_time_init();
+	its_time_t ts = {0};
+	its_settimeofday(&ts);
+    printf("TIME\n");
+	while (1) {
+        HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+	    its_gettimeofday(&ts);
+        printf("SEC: %lu.%03hu\n", (uint32_t) ts.sec, ts.usec);
+        its_delay_us(1000000);
+        //HAL_Delay(30);
+	}
+	while (1)
 	{
-	   // clock_t t = clock();
+	    printf("%d\n", sizeof(clock_t));
 		printf("teak = %d\n", i++);
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 
@@ -45,7 +60,6 @@ int app_main()
 			stats.listen_done_cnt, stats.last_error, stats.restarts_cnt
 		);
 
-		//printf("time: %lu\n", clock() - t);
 		HAL_Delay(100);
 	}
 
