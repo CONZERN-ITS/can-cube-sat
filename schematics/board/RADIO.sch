@@ -276,6 +276,12 @@
 <wire x1="-15.24" y1="12.7" x2="0" y2="12.7" width="0.1524" layer="91"/>
 <label x="-10.16" y="12.7" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="RADIO" gate="G$1" pin="M0"/>
+<pinref part="JP1" gate="A" pin="7"/>
+<wire x1="-15.24" y1="27.94" x2="0" y2="27.94" width="0.1524" layer="91"/>
+<label x="-10.16" y="27.94" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="5V" class="0">
 <segment>
@@ -315,14 +321,6 @@
 <pinref part="JP1" gate="A" pin="6"/>
 <wire x1="-15.24" y1="25.4" x2="0" y2="25.4" width="0.1524" layer="91"/>
 <label x="-10.16" y="25.4" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="M0" class="0">
-<segment>
-<pinref part="RADIO" gate="G$1" pin="M0"/>
-<pinref part="JP1" gate="A" pin="7"/>
-<wire x1="-15.24" y1="27.94" x2="0" y2="27.94" width="0.1524" layer="91"/>
-<label x="-10.16" y="27.94" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
