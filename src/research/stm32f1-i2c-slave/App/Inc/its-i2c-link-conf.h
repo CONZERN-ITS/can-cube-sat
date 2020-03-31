@@ -26,4 +26,14 @@ extern I2C_HandleTypeDef hi2c1;
 //! халовский i2c-handle на котором осуществляется обмен
 #define I2C_LINK_BUS_HANDLE (&hi2c1)
 
+/*
+ * I2C transmit timeout used in hal_slave_transmit
+ */
+#define I2C_LINK_TIMEOUT 1000
+/*
+ * Threshold between using dma and interrupt transmitting for data size of
+ * more than I2C_LINK_SEND_THD and less then I2C_LINK_SEND_THD correspondingly
+ */
+#define I2C_LINK_SEND_THD 10
+
 #endif /* I2C_LINK_CONF_H_ */

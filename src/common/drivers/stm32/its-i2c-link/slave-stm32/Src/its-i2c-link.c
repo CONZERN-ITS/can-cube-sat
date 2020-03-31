@@ -5,8 +5,6 @@
 #include <assert.h>
 #include <string.h>
 
-#define I2C_LINK_TIMEOUT 1000
-#define I2C_LINK_SEND_THD 10
 
 //! Буфер для пакета (а может быть и для нескольких?
 typedef struct its_i2c_link_pbuf_t
@@ -246,6 +244,25 @@ static int _link_tx_send(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 }
 
 /*
+ * Отправляет размер
+ */
+static int _link_tx_send_size(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx) {
+
+    int rc = 0;
+
+    uint16_t size = 0;
+    its_i2c_link_pbuf_t * buf = _pbuf_queue_get_tail(&ctx->tx_bufs_queue);
+    if (buf != 0) {
+        size = buf->packet_size;
+    }
+    rc = _i2c_send(hi2c, (uint8_t*) &size, sizeof(size), I2C_FIRST_AND_LAST_FRAME);
+    rc = _hal_status_to_errno(rc);
+
+    ctx->state = I2C_LINK_STATE_TX;
+    return rc;
+}
+
+/*
  * Обработка команды, полученной раннее
  */
 static int _link_tx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx) {
@@ -257,15 +274,7 @@ static int _link_tx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx) {
         break;
 
     case I2C_LINK_CMD_GET_SIZE: {
-        uint16_t size = 0;
-        its_i2c_link_pbuf_t * buf = _pbuf_queue_get_tail(&ctx->tx_bufs_queue);
-        if (buf != 0) {
-            size = buf->packet_size;
-        }
-        rc = _i2c_send(hi2c, (uint8_t*) &size, sizeof(size), I2C_FIRST_AND_LAST_FRAME);
-        rc = _hal_status_to_errno(rc);
-
-        ctx->state = I2C_LINK_STATE_TX;
+        rc = _link_tx_send_size(hi2c, ctx);
         break;
     }
     case I2C_LINK_CMD_NONE:
@@ -361,6 +370,14 @@ static int _link_rx_recieve(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 	return 0;
 }
 
+static int _link_rx_recieve_cmd(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx) {
+    int rc = 0;
+    rc = _i2c_recieve(hi2c, (uint8_t*) &ctx->cur_cmd, 1, I2C_FIRST_FRAME);
+    rc = _hal_status_to_errno(rc);
+    ctx->state = I2C_LINK_STATE_RX;
+    return rc;
+}
+
 /*
  * Обрабатывает команды и получает команду
  */
@@ -372,9 +389,7 @@ static int _link_rx_start(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx) {
         break;
 
     default:
-        rc = _i2c_recieve(hi2c, (uint8_t*) &ctx->cur_cmd, 1, I2C_FIRST_FRAME);
-        rc = _hal_status_to_errno(rc);
-        ctx->state = I2C_LINK_STATE_RX;
+        rc = _link_rx_recieve_cmd(hi2c, ctx);
     }
     ctx->prev_cmd = ctx->cur_cmd;
     ctx->cur_cmd = I2C_LINK_CMD_NONE;
