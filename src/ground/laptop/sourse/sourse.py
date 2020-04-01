@@ -4,6 +4,7 @@ import numpy as NumPy
 import time
 from sourse import settings_control
 from sourse.data_control import *
+from sourse.map_sourse.open_street_map import *
 
 APP_ICON_PATH = "./sourse/images/StrelA_MS.png"
 WINDOW_ICON_PATH = "./sourse/images/window.png"
@@ -101,16 +102,16 @@ class CommonProperties(AbstractProperties):
 
 
 class GraphProperties(AbstractProperties):
-    class Plot_properties_widget(AbstractProperties):
+    class PlotPropertiesWidget(AbstractProperties):
         def __init__(self, plot):
             self.change_plot(plot)
-            super(GraphProperties.Plot_properties_widget, self).__init__()
+            super(GraphProperties.PlotPropertiesWidget, self).__init__()
 
         def change_plot(self, plot):
             self.plot = plot
 
         def setup_ui(self):
-            super(GraphProperties.Plot_properties_widget, self).setup_ui()
+            super(GraphProperties.PlotPropertiesWidget, self).setup_ui()
             self.name_label = QtWidgets.QLabel()
             self.name_label.setAlignment(QtCore.Qt.AlignHCenter)
             self.grid_layout.addWidget(self.name_label, self.grid_layout.rowCount(), 0, 1, -1)
@@ -118,7 +119,7 @@ class GraphProperties(AbstractProperties):
             self.curve_colour = self.add_edit_group(1)
 
         def setup_ui_design(self):
-            super(GraphProperties.Plot_properties_widget, self).setup_ui_design()
+            super(GraphProperties.PlotPropertiesWidget, self).setup_ui_design()
             self.name_label.setText("Curve properties for " + self.plot + " plot")
             self.settings.beginGroup("CentralWidget/GraphWidget/Graph/" + self.plot)
             self.curve_count[0].setText('Curves count')
@@ -130,7 +131,7 @@ class GraphProperties(AbstractProperties):
         def save_properties(self):
             self.settings.beginGroup("CentralWidget/GraphWidget/Graph/" + self.plot)
             self.read_from_edit_group(self.curve_count, 'count', int)
-            self.read_from_edit_group(self.curve_count, 'curve_colour', str)
+            self.read_from_edit_group(self.curve_colour, 'colour', str)
             while len(self.settings.value('colour')) < self.settings.value('count'):
                 self.settings.setValue('colour', self.settings.value('colour') + 'g')
             self.settings.endGroup()
@@ -153,7 +154,7 @@ class GraphProperties(AbstractProperties):
         self.plot_combo_box = self.add_combo_box()
         self.plot_combo_box[1].addItems(self.upload_plots())
         self.plot_combo_box[1].activated.connect(self.change_plot_properties)
-        self.property  = GraphProperties.Plot_properties_widget(self.plot_combo_box[1].currentText())
+        self.property  = GraphProperties.PlotPropertiesWidget(self.plot_combo_box[1].currentText())
         self.grid_layout.addWidget(self.property, self.grid_layout.rowCount(), 0, 1, -1)
         self.add_btn()
 
@@ -225,8 +226,6 @@ class SettingsWindow(QtWidgets.QMainWindow):
         self.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.move_to_center()
 
-        self.settings_is_enabled = True
-
         self.setup_ui()
         self.setup_ui_design()
 
@@ -277,13 +276,11 @@ class SettingsWindow(QtWidgets.QMainWindow):
         self.central_widget.apply_btn.clicked.connect(self.set_properties)
         if self.centralWidget() is not None:
             self.takeCentralWidget()
-        self.central_widget.setEnabled(self.settings_is_enabled)
 
         self.setCentralWidget(self.central_widget)
 
     def settings_enabled(self, mode):
-        self.settings_is_enabled = mode
-        self.central_widget.setEnabled(self.settings_is_enabled)
+        self.central_widget.setEnabled(mode)
 
     def set_properties(self):
         self.central_widget.save_properties()
@@ -302,13 +299,34 @@ class SettingsWindow(QtWidgets.QMainWindow):
         self.move(frame.topLeft())
 
 
+class MapWidget(OpenStreetMap):
+    def __init__(self):
+        super(MapWidget, self).__init__()
+        self.settings = settings_control.init_settings()
+
+        self.setup_ui()
+        self.setup_ui_design()
+
+    def setup_ui(self):
+        pass
+
+    def setup_ui_design(self):
+        pass
+
+    def new_data_reaction(self, data):
+        pass               
+
+    def clear_data(self):
+        pass
+
+
 class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
     class Curve():
         def __init__(self, plot, pen):
             self.plot = plot
             self.arr = None
             self.curve = None
-            self.pen=pen
+            self.pen = pen
 
         def show_data(self, data):
             if self.arr is None:
@@ -345,7 +363,7 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
         curves = []
         for i in range(count):
             curves.append(GraphWidget.Curve(plot, colour[i]))
-        return curves
+        return tuple(curves)
 
     def setup_ui_design(self):
         self.plot_dict.clear()
@@ -376,12 +394,12 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
             for i in range(len(data)):
                 if (self.settings.value("packet_name") == data[i][0]) and ((len(data[i]) - 2) >= len(plot[1])):
                     plot_buf.append(data[i])
-            for i in range(len(plot[1])):
-                curve_buf = []
-                for pack in plot_buf:  
-                    curve_buf.append((pack[1], pack[i + 2]))
-                if len(curve_buf) > 0:  
-                    plot[1][i].show_data(curve_buf)
+            if len(plot_buf) > 0:
+	            for i in range(len(plot[1])):
+	                curve_buf = []
+	                for pack in plot_buf:  
+	                    curve_buf.append((pack[1], pack[i + 2]))
+	                plot[1][i].show_data(curve_buf)
             self.settings.endGroup()
 
     def clear_data(self):
@@ -402,8 +420,12 @@ class CentralWidget(QtWidgets.QWidget):
     def setup_ui(self):
         self.grid_layout = QtWidgets.QGridLayout(self)
         self.settings.beginGroup("CentralWidget")
+
         if self.settings.value("GraphWidget/is_on"):
             self.widgets_dict.update([("GraphWidget", GraphWidget())])
+        if self.settings.value("MapWidget/is_on"):
+            self.widgets_dict.update([("MapWidget", MapWidget())])
+
         for key in self.widgets_dict.keys():
             self.settings.beginGroup(key)
             if int(self.settings.value("is_on")):
@@ -423,8 +445,6 @@ class CentralWidget(QtWidgets.QWidget):
     def setup_ui_design(self):
         for widget in self.widgets_dict.items():
             widget[1].setup_ui_design()
-        self.settings.beginGroup("CentralWidget")
-        self.settings.endGroup()
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -446,8 +466,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.data_obj = data_obj
 
         def start(self):
-            self.a = 0
-            self.b = 0
             self.set_close_flag(False)
             close = False
             try:
@@ -458,9 +476,6 @@ class MainWindow(QtWidgets.QMainWindow):
             start_time = time.time()
             data_buf = []
             while not close:
-                self.mutex.lock()
-                close = self.close_flag
-                self.mutex.unlock()
                 try:
                     data = self.data_obj.read_data()
                 except RuntimeError:
@@ -476,6 +491,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.new_data.emit(tuple(data_buf))
                         start_time = time.time()
                         data_buf = []
+                self.mutex.lock()
+                close = self.close_flag
+                self.mutex.unlock()
+
         def quit(self):
             self.set_close_flag(True)
             time.sleep(0.01)
@@ -491,9 +510,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if not settings_control.settings_test(self.settings):
             settings_control.set_to_default(self.settings)
             self.settings = settings_control.init_settings()
-            self.settings.setValue('MainWindow/size', [1000, 800])
-            self.settings.setValue('CentralWidget/GraphWidget/position', [0,0,0,0])
-            self.settings.setValue('CentralWidget/GraphWidget/is_on', 0)
 
         self.setWindowIcon(QtGui.QIcon(APP_ICON_PATH))
 
@@ -542,7 +558,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.action_settings.setStatusTip("Settings")
             self.action_exit.setText("&Exit")
             self.action_exit.setStatusTip("Exit")
-
 
             self.central_widget.setup_ui_design()
             self.settings_window.setup_ui_design()
