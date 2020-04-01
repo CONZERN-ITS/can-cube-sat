@@ -6778,8 +6778,8 @@ Source: www.kingbright.com</description>
 <part name="LED1" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R2" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="LED3" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
-<part name="LED4" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R3" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
+<part name="LED4" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 </parts>
 <sheets>
 <sheet>
@@ -7937,13 +7937,13 @@ Source: www.kingbright.com</description>
 <attribute name="NAME" x="87.376" y="147.828" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="89.535" y="147.828" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="LED4" gate="G$1" x="43.18" y="203.2" smashed="yes" rot="R180">
-<attribute name="NAME" x="39.624" y="207.772" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="37.465" y="207.772" size="1.778" layer="96" rot="R270"/>
-</instance>
 <instance part="R3" gate="G$1" x="43.18" y="213.36" smashed="yes" rot="R270">
 <attribute name="NAME" x="44.6786" y="217.17" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="39.878" y="217.17" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="LED4" gate="G$1" x="43.18" y="205.74" smashed="yes">
+<attribute name="NAME" x="46.736" y="201.168" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="48.895" y="201.168" size="1.778" layer="96" rot="R90"/>
 </instance>
 </instances>
 <busses>
@@ -8169,10 +8169,10 @@ Source: www.kingbright.com</description>
 <pinref part="FS8205A" gate="G$1" pin="S1"/>
 <wire x1="53.34" y1="200.66" x2="60.96" y2="200.66" width="0.1524" layer="91"/>
 <pinref part="R20" gate="G$1" pin="2"/>
-<wire x1="53.34" y1="200.66" x2="43.18" y2="200.66" width="0.1524" layer="91"/>
 <junction x="53.34" y="200.66"/>
 <label x="30.48" y="200.66" size="1.778" layer="95"/>
-<pinref part="LED4" gate="G$1" pin="A"/>
+<wire x1="53.34" y1="200.66" x2="43.18" y2="200.66" width="0.1524" layer="91"/>
+<pinref part="LED4" gate="G$1" pin="C"/>
 <wire x1="43.18" y1="200.66" x2="30.48" y2="200.66" width="0.1524" layer="91"/>
 <junction x="43.18" y="200.66"/>
 </segment>
@@ -8258,8 +8258,8 @@ Source: www.kingbright.com</description>
 </net>
 <net name="N$25" class="0">
 <segment>
+<pinref part="LED4" gate="G$1" pin="A"/>
 <pinref part="R3" gate="G$1" pin="2"/>
-<pinref part="LED4" gate="G$1" pin="C"/>
 </segment>
 </net>
 </nets>

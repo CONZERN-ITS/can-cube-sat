@@ -6930,10 +6930,10 @@ Source: www.kingbright.com</description>
 <part name="LED1" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R3" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="LED3" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
-<part name="LED4" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R4" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="LED5" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R5" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
+<part name="LED4" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 </parts>
 <sheets>
 <sheet>
@@ -8097,10 +8097,6 @@ Source: www.kingbright.com</description>
 <attribute name="NAME" x="89.916" y="234.188" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="92.075" y="234.188" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="LED4" gate="G$1" x="121.92" y="220.98" smashed="yes" rot="R180">
-<attribute name="NAME" x="118.364" y="225.552" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="116.205" y="225.552" size="1.778" layer="96" rot="R270"/>
-</instance>
 <instance part="R4" gate="G$1" x="121.92" y="231.14" smashed="yes" rot="R270">
 <attribute name="NAME" x="123.4186" y="234.95" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="118.618" y="234.95" size="1.778" layer="96" rot="R270"/>
@@ -8112,6 +8108,10 @@ Source: www.kingbright.com</description>
 <instance part="R5" gate="G$1" x="160.02" y="170.18" smashed="yes" rot="R270">
 <attribute name="NAME" x="161.5186" y="173.99" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="156.718" y="173.99" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="LED4" gate="G$1" x="121.92" y="223.52" smashed="yes">
+<attribute name="NAME" x="125.476" y="218.948" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="127.635" y="218.948" size="1.778" layer="96" rot="R90"/>
 </instance>
 </instances>
 <busses>
@@ -8394,11 +8394,11 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="134.62" y1="218.44" x2="142.24" y2="218.44" width="0.1524" layer="91"/>
 <pinref part="R20" gate="G$1" pin="2"/>
-<wire x1="134.62" y1="218.44" x2="121.92" y2="218.44" width="0.1524" layer="91"/>
 <junction x="134.62" y="218.44"/>
 <label x="109.22" y="218.44" size="1.778" layer="95"/>
 <pinref part="FS8205A#1" gate="G$1" pin="S1"/>
-<pinref part="LED4" gate="G$1" pin="A"/>
+<wire x1="134.62" y1="218.44" x2="121.92" y2="218.44" width="0.1524" layer="91"/>
+<pinref part="LED4" gate="G$1" pin="C"/>
 <wire x1="121.92" y1="218.44" x2="109.22" y2="218.44" width="0.1524" layer="91"/>
 <junction x="121.92" y="218.44"/>
 </segment>
@@ -8551,16 +8551,16 @@ Source: www.kingbright.com</description>
 <pinref part="R3" gate="G$1" pin="1"/>
 </segment>
 </net>
-<net name="N$27" class="0">
-<segment>
-<pinref part="R4" gate="G$1" pin="2"/>
-<pinref part="LED4" gate="G$1" pin="C"/>
-</segment>
-</net>
 <net name="N$28" class="0">
 <segment>
 <pinref part="R5" gate="G$1" pin="2"/>
 <pinref part="LED5" gate="G$1" pin="C"/>
+</segment>
+</net>
+<net name="N$27" class="0">
+<segment>
+<pinref part="LED4" gate="G$1" pin="A"/>
+<pinref part="R4" gate="G$1" pin="2"/>
 </segment>
 </net>
 </nets>
