@@ -40,6 +40,7 @@
 #include "drivers/lis3mdl.h"
 #include "drivers/lsm6ds3.h"
 #include "drivers/gps.h"
+#include "time.h"
 
 #include "MadgwickAHRS.h"
 #include "vector.h"
@@ -68,6 +69,9 @@ stateSINS_isc_t stateSINS_isc_prev;
 stateSINS_transfer_t stateSINS_transfer;
 stateGPS_t stateGPS;
 
+
+TIM_HandleTypeDef TimTowMs;
+TIM_HandleTypeDef TimMaster;
 
 static uint8_t	get_gyro_staticShift(float* gyro_staticShift);
 static uint8_t	get_accel_staticShift(float* accel_staticShift);
@@ -342,8 +346,6 @@ void uartTransferInit(UART_HandleTypeDef * uart)
 }
 
 
-
-
 //FIXME: реализовать таймер для отправки пакетов с мк по uart
 
 int main(int argc, char* argv[])
@@ -365,8 +367,8 @@ int main(int argc, char* argv[])
 //	init_led();
 //	initInterruptPin();
 //	uartTransferInit(&uartTransfer_data);
-	uartGPSInit(&uartGPS);
-	gps_init(&gps);
+//	uartGPSInit(&uartGPS);
+//	gps_init(&gps);
 //	bus_i2c_init(&i2c);
 //	SENSORS_Init();
 
@@ -377,31 +379,67 @@ int main(int argc, char* argv[])
 	__enable_irq();
 	uint16_t flag = 0xFEFF;
 
+	InitMasterTimer(&TimMaster);
+
+	TIM_MasterConfigTypeDef sMasterConfig;
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
+	int error = HAL_TIMEx_MasterConfigSynchronization(&TimMaster, &sMasterConfig);
+	trace_printf("Master Config Sync error %d\n", error);
+
+	error = 0;
+	error = HAL_TIM_Base_Init(&TimMaster);
+	trace_printf("Master timer init error %d\n", error);
+
+
+	InitTowMsTimer(&TimTowMs);
+
+	TIM_SlaveConfigTypeDef sSlaveConfig;
+	sSlaveConfig.SlaveMode = TIM_SLAVEMODE_TRIGGER;
+	sSlaveConfig.InputTrigger = TIM_TS_ITR0;
+	sSlaveConfig.TriggerPrescaler = TIM_TRIGGERPRESCALER_DIV1;
+	error = 0;
+	error = HAL_TIM_SlaveConfigSynchronization(&TimTowMs, &sSlaveConfig);
+	trace_printf("Slave Config Sync error %d\n", error);
+
+	error = 0;
+	error = HAL_TIM_Base_Init(&TimTowMs);
+	trace_printf("TOW ms init error %d\n", error);
+
+//	HAL_TIM_Base_Start(&TimTowMs);
+	HAL_TIM_Base_Start(&TimMaster);
+
 
 	for (; ; )
 	{
 //		UpdateDataAll();
 //		SINS_updatePrevData();
 
-
 //		trace_printf("error read gps buffer:\t%d\n", error);
 
-		float accel[3] = {0};
-		float gyro[3] = {0};
-		for (int i = 0; i < 3; i++){
-			gyro[i] = stateSINS_rsc.gyro[i];
-//			trace_printf("accel %d:\t%f\n", i, stateSINS_rsc.accel[i]);
-			accel[i] = stateSINS_rsc.accel[i];
-		}
+		HAL_Delay(1000);
 
-		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&flag, sizeof(flag), 3);
-		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&stateSINS_rsc, sizeof(stateSINS_rsc), 7);
+		uint32_t MasterTick = TimMaster.Instance->CNT;
+		trace_printf("Master count %d\n", MasterTick);
+
+		uint32_t SlaveTick = TimTowMs.Instance->CNT;
+		trace_printf("Slave count %d\n", SlaveTick);
+
+
+//		float accel[3] = {0};
+//		float gyro[3] = {0};
+//		for (int i = 0; i < 3; i++){
+//			gyro[i] = stateSINS_rsc.gyro[i];
+////			trace_printf("accel %d:\t%f\n", i, stateSINS_rsc.accel[i]);
+//			accel[i] = stateSINS_rsc.accel[i];
+//		}
+//
+//		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&flag, sizeof(flag), 3);
+//		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&stateSINS_rsc, sizeof(stateSINS_rsc), 7);
 //		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&gyro, sizeof(gyro), 10);
 
-		HAL_Delay(3000);
-		__disable_irq();
-		int error = read_gps_buffer();
-		__enable_irq();
+//		HAL_Delay(3000);
+//		int error = read_gps_buffer();
 //		HAL_Delay(10);
 /*
 		if (transfer_time > 1.0)

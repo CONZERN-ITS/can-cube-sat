@@ -9,6 +9,7 @@
 #include "drivers/lis3mdl.h"
 #include "drivers/lsm6ds3.h"
 #include "drivers/gps.h"
+#include "time.h"
 
 #ifndef STATE_H_
 #define STATE_H_
