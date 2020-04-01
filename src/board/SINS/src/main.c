@@ -371,40 +371,14 @@ int main(int argc, char* argv[])
 //	gps_init(&gps);
 //	bus_i2c_init(&i2c);
 //	SENSORS_Init();
-
 //	get_gyro_staticShift(state_zero.gyro_staticShift);
-
 //	get_accel_staticShift(state_zero.accel_staticShift);
 
 	__enable_irq();
 	uint16_t flag = 0xFEFF;
 
 	InitMasterTimer(&TimMaster);
-
-	TIM_MasterConfigTypeDef sMasterConfig;
-	sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
-	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
-	int error = HAL_TIMEx_MasterConfigSynchronization(&TimMaster, &sMasterConfig);
-	trace_printf("Master Config Sync error %d\n", error);
-
-	error = 0;
-	error = HAL_TIM_Base_Init(&TimMaster);
-	trace_printf("Master timer init error %d\n", error);
-
-
 	InitTowMsTimer(&TimTowMs);
-
-	TIM_SlaveConfigTypeDef sSlaveConfig;
-	sSlaveConfig.SlaveMode = TIM_SLAVEMODE_TRIGGER;
-	sSlaveConfig.InputTrigger = TIM_TS_ITR0;
-	sSlaveConfig.TriggerPrescaler = TIM_TRIGGERPRESCALER_DIV1;
-	error = 0;
-	error = HAL_TIM_SlaveConfigSynchronization(&TimTowMs, &sSlaveConfig);
-	trace_printf("Slave Config Sync error %d\n", error);
-
-	error = 0;
-	error = HAL_TIM_Base_Init(&TimTowMs);
-	trace_printf("TOW ms init error %d\n", error);
 
 //	HAL_TIM_Base_Start(&TimTowMs);
 	HAL_TIM_Base_Start(&TimMaster);
@@ -414,15 +388,14 @@ int main(int argc, char* argv[])
 	{
 //		UpdateDataAll();
 //		SINS_updatePrevData();
-
 //		trace_printf("error read gps buffer:\t%d\n", error);
 
 		HAL_Delay(1000);
 
 		uint32_t MasterTick = TimMaster.Instance->CNT;
-		trace_printf("Master count %d\n", MasterTick);
-
 		uint32_t SlaveTick = TimTowMs.Instance->CNT;
+
+		trace_printf("Master count %d\n", MasterTick);
 		trace_printf("Slave count %d\n", SlaveTick);
 
 

@@ -11,24 +11,58 @@
 #include "diag/Trace.h"
 #include "stm32f4xx_hal.h"
 
-TIM_ClockConfigTypeDef sClockSourceConfig;
-
-
 
 // Init timer for TOW in ms
 void InitTowMsTimer(TIM_HandleTypeDef * htim)
 {
+	int error = 0;
 
-//	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-//	HAL_TIM_ConfigClockSource(htim3, &sClockSourceConfig);
-
-	__TIM5_CLK_ENABLE();
-	htim->Instance = TIM5;
+	__TIM2_CLK_ENABLE();
+	htim->Instance = TIM2;
 	htim->Init.Prescaler = 0;
 	htim->Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim->Init.Period = 604799999;
-//	htim->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim->Init.Period = 604799999;				//миллисекунды в неделе
 
+	TIM_SlaveConfigTypeDef sSlaveConfig;
+	sSlaveConfig.SlaveMode = TIM_SLAVEMODE_TRIGGER;
+//	sSlaveConfig.InputTrigger = TIM_TS_ITR3;	// slave - TIM2, master - TIM4
+	sSlaveConfig.TriggerPrescaler = TIM_TRIGGERPRESCALER_DIV1;
+	error = HAL_TIM_SlaveConfigSynchronization(htim, &sSlaveConfig);
+	trace_printf("Slave Config Sync error %d\n", error);
+
+	error = 0;
+	error = HAL_TIM_Base_Init(htim);
+	trace_printf("TOW ms init error %d\n", error);
+
+
+}
+
+void InitMasterTimer(TIM_HandleTypeDef * htim)
+{
+	int error = 0;
+
+	__TIM4_CLK_ENABLE();
+	htim->Instance = TIM4;
+	htim->Init.Prescaler = 41999;		// 2000 раз в секунду
+	htim->Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim->Init.Period = 1;			//1209600000
+
+	TIM_MasterConfigTypeDef sMasterConfig;
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
+	error = HAL_TIMEx_MasterConfigSynchronization(htim, &sMasterConfig);
+	trace_printf("Master Config Sync error %d\n", error);
+
+	error = 0;
+	error = HAL_TIM_Base_Init(htim);
+	trace_printf("Master timer init error %d\n", error);
+}
+
+
+
+//TIM_ClockConfigTypeDef sClockSourceConfig;
+//	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+//	HAL_TIM_ConfigClockSource(htim3, &sClockSourceConfig);
 
 //	sSlaveConfig.SlaveMode = TIM_SLAVEMODE_TRIGGER;
 //	sSlaveConfig.InputTrigger = TIM_TS_ITR2;
@@ -39,29 +73,4 @@ void InitTowMsTimer(TIM_HandleTypeDef * htim)
 //	sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
 //	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 //	HAL_TIMEx_Ma(htim2, &sMasterConfig);
-
-}
-
-
-void InitMasterTimer(TIM_HandleTypeDef * htim)
-{
-	__TIM2_CLK_ENABLE();
-	htim->Instance = TIM2;
-	htim->Init.Prescaler = 41999;
-	htim->Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim->Init.Period = 1;			//1209600000
-	htim->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-
-}
-
-//ну там прескейлер, период настриваем по вкусу
-//Я поставил чтобы его выходом на триигерную линию был UPDATE эвент
-//sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
-//там можно разные штуки ставить, но пока попробуем так
-//теперь тим2
-//смотрим эту табличку в рефмане
-//тут получается, что если я хочу запитать таймер 2 от триггера таймера 3, то мне нужно брать ITR2
-//Запомнили
-//Настриваем
-
 
