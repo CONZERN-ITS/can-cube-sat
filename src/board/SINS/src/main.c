@@ -380,7 +380,7 @@ int main(int argc, char* argv[])
 	InitMasterTimer(&TimMaster);
 	InitTowMsTimer(&TimTowMs);
 
-//	HAL_TIM_Base_Start(&TimTowMs);
+	HAL_TIM_Base_Start(&TimTowMs);
 	HAL_TIM_Base_Start(&TimMaster);
 
 
