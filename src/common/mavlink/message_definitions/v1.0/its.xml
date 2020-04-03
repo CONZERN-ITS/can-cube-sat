@@ -30,7 +30,7 @@
       <field type="float" name="voltage" units="V">X Voltage</field>
     </message>
 
-    <message id="12" name="GPS_UBX_NAV-SOL">
+    <message id="12" name="GPS_UBX_NAV_SOL">
       <description></description>
       <field type="uint32_t" name="iTOW" units="ms">Time of week of the navigation epoch</field>
       <field type="int32_t" name="fTOW" units="ns">Fractorial part of iTOW</field>
@@ -50,7 +50,7 @@
       <field type="uint8_t" name="numSV">Number of SVs used in Nav Solution</field>
     </message>
 
-    <message id="13" name="GPS_UBX_NAV-TIMEGPS">
+    <message id="13" name="GPS_UBX_NAV_TIMEGPS">
       <description></description>
       <field type="uint32_t" name="iTOW" units="ms">Time of week of the navigation epoch</field>
       <field type="int32_t" name="fTOW" units="ns">Fractorial part of iTOW</field>
@@ -58,6 +58,15 @@
       <field type="int8_t" name="leapS" units="s">GPS leap seconds</field>
       <field type="uint8_t" name="flags">Validity flags</field>
       <field type="uint32_t" name="tAcc" units="ns">Time accuracy estimate</field>
+    </message>
+
+    <message id="14" name="SINS_isc">
+      <description>SINS data in ISC</description>
+      <field type="float[3]" name="accel">accelerations</field>
+      <field type="float[3]" name="compass">magnetometer vector</field>
+      <field type="float[4]" name="quaternion">quaternion for translating RSC into ISC</field>
+      <field type="uint32_t" name="time_s">current time in seconds</field>
+      <field type="uint32_t" name="time_ms">fractorial part of time_ms</field>
     </message>
   </messages>
 </mavlink>
