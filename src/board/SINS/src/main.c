@@ -33,6 +33,8 @@
 #include "diag/Trace.h"
 #include "stm32f4xx_hal.h"
 
+#include "its/mavlink.h"
+
 #include "Timer.h"
 #include "BlinkLed.h"
 #include "state.h"
@@ -157,9 +159,9 @@ void SENSORS_Init(void)
 	trace_printf("lis3mdl init error: %d\n", error);
 	state_system.lis3mdl_state = error; //FIXME: вернуть
 
-	error = 0;
-	gps_init(&gps);
-	state_system.GPS_state = error;
+//	error = 0;
+//	gps_init(&gps);
+//	state_system.GPS_state = error;
 }
 
 
@@ -288,7 +290,7 @@ int32_t bus_i2c_init(void* handle)
 	i2c.Mode = HAL_I2C_MODE_MASTER;
 
 	error |= HAL_I2C_Init(&i2c);
-	HAL_Delay(200);
+//	HAL_Delay(200);
 	trace_printf("i2c init error: %d\n", error);
 	return error;
 
@@ -332,7 +334,7 @@ void uartTransferInit(UART_HandleTypeDef * uart)
 	uint8_t error = 0;
 
 	uart->Instance = USART1;					//uart для отправки данных на ESP
-	uart->Init.BaudRate = 11520;
+	uart->Init.BaudRate = 115200;
 	uart->Init.WordLength = UART_WORDLENGTH_8B;
 	uart->Init.StopBits = UART_STOPBITS_1;
 	uart->Init.Parity = UART_PARITY_NONE;
@@ -350,7 +352,7 @@ void uartTransferInit(UART_HandleTypeDef * uart)
 
 int main(int argc, char* argv[])
 {
-	__disable_irq();
+//	__disable_irq();
 	//	Global structures init
 	memset(&stateGPS, 				0x00, sizeof(stateGPS));
 	memset(&stateSINS_isc, 			0x00, sizeof(stateSINS_isc));
@@ -361,54 +363,95 @@ int main(int argc, char* argv[])
 	memset(&state_system_prev,		0x00, sizeof(state_system_prev));
 	memset(&state_zero,				0x00, sizeof(state_zero));
 
+//	HAL_Delay(1000);
 
 	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
 //	init_led();
 //	initInterruptPin();
-//	uartTransferInit(&uartTransfer_data);
+	uartTransferInit(&uartTransfer_data);
 //	uartGPSInit(&uartGPS);
 //	gps_init(&gps);
-//	bus_i2c_init(&i2c);
-//	SENSORS_Init();
+	bus_i2c_init(&i2c);
+	SENSORS_Init();
 //	get_gyro_staticShift(state_zero.gyro_staticShift);
 //	get_accel_staticShift(state_zero.accel_staticShift);
 
-	__enable_irq();
-	uint16_t flag = 0xFEFF;
+//	__enable_irq();
+//	uint16_t flag = 0xFEFF;
 
-	InitMasterTimer(&TimMaster);
-	InitTowMsTimer(&TimTowMs);
-
-	HAL_TIM_Base_Start(&TimTowMs);
-	HAL_TIM_Base_Start(&TimMaster);
+//	InitMasterTimer(&TimMaster);
+//	InitTowMsTimer(&TimTowMs);
+//
+//	HAL_TIM_Base_Start(&TimTowMs);
+//	HAL_TIM_Base_Start(&TimMaster);
 
 
 	for (; ; )
 	{
-//		UpdateDataAll();
-//		SINS_updatePrevData();
+		UpdateDataAll();
+		SINS_updatePrevData();
 //		trace_printf("error read gps buffer:\t%d\n", error);
 
-		HAL_Delay(1000);
+//		HAL_Delay(1000);
 
-		uint32_t MasterTick = TimMaster.Instance->CNT;
-		uint32_t SlaveTick = TimTowMs.Instance->CNT;
-
-		trace_printf("Master count %d\n", MasterTick);
-		trace_printf("Slave count %d\n", SlaveTick);
+//		uint32_t MasterTick = TimMaster.Instance->CNT;
+//		uint32_t SlaveTick = TimTowMs.Instance->CNT;
+//
+//		trace_printf("Master count %d\n", MasterTick);
+//		trace_printf("Slave count %d\n", SlaveTick);
 
 
 //		float accel[3] = {0};
-//		float gyro[3] = {0};
+//		float magn[3] = {0};
+//
 //		for (int i = 0; i < 3; i++){
-//			gyro[i] = stateSINS_rsc.gyro[i];
-////			trace_printf("accel %d:\t%f\n", i, stateSINS_rsc.accel[i]);
+//			magn[i] = stateSINS_isc.magn[i];
+//			trace_printf("accel %d:\t%f\n", i, stateSINS_rsc.accel[i]);
 //			accel[i] = stateSINS_rsc.accel[i];
 //		}
-//
-//		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&flag, sizeof(flag), 3);
-//		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&stateSINS_rsc, sizeof(stateSINS_rsc), 7);
+
+		mavlink_sins_isc_t msg_sins_isc;
+		msg_sins_isc.time_s = HAL_GetTick();
+		msg_sins_isc.time_ms = 0;
+		__disable_irq();
+		for (int i = 0; i < 3; i++)
+		{
+			msg_sins_isc.accel[i] = stateSINS_isc.accel[i];
+			msg_sins_isc.compass[i] = stateSINS_isc.magn[i];
+			msg_sins_isc.quaternion[i] = stateSINS_isc.quaternion[i];
+		}
+		msg_sins_isc.quaternion[3] = stateSINS_isc.quaternion[3];
+		__enable_irq();
+
+		mavlink_message_t msg;
+		uint16_t len = mavlink_msg_sins_isc_encode(0, 0, &msg, &msg_sins_isc);
+		uint8_t buffer[100];
+		len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&buffer, len, 20);
+
+
+		mavlink_sins_rsc_t msg_sins_rsc;
+		msg_sins_rsc.time_s = HAL_GetTick();
+		msg_sins_rsc.time_ms = 0;
+		__disable_irq();
+		for (int i = 0; i < 3; i++)
+		{
+			msg_sins_rsc.accel[i] = stateSINS_rsc.accel[i];
+			msg_sins_rsc.gyro[i] = stateSINS_rsc.gyro[i];
+			msg_sins_rsc.compass[i] = stateSINS_rsc.magn[i];
+		}
+		__enable_irq();
+
+		len = mavlink_msg_sins_rsc_encode(0, 0, &msg, &msg_sins_rsc);
+		len = mavlink_msg_to_send_buffer(buffer, &msg);
+		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&buffer, len, 20);
+
+//		for (int i = 0; i < len; i++)
+//			trace_printf("0x%x ", buffer[i]);
+//		trace_printf("\n");
+//		HAL_Delay(20);
 //		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&gyro, sizeof(gyro), 10);
 
 //		HAL_Delay(3000);
