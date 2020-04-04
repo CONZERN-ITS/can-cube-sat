@@ -57,8 +57,12 @@
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
 <layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
 <layer number="88" name="SimResults" color="9" fill="1" visible="yes" active="yes"/>
 <layer number="89" name="SimProbes" color="9" fill="1" visible="yes" active="yes"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
@@ -74,6 +78,68 @@
 <layer number="100" name="DocFrame" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="101" name="NotChangedData" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="102" name="ChangedData" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="103" name="tMap" color="7" fill="1" visible="no" active="no"/>
+<layer number="104" name="Name" color="7" fill="1" visible="no" active="no"/>
+<layer number="105" name="tPlate" color="7" fill="1" visible="no" active="no"/>
+<layer number="106" name="bPlate" color="7" fill="1" visible="no" active="no"/>
+<layer number="107" name="Crop" color="7" fill="1" visible="no" active="no"/>
+<layer number="108" name="fp8" color="7" fill="1" visible="no" active="no"/>
+<layer number="109" name="fp9" color="7" fill="1" visible="no" active="no"/>
+<layer number="110" name="110" color="7" fill="1" visible="no" active="no"/>
+<layer number="111" name="111" color="7" fill="1" visible="no" active="no"/>
+<layer number="112" name="tSilk" color="7" fill="1" visible="no" active="no"/>
+<layer number="113" name="IDFDebug" color="7" fill="1" visible="no" active="yes"/>
+<layer number="116" name="Patch_BOT" color="9" fill="4" visible="no" active="no"/>
+<layer number="118" name="Rect_Pads" color="7" fill="1" visible="no" active="no"/>
+<layer number="121" name="_tsilk" color="7" fill="1" visible="no" active="no"/>
+<layer number="122" name="_bsilk" color="7" fill="1" visible="no" active="no"/>
+<layer number="123" name="tTestmark" color="7" fill="1" visible="no" active="no"/>
+<layer number="124" name="bTestmark" color="7" fill="1" visible="no" active="no"/>
+<layer number="125" name="_tNames" color="7" fill="1" visible="no" active="no"/>
+<layer number="126" name="_bNames" color="7" fill="1" visible="no" active="no"/>
+<layer number="127" name="_tValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="128" name="_bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="131" name="tAdjust" color="7" fill="1" visible="no" active="no"/>
+<layer number="132" name="bAdjust" color="7" fill="1" visible="no" active="no"/>
+<layer number="144" name="DrillLegend" color="7" fill="1" visible="no" active="no"/>
+<layer number="151" name="HeatSink" color="14" fill="1" visible="no" active="no"/>
+<layer number="152" name="_bDocu" color="7" fill="1" visible="no" active="no"/>
+<layer number="199" name="Contour" color="7" fill="1" visible="no" active="no"/>
+<layer number="200" name="200bmp" color="1" fill="10" visible="no" active="no"/>
+<layer number="201" name="201bmp" color="2" fill="1" visible="no" active="no"/>
+<layer number="202" name="202bmp" color="3" fill="1" visible="no" active="no"/>
+<layer number="203" name="203bmp" color="4" fill="10" visible="no" active="no"/>
+<layer number="204" name="204bmp" color="5" fill="10" visible="no" active="no"/>
+<layer number="205" name="205bmp" color="6" fill="10" visible="no" active="no"/>
+<layer number="206" name="206bmp" color="7" fill="10" visible="no" active="no"/>
+<layer number="207" name="207bmp" color="15" fill="10" visible="no" active="no"/>
+<layer number="208" name="208bmp" color="9" fill="10" visible="no" active="no"/>
+<layer number="209" name="209bmp" color="7" fill="1" visible="no" active="no"/>
+<layer number="210" name="210bmp" color="7" fill="1" visible="no" active="no"/>
+<layer number="211" name="211bmp" color="7" fill="1" visible="no" active="no"/>
+<layer number="212" name="212bmp" color="7" fill="1" visible="no" active="no"/>
+<layer number="213" name="213bmp" color="7" fill="1" visible="no" active="no"/>
+<layer number="214" name="214bmp" color="7" fill="1" visible="no" active="no"/>
+<layer number="215" name="215bmp" color="7" fill="1" visible="no" active="no"/>
+<layer number="216" name="216bmp" color="7" fill="1" visible="no" active="no"/>
+<layer number="217" name="217bmp" color="18" fill="1" visible="no" active="no"/>
+<layer number="218" name="218bmp" color="19" fill="1" visible="no" active="no"/>
+<layer number="219" name="219bmp" color="20" fill="1" visible="no" active="no"/>
+<layer number="220" name="220bmp" color="21" fill="1" visible="no" active="no"/>
+<layer number="221" name="221bmp" color="22" fill="1" visible="no" active="no"/>
+<layer number="222" name="222bmp" color="23" fill="1" visible="no" active="no"/>
+<layer number="223" name="223bmp" color="24" fill="1" visible="no" active="no"/>
+<layer number="224" name="224bmp" color="25" fill="1" visible="no" active="no"/>
+<layer number="225" name="225bmp" color="7" fill="1" visible="no" active="yes"/>
+<layer number="226" name="226bmp" color="7" fill="1" visible="no" active="yes"/>
+<layer number="227" name="227bmp" color="7" fill="1" visible="no" active="yes"/>
+<layer number="228" name="228bmp" color="7" fill="1" visible="no" active="yes"/>
+<layer number="230" name="230bmp" color="7" fill="1" visible="no" active="yes"/>
+<layer number="248" name="Housing" color="7" fill="1" visible="no" active="no"/>
+<layer number="249" name="Edge" color="7" fill="1" visible="no" active="no"/>
+<layer number="250" name="Descript" color="7" fill="1" visible="no" active="yes"/>
+<layer number="251" name="SMDround" color="7" fill="1" visible="no" active="yes"/>
+<layer number="254" name="OrgLBR" color="13" fill="1" visible="no" active="no"/>
 </layers>
 <schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">
 <libraries>
@@ -16429,6 +16495,144 @@ Distributor Buerklin, 11G810</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="MicroUSB">
+<description>&lt;BR&gt;Würth Elektronik -- Electronic Interconnect &amp; Electromechanical Solutions&lt;br&gt;&lt;Hr&gt;
+&lt;BR&gt;&lt;BR&gt; 
+&lt;TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0&gt;
+&lt;TR&gt;   
+&lt;TD BGCOLOR="#cccccc" ALIGN=CENTER&gt;&lt;FONT FACE=ARIAL SIZE=3&gt;&lt;BR&gt;&lt;br&gt;
+      &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&lt;BR&gt;
+       &lt;BR&gt;
+       &lt;BR&gt;
+       &lt;BR&gt;&lt;BR&gt;&lt;/FONT&gt;
+    &lt;/TD&gt;
+&lt;TD BGCOLOR="#cccccc" ALIGN=CENTER&gt;&lt;FONT FACE=ARIAL SIZE=3&gt;&lt;br&gt;
+      -----&lt;BR&gt;
+      -----&lt;BR&gt;
+      -----&lt;BR&gt;
+      -----&lt;BR&gt;
+      -----&lt;BR&gt;&lt;BR&gt;&lt;/FONT&gt;
+    &lt;/TD&gt;
+    &lt;TD BGCOLOR="#cccccc" ALIGN=CENTER&gt; &lt;FONT FACE=ARIAL SIZE=3&gt;&lt;br&gt;
+      ---------------------------&lt;BR&gt;
+&lt;B&gt;&lt;I&gt;&lt;span style='font-size:26pt;
+  color:#FF6600;'&gt;WE &lt;/span&gt;&lt;/i&gt;&lt;/b&gt;
+&lt;BR&gt;
+      ---------------------------&lt;BR&gt;&lt;b&gt;Würth Elektronik&lt;/b&gt;&lt;/FONT&gt;
+    &lt;/TD&gt;
+    &lt;TD BGCOLOR="#cccccc" ALIGN=CENTER&gt;&lt;FONT FACE=ARIAL SIZE=3&gt;&lt;br&gt;
+      ---------O---&lt;BR&gt;
+      ----O--------&lt;BR&gt;
+      ---------O---&lt;BR&gt;
+      ----O--------&lt;BR&gt;
+      ---------O---&lt;BR&gt;&lt;BR&gt;&lt;/FONT&gt;
+    &lt;/TD&gt;
+   
+&lt;TD BGCOLOR="#cccccc" ALIGN=CENTER&gt;&lt;FONT FACE=ARIAL SIZE=3&gt;&lt;BR&gt;
+      &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&lt;BR&gt;
+       &lt;BR&gt;
+       &lt;BR&gt;
+       &lt;BR&gt;
+       &lt;BR&gt;&lt;BR&gt;&lt;/FONT&gt;
+    &lt;/TD&gt;
+  &lt;/TR&gt;
+
+  &lt;TR&gt;
+    &lt;TD COLSPAN=7&gt;&amp;nbsp;
+    &lt;/TD&gt;
+  &lt;/TR&gt;
+  
+&lt;/TABLE&gt;
+&lt;B&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;More than you expect&lt;BR&gt;&lt;BR&gt;&lt;BR&gt;&lt;/B&gt;
+
+&lt;HR&gt;&lt;BR&gt;
+&lt;b&gt;Würth Elektronik eiSos GmbH &amp; Co. KG&lt;/b&gt;&lt;br&gt;
+EMC &amp; Inductive Solutions&lt;br&gt;
+
+Max-Eyth-Str.1&lt;br&gt;
+D-74638 Waldenburg&lt;br&gt;
+&lt;br&gt;
+Tel: +49 (0)7942-945-0&lt;br&gt;
+Fax:+49 (0)7942-945-405&lt;br&gt;
+&lt;br&gt;
+&lt;a href="http://www.we-online.com"&gt;http://www.we-online.com&lt;/a&gt;&lt;br&gt;
+&lt;a href="mailto:pm.hotline@we-online.de"&gt;pm.hotline@we-online.de&lt;/a&gt; &lt;BR&gt;&lt;BR&gt;
+&lt;br&gt;&lt;HR&gt;&lt;BR&gt;
+Neither CadSoft nor WE-eiSos does warrant that this library is error-free or &lt;br&gt;
+that it meets your specific requirements.&lt;br&gt;&lt;BR&gt;
+Please contact us for more information.&lt;br&gt;&lt;BR&gt;&lt;br&gt;
+&lt;hr&gt;
+Version 1.2,   May 6-th 2011
+&lt;HR&gt;
+Copyright: Würth Elektronik</description>
+<packages>
+<package name="629105136821">
+<description>WR-COM SMT Horizontal 5 Contacts Micro USB Type B, 5 pins</description>
+<wire x1="-3.75" y1="0" x2="3.75" y2="0" width="0.127" layer="51"/>
+<wire x1="3.75" y1="0" x2="3.75" y2="-5" width="0.127" layer="51"/>
+<wire x1="3.75" y1="-5" x2="3.75" y2="-5.6" width="0.127" layer="51"/>
+<wire x1="3.75" y1="-5.6" x2="-3.75" y2="-5.6" width="0.127" layer="51"/>
+<wire x1="-3.75" y1="-5.6" x2="-3.75" y2="-5" width="0.127" layer="51"/>
+<wire x1="-3.75" y1="-5" x2="-3.75" y2="0" width="0.127" layer="51"/>
+<wire x1="-3.75" y1="-5" x2="3.75" y2="-5" width="0.127" layer="51"/>
+<wire x1="-5" y1="0.8" x2="5" y2="0.8" width="0.127" layer="21"/>
+<wire x1="5" y1="0.8" x2="5" y2="-4.3" width="0.127" layer="21"/>
+<wire x1="-5" y1="-4.3" x2="5" y2="-4.3" width="0.127" layer="21"/>
+<wire x1="5" y1="-5.6" x2="-5" y2="-5.6" width="0.127" layer="21"/>
+<wire x1="5" y1="-4.3" x2="5" y2="-5.6" width="0.127" layer="21"/>
+<wire x1="-5" y1="-4.3" x2="-5" y2="0.8" width="0.127" layer="21"/>
+<wire x1="-5" y1="-5.6" x2="-5" y2="-4.3" width="0.127" layer="21"/>
+<smd name="D+" x="0" y="0" dx="0.4" dy="1.4" layer="1"/>
+<smd name="SENSE" x="0.65" y="0" dx="0.4" dy="1.4" layer="1"/>
+<smd name="D-" x="-0.65" y="0" dx="0.4" dy="1.35" layer="1"/>
+<smd name="5V" x="-1.3" y="0" dx="0.4" dy="1.4" layer="1"/>
+<smd name="GND" x="1.3" y="0" dx="0.4" dy="1.4" layer="1"/>
+<smd name="Z4" x="3.75" y="-2.8" dx="2.3" dy="1.9" layer="1"/>
+<smd name="Z3" x="1.2" y="-2.8" dx="1.9" dy="1.9" layer="1"/>
+<smd name="Z2" x="-1.2" y="-2.8" dx="1.9" dy="1.9" layer="1"/>
+<smd name="Z1" x="-3.75" y="-2.8" dx="2.3" dy="1.9" layer="1"/>
+<text x="-3.263" y="1.5539" size="1.27" layer="25">&gt;NAME</text>
+<text x="-3.263" y="-7.4604" size="1.27" layer="27">&gt;VALUE</text>
+</package>
+</packages>
+<symbols>
+<symbol name="5">
+<wire x1="-5.08" y1="-2.54" x2="-5.08" y2="12.7" width="0.254" layer="94"/>
+<wire x1="-5.08" y1="12.7" x2="2.54" y2="12.7" width="0.254" layer="94"/>
+<wire x1="2.54" y1="12.7" x2="2.54" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="2.54" y1="-2.54" x2="-5.08" y2="-2.54" width="0.254" layer="94"/>
+<text x="-7.62" y="13.97" size="1.778" layer="95">&gt;NAME</text>
+<text x="-7.62" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="5" x="-10.16" y="0" visible="pad" length="middle" direction="pas"/>
+<pin name="4" x="-10.16" y="2.54" visible="pad" length="middle" direction="pas"/>
+<pin name="3" x="-10.16" y="5.08" visible="pad" length="middle" direction="pas"/>
+<pin name="2" x="-10.16" y="7.62" visible="pad" length="middle" direction="pas"/>
+<pin name="1" x="-10.16" y="10.16" visible="pad" length="middle" direction="pas"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="629105136821" prefix="K">
+<description>WR-COM SMT Horizontal 5 Contacts Micro USB Type B,5 pins</description>
+<gates>
+<gate name="G$1" symbol="5" x="2.54" y="-5.08"/>
+</gates>
+<devices>
+<device name="" package="629105136821">
+<connects>
+<connect gate="G$1" pin="1" pad="5V"/>
+<connect gate="G$1" pin="2" pad="D-"/>
+<connect gate="G$1" pin="3" pad="D+"/>
+<connect gate="G$1" pin="4" pad="SENSE"/>
+<connect gate="G$1" pin="5" pad="GND Z1 Z2 Z3 Z4"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 <attribute name="ESKD_CHECKED" value=""/>
@@ -16663,6 +16867,7 @@ Distributor Buerklin, 11G810</description>
 <part name="IC2" library="CanCubeSat" deviceset="STM32F103C*T" device="" technology="8"/>
 <part name="R25" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
 <part name="R26" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
+<part name="MICRO" library="MicroUSB" deviceset="629105136821" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -18425,6 +18630,10 @@ Distributor Buerklin, 11G810</description>
 <attribute name="NAME" x="529.3614" y="290.83" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="534.162" y="290.83" size="1.778" layer="96" rot="R90"/>
 </instance>
+<instance part="MICRO" gate="G$1" x="515.62" y="231.14" smashed="yes">
+<attribute name="NAME" x="508" y="245.11" size="1.778" layer="95"/>
+<attribute name="VALUE" x="508" y="226.06" size="1.778" layer="96"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -19751,6 +19960,11 @@ Distributor Buerklin, 11G810</description>
 <wire x1="513.08" y1="322.58" x2="513.08" y2="312.42" width="0.1524" layer="91"/>
 <label x="513.08" y="312.42" size="1.778" layer="95" rot="R90"/>
 </segment>
+<segment>
+<pinref part="MICRO" gate="G$1" pin="5"/>
+<wire x1="505.46" y1="231.14" x2="495.3" y2="231.14" width="0.1524" layer="91"/>
+<label x="495.3" y="231.14" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="INA_BUS+" class="0">
 <segment>
@@ -20490,6 +20704,11 @@ Distributor Buerklin, 11G810</description>
 <wire x1="447.04" y1="261.62" x2="447.04" y2="274.32" width="0.1524" layer="91"/>
 <label x="447.04" y="269.24" size="1.778" layer="95" rot="R90"/>
 <pinref part="BSK4" gate="A" pin="8"/>
+</segment>
+<segment>
+<pinref part="MICRO" gate="G$1" pin="1"/>
+<wire x1="505.46" y1="241.3" x2="495.3" y2="241.3" width="0.1524" layer="91"/>
+<label x="495.3" y="241.3" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TIME" class="0">

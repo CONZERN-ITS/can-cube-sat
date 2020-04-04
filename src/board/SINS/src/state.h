@@ -25,7 +25,7 @@
 
 
 #define CALIBRATION 0
-#define GPS			1
+#define GPS			0
 #define LSM6DS3		0
 #define LIS3MDL		0
 
@@ -61,7 +61,6 @@ typedef struct {
 typedef struct {
 	float quaternion[4];
 	float accel[3];
-	float gyro[3];
 	float magn[3];
 }stateSINS_isc_t;
 
