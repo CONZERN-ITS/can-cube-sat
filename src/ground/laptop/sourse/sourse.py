@@ -304,21 +304,44 @@ class MapWidget(OpenStreetMap):
         super(MapWidget, self).__init__()
         self.settings = settings_control.init_settings()
 
-        self.setup_ui()
+        self.marker = None;
+        self.polyline = None;
+        self.set_zoom(7)
+
         self.setup_ui_design()
 
-    def setup_ui(self):
-        pass
-
     def setup_ui_design(self):
-        pass
+        self.set_center(55.9, 37.8)
+        self.set_zoom(7)
+        pass#self.settings.beginGroup("CentralWidget/MapWidget")
+        #self.set_center(int(self.settings.value("center")[0],) int(self.settings.value("center")[1]))
+        #self.set_zoom(self.settings.value("zoom"))
+        #self.settings.endGroup()
+        #self.add_marker('2', 55.9, 37.8, **dict(icon="http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_red.png"))
+        #self.move_marker('2', 55.93, 37.81)
+        #print(self.get_marker_position('2'))
+        #self.delete_marker('2')
+        self.add_polyline('2', 55.9, 37.8, **dict())
+        self.add_point_to_polyline('2', 55.93, 37.81)
+        #self.add_point_to_polyline('2', 55.92, 37.82)
+        #self.add_point_to_polyline('2', 55.91, 37.83)
+        self.add_points_to_polyline('2', [[55.92, 37.82], [55.91, 37.83]])
+        #self.delete_polyline('2')
 
     def new_data_reaction(self, data):
-        pass               
+        points = []
+        for i in range(len(data)):
+            if (self.settings.value("CentralWidget/MapWidget/packet_name") == data[i][0]) and ((len(data[i]) - 2) >= 2):
+                points.append(data[2:4])
+        if len(points) > 0:
+            if self.marker is None:
+                pass
 
     def clear_data(self):
-        pass
-
+        if self.marker is not None:
+            self.delete_marker(self.marker)
+        if self.polyline is not None:
+            self.delete_marker(self.polyline)
 
 class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
     class Curve():
