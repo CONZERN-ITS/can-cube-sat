@@ -49,7 +49,7 @@ function move_marker(key, latitude, longitude) {
     markers[key].setLatLng(newLatLng);
 }
 
-function get_marker_pos(key) {
+function get_marker_position (key) {
     marker = markers[key];
     return [marker.getLatLng().lat, marker.getLatLng().lng];
 }
