@@ -1,7 +1,0 @@
-ubx.c:18:12:_check_packet_chksum	32	static
-ubx.c:35:12:_check_packet_header	24	static
-ubx.c:51:13:_ubx_parse_nav_sol	16	static
-ubx.c:59:13:_ubx_parse_tim_tp	24	static
-ubx.c:68:13:_ubx_parse_nav_timegps	24	static
-ubx.c:81:6:gps_ctx_init	16	static
-ubx.c:88:6:gps_consume_byte	16	static

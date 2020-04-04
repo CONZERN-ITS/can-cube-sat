@@ -203,7 +203,7 @@ void SysTick_Handler(void)
 void DMA1_Stream5_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Stream5_IRQn 0 */
-  volatile int x = 0;
+
   /* USER CODE END DMA1_Stream5_IRQn 0 */
   
   /* USER CODE BEGIN DMA1_Stream5_IRQn 1 */

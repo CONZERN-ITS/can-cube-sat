@@ -70,7 +70,6 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 /* USER CODE BEGIN Private defines */
-extern RTC_HandleTypeDef hrtc;
 
 extern UART_HandleTypeDef huart1;
 /* USER CODE END Private defines */

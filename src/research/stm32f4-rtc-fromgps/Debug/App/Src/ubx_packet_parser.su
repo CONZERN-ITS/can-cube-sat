@@ -1,9 +1,0 @@
-ubx_packet_parser.c:13:10:ubx_packet_pid	16	static
-ubx_packet_parser.c:19:10:ubx_packet_payload_size	16	static
-ubx_packet_parser.c:25:10:ubx_packet_payload_expected_size	16	static
-ubx_packet_parser.c:45:17:_read_u32	16	static
-ubx_packet_parser.c:55:17:_read_u16	16	static
-ubx_packet_parser.c:64:13:_ubx_parse_nav_sol	16	static
-ubx_packet_parser.c:72:13:_ubx_parse_tim_tp	24	static
-ubx_packet_parser.c:81:13:_ubx_parse_nav_timegps	24	static
-ubx_packet_parser.c:90:5:ubx_parse_any_packet	32	static

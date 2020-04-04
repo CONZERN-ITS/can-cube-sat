@@ -46,6 +46,26 @@ static void on_ubx_packet(void * userarg, const ubx_any_packet_t * packet)
 }
 
 
+static void setup_gps_dma()
+{
+	LL_USART_Disable(GPS_UART);
+	LL_DMA_SetPeriphAddress(GPS_DMA, GPS_DMA_STREAM, LL_USART_DMA_GetRegAddr(GPS_UART));
+	LL_DMA_SetMemoryAddress(GPS_DMA, GPS_DMA_STREAM, (uint32_t)&_gps_uart_dma_buffer);
+	LL_DMA_SetDataLength(GPS_DMA, GPS_DMA_STREAM, sizeof(_gps_uart_dma_buffer));
+	_gps_uart_dma_tail = 0;
+
+
+	LL_DMA_EnableStream(GPS_DMA, GPS_DMA_STREAM);
+	LL_USART_EnableDMAReq_RX(GPS_UART);
+	LL_USART_EnableIT_RXNE(GPS_UART);
+	LL_USART_Enable(GPS_UART);
+
+	ubx_sparser_reset(&sparser_ctx);
+	ubx_sparser_set_pbuffer(&sparser_ctx, _gps_sparser_buffer, sizeof(_gps_sparser_buffer));
+	ubx_sparser_set_packet_callback(&sparser_ctx, on_ubx_packet, NULL);
+}
+
+
 static void poll_gps_dma()
 {
 	DMA_Stream_TypeDef * stream = __LL_DMA_GET_STREAM_INSTANCE(GPS_DMA, GPS_DMA_STREAM);
@@ -70,28 +90,19 @@ static void poll_gps_dma()
 }
 
 
+static void setup_rtc()
+{
+	//HAL_RTC_Init(&hrtc);
+}
+
+
 int app_main()
 {
 	// для pritnf
 	__HAL_UART_ENABLE(&huart1);
 
 	// для GPS
-	LL_USART_Disable(GPS_UART);
-	LL_DMA_SetPeriphAddress(GPS_DMA, GPS_DMA_STREAM, LL_USART_DMA_GetRegAddr(GPS_UART));
-	LL_DMA_SetMemoryAddress(GPS_DMA, GPS_DMA_STREAM, (uint32_t)&_gps_uart_dma_buffer);
-	LL_DMA_SetDataLength(GPS_DMA, GPS_DMA_STREAM, sizeof(_gps_uart_dma_buffer));
-	_gps_uart_dma_tail = 0;
-
-
-	LL_DMA_EnableStream(GPS_DMA, GPS_DMA_STREAM);
-	LL_USART_EnableDMAReq_RX(GPS_UART);
-	LL_USART_EnableIT_RXNE(GPS_UART);
-	LL_USART_Enable(GPS_UART);
-
-	ubx_sparser_reset(&sparser_ctx);
-	ubx_sparser_set_pbuffer(&sparser_ctx, _gps_sparser_buffer, sizeof(_gps_sparser_buffer));
-	ubx_sparser_set_packet_callback(&sparser_ctx, on_ubx_packet, NULL);
-
+	setup_gps_dma();
 
 	while(1)
 	{
