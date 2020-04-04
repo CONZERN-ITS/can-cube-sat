@@ -29,6 +29,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_ll_rtc.h"
 #include "stm32f4xx_ll_usart.h"
 #include "stm32f4xx_ll_rcc.h"
 #include "stm32f4xx_ll_bus.h"
@@ -72,6 +73,7 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 
 extern UART_HandleTypeDef huart1;
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
