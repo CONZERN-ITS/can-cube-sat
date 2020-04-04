@@ -1,0 +1,7 @@
+ubx_stream_parser.c:23:12:_check_packet_header	24	static
+ubx_stream_parser.c:34:12:_check_whole_packet	32	static
+ubx_stream_parser.c:55:12:_dispatch_packet	32	static
+ubx_stream_parser.c:71:6:ubx_sparser_reset	16	static
+ubx_stream_parser.c:80:6:ubx_sparser_set_packet_callback	24	static
+ubx_stream_parser.c:89:6:ubx_sparser_set_pbuffer	24	static
+ubx_stream_parser.c:99:6:ubx_sparser_consume_byte	16	static

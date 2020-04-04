@@ -1,0 +1,4 @@
+ubx_packets.c:12:10:ubx_packet_expected_len	16	static
+ubx_packets.c:31:10:ubx_packet_pid	16	static
+ubx_packets.c:37:10:ubx_packet_length	16	static
+ubx_packets.c:43:5:ubx_packet_parse	24	static
