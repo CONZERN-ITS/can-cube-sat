@@ -3373,12 +3373,12 @@ design rules under a new name.</description>
 <attribute name="SPICEPREFIX" value="C" x="138.44" y="-19.15" size="1.778" layer="27" display="off"/>
 <attribute name="VALUE" x="53.35" y="34.19" size="1.27" layer="27"/>
 </element>
-<element name="C7" library="rcl" library_urn="urn:adsk.eagle:library:334" package="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="54pF" x="32.08" y="54.13" smashed="yes">
+<element name="C7" library="rcl" library_urn="urn:adsk.eagle:library:334" package="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="27pF" x="32.08" y="54.13" smashed="yes">
 <attribute name="POPULARITY" value="73" x="103.2" y="-27.15" size="1.778" layer="27" display="off"/>
 <attribute name="SPICEPREFIX" value="C" x="103.2" y="-27.15" size="1.778" layer="27" display="off"/>
 <attribute name="VALUE" x="31.445" y="52.225" size="1.27" layer="27"/>
 </element>
-<element name="C8" library="rcl" library_urn="urn:adsk.eagle:library:334" package="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="54pF" x="32.03" y="56.28" smashed="yes">
+<element name="C8" library="rcl" library_urn="urn:adsk.eagle:library:334" package="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="27pF" x="32.03" y="56.28" smashed="yes">
 <attribute name="POPULARITY" value="73" x="109.5" y="-25" size="1.778" layer="27" display="off"/>
 <attribute name="SPICEPREFIX" value="C" x="109.5" y="-25" size="1.778" layer="27" display="off"/>
 <attribute name="VALUE" x="31.395" y="54.375" size="1.27" layer="27"/>
