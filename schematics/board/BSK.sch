@@ -439,6 +439,50 @@
 <rectangle x1="2.746" y1="3.246" x2="3.254" y2="3.754" layer="51"/>
 <rectangle x1="2.746" y1="-3.754" x2="3.254" y2="-3.246" layer="51"/>
 </package>
+<package name="KCONNECT-1">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
+<pad name="2" x="-3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<pad name="3" x="3" y="-3.5" drill="1" diameter="1.4" shape="octagon"/>
+<pad name="4" x="3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<text x="-3.54" y="5.175" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.54" y="-6.445" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-3.254" y1="3.246" x2="-2.746" y2="3.754" layer="51"/>
+<rectangle x1="2.746" y1="3.246" x2="3.254" y2="3.754" layer="51"/>
+<rectangle x1="2.746" y1="-3.754" x2="3.254" y2="-3.246" layer="51"/>
+</package>
+<package name="KCONNECT-2">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
+<pad name="1" x="-3" y="-3.5" drill="1" diameter="1.4" shape="square"/>
+<pad name="3" x="3" y="-3.5" drill="1" diameter="1.4" shape="octagon"/>
+<pad name="4" x="3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<text x="-3.54" y="5.175" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.54" y="-6.445" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-3.254" y1="-3.754" x2="-2.746" y2="-3.246" layer="51"/>
+<rectangle x1="2.746" y1="3.246" x2="3.254" y2="3.754" layer="51"/>
+<rectangle x1="2.746" y1="-3.754" x2="3.254" y2="-3.246" layer="51"/>
+</package>
+<package name="KCONNECT-3">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
+<pad name="1" x="-3" y="-3.5" drill="1" diameter="1.4" shape="square"/>
+<pad name="2" x="-3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<pad name="4" x="3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<text x="-3.54" y="5.175" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.54" y="-6.445" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-3.254" y1="-3.754" x2="-2.746" y2="-3.246" layer="51"/>
+<rectangle x1="-3.254" y1="3.246" x2="-2.746" y2="3.754" layer="51"/>
+<rectangle x1="2.746" y1="3.246" x2="3.254" y2="3.754" layer="51"/>
+</package>
+<package name="KCONNECT-4">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
+<pad name="1" x="-3" y="-3.5" drill="1" diameter="1.4" shape="square"/>
+<pad name="2" x="-3" y="3.5" drill="1" diameter="1.4" shape="octagon"/>
+<pad name="3" x="3" y="-3.5" drill="1" diameter="1.4" shape="octagon"/>
+<text x="-3.54" y="5.175" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.54" y="-6.445" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-3.254" y1="-3.754" x2="-2.746" y2="-3.246" layer="51"/>
+<rectangle x1="-3.254" y1="3.246" x2="-2.746" y2="3.754" layer="51"/>
+<rectangle x1="2.746" y1="-3.754" x2="3.254" y2="-3.246" layer="51"/>
+</package>
 </packages>
 <symbols>
 <symbol name="DS18B20Z">
@@ -850,6 +894,38 @@
 <device name="-" package="KCONNECT-">
 <connects>
 <connect gate="G$1" pin="P$1" pad="1 2 3 4"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="1" package="KCONNECT-1">
+<connects>
+<connect gate="G$1" pin="P$1" pad="2 3 4"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="2" package="KCONNECT-2">
+<connects>
+<connect gate="G$1" pin="P$1" pad="1 3 4"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="3" package="KCONNECT-3">
+<connects>
+<connect gate="G$1" pin="P$1" pad="1 2 4"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="4" package="KCONNECT-4">
+<connects>
+<connect gate="G$1" pin="P$1" pad="1 2 3"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -11043,6 +11119,124 @@ Source: http://www.ledtronics.com/ds/smd-0603/Dstr0092.pdf</description>
 <rectangle x1="-0.4" y1="0.175" x2="0" y2="0.4" layer="51"/>
 <rectangle x1="-0.25" y1="0.175" x2="0" y2="0.4" layer="21"/>
 </package>
+<package name="P47F-BOTTOM" urn="urn:adsk.eagle:footprint:15761/1" locally_modified="yes" library_version="5" library_locally_modified="yes">
+<description>&lt;b&gt;PointLED® Enhanced Thinfilm LED&lt;/b&gt; BOTTOM mount&lt;p&gt;
+Source: http://catalog.osram-os.com .. LA_LR_LS_LY_P47F_Pb_free.pdf</description>
+<wire x1="-0.8" y1="-0.6095" x2="-1.7524" y2="-0.6095" width="0.1" layer="51"/>
+<wire x1="-1.7524" y1="-0.6095" x2="-1.7524" y2="-0.1714" width="0.1" layer="51"/>
+<wire x1="-1.7524" y1="-0.1714" x2="-1.4953" y2="-0.1714" width="0.1" layer="51"/>
+<wire x1="-1.4953" y1="-0.1714" x2="-1.4286" y2="-0.2286" width="0.1" layer="51"/>
+<wire x1="-1.4286" y1="-0.2286" x2="-1.2667" y2="-0.2571" width="0.1" layer="51" curve="61.173957"/>
+<wire x1="-1.2667" y1="-0.2571" x2="-1.2095" y2="-0.2" width="0.1" layer="51" curve="48.594558"/>
+<wire x1="-1.2095" y1="-0.2" x2="-1.2381" y2="-0.0095" width="0.1" layer="51" curve="58.580846"/>
+<wire x1="-1.2381" y1="-0.0095" x2="-1.2857" y2="0.0952" width="0.1" layer="51" curve="-26.758013"/>
+<wire x1="-1.2857" y1="0.0952" x2="-1.2857" y2="0.2571" width="0.1" layer="51" curve="-22.142725"/>
+<wire x1="-1.2857" y1="0.2571" x2="-1.1524" y2="0.6095" width="0.1" layer="51" curve="-19.309263"/>
+<wire x1="-1.1524" y1="0.6095" x2="-0.9714" y2="0.6095" width="0.1" layer="51"/>
+<wire x1="-0.9714" y1="0.6095" x2="-0.7524" y2="0.6095" width="0.1" layer="51"/>
+<wire x1="-0.981" y1="-0.6" x2="-1.1143" y2="-0.3619" width="0.1" layer="51"/>
+<wire x1="-1.1143" y1="-0.3619" x2="-0.9714" y2="-0.2952" width="0.1" layer="51"/>
+<wire x1="-0.9334" y1="0.2667" x2="-1.1143" y2="0.3525" width="0.1" layer="51"/>
+<wire x1="-1.1143" y1="0.3525" x2="-0.9714" y2="0.6095" width="0.1" layer="51"/>
+<wire x1="-0.3048" y1="-0.0476" x2="-0.0857" y2="-0.2667" width="0.1" layer="52" curve="90"/>
+<wire x1="-0.0857" y1="-0.2667" x2="0.2286" y2="-0.2667" width="0.1" layer="52"/>
+<wire x1="0.2286" y1="-0.2667" x2="0.5429" y2="-0.2952" width="0.1" layer="52"/>
+<wire x1="0.5429" y1="-0.2952" x2="0.6953" y2="-0.2381" width="0.1" layer="52" curve="51.565061"/>
+<wire x1="0.6953" y1="-0.2381" x2="0.8" y2="0" width="0.1" layer="52" curve="39.925503"/>
+<wire x1="-0.3048" y1="0.0476" x2="-0.3048" y2="-0.0476" width="0.1" layer="52"/>
+<wire x1="-0.0857" y1="0.2667" x2="-0.3048" y2="0.0476" width="0.1" layer="52" curve="90"/>
+<wire x1="-0.0857" y1="0.2666" x2="0.2286" y2="0.2666" width="0.1" layer="52"/>
+<wire x1="0.5429" y1="0.2952" x2="0.2286" y2="0.2667" width="0.1" layer="52"/>
+<wire x1="0.5429" y1="0.2952" x2="0.6953" y2="0.2381" width="0.1" layer="52" curve="-51.565061"/>
+<wire x1="0.6953" y1="0.2381" x2="0.8" y2="0" width="0.1" layer="52" curve="-39.925503"/>
+<wire x1="0.8" y1="0.6095" x2="1.7524" y2="0.6095" width="0.1" layer="51"/>
+<wire x1="1.7524" y1="0.6095" x2="1.7524" y2="0.1714" width="0.1" layer="51"/>
+<wire x1="1.7524" y1="0.1714" x2="1.4953" y2="0.1714" width="0.1" layer="51"/>
+<wire x1="1.4953" y1="0.1714" x2="1.4286" y2="0.2286" width="0.1" layer="51"/>
+<wire x1="1.4286" y1="0.2286" x2="1.2667" y2="0.2571" width="0.1" layer="51" curve="61.173957"/>
+<wire x1="1.2667" y1="0.2571" x2="1.2095" y2="0.2" width="0.1" layer="51" curve="48.594558"/>
+<wire x1="1.2095" y1="0.2" x2="1.2381" y2="0.0095" width="0.1" layer="51" curve="58.580846"/>
+<wire x1="1.2381" y1="0.0095" x2="1.2857" y2="-0.0952" width="0.1" layer="51" curve="-26.758013"/>
+<wire x1="1.2857" y1="-0.0952" x2="1.2857" y2="-0.2571" width="0.1" layer="51" curve="-22.142725"/>
+<wire x1="1.2857" y1="-0.2571" x2="1.1524" y2="-0.6095" width="0.1" layer="51" curve="-19.309263"/>
+<wire x1="1.1524" y1="-0.6095" x2="0.9714" y2="-0.6095" width="0.1" layer="51"/>
+<wire x1="0.9714" y1="-0.6095" x2="0.7524" y2="-0.6095" width="0.1" layer="51"/>
+<wire x1="0.981" y1="0.6" x2="1.1143" y2="0.3619" width="0.1" layer="51"/>
+<wire x1="1.1143" y1="0.3619" x2="0.9714" y2="0.2952" width="0.1" layer="51"/>
+<wire x1="0.9334" y1="-0.2667" x2="1.1143" y2="-0.3525" width="0.1" layer="51"/>
+<wire x1="1.1143" y1="-0.3525" x2="0.9714" y2="-0.6095" width="0.1" layer="51"/>
+<circle x="0" y="0" radius="0.9524" width="0.1" layer="22"/>
+<smd name="A" x="-2.45" y="0" dx="2.6" dy="2.6" layer="1" stop="no" cream="no"/>
+<smd name="C" x="2.45" y="0" dx="2.6" dy="2.6" layer="1" rot="R180" stop="no" cream="no"/>
+<text x="-3.81" y="1.905" size="1.27" layer="25">&gt;NAME</text>
+<text x="-3.81" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-1.825" y1="-0.9" x2="-1.15" y2="0.2" layer="29"/>
+<rectangle x1="1.15" y1="-0.2" x2="1.825" y2="0.9" layer="29" rot="R180"/>
+<rectangle x1="-1.8" y1="-0.725" x2="-1.175" y2="0.05" layer="31"/>
+<rectangle x1="1.175" y1="-0.05" x2="1.8" y2="0.725" layer="31" rot="R180"/>
+<rectangle x1="-0.1" y1="-0.1" x2="0.1" y2="0.1" layer="52"/>
+<hole x="0" y="0" drill="2.3"/>
+</package>
+<package name="P47F-TOP" urn="urn:adsk.eagle:footprint:15762/1" library_version="5">
+<description>&lt;b&gt;PointLED® Enhanced Thinfilm LED&lt;/b&gt; TOP mount&lt;p&gt;
+Source: http://catalog.osram-os.com .. LA_LR_LS_LY_P47F_Pb_free.pdf</description>
+<wire x1="-0.8" y1="0.6095" x2="-1.7524" y2="0.6095" width="0.1" layer="51"/>
+<wire x1="-1.7524" y1="0.6095" x2="-1.7524" y2="0.1714" width="0.1" layer="51"/>
+<wire x1="-1.7524" y1="0.1714" x2="-1.4953" y2="0.1714" width="0.1" layer="51"/>
+<wire x1="-1.4953" y1="0.1714" x2="-1.4286" y2="0.2286" width="0.1" layer="51"/>
+<wire x1="-1.4286" y1="0.2286" x2="-1.2667" y2="0.2571" width="0.1" layer="51" curve="-61.21063"/>
+<wire x1="-1.2667" y1="0.2571" x2="-1.2095" y2="0.2" width="0.1" layer="51" curve="-48.594558"/>
+<wire x1="-1.2095" y1="0.2" x2="-1.2381" y2="0.0095" width="0.1" layer="51" curve="-58.580846"/>
+<wire x1="-1.2381" y1="0.0095" x2="-1.2857" y2="-0.0952" width="0.1" layer="51" curve="26.758013"/>
+<wire x1="-1.2857" y1="-0.0952" x2="-1.2857" y2="-0.2571" width="0.1" layer="51" curve="22.142725"/>
+<wire x1="-1.2857" y1="-0.2571" x2="-1.1524" y2="-0.6095" width="0.1" layer="51" curve="19.307434"/>
+<wire x1="-1.1524" y1="-0.6095" x2="-0.9714" y2="-0.6095" width="0.1" layer="51"/>
+<wire x1="-0.9714" y1="-0.6095" x2="-0.7524" y2="-0.6095" width="0.1" layer="51"/>
+<wire x1="-0.981" y1="0.6" x2="-1.1143" y2="0.3619" width="0.1" layer="51"/>
+<wire x1="-1.1143" y1="0.3619" x2="-0.9714" y2="0.2952" width="0.1" layer="51"/>
+<wire x1="-0.9334" y1="-0.2667" x2="-1.1143" y2="-0.3525" width="0.1" layer="51"/>
+<wire x1="-1.1143" y1="-0.3525" x2="-0.9714" y2="-0.6095" width="0.1" layer="51"/>
+<wire x1="-0.3048" y1="0.0476" x2="-0.0857" y2="0.2667" width="0.1" layer="21" curve="-90"/>
+<wire x1="-0.0857" y1="0.2667" x2="0.2286" y2="0.2667" width="0.1" layer="21"/>
+<wire x1="0.2286" y1="0.2667" x2="0.5429" y2="0.2952" width="0.1" layer="21"/>
+<wire x1="0.5429" y1="0.2952" x2="0.6953" y2="0.2381" width="0.1" layer="21" curve="-51.536625"/>
+<wire x1="0.6953" y1="0.2381" x2="0.8" y2="0" width="0.1" layer="21" curve="-39.925503"/>
+<wire x1="-0.3048" y1="-0.0476" x2="-0.3048" y2="0.0476" width="0.1" layer="21"/>
+<wire x1="-0.0857" y1="-0.2667" x2="-0.3048" y2="-0.0476" width="0.1" layer="21" curve="-90"/>
+<wire x1="-0.0857" y1="-0.2666" x2="0.2286" y2="-0.2666" width="0.1" layer="21"/>
+<wire x1="0.5429" y1="-0.2952" x2="0.2286" y2="-0.2667" width="0.1" layer="21"/>
+<wire x1="0.5429" y1="-0.2952" x2="0.6953" y2="-0.2381" width="0.1" layer="21" curve="51.536625"/>
+<wire x1="0.6953" y1="-0.2381" x2="0.8" y2="0" width="0.1" layer="21" curve="39.925503"/>
+<wire x1="0.8" y1="-0.6095" x2="1.7524" y2="-0.6095" width="0.1" layer="51"/>
+<wire x1="1.7524" y1="-0.6095" x2="1.7524" y2="-0.1714" width="0.1" layer="51"/>
+<wire x1="1.7524" y1="-0.1714" x2="1.4953" y2="-0.1714" width="0.1" layer="51"/>
+<wire x1="1.4953" y1="-0.1714" x2="1.4286" y2="-0.2286" width="0.1" layer="51"/>
+<wire x1="1.4286" y1="-0.2286" x2="1.2667" y2="-0.2571" width="0.1" layer="51" curve="-61.21063"/>
+<wire x1="1.2667" y1="-0.2571" x2="1.2095" y2="-0.2" width="0.1" layer="51" curve="-48.594558"/>
+<wire x1="1.2095" y1="-0.2" x2="1.2381" y2="-0.0095" width="0.1" layer="51" curve="-58.580846"/>
+<wire x1="1.2381" y1="-0.0095" x2="1.2857" y2="0.0952" width="0.1" layer="51" curve="26.758013"/>
+<wire x1="1.2857" y1="0.0952" x2="1.2857" y2="0.2571" width="0.1" layer="51" curve="22.142725"/>
+<wire x1="1.2857" y1="0.2571" x2="1.1524" y2="0.6095" width="0.1" layer="51" curve="19.307434"/>
+<wire x1="1.1524" y1="0.6095" x2="0.9714" y2="0.6095" width="0.1" layer="51"/>
+<wire x1="0.9714" y1="0.6095" x2="0.7524" y2="0.6095" width="0.1" layer="51"/>
+<wire x1="0.981" y1="-0.6" x2="1.1143" y2="-0.3619" width="0.1" layer="51"/>
+<wire x1="1.1143" y1="-0.3619" x2="0.9714" y2="-0.2952" width="0.1" layer="51"/>
+<wire x1="0.9334" y1="0.2667" x2="1.1143" y2="0.3525" width="0.1" layer="51"/>
+<wire x1="1.1143" y1="0.3525" x2="0.9714" y2="0.6095" width="0.1" layer="51"/>
+<circle x="0" y="0" radius="0.9524" width="0.1" layer="21"/>
+<smd name="A" x="-2.45" y="0" dx="2.6" dy="2.6" layer="1" stop="no" cream="no"/>
+<smd name="C" x="2.45" y="0" dx="2.6" dy="2.6" layer="1" rot="R180" stop="no" cream="no"/>
+<text x="-3.81" y="1.905" size="1.27" layer="25">&gt;NAME</text>
+<text x="-3.81" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-3.0067" y1="0.1758" x2="-2.9972" y2="0.1853" layer="1"/>
+<rectangle x1="-1.825" y1="-0.2" x2="-1.15" y2="0.9" layer="29"/>
+<rectangle x1="1.15" y1="-0.9" x2="1.825" y2="0.2" layer="29" rot="R180"/>
+<rectangle x1="2.4937" y1="0.0047" x2="2.5031" y2="0.0141" layer="1" rot="R180"/>
+<rectangle x1="-1.8" y1="-0.05" x2="-1.175" y2="0.725" layer="31"/>
+<rectangle x1="1.175" y1="-0.725" x2="1.8" y2="0.05" layer="31" rot="R180"/>
+<rectangle x1="-0.1" y1="-0.1" x2="0.1" y2="0.1" layer="21"/>
+<hole x="0" y="0" drill="2.3"/>
+</package>
 </packages>
 <packages3d>
 <package3d name="1206" urn="urn:adsk.eagle:package:15796/2" type="model" library_version="5">
@@ -11338,6 +11532,20 @@ Y3KSUPER YELLOW
 Source: http://www.ledtronics.com/ds/smd-0603/Dstr0092.pdf</description>
 <packageinstances>
 <packageinstance name="SML0603"/>
+</packageinstances>
+</package3d>
+<package3d name="P47F-BOTTOM" urn="urn:adsk.eagle:package:15878/1" type="box" library_version="5" library_locally_modified="yes">
+<description>PointLED® Enhanced Thinfilm LED BOTTOM mount
+Source: http://catalog.osram-os.com .. LA_LR_LS_LY_P47F_Pb_free.pdf</description>
+<packageinstances>
+<packageinstance name="P47F-BOTTOM"/>
+</packageinstances>
+</package3d>
+<package3d name="P47F-TOP" urn="urn:adsk.eagle:package:15879/1" type="box" library_version="5">
+<description>PointLED® Enhanced Thinfilm LED TOP mount
+Source: http://catalog.osram-os.com .. LA_LR_LS_LY_P47F_Pb_free.pdf</description>
+<packageinstances>
+<packageinstance name="P47F-TOP"/>
 </packageinstances>
 </package3d>
 </packages3d>
@@ -11968,6 +12176,80 @@ Source: www.kingbright.com</description>
 </device>
 </devices>
 </deviceset>
+<deviceset name="*P4" urn="urn:adsk.eagle:component:15960/3" prefix="LED" library_version="5" library_locally_modified="yes">
+<description>&lt;b&gt;PointLED® Enhanced Thinfilm LED&lt;/b&gt; TOP &amp; BOTTOM mount&lt;p&gt;
+LS P47F, LR P47F, LA P47F, LY P47F, LT P4SG, LB P4SG, LW P4SG&lt;br&gt;
+Source: http://catalog.osram-os.com .. LA_LR_LS_LY_P47F_Pb_free.pdf</description>
+<gates>
+<gate name="G$1" symbol="LED" x="0" y="0"/>
+</gates>
+<devices>
+<device name="-BOTTOM" package="P47F-BOTTOM">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<package3dinstances>
+<package3dinstance package3d_urn="urn:adsk.eagle:package:15878/1"/>
+</package3dinstances>
+<technologies>
+<technology name="LA">
+<attribute name="POPULARITY" value="1" constant="no"/>
+</technology>
+<technology name="LB">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LR">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LS">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LT">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LW">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LY">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+</technologies>
+</device>
+<device name="-TOP" package="P47F-TOP">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<package3dinstances>
+<package3dinstance package3d_urn="urn:adsk.eagle:package:15879/1"/>
+</package3dinstances>
+<technologies>
+<technology name="LA">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LB">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LR">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LS">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LT">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LW">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+<technology name="LY">
+<attribute name="POPULARITY" value="0" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </libraries>
@@ -12057,6 +12339,7 @@ Source: www.kingbright.com</description>
 <part name="R7" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
 <part name="R14" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
 <part name="LED-G#2" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
+<part name="LAP4" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="*P4" device="-BOTTOM" package3d_urn="urn:adsk.eagle:package:15878/1" technology="LA"/>
 </parts>
 <sheets>
 <sheet>
@@ -13315,6 +13598,9 @@ Source: www.kingbright.com</description>
 <attribute name="NAME" x="227.076" y="85.09" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="229.235" y="89.408" size="1.778" layer="96" rot="R90"/>
 </instance>
+<instance part="LAP4" gate="G$1" x="215.9" y="93.98" smashed="yes">
+<attribute name="NAME" x="219.456" y="89.408" size="1.778" layer="95" rot="R90"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -14153,11 +14439,14 @@ Source: www.kingbright.com</description>
 <pinref part="R20" gate="G$1" pin="2"/>
 <wire x1="238.76" y1="88.9" x2="223.52" y2="88.9" width="0.1524" layer="91"/>
 <junction x="238.76" y="88.9"/>
-<label x="210.82" y="88.9" size="1.778" layer="95"/>
+<label x="205.74" y="88.9" size="1.778" layer="95"/>
 <pinref part="FS8205A" gate="G$1" pin="S1"/>
 <pinref part="LED-G#2" gate="G$1" pin="C"/>
-<wire x1="223.52" y1="88.9" x2="210.82" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="223.52" y1="88.9" x2="215.9" y2="88.9" width="0.1524" layer="91"/>
 <junction x="223.52" y="88.9"/>
+<pinref part="LAP4" gate="G$1" pin="C"/>
+<wire x1="215.9" y1="88.9" x2="205.74" y2="88.9" width="0.1524" layer="91"/>
+<junction x="215.9" y="88.9"/>
 </segment>
 <segment>
 <label x="287.02" y="106.68" size="1.778" layer="95"/>
@@ -14542,6 +14831,9 @@ Source: www.kingbright.com</description>
 <segment>
 <pinref part="LED-G#2" gate="G$1" pin="A"/>
 <pinref part="R6" gate="G$1" pin="2"/>
+<pinref part="LAP4" gate="G$1" pin="A"/>
+<wire x1="215.9" y1="96.52" x2="223.52" y2="96.52" width="0.1524" layer="91"/>
+<junction x="223.52" y="96.52"/>
 </segment>
 </net>
 </nets>

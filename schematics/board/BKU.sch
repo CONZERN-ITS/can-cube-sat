@@ -11125,6 +11125,34 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <rectangle x1="4.75" y1="-0.25" x2="5.25" y2="0.25" layer="51" rot="R270"/>
 <rectangle x1="2.75" y1="-0.25" x2="3.25" y2="0.25" layer="51" rot="R270"/>
 </package>
+<package name="1X02">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 0.1"</description>
+<wire x1="-2.54" y1="1.27" x2="-2.54" y2="-1.27" width="0.254" layer="21"/>
+<wire x1="2.54" y1="-1.27" x2="-2.54" y2="-1.27" width="0.254" layer="21"/>
+<wire x1="-2.54" y1="1.27" x2="0" y2="1.27" width="0.254" layer="21"/>
+<wire x1="0" y1="1.27" x2="2.54" y2="1.27" width="0.254" layer="21"/>
+<wire x1="2.54" y1="1.27" x2="2.54" y2="-1.27" width="0.254" layer="21"/>
+<wire x1="0" y1="1.27" x2="0" y2="-1.27" width="0.254" layer="21"/>
+<pad name="1" x="-1.27" y="0" drill="1.016" shape="square" rot="R90"/>
+<pad name="2" x="1.27" y="0" drill="1.016" shape="octagon" rot="R90"/>
+<text x="-2.6162" y="1.8288" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-2.54" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-1.524" y1="-0.254" x2="-1.016" y2="0.254" layer="51"/>
+<rectangle x1="1.016" y1="-0.254" x2="1.524" y2="0.254" layer="51"/>
+</package>
+<package name="1X02M">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt; - 2MM"</description>
+<wire x1="2.25" y1="1.25" x2="2.25" y2="-1.25" width="0.2032" layer="21"/>
+<wire x1="2.25" y1="-1.25" x2="-2.25" y2="-1.25" width="0.2032" layer="21"/>
+<wire x1="-2.25" y1="-1.25" x2="-2.25" y2="1.25" width="0.2032" layer="21"/>
+<wire x1="-2.25" y1="1.25" x2="2.25" y2="1.25" width="0.2032" layer="21"/>
+<pad name="1" x="-1" y="0" drill="0.9144" shape="square"/>
+<pad name="2" x="1" y="0" drill="0.9144"/>
+<text x="-3" y="-1" size="1.016" layer="25" ratio="14" rot="R90">&gt;NAME</text>
+<text x="4" y="-1" size="0.8128" layer="27" ratio="10" rot="R90">&gt;VALUE</text>
+<rectangle x1="0.75" y1="-0.25" x2="1.25" y2="0.25" layer="51"/>
+<rectangle x1="-1.25" y1="-0.25" x2="-0.75" y2="0.25" layer="51"/>
+</package>
 </packages>
 <symbols>
 <symbol name="PINHD12">
@@ -11210,6 +11238,16 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pin name="4" x="-2.54" y="0" visible="pad" length="short" direction="pas" function="dot"/>
 <pin name="5" x="-2.54" y="-2.54" visible="pad" length="short" direction="pas" function="dot"/>
 <pin name="6" x="-2.54" y="-5.08" visible="pad" length="short" direction="pas" function="dot"/>
+</symbol>
+<symbol name="PINHD2">
+<wire x1="-6.35" y1="-2.54" x2="1.27" y2="-2.54" width="0.4064" layer="94"/>
+<wire x1="1.27" y1="-2.54" x2="1.27" y2="5.08" width="0.4064" layer="94"/>
+<wire x1="1.27" y1="5.08" x2="-6.35" y2="5.08" width="0.4064" layer="94"/>
+<wire x1="-6.35" y1="5.08" x2="-6.35" y2="-2.54" width="0.4064" layer="94"/>
+<text x="-6.35" y="5.715" size="1.778" layer="95">&gt;NAME</text>
+<text x="-6.35" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="1" x="-2.54" y="2.54" visible="pad" length="short" direction="pas" function="dot"/>
+<pin name="2" x="-2.54" y="0" visible="pad" length="short" direction="pas" function="dot"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -11404,6 +11442,32 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <connect gate="A" pin="4" pad="4"/>
 <connect gate="A" pin="5" pad="5"/>
 <connect gate="A" pin="6" pad="6"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="PINHD-1X2" prefix="JP" uservalue="yes">
+<description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>
+<gates>
+<gate name="G$1" symbol="PINHD2" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="1X02">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="M" package="1X02M">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -14799,7 +14863,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="R9" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
 <part name="R12" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="73,2k"/>
 <part name="R13" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="45,3k"/>
-<part name="C14" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="2,2µ"/>
+<part name="C14" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="2,2µ"/>
 <part name="C6" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="22µ"/>
 <part name="C15" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="22µ"/>
 <part name="U$11" library="CanCubeSat" deviceset="B82498F" device="" value="1µH"/>
@@ -14866,6 +14930,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="BT1" library="SparkFun-Batteries" deviceset="BATTERY" device="-6.8MM_SMD" value="6.8MM_COIN_CELL"/>
 <part name="R10" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
 <part name="R11" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
+<part name="JP1" library="pinheadCS" deviceset="PINHD-1X2" device=""/>
+<part name="R14" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
 </parts>
 <sheets>
 <sheet>
@@ -16087,9 +16153,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <attribute name="NAME" x="-94.615" y="57.15" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="-78.74" y="57.15" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="R15" gate="G$1" x="309.88" y="149.86" smashed="yes" rot="R90">
-<attribute name="NAME" x="308.3814" y="146.05" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="313.182" y="146.05" size="1.778" layer="96" rot="R90"/>
+<instance part="R15" gate="G$1" x="320.04" y="149.86" smashed="yes" rot="R90">
+<attribute name="NAME" x="318.5414" y="146.05" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="323.342" y="146.05" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="R17" gate="G$1" x="302.26" y="86.36" smashed="yes" rot="R90">
 <attribute name="NAME" x="300.7614" y="82.55" size="1.778" layer="95" rot="R90"/>
@@ -16149,9 +16215,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <attribute name="NAME" x="75.184" y="222.885" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="75.184" y="227.711" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="LED2" gate="G$1" x="309.88" y="162.56" smashed="yes">
-<attribute name="NAME" x="313.436" y="157.988" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="315.595" y="157.988" size="1.778" layer="96" rot="R90"/>
+<instance part="LED2" gate="G$1" x="320.04" y="162.56" smashed="yes">
+<attribute name="NAME" x="323.596" y="157.988" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="325.755" y="157.988" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="LED3" gate="G$1" x="177.8" y="91.44" smashed="yes" rot="R270">
 <attribute name="NAME" x="173.228" y="87.884" size="1.778" layer="95"/>
@@ -16200,6 +16266,14 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <instance part="R11" gate="G$1" x="17.78" y="45.72" smashed="yes">
 <attribute name="NAME" x="13.97" y="47.2186" size="1.778" layer="95"/>
 <attribute name="VALUE" x="13.97" y="42.418" size="1.778" layer="96"/>
+</instance>
+<instance part="JP1" gate="G$1" x="208.28" y="119.38" smashed="yes" rot="R90">
+<attribute name="NAME" x="202.565" y="113.03" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="213.36" y="113.03" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="R14" gate="G$1" x="203.2" y="106.68" smashed="yes" rot="R180">
+<attribute name="NAME" x="207.01" y="105.1814" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="207.01" y="109.982" size="1.778" layer="96" rot="R180"/>
 </instance>
 </instances>
 <busses>
@@ -16459,6 +16533,11 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="276.86" y1="226.06" x2="276.86" y2="233.68" width="0.1524" layer="91"/>
 <label x="276.86" y="228.6" size="1.778" layer="95" rot="R90"/>
 </segment>
+<segment>
+<pinref part="R14" gate="G$1" pin="2"/>
+<wire x1="198.12" y1="106.68" x2="190.5" y2="106.68" width="0.1524" layer="91"/>
+<label x="195.58" y="106.68" size="1.778" layer="95" rot="R180"/>
+</segment>
 </net>
 <net name="5V" class="0">
 <segment>
@@ -16525,6 +16604,12 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="RADIO" gate="G$1" pin="VCC"/>
 <wire x1="220.98" y1="264.16" x2="220.98" y2="271.78" width="0.1524" layer="91"/>
 <label x="220.98" y="266.7" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="GPS" gate="G$1" pin="UCC"/>
+<wire x1="246.38" y1="198.12" x2="246.38" y2="193.04" width="0.1524" layer="91"/>
+<wire x1="246.38" y1="193.04" x2="254" y2="193.04" width="0.1524" layer="91"/>
+<label x="248.92" y="193.04" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="1W" class="0">
@@ -16665,19 +16750,13 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="C12" gate="G$1" pin="2"/>
 </segment>
 <segment>
-<pinref part="GPS" gate="G$1" pin="UCC"/>
-<wire x1="246.38" y1="198.12" x2="246.38" y2="193.04" width="0.1524" layer="91"/>
-<wire x1="246.38" y1="193.04" x2="254" y2="193.04" width="0.1524" layer="91"/>
-<label x="248.92" y="193.04" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="LED2" gate="G$1" pin="A"/>
 <pinref part="U1" gate="G$1" pin="VDD"/>
 <pinref part="U1" gate="G$1" pin="VDDA"/>
 <wire x1="292.1" y1="172.72" x2="292.1" y2="175.26" width="0.1524" layer="91"/>
 <label x="297.18" y="165.1" size="1.778" layer="95"/>
 <junction x="292.1" y="172.72"/>
-<wire x1="309.88" y1="165.1" x2="292.1" y2="165.1" width="0.1524" layer="91"/>
+<wire x1="320.04" y1="165.1" x2="292.1" y2="165.1" width="0.1524" layer="91"/>
 <wire x1="292.1" y1="165.1" x2="292.1" y2="172.72" width="0.1524" layer="91"/>
 </segment>
 <segment>
@@ -16770,6 +16849,11 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="7.62" y1="45.72" x2="7.62" y2="35.56" width="0.1524" layer="91"/>
 <junction x="7.62" y="45.72"/>
 <label x="7.62" y="35.56" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="JP1" gate="G$1" pin="1"/>
+<wire x1="205.74" y1="116.84" x2="190.5" y2="116.84" width="0.1524" layer="91"/>
+<label x="195.58" y="116.84" size="1.778" layer="95" rot="R180"/>
 </segment>
 </net>
 <net name="N$24" class="0">
@@ -17032,8 +17116,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <net name="N$38" class="0">
 <segment>
 <pinref part="U1" gate="G$1" pin="PC12"/>
-<wire x1="292.1" y1="129.54" x2="309.88" y2="129.54" width="0.1524" layer="91"/>
-<wire x1="309.88" y1="129.54" x2="309.88" y2="144.78" width="0.1524" layer="91"/>
+<wire x1="292.1" y1="129.54" x2="320.04" y2="129.54" width="0.1524" layer="91"/>
+<wire x1="320.04" y1="129.54" x2="320.04" y2="144.78" width="0.1524" layer="91"/>
 <pinref part="R15" gate="G$1" pin="1"/>
 </segment>
 </net>
@@ -17818,7 +17902,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <segment>
 <pinref part="R15" gate="G$1" pin="2"/>
 <pinref part="LED2" gate="G$1" pin="C"/>
-<wire x1="309.88" y1="157.48" x2="309.88" y2="154.94" width="0.1524" layer="91"/>
+<wire x1="320.04" y1="157.48" x2="320.04" y2="154.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$51" class="0">
@@ -17854,6 +17938,19 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="R4" gate="G$1" pin="1"/>
 <pinref part="BT1" gate="G$1" pin="+"/>
 <wire x1="276.86" y1="215.9" x2="276.86" y2="213.36" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$5" class="0">
+<segment>
+<pinref part="JP1" gate="G$1" pin="2"/>
+<wire x1="208.28" y1="99.06" x2="208.28" y2="106.68" width="0.1524" layer="91"/>
+<pinref part="R14" gate="G$1" pin="1"/>
+<wire x1="208.28" y1="106.68" x2="208.28" y2="116.84" width="0.1524" layer="91"/>
+<junction x="208.28" y="106.68"/>
+<wire x1="208.28" y1="99.06" x2="228.6" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="228.6" y1="99.06" x2="228.6" y2="93.98" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="PB9"/>
+<wire x1="228.6" y1="93.98" x2="231.14" y2="93.98" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
