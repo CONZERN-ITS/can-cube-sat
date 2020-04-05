@@ -6,14 +6,14 @@
   <enums>
   </enums>
   <messages>
-    <message id="5010" name="TERMAL_STATE">
+    <message id="50010" name="TERMAL_STATE">
       <description></description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint16_t" name="area_id" >Observed area id</field>
       <field type="float" name="temperature" units="degC">X Temperature</field>
     </message>
 
-    <message id="5011" name="ELECTRICAL_STATE">
+    <message id="50011" name="ELECTRICAL_STATE">
       <description></description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint16_t" name="area_id" >Observed area id</field>
@@ -21,7 +21,7 @@
       <field type="float" name="voltage" units="V">X Voltage</field>
     </message>
 
-    <message id="5012" name="GPS_UBX_NAV_SOL">
+    <message id="50012" name="GPS_UBX_NAV_SOL">
       <description></description>
       <field type="uint32_t" name="iTOW" units="ms">Time of week of the navigation epoch</field>
       <field type="int32_t" name="fTOW" units="ns">Fractorial part of iTOW</field>
@@ -41,7 +41,7 @@
       <field type="uint8_t" name="numSV">Number of SVs used in Nav Solution</field>
     </message>
 
-    <message id="5013" name="GPS_UBX_NAV_TIMEGPS">
+    <message id="50013" name="GPS_UBX_NAV_TIMEGPS">
       <description></description>
       <field type="uint32_t" name="iTOW" units="ms">Time of week of the navigation epoch</field>
       <field type="int32_t" name="fTOW" units="ns">Fractorial part of iTOW</field>
@@ -51,7 +51,7 @@
       <field type="uint32_t" name="tAcc" units="ns">Time accuracy estimate</field>
     </message>
 
-    <message id="5014" name="SINS_isc">
+    <message id="50014" name="SINS_isc">
       <description>SINS data in ISC</description>
       <field type="float[3]" name="accel">accelerations</field>
       <field type="float[3]" name="compass">magnetometer vector</field>
