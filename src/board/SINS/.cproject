@@ -16,7 +16,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.869599823" name="Debug" optionalBuildProperties="" parent="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.869599823" name="Debug" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug">
 					<folderInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.869599823." name="/" resourcePath="">
 						<toolChain id="ilg.gnuarmeclipse.managedbuild.cross.toolchain.elf.debug.1369422331" name="Cross ARM GCC" superClass="ilg.gnuarmeclipse.managedbuild.cross.toolchain.elf.debug">
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.672032832" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.debug" valueType="enumerated"/>
@@ -46,7 +46,7 @@
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm.1403266675" name="Remove command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm" useByScannerDiscovery="false" value="rm" valueType="string"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash.623276264" name="Create flash image" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize.803257437" name="Print size" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id.1458285196" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id" value="1287942917" valueType="string"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id.1458285196" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id" useByScannerDiscovery="false" value="1287942917" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.847849212" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
 							<builder buildPath="${workspace_loc:/SINS}/Debug" id="ilg.gnuarmeclipse.managedbuild.cross.builder.1005252935" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1982693744" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
@@ -60,7 +60,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library/lsm6ds3_STdC/driver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\Danich\Desktop\can-cube-sat\src\common\mavlink\generated\mavlink&quot;"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1778141953" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" useByScannerDiscovery="true" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
@@ -83,7 +82,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library/lsm6ds3_STdC/driver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\Danich\Desktop\can-cube-sat\src\common\mavlink\generated\mavlink&quot;"/>
+									<listOptionValue builtIn="false" value="../../../common/mavlink/generated"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1003618726" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="true" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
@@ -106,7 +105,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library/lsm6ds3_STdC/driver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\Danich\Desktop\can-cube-sat\src\common\mavlink\generated\mavlink&quot;"/>
+									<listOptionValue builtIn="false" value="../../../common/mavlink/generated"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.1564960656" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.465247165" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -252,7 +251,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.2097242906" name="Release" parent="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.2097242906" name="Release" optionalBuildProperties="" parent="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release">
 					<folderInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.2097242906." name="/" resourcePath="">
 						<toolChain id="ilg.gnuarmeclipse.managedbuild.cross.toolchain.elf.release.92079819" name="Cross ARM GCC" superClass="ilg.gnuarmeclipse.managedbuild.cross.toolchain.elf.release">
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.1712265609" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.size" valueType="enumerated"/>
@@ -281,7 +280,7 @@
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm.1716581230" name="Remove command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm" useByScannerDiscovery="false" value="rm" valueType="string"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash.1913484696" name="Create flash image" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize.995678221" name="Print size" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id.2126470281" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id" value="1287942917" valueType="string"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id.2126470281" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.toolchain.id" useByScannerDiscovery="false" value="1287942917" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.1323600160" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
 							<builder buildPath="${workspace_loc:/SINS}/Release" id="ilg.gnuarmeclipse.managedbuild.cross.builder.1170175553" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1428027523" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
@@ -294,9 +293,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library/lis3mdl_STdC/driver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library/lsm6ds3_STdC/driver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/home/developer/can-cube-sat/SINS/src/library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\Danich\Desktop\can-cube-sat\src\common\mavlink\generated\mavlink&quot;"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1460916820" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" useByScannerDiscovery="true" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NDEBUG"/>
@@ -315,9 +312,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library/lis3mdl_STdC/driver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library/lsm6ds3_STdC/driver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/home/developer/can-cube-sat/SINS/src/library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\Danich\Desktop\can-cube-sat\src\common\mavlink\generated\mavlink&quot;"/>
+									<listOptionValue builtIn="false" value="../../../common/mavlink/generated"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.989993683" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="true" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NDEBUG"/>
@@ -336,9 +332,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library/lis3mdl_STdC/driver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library/lsm6ds3_STdC/driver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/home/developer/can-cube-sat/SINS/src/library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SINS/src/library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\Danich\Desktop\can-cube-sat\src\common\mavlink\generated\mavlink&quot;"/>
+									<listOptionValue builtIn="false" value="../../../common/mavlink/generated"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.585239199" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.399931576" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>

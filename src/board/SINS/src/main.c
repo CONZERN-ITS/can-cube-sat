@@ -30,15 +30,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "diag/Trace.h"
-#include "stm32f4xx_hal.h"
 
-#include "state.h"
+#include <mavlink/its/mavlink.h>
+
+#include <stm32f4xx_hal.h>
+#include <diag/Trace.h>
 
 #include "drivers/lis3mdl.h"
 #include "drivers/lsm6ds3.h"
 #include "drivers/gps.h"
-#include "time.h"
+#include "drivers/lis3mdl.h"
+#include "drivers/lsm6ds3.h"
+#include "drivers/gps.h"
+
+#include "state.h"
+
 
 #include "MadgwickAHRS.h"
 #include "vector.h"
