@@ -6,6 +6,13 @@
  */
 
 #include "timers.h"
+#include "time_util.h"
+
+#include <assert.h>
+
+
+//! Текущий номер недели
+static uint32_t _gps_week;
 
 
 TIM_HandleTypeDef htim2;
@@ -121,6 +128,26 @@ static void MX_TIM4_Init(void)
 }
 
 
+//! прерывание таймера 2
+void TIM2_IRQHandler()
+{
+	// Отдаем его халу. Впринципе нас интересует только перерывание на переполнение таймера
+	// Что будет означать что прошла неделя
+	HAL_TIM_IRQHandler(&htim2);
+}
+
+
+//! Халовский колбек на переполнение таймера
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef * htim)
+{
+	// Если это был таймер2, то значит прошла неделя
+	if (&htim2 == htim)
+	{
+		_gps_week++;
+	}
+}
+
+
 void time_svc_timers_prepare()
 {
 	// Инициализируем таймеры и все сопутствующие им железочки
@@ -133,8 +160,7 @@ void time_svc_timers_prepare()
 	// в предельное значение
 	// При наших настройках (PWM MODE 1, POLARITY HIGH) это выводит PWM линию в 0
 	// Но при этом таймер по пуску сразу же сгенерирует UPD событие и сбросится не делая(? FIXME) лишних тиков
-	__HAL_TIM_SET_COUNTER(&htim2, __HAL_TIM_GET_AUTORELOAD(&htim2));
-	TIM_CCxChannelCmd(htim2.Instance, TIM_CHANNEL_1, TIM_CCx_ENABLE);
+	__HAL_TIM_SET_COUNTER(&htim2, 0); // у TIM2 нет PWM линий и прочего
 
 	__HAL_TIM_SET_COUNTER(&htim3, __HAL_TIM_GET_AUTORELOAD(&htim3));
 	TIM_CCxChannelCmd(htim3.Instance, TIM_CHANNEL_1, TIM_CCx_ENABLE);
@@ -148,11 +174,30 @@ void time_svc_timers_prepare()
 }
 
 
-void time_svc_timers_start()
+void time_svc_timers_initial_time_preload(time_t initial_time)
 {
-	// Запускаем все таймеры
-	// именно в таком порядке
-	__HAL_TIM_ENABLE(&htim2);
-	__HAL_TIM_ENABLE(&htim3);
-	__HAL_TIM_ENABLE(&htim4);
+	uint32_t tow_ms;
+	uint16_t week;
+
+	struct timeval tmv = { .tv_sec = initial_time };
+	unix_time_to_gps_time(&tmv, &week, &tow_ms);
+
+	// Убеждаемся, что нам дали миллисекунды ровно на начало секунды
+	assert(tow_ms % 1000 == 0);
+
+	// Проставляем значения
+	_gps_week = week;
+	__HAL_TIM_SET_COUNTER(&htim2, tow_ms);
+}
+
+
+void time_svc_timers_get_time(struct timeval * tmv)
+{
+	uint16_t week;
+	uint32_t tow_ms;
+
+	week = _gps_week;
+	tow_ms = __HAL_TIM_GET_COUNTER(&htim2);
+
+	gps_time_to_unix_time(week, tow_ms, tmv);
 }

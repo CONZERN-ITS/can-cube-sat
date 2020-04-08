@@ -17,12 +17,12 @@
 static UART_HandleTypeDef uartGPS;
 
 //! Циклобуфер для входящих байт GPS
-static uint8_t _uart_cycle_buffer[GPS_UART_CYCLE_BUFFER_SIZE];
+static uint8_t _uart_cycle_buffer[ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE];
 static int _uart_cycle_buffer_head;
 static int _uart_cycle_buffer_tail;
 
 //! Линейный буфер для сбора сообщений потоковым парсером UBX
-static uint8_t _ubx_sparser_buffer[GPS_UBX_SPARSER_BUFFER_SIZE];
+static uint8_t _ubx_sparser_buffer[ITS_SINS_GPS_UBX_SPARSER_BUFFER_SIZE];
 //! Контекст потокового парсера UBX
 static ubx_sparser_ctx_t _sparser_ctx;
 
@@ -49,7 +49,7 @@ static void _init_uart()
 
 	//Включение прерывания USART: RXNE
 	__HAL_UART_ENABLE_IT(&uartGPS, UART_IT_RXNE);
-	HAL_NVIC_SetPriority(USART2_IRQn, GPS_UART_IRQ_PRIORITY, 0);
+	HAL_NVIC_SetPriority(USART2_IRQn, ITS_SINS_GPS_UART_IRQ_PRIORITY, 0);
 	HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
 
@@ -66,7 +66,7 @@ static void _init_pps()
 	gpioa.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOA, &gpioa);
 
-	HAL_NVIC_SetPriority(EXTI0_IRQn, GPS_PPS_IRQ_PRIORITY, 0);
+	HAL_NVIC_SetPriority(EXTI0_IRQn, ITS_SINS_GPS_PPS_IRQ_PRIORITY, 0);
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 }
 
@@ -80,7 +80,7 @@ void USART2_IRQHandler(void)
 		volatile uint8_t tmp = USART2->DR;
 
 		int next_head = _uart_cycle_buffer_head + 1;
-		if (next_head >= GPS_UART_CYCLE_BUFFER_SIZE)
+		if (next_head >= ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE)
 			next_head = 0;
 
 		if (next_head == _uart_cycle_buffer_tail)
@@ -132,7 +132,7 @@ int gps_poll(void)
 {
 	size_t i = 0;
 	// Выгребаем байты из цилобуфера и корими ими стрим парсер
-	for ( ; i < GPS_MAX_POLL_SIZE; i++)
+	for ( ; i < ITS_SINS_GPS_MAX_POLL_SIZE; i++)
 	{
 		if (_uart_cycle_buffer_tail == _uart_cycle_buffer_head)
 		{
@@ -143,7 +143,7 @@ int gps_poll(void)
 		// Достаем байт
 		uint8_t byte = _uart_cycle_buffer[_uart_cycle_buffer_tail];
 		int next_tail = _uart_cycle_buffer_tail + 1;
-		if (next_tail >= GPS_UART_CYCLE_BUFFER_SIZE)
+		if (next_tail >= ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE)
 			next_tail = 0;
 
 		// Показываем что мы его достали

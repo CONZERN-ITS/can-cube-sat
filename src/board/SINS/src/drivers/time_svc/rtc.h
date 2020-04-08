@@ -26,37 +26,21 @@ void time_svc_rtc_simple_init(void);
 
 //! Настройка RTC в общем
 /*! Настраивать понрмальному или по-хардкору решает само. Просто глядя работает ли уже RTC или еще нет */
-void time_scv_rtc_init(void);
+void time_svc_rtc_init(void);
 
 
-//! Пересчет дня недели из терминов struct tm в термины RTC
-int struct_tm_wday_to_rtc(int tm_wday, uint8_t * rtc_wday);
-//! Пересчет дня недели из терминов RTC в термины struct tm
-int rtc_wday_to_struct_tm(uint8_t rtc_wday, int * tm_wday);
+//! Загрузка времени из RTC в struct_tm
+int time_svc_rtc_load(struct tm * tm);
 
-//! Пересчет номера месяца из терминов struct_tm в термины RTC
-int struct_tm_month_to_rtc(int tm_month, uint8_t * rtc_month);
-//! Пересчет номера месяца из терминов RTC в термины struct_tm
-int rtc_month_to_struct_tm(uint8_t rtc_month, int * tm_month);
+//! Сохранение времени из struct tm в RTC
+int time_svc_rtc_store(const struct tm * tm);
 
-//! Пересчет номера года из терминов struct_tm в термины RTC
-int struct_tm_year_to_rtc(int tm_year, uint8_t * rtc_year);
-//! Пересчет номера года из терминов RTC в термины struct_tm
-int rtc_year_to_struct_tm(uint8_t rtc_year, int * tm_year);
 
-//! Сборка struct tm из RTCшных структур хала
-/*! Подразумевается BCD формат на 24 часа.
- *  Daylight Saving, SecondFraction и SubSeconds не учитываются */
-int rtc_to_struct_tm(const RTC_TimeTypeDef * rtc_time, const RTC_DateTypeDef * rtc_date, struct tm * tm);
-
-//! Сборка RTCшных структур хала из struct tm
-/*! Подразумевается BCD формат на 24 часа.
- *  DaylightSaving = RTC_DAYLIGHTSAVING_NONE,
- *  StoreOperation = RTC_STOREOPERATION_RESET,
- *  SecondFraction = 0,
- *  SubSeconds = 0 */
-int struct_tm_to_rtc(const struct tm * tm, RTC_TimeTypeDef * rtc_time, RTC_DateTypeDef * rtc_date);
-
+//! Установка времени в будильник RTC
+/*! Будильник RTC довольно наивный и по абсолютному времени не работает.
+ *  Самое близкое это точное время на определенный день какого-то месяца какого-то года.
+ *  Аргумент alarm должен быть из множества RTC_Alarms_Definitions. RTC_ALARM_A или RTC_ALARM_B */
+int time_svc_rtc_alarm_setup(const struct tm * tm, uint32_t alarm);
 
 
 #endif /* DRIVERS_TIME_SVC_RTC_H_ */
