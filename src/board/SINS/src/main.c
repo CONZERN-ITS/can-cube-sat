@@ -36,6 +36,7 @@
 #include <stm32f4xx_hal.h>
 #include <diag/Trace.h>
 
+#include "drivers/time_svc/time_svc.h"
 #include "drivers/mems/mems.h"
 #include "drivers/gps.h"
 #include "drivers/uplink.h"
@@ -217,12 +218,11 @@ int main(int argc, char* argv[])
 	memset(&state_system_prev,		0x00, sizeof(state_system_prev));
 	memset(&state_zero,				0x00, sizeof(state_zero));
 
-//	HAL_Delay(1000);
-
 	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
 //	init_led();
 //	initInterruptPin();
+	time_svc_init();
 	uplink_init();
 	SENSORS_Init();
 //	get_gyro_staticShift(state_zero.gyro_staticShift);
@@ -231,12 +231,16 @@ int main(int argc, char* argv[])
 //	__enable_irq();
 //	uint16_t flag = 0xFEFF;
 
-//	InitMasterTimer(&TimMaster);
-//	InitTowMsTimer(&TimTowMs);
-//
-//	HAL_TIM_Base_Start(&TimTowMs);
-//	HAL_TIM_Base_Start(&TimMaster);
-
+	for (;;)
+	{
+		struct timeval tmv;
+		time_svc_timers_get_time(&tmv);
+		struct tm * tm = gmtime(&tmv.tv_sec);
+		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
+		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
+		trace_printf("time is %s\n", buffer);
+		HAL_Delay(100);
+	}
 
 	for (; ; )
 	{

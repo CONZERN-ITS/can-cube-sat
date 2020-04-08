@@ -44,6 +44,9 @@ inline void time_svc_timers_start()
 	__HAL_TIM_ENABLE(&htim2);
 	__HAL_TIM_ENABLE(&htim3);
 	__HAL_TIM_ENABLE(&htim4);
+
+	// Для счёта недель.
+	__HAL_TIM_ENABLE_IT(&htim2, TIM_IT_UPDATE);
 }
 
 

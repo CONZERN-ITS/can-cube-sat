@@ -123,7 +123,6 @@ int time_svc_rtc_hardcore_init()
 
 int time_svc_rtc_simple_init()
 {
-	HAL_StatusTypeDef hal_error;
 	// к сожалению в ХАЛ-Е не предусмотрены интерфейсы для работы
 	// с RTC, который уже настроен кем-то до нас.
 	// Поэтому сделаем это все для него и сделаем вид что ХАЛ нормально настроился
@@ -202,8 +201,10 @@ int time_svc_rtc_store(const struct tm * tm)
 		return rc;
 
 	// зашиваем!
+	HAL_PWR_EnableBkUpAccess();
 	hrc_date = HAL_RTC_SetDate(&hrtc, &rtc_date, RTC_FORMAT_BCD);
 	hrc_time = HAL_RTC_SetTime(&hrtc, &rtc_time, RTC_FORMAT_BCD);
+	HAL_PWR_DisableBkUpAccess();
 
 	// Проверяем как зашилось
 	rc = sins_hal_status_to_errno(hrc_date);
@@ -231,14 +232,17 @@ int time_svc_rtc_alarm_setup(const struct tm * tm, uint32_t alarm)
 	if (0 != rc)
 		return rc;
 
-	rtc_alarm.AlarmMask = RTC_ALARMMASK_NONE; 	// Алармим по всем параметрам даты
+	rtc_alarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY; //RTC_ALARMMASK_NONE; 	// Алармим по всем параметрам даты
 	rtc_alarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL; // Забиваем на сабсекунды
 	rtc_alarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE; // Работаем по дате а не еженедельно
 	rtc_alarm.AlarmDateWeekDay = rtc_date.Date; // Уточняем собственно дату
 	rtc_alarm.Alarm = alarm;
 
-	// Выставляемs
+	// Выставляем
+	HAL_PWR_EnableBkUpAccess();
 	hrc = HAL_RTC_SetAlarm(&hrtc, &rtc_alarm, RTC_FORMAT_BCD);
+	HAL_PWR_DisableBkUpAccess();
+
 	rc = sins_hal_status_to_errno(hrc);
 	if (0 != rc)
 		return rc;

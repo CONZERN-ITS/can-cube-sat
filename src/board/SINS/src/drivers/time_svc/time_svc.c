@@ -28,17 +28,51 @@ void RTC_Alarm_IRQHandler()
 	// Немедленно пускаем таймеры!
 	time_svc_timers_start();
 
-	// Выключаем прерывание
-	__HAL_RTC_ALARM_CLEAR_FLAG(&hrtc, RTC_FLAG_ALRAF);
+
+	// Эта штука выключит все флаги, которые вызывают прерывание
+	HAL_PWR_EnableBkUpAccess();
+	HAL_RTC_AlarmIRQHandler(&hrtc);
+	HAL_PWR_DisableBkUpAccess();
+
+
 	_time_svc_started = 1;
+}
+
+
+
+static void _enable_alarm_irq()
+{
+	HAL_PWR_EnableBkUpAccess();
+	__HAL_RTC_WRITEPROTECTION_DISABLE(&hrtc);
+
+	__HAL_RTC_ALARM_ENABLE_IT(&hrtc, RTC_IT_ALRA);
+
+	__HAL_RTC_WRITEPROTECTION_ENABLE(&hrtc);
+	HAL_PWR_DisableBkUpAccess();
+
+
+	// Включаем EXTI для аларма на Rising Edge
+	__HAL_RTC_ALARM_EXTI_ENABLE_IT();
+	EXTI->RTSR |= RTC_EXTI_LINE_ALARM_EVENT;
+
+	HAL_NVIC_SetPriority(RTC_Alarm_IRQn, ITS_SINS_TIME_SVC_ALARM_IRQ_PRIORITY, 0);
+	HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
 }
 
 
 
 static void _disable_alarm_irq()
 {
+	HAL_PWR_EnableBkUpAccess();
+	__HAL_RTC_WRITEPROTECTION_DISABLE(&hrtc);
+
 	// глушим прерывания от RTC
 	__HAL_RTC_ALARM_DISABLE_IT(&hrtc, RTC_IT_ALRA);
+
+	__HAL_RTC_WRITEPROTECTION_ENABLE(&hrtc);
+	HAL_PWR_DisableBkUpAccess();
+
+
 	HAL_NVIC_DisableIRQ(RTC_Alarm_IRQn);
 }
 
@@ -85,17 +119,14 @@ int time_svc_init(void)
 	_time_svc_started = 0;
 
 	// Разрешаем прерывания для таймера А
-	__HAL_RTC_ALARM_ENABLE_IT(&hrtc, RTC_IT_ALRA);
-	HAL_NVIC_SetPriority(RTC_Alarm_IRQn, ITS_SINS_TIME_SVC_ALARM_IRQ_PRIORITY, 0);
-	HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
-
+	_enable_alarm_irq();
 
 	uint32_t start_tick = HAL_GetTick();
 	// Ждем пока служба времени запустится
 	while(0 == _time_svc_started)
 	{
 		// Если мы тут крутимся больше трех секунд - очевидно что-то не то
-		if (HAL_GetTick() - start_tick <= 3000)
+		if (HAL_GetTick() - start_tick > 3000)
 		{
 			// глушим прерывания от RTC
 			_disable_alarm_irq();

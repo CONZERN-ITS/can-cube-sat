@@ -34,7 +34,7 @@ static int MX_TIM2_Init(void)
 	htim2.Instance = TIM2;
 	htim2.Init.Prescaler = 0;
 	htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim2.Init.Period = 999;
+	htim2.Init.Period = SECONDS_PER_WEEK * 1000 - 1;
 	htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	hal_error = HAL_TIM_Base_Init(&htim2);
 	if (HAL_OK != hal_error)

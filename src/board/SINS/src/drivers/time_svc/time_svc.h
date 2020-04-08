@@ -8,6 +8,7 @@
 #ifndef DRIVERS_TIME_SVC_TIME_SVC_H_
 #define DRIVERS_TIME_SVC_TIME_SVC_H_
 
+#include "timers.h"
 
 int time_svc_init(void);
 
