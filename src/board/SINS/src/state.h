@@ -8,7 +8,7 @@
 #include "stm32f4xx_hal.h"
 #include "drivers/lis3mdl.h"
 #include "drivers/lsm6ds3.h"
-#include "drivers/gps/gps.h"
+#include "drivers/gps.h"
 #include "time.h"
 
 #ifndef STATE_H_

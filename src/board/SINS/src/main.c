@@ -37,7 +37,7 @@
 
 #include "drivers/lis3mdl.h"
 #include "drivers/lsm6ds3.h"
-#include "drivers/gps/gps.h"
+#include "drivers/gps.h"
 #include "time.h"
 
 #include "MadgwickAHRS.h"
