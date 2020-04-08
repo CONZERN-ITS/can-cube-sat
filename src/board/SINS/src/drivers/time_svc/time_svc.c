@@ -68,19 +68,19 @@ void time_svc_init(void)
 	__HAL_RTC_ALARM_ENABLE_IT(&hrtc, RTC_IT_ALRA);
 	HAL_NVIC_SetPriority(RTC_Alarm_IRQn, ITS_SINS_TIME_SVC_ALARM_IRQ_PRIORITY, 0);
 	HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
-	NVIC_EnableIRQ(RTC_Alarm_IRQn);
 
 
 	uint32_t start_tick = HAL_GetTick();
 	// Ждем пока служба времени запустится
 	while(0 == _time_svc_started)
 	{
-			// Если мы тут крутимся больше трех секунд - очевидно что-то не то
+		// Если мы тут крутимся больше трех секунд - очевидно что-то не то
 		assert(HAL_GetTick() - start_tick <= 3000);
 	}
 	// Ок! Мы запустились!
 
+
 	// глушим прерывания от RTC
 	__HAL_RTC_ALARM_DISABLE_IT(&hrtc, RTC_IT_ALRA);
-	NVIC_DisableIRQ(RTC_Alarm_IRQn);
+	HAL_NVIC_DisableIRQ(RTC_Alarm_IRQn);
 }
