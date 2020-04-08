@@ -24,7 +24,7 @@ void unix_time_to_gps_time(const struct timeval * tmv, uint16_t * week, uint32_t
 	const time_t gps_epoch_seconds = tmv->tv_sec - GPS_EPOCH_IN_UNIX_TIME;
 
 	*week = gps_epoch_seconds / SECONDS_PER_WEEK;
-	*tow_ms = tmv->tv_usec / 1000;
+	*tow_ms = (tmv->tv_sec % SECONDS_PER_WEEK) * 1000 + tmv->tv_usec / 1000;
 }
 
 
@@ -163,15 +163,19 @@ static int yisleap(int year)
 
 
 // https://stackoverflow.com/a/19377562/1869025
-static int get_yday(int mon, int day, int year)
+static int get_yday(int day, int mon, int year, int * yday)
 {
+	if (mon < 0 || mon > 11)
+		return -EINVAL;
+
 	static const int days[2][13] = {
-		{0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334},
-		{0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335}
+		{0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334},
+		{0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335}
 	};
 	int leap = yisleap(year);
 
-	return days[leap][mon] + day;
+	*yday = days[leap][mon] + day;
+	return 0;
 }
 
 
@@ -198,7 +202,9 @@ int time_svc_rtc_to_struct_tm(const RTC_DateTypeDef * rtc_date, const RTC_TimeTy
 	tm->tm_sec =  RTC_Bcd2ToByte(rtc_time->Seconds);
 
 	tm->tm_isdst = 0;
-	tm->tm_yday = get_yday(tm->tm_mon, tm->tm_mday, tm->tm_year + 1900);
+	rc = get_yday(tm->tm_mday, tm->tm_mon, tm->tm_year + 1900, &tm->tm_yday);
+	if (0 != rc)
+		return rc;
 
 	return 0;
 }
