@@ -279,7 +279,7 @@ int main(int argc, char* argv[])
 		uint16_t len = mavlink_msg_sins_isc_encode(0, 0, &msg, &msg_sins_isc);
 		uplink_write_mav(&msg);
 
-
+		/*
 		mavlink_sins_rsc_t msg_sins_rsc;
 		msg_sins_rsc.time_s = HAL_GetTick();
 		msg_sins_rsc.time_ms = 0;
@@ -294,6 +294,7 @@ int main(int argc, char* argv[])
 
 		mavlink_msg_sins_rsc_encode(0, 0, &msg, &msg_sins_rsc);
 		uplink_write_mav(&msg);
+		*/
 
 //		for (int i = 0; i < len; i++)
 //			trace_printf("0x%x ", buffer[i]);

@@ -10,6 +10,11 @@
 
 #include <assert.h>
 
+#include "../common.h"
+
+
+I2C_HandleTypeDef hmems_i2c;
+
 
 int mems_init_bus()
 {
@@ -26,7 +31,7 @@ int mems_init_bus()
 	hmems_i2c.Init.OwnAddress1 = 0x00;
 
 	HAL_StatusTypeDef hal_status =  HAL_I2C_Init(&hmems_i2c);
-	return mems_hal_status_to_errno(hal_status);
+	return sins_hal_status_to_errno(hal_status);
 }
 
 
