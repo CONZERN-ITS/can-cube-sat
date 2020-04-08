@@ -9,11 +9,9 @@
 #define DRIVERS_LIS3MDL_H_
 #include <stdint.h>
 
-#include "state.h"
-#include "lis3mdl_reg.h"
 
-int lis3mdl_init(void);
+int mems_lis3mdl_init(void);
 
-uint32_t lis3mdl_get_m_data_mG(float* magn);
+int mems_lis3mdl_get_m_data_mG(float* magn);
 
 #endif /* DRIVERS_LIS3MDL_H_ */

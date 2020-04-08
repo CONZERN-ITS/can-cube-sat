@@ -6,23 +6,11 @@
  */
 
 #include "stm32f4xx_hal.h"
-#include "drivers/lis3mdl.h"
-#include "drivers/lsm6ds3.h"
+#include "drivers/mems/mems.h"
 #include "drivers/gps.h"
-#include "time.h"
 
 #ifndef STATE_H_
 #define STATE_H_
-
-
-//--------- SPI ---------------
-#define PORT				GPIOA
-#define CS_PIN_ACCEL		GPIO_PIN_4
-#define CS_PIN_MAGN			GPIO_PIN_0
-#define SCK_PIN				GPIO_PIN_5
-#define MISO_PIN			GPIO_PIN_6
-#define MOSI_PIN			GPIO_PIN_7
-
 
 #define CALIBRATION 0
 #define GPS			0
@@ -76,15 +64,7 @@ typedef struct {
 
 }__attribute__((packed, aligned(1))) stateSINS_transfer_t;
 
-extern SPI_HandleTypeDef spi;
-extern I2C_HandleTypeDef i2c;
 
-extern UART_HandleTypeDef uartTransfer_data;
-extern UART_HandleTypeDef uartGPS;
-
-
-extern stmdev_ctx_t lsm6ds3_dev_ctx;
-extern stmdev_ctx_t lis3mdl_dev_ctx;
 extern stateSINS_rsc_t stateSINS_rsc;
 extern state_system_t state_system;
 extern state_zero_t state_zero;
@@ -95,8 +75,6 @@ extern stateSINS_transfer_t stateSINS_transfer;
 extern stateGPS_t stateGPS;
 
 
-extern int32_t bus_spi_init(void * handle);
-extern void init_led(void);
 //void SENSORS_Init(void);
 extern void SensorsInit(void);
 extern int UpdateDataAll(void);

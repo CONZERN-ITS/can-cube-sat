@@ -10,40 +10,12 @@
 #include <assert.h>
 #include <errno.h>
 
+#include "../common.h"
 #include "sins_config.h"
 #include "time_util.h"
 
+
 RTC_HandleTypeDef hrtc;
-
-
-//! Ошибка в терминах ХАЛа в errno
-inline static int _hal_status_to_errno(HAL_StatusTypeDef h_status)
-{
-	int rc;
-
-	switch (h_status)
-	{
-	case HAL_OK:
-		rc = 0;
-		break;
-
-	case HAL_BUSY:
-		rc = -EBUSY;
-		break;
-
-	case HAL_TIMEOUT:
-		rc = -ETIMEDOUT;
-		break;
-
-	default:
-	case HAL_ERROR:
-		rc = -EFAULT;
-		break;
-	}
-
-	return rc;
-}
-
 
 //! Настройка клоков RTC
 /*! Это нужно делать, только если вдруг обнаружится что наш бэкап домен нифига не настроен */
@@ -176,11 +148,11 @@ int time_svc_rtc_load(struct tm * tm)
 	hrc_date = HAL_RTC_GetDate(&hrtc, &rtc_date, RTC_FORMAT_BCD);
 	hrc_time = HAL_RTC_GetTime(&hrtc, &rtc_time, RTC_FORMAT_BCD);
 
-	rc = _hal_status_to_errno(hrc_date);
+	rc = sins_hal_status_to_errno(hrc_date);
 	if (0 != rc)
 		return rc;
 
-	rc = _hal_status_to_errno(hrc_time);
+	rc = sins_hal_status_to_errno(hrc_time);
 	if (0 != rc)
 		return rc;
 
@@ -211,11 +183,11 @@ int time_svc_rtc_store(const struct tm * tm)
 	hrc_time = HAL_RTC_SetTime(&hrtc, &rtc_time, RTC_FORMAT_BCD);
 
 	// Проверяем как зашилось
-	rc = _hal_status_to_errno(hrc_date);
+	rc = sins_hal_status_to_errno(hrc_date);
 	if (0 != rc)
 		return rc;
 
-	rc = _hal_status_to_errno(hrc_time);
+	rc = sins_hal_status_to_errno(hrc_time);
 	if (0 != rc)
 		return rc;
 
@@ -244,7 +216,7 @@ int time_svc_rtc_alarm_setup(const struct tm * tm, uint32_t alarm)
 
 	// Выставляемs
 	hrc = HAL_RTC_SetAlarm(&hrtc, &rtc_alarm, RTC_FORMAT_BCD);
-	rc = _hal_status_to_errno(hrc);
+	rc = sins_hal_status_to_errno(hrc);
 	if (0 != rc)
 		return rc;
 
