@@ -33,15 +33,11 @@
 #include "diag/Trace.h"
 #include "stm32f4xx_hal.h"
 
-#include "its/mavlink.h"
-
-#include "Timer.h"
-#include "BlinkLed.h"
 #include "state.h"
 
 #include "drivers/lis3mdl.h"
 #include "drivers/lsm6ds3.h"
-#include "drivers/gps.h"
+#include "drivers/gps/gps.h"
 #include "time.h"
 
 #include "MadgwickAHRS.h"
@@ -53,8 +49,8 @@
 SPI_HandleTypeDef spi;
 I2C_HandleTypeDef i2c;
 UART_HandleTypeDef uartTransfer_data;
-UART_HandleTypeDef uartGPS;
-//DMA_HandleTypeDef dmaGPS;
+
+
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
