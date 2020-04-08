@@ -24,4 +24,8 @@
 #define GPS_MAX_POLL_SIZE (GPS_UART_CYCLE_BUFFER_SIZE)
 
 
+
+//! Базовый год для RTC, так как оно работает в двух последних цифрах года
+#define RTC_BASE_YEAR (2000)
+
 #endif /* INC_SINS_CONFIG_H_*/
