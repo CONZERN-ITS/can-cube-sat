@@ -74,7 +74,7 @@
   */
 void HAL_MspInit(void)
 {
-	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+//	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 }
 
 /**
