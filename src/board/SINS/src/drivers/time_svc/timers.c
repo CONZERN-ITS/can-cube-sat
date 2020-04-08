@@ -6,9 +6,11 @@
  */
 
 #include "timers.h"
-#include "time_util.h"
 
 #include <assert.h>
+
+#include "../common.h"
+#include "time_util.h"
 
 
 //! Текущий номер недели
@@ -23,8 +25,9 @@ TIM_HandleTypeDef htim4;
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 
-static void MX_TIM2_Init(void)
+static int MX_TIM2_Init(void)
 {
+	HAL_StatusTypeDef hal_error;
 	TIM_SlaveConfigTypeDef sSlaveConfig = {0};
 	TIM_MasterConfigTypeDef sMasterConfig = {0};
 
@@ -33,23 +36,34 @@ static void MX_TIM2_Init(void)
 	htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
 	htim2.Init.Period = 999;
 	htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	assert(HAL_TIM_Base_Init(&htim2) == HAL_OK);
-	assert(HAL_TIM_PWM_Init(&htim2) == HAL_OK);
+	hal_error = HAL_TIM_Base_Init(&htim2);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
+
+	hal_error = HAL_TIM_PWM_Init(&htim2);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sSlaveConfig.SlaveMode = TIM_SLAVEMODE_EXTERNAL1;
 	sSlaveConfig.InputTrigger = TIM_TS_ITR3;
-	assert(HAL_TIM_SlaveConfigSynchronization(&htim2, &sSlaveConfig) == HAL_OK);
+	hal_error = HAL_TIM_SlaveConfigSynchronization(&htim2, &sSlaveConfig);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	assert(HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) == HAL_OK);
+	hal_error = HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	HAL_TIM_MspPostInit(&htim2);
+	return 0;
 }
 
 
-static void MX_TIM3_Init(void)
+static int MX_TIM3_Init(void)
 {
+	HAL_StatusTypeDef hal_error;
 	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
 	TIM_SlaveConfigTypeDef sSlaveConfig = {0};
 	TIM_MasterConfigTypeDef sMasterConfig = {0};
@@ -60,37 +74,53 @@ static void MX_TIM3_Init(void)
 	htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
 	htim3.Init.Period = 999;
 	htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	assert(HAL_TIM_Base_Init(&htim3) == HAL_OK);
+	hal_error = HAL_TIM_Base_Init(&htim3);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_ETRMODE2;
 	sClockSourceConfig.ClockPolarity = TIM_CLOCKPOLARITY_NONINVERTED;
 	sClockSourceConfig.ClockPrescaler = TIM_CLOCKPRESCALER_DIV1;
 	sClockSourceConfig.ClockFilter = 0;
-	assert(HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) == HAL_OK);
-	assert(HAL_TIM_PWM_Init(&htim3) == HAL_OK);
+	hal_error = HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
+
+	hal_error = HAL_TIM_PWM_Init(&htim3);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sSlaveConfig.SlaveMode = TIM_SLAVEMODE_RESET;
 	sSlaveConfig.InputTrigger = TIM_TS_TI2FP2;
 	sSlaveConfig.TriggerPolarity = TIM_TRIGGERPOLARITY_RISING;
 	sSlaveConfig.TriggerFilter = 0;
-	assert(HAL_TIM_SlaveConfigSynchronization(&htim3, &sSlaveConfig) == HAL_OK);
+	hal_error = HAL_TIM_SlaveConfigSynchronization(&htim3, &sSlaveConfig);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	assert (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) == HAL_OK);
+	hal_error = HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
 	sConfigOC.Pulse = 10;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-	assert(HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) == HAL_OK);
+	hal_error = HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	HAL_TIM_MspPostInit(&htim3);
+	return 0;
 }
 
 
-static void MX_TIM4_Init(void)
+static int MX_TIM4_Init(void)
 {
+	HAL_StatusTypeDef hal_error;
+
 	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
 	TIM_SlaveConfigTypeDef sSlaveConfig = {0};
 	TIM_MasterConfigTypeDef sMasterConfig = {0};
@@ -101,30 +131,43 @@ static void MX_TIM4_Init(void)
 	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
 	htim4.Init.Period = 3;
 	htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	assert(HAL_TIM_Base_Init(&htim4) == HAL_OK);
+	hal_error = HAL_TIM_Base_Init(&htim4);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-	assert(HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) == HAL_OK);
+	hal_error = HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
-	assert(HAL_TIM_PWM_Init(&htim4) == HAL_OK);
+	hal_error = HAL_TIM_PWM_Init(&htim4);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sSlaveConfig.SlaveMode = TIM_SLAVEMODE_RESET;
 	sSlaveConfig.InputTrigger = TIM_TS_TI2FP2;
 	sSlaveConfig.TriggerPolarity = TIM_TRIGGERPOLARITY_RISING;
 	sSlaveConfig.TriggerFilter = 0;
-	assert(HAL_TIM_SlaveConfigSynchronization(&htim4, &sSlaveConfig) == HAL_OK);
+	hal_error = HAL_TIM_SlaveConfigSynchronization(&htim4, &sSlaveConfig);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	assert(HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) == HAL_OK);
+	hal_error = HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
 	sConfigOC.Pulse = 2;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-	assert(HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) == HAL_OK);
+	hal_error = HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	HAL_TIM_MspPostInit(&htim4);
+	return 0;
 }
 
 
@@ -148,12 +191,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef * htim)
 }
 
 
-void time_svc_timers_prepare()
+int time_svc_timers_prepare()
 {
+	int rc;
 	// Инициализируем таймеры и все сопутствующие им железочки
-	MX_TIM2_Init();
-	MX_TIM3_Init();
-	MX_TIM4_Init();
+	rc = MX_TIM2_Init();
+	if (0 != rc) return rc;
+
+	rc = MX_TIM3_Init();
+	if (0 != rc) return rc;
+
+	rc = MX_TIM4_Init();
+	if (0 != rc) return rc;
 
 	// Включаем PWM выводы для всех таймеров, для того, чтобы пины
 	// перешли в OUTPUT режим и ставим счетчик таймера
@@ -171,6 +220,7 @@ void time_svc_timers_prepare()
 	// Подождем чуть чуть, чтобы все PWM линии надежно опустились вниз
 	// и все таймеры одновременно стартанули красивым передним фронтом на своих PWM линиях
 	HAL_Delay(10);
+	return 0;
 }
 
 

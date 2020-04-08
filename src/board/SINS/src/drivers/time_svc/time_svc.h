@@ -9,7 +9,7 @@
 #define DRIVERS_TIME_SVC_TIME_SVC_H_
 
 
-void time_svc_init(void);
+int time_svc_init(void);
 
 
 #endif /* DRIVERS_TIME_SVC_TIME_SVC_H_ */

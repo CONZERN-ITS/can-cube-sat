@@ -9,6 +9,7 @@
 
 #include <stm32f4xx_hal.h>
 #include <assert.h>
+#include <errno.h>
 
 #include "sins_config.h"
 
@@ -34,17 +35,34 @@ void RTC_Alarm_IRQHandler()
 
 
 
-void time_svc_init(void)
+static void _disable_alarm_irq()
 {
+	// глушим прерывания от RTC
+	__HAL_RTC_ALARM_DISABLE_IT(&hrtc, RTC_IT_ALRA);
+	HAL_NVIC_DisableIRQ(RTC_Alarm_IRQn);
+}
+
+
+
+int time_svc_init(void)
+{
+	int rc;
+
 	// готовим RTC. По-хардкору или без. Нам нужно чтобы оно работало
-	time_svc_rtc_init();
+	rc = time_svc_rtc_init();
+	if (0 != rc)
+		return rc;
 
 	// взводим таймеры
-	time_svc_timers_prepare();
+	rc = time_svc_timers_prepare();
+	if (0 != rc)
+		return rc;
 
 	// загружаем время из rtc
 	struct tm tm;
-	assert(0 == time_svc_rtc_load(&tm));
+	rc = time_svc_rtc_load(&tm);
+	if (0 != rc)
+		return rc;
 
 	// Добавим две секунды
 	// выставим это время в таймеры службы времени
@@ -58,7 +76,9 @@ void time_svc_init(void)
 	// Загружаем это время в таймеры
 	time_svc_timers_initial_time_preload(next_tt);
 	// Загружаем это время в будильник А RTC
-	time_svc_rtc_alarm_setup(next_tm, RTC_ALARM_A);
+	rc = time_svc_rtc_alarm_setup(next_tm, RTC_ALARM_A);
+	if (0 != rc)
+		return rc;
 
 
 	// Мы еще не запустились
@@ -75,12 +95,16 @@ void time_svc_init(void)
 	while(0 == _time_svc_started)
 	{
 		// Если мы тут крутимся больше трех секунд - очевидно что-то не то
-		assert(HAL_GetTick() - start_tick <= 3000);
+		if (HAL_GetTick() - start_tick <= 3000)
+		{
+			// глушим прерывания от RTC
+			_disable_alarm_irq();
+			return -ETIMEDOUT;
+		}
 	}
 	// Ок! Мы запустились!
 
-
 	// глушим прерывания от RTC
-	__HAL_RTC_ALARM_DISABLE_IT(&hrtc, RTC_IT_ALRA);
-	HAL_NVIC_DisableIRQ(RTC_Alarm_IRQn);
+	_disable_alarm_irq();
+	return 0;
 }

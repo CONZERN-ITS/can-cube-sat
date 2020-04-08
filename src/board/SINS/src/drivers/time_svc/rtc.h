@@ -17,16 +17,16 @@ extern RTC_HandleTypeDef hrtc;
 //! Запуск RTC по хардкору.
 /*! Настриваем вообще все, что нужно настраивать в бекап домене.
  *  Включаем и настраиваем LSE. Включаем RTC. Настраиваем его на эпоху GPS и запускаем */
-void time_svc_rtc_hardcore_init(void);
+int time_svc_rtc_hardcore_init(void);
 
 //! Настройка RTC по-нормальному
 /*! Предполагается что RTC уже настроено кем-то другим и настроено так как мы ожидаем
  *  Мы просто подключаемся к нему и работаем вообще его не трогая */
-void time_svc_rtc_simple_init(void);
+int time_svc_rtc_simple_init(void);
 
 //! Настройка RTC в общем
 /*! Настраивать понрмальному или по-хардкору решает само. Просто глядя работает ли уже RTC или еще нет */
-void time_svc_rtc_init(void);
+int time_svc_rtc_init(void);
 
 
 //! Загрузка времени из RTC в struct_tm

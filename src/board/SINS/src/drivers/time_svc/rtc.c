@@ -19,15 +19,18 @@ RTC_HandleTypeDef hrtc;
 
 //! Настройка клоков RTC
 /*! Это нужно делать, только если вдруг обнаружится что наш бэкап домен нифига не настроен */
-static void _init_rtc_clocks()
+static int _init_rtc_clocks()
 {
+	HAL_StatusTypeDef hal_error;
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
 
 	// Влючаем LSE
 	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE; // Из всех осциляторов трогаем только LSE
 	RCC_OscInitStruct.LSEState = RCC_LSE_ON; // Включаем lSE
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE; // PLL не трогаем
-	assert(HAL_RCC_OscConfig(&RCC_OscInitStruct) == HAL_OK);
+	hal_error = HAL_RCC_OscConfig(&RCC_OscInitStruct);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
@@ -39,10 +42,13 @@ static void _init_rtc_clocks()
 	the Reset of Backup domain will be applied in order to modify the RTC Clock source as consequence all backup
 	domain (RTC and RCC_BDCR register expect BKPSRAM) will be reset
 	*/
-	assert(HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) == HAL_OK);
+	hal_error = HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	// А еще эта штука забывает выключить доступ на запись к бекап домену. Сделаем это за нее
 	HAL_PWR_DisableBkUpAccess();
+	return 0;
 }
 
 
@@ -59,16 +65,23 @@ static void _init_rtc_handle()
 }
 
 
-void time_svc_rtc_hardcore_init()
+int time_svc_rtc_hardcore_init()
 {
+	HAL_StatusTypeDef hal_error;
+	int rc;
+
 	// Настриваем LSE и запитываем от него RTC
-	_init_rtc_clocks();
+	rc = _init_rtc_clocks();
+	if (0 != rc)
+		return rc;
 
 	// Настриваем наш хеднл
 	_init_rtc_handle();
 
 	// Канонично настраиваем RTC
-	HAL_RTC_Init(&hrtc);
+	hal_error = HAL_RTC_Init(&hrtc);
+	if (HAL_OK != hal_error)
+		return sins_hal_status_to_errno(hal_error);
 
 	// Выставляем 1 января 2000ого года
 	RTC_TimeTypeDef time;
@@ -91,17 +104,26 @@ void time_svc_rtc_hardcore_init()
 	date.WeekDay = RTC_WEEKDAY_SATURDAY; // это была суббота
 	date.Year = RTC_ByteToBcd2(0x00);    // Будем считать это 2000ным годом
 
+	HAL_StatusTypeDef hal_date_error, hal_time_error;
 	HAL_PWR_EnableBkUpAccess();
-	HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BCD);
-	HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BCD);
+	hal_date_error = HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BCD);
+	hal_time_error = HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BCD);
 	HAL_PWR_DisableBkUpAccess();
 
+	if (HAL_OK != hal_date_error)
+		return sins_hal_status_to_errno(hal_date_error);
+
+	if (HAL_OK != hal_time_error)
+		return sins_hal_status_to_errno(hal_time_error);
+
 	// Ну, типо оно тикает
+	return 0;
 }
 
 
-void time_svc_rtc_simple_init()
+int time_svc_rtc_simple_init()
 {
+	HAL_StatusTypeDef hal_error;
 	// к сожалению в ХАЛ-Е не предусмотрены интерфейсы для работы
 	// с RTC, который уже настроен кем-то до нас.
 	// Поэтому сделаем это все для него и сделаем вид что ХАЛ нормально настроился
@@ -119,20 +141,21 @@ void time_svc_rtc_simple_init()
 	hrtc.State = HAL_RTC_STATE_READY;
 
 	// Готово
+	return 0;
 }
 
 
-void time_svc_rtc_init(void)
+int time_svc_rtc_init(void)
 {
 	if (RCC->BDCR & RCC_BDCR_RTCEN)
 	{
 		// Значит оно уже работает. Настраиваемся по-простому
-		time_svc_rtc_simple_init();
+		return time_svc_rtc_simple_init();
 	}
 	else
 	{
 		// Значит оно не работает. Запускаем по жести
-		time_svc_rtc_hardcore_init();
+		return time_svc_rtc_hardcore_init();
 	}
 }
 
