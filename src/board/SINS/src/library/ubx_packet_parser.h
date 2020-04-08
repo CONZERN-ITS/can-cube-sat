@@ -31,6 +31,40 @@ typedef enum ubx_pid_t
 } ubx_pid_t;
 
 
+//! тип FIX
+typedef enum ubx_fix_type_t
+{
+	//! No Fix (нет фиксации)
+	UBX_FIX_TYPE__NO_FIX = 0x00,
+	//! только Dead Reckoning
+	UBX_FIX_TYPE__DEAD_RECKONING = 0x01,
+	//! 2D-Fix
+	UBX_FIX_TYPE__2D = 0x02,
+	//! 3D-Fix
+	UBX_FIX_TYPE__3D = 0x03,
+	//! комбинация GNSS + dead reckoning
+	UBX_FIX_TYPE__COMBO = 0x04,
+	//! только фиксация времени
+	UBX_FIX_TYPE__TIME_ONLY = 0x05,
+
+	// Прочие значения зарезервированы
+} ubx_fix_type_t;
+
+
+//! Битовые флаги из поля flags сообщения ubx_nav_sol_packet_t
+typedef enum ubx_nav_sol_flags_t
+{
+	//!  фиксация в определенных пределах
+	UBX_NAVSOL_FLAGS__GPS_FIX_OK	= 0x01 << 0,
+	//! использовалось DGPS
+	UBX_NAVSOL_FLAGS__DIFF_SOL_IN	= 0x01 << 1,
+	//! достоверный номер недели GPS
+	UBX_NAVSOL_FLAGS__WKN_SET		= 0x01 << 2,
+	//!  достоверно время недели GPS (iTOW и fTOW)
+	UBX_NAVSOL_FLAGS__TOW_SET		= 0x01 << 3
+};
+
+
 //! Пакет gpstime
 typedef struct ubx_gpstime_packet_t
 {
@@ -47,6 +81,32 @@ typedef struct ubx_timtp_packet_t
 } ubx_timtp_packet_t;
 
 
+typedef struct ubx_nav_sol_packet_t
+{
+	//! Время недели GPS для эпохи навигации
+	uint32_t i_tow;
+	//! Дробная часть iTOW (диапазон ±500000).
+	int32_t f_tow;
+	//! Номер недели эпохи навигации
+	uint16_t week;
+	//! Тип фиксации позиции GPS. Значения описаны в ubx_fix_type_t
+	uint8_t gps_fix;
+	//! Флаги состояния фиксации. Значения описаны в ubx_nav_sol_flags_t
+	uint8_t flags;
+	//! Координаты в ECEF
+	int32_t pos_ecef[3];
+	//! Оценка точности положения в ECEF
+	uint32_t p_acc;
+	//! Скорость в ECEF
+	int32_t vel_ecef[3];
+	//! Оценка точности скорости в ECEF
+	uint32_t s_acc;
+	//! DOP позиционирования
+	uint16_t p_dop;
+	// Количество спутников
+	uint8_t num_sv;
+} ubx_nav_sol_packet_t;
+
 //! Структура, включающая данные любого пакета
 typedef struct ubx_any_packet_t
 {
@@ -56,6 +116,7 @@ typedef struct ubx_any_packet_t
 	{
 		ubx_gpstime_packet_t gpstime;
 		ubx_timtp_packet_t timtp;
+		ubx_nav_sol_packet_t navsol;
 	} packet;
 } ubx_any_packet_t;
 

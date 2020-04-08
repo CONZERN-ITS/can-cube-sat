@@ -52,6 +52,13 @@ static uint32_t _read_u32(const uint8_t * data)
 }
 
 
+static uint32_t _read_i32(const uint8_t * data)
+{
+	uint32_t buffer = _read_u32(data);
+	return *(int16_t*)&buffer;
+}
+
+
 static uint32_t _read_u16(const uint8_t * data)
 {
 	return	  (uint16_t)data[1] << 1*8
@@ -64,7 +71,25 @@ static uint32_t _read_u16(const uint8_t * data)
 static void _ubx_parse_nav_sol(const uint8_t * payload, ubx_any_packet_t * packet_)
 {
 	// обрезание пакета до 48 байт т.к. дальше идут зарезервированные поля
-	//сбор mavlink пакета
+	ubx_nav_sol_packet_t * packet = &packet_->packet.navsol;
+
+	packet->i_tow		= _read_u32(payload + 0);
+	packet->f_tow		= _read_i32(payload + 4);
+	packet->week		= _read_u16(payload + 8);
+	packet->gps_fix		= *(payload + 10);
+	packet->flags		= *(payload + 11);
+	packet->pos_ecef[0] = _read_i32(payload + 12);
+	packet->pos_ecef[1] = _read_i32(payload + 16);
+	packet->pos_ecef[2] = _read_i32(payload + 20);
+	packet->p_acc		= _read_u32(payload + 24);
+	packet->vel_ecef[0] = _read_i32(payload + 28);
+	packet->vel_ecef[1] = _read_i32(payload + 32);
+	packet->vel_ecef[2] = _read_i32(payload + 36);
+	packet->s_acc		= _read_u32(payload + 40);
+	packet->p_dop		= _read_u16(payload + 44);
+	// 1 байт резерва
+	packet->num_sv		= *(payload + 47);
+	// 4 байта в резерве
 }
 
 
