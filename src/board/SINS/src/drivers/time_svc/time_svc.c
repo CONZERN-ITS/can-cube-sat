@@ -56,9 +56,6 @@ static void _enable_alarm_irq()
 	// Включаем EXTI для аларма на Rising Edge
 	__HAL_RTC_ALARM_EXTI_ENABLE_IT();
 	EXTI->RTSR |= RTC_EXTI_LINE_ALARM_EVENT;
-
-	HAL_NVIC_SetPriority(RTC_Alarm_IRQn, ITS_SINS_TIME_SVC_ALARM_IRQ_PRIORITY, 0);
-	HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
 }
 
 
@@ -76,7 +73,6 @@ static void _disable_alarm_irq()
 
 
 	__HAL_RTC_ALARM_EXTI_DISABLE_IT();
-	HAL_NVIC_DisableIRQ(RTC_Alarm_IRQn);
 }
 
 

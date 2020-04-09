@@ -83,6 +83,8 @@ int time_svc_rtc_hardcore_init()
 	if (HAL_OK != hal_error)
 		return sins_hal_status_to_errno(hal_error);
 
+	// nvic в hal_msp
+
 	// Выставляем 1 января 2000ого года
 	RTC_TimeTypeDef time;
 
@@ -134,6 +136,8 @@ int time_svc_rtc_simple_init()
 	// Короче прокидываем себе мостик к RTC в бэкап домен
 	// (кажется)
 	HAL_RTC_MspInit(&hrtc);
+
+	// nvic в hal_msp
 
 	// Делаем вид что все настроилось как задумано
 	hrtc.Lock = HAL_UNLOCKED;

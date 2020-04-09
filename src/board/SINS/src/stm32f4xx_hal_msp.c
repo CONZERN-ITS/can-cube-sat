@@ -188,6 +188,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 		gpioa.Pull = GPIO_NOPULL;
 		gpioa.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 		HAL_GPIO_Init(GPIOA, &gpioa);
+
+		HAL_NVIC_SetPriority(USART2_IRQn, ITS_SINS_GPS_UART_IRQ_PRIORITY, 0);
+		HAL_NVIC_EnableIRQ(USART2_IRQn);
 	}
 }
 
@@ -206,7 +209,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 	{
 		__HAL_RCC_TIM2_CLK_ENABLE();
 
-		HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+		HAL_NVIC_SetPriority(TIM2_IRQn, ITS_SINS_TIME_SVC_TOW_OVF_PRIOIRITY, 0);
 		HAL_NVIC_EnableIRQ(TIM2_IRQn);
 	}
 	else if(htim_base->Instance==TIM3)
@@ -347,7 +350,18 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 	if(hrtc->Instance==RTC)
 	{
 		__HAL_RCC_RTC_ENABLE();
+
+		HAL_NVIC_SetPriority(RTC_Alarm_IRQn, ITS_SINS_TIME_SVC_ALARM_IRQ_PRIORITY, 0);
+		HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
 	}
+}
+
+
+//! Не совсем халовский MSP, но пускай уж будет тут как остальные настройки нвика
+void NONHAL_PPS_MspInit(void)
+{
+	HAL_NVIC_SetPriority(EXTI0_IRQn, ITS_SINS_GPS_PPS_IRQ_PRIORITY, 0);
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 }
 
 

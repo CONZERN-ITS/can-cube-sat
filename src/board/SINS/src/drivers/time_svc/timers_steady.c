@@ -38,6 +38,8 @@ static int _prepare_timer()
 	if (HAL_OK != hal_error)
 		return sins_hal_status_to_errno(hal_error);
 
+
+	// nvic в hal_msp
 	return 0;
 }
 

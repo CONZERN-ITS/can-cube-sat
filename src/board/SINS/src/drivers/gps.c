@@ -49,9 +49,12 @@ static void _init_uart()
 
 	//Включение прерывания USART: RXNE
 	__HAL_UART_ENABLE_IT(&uartGPS, UART_IT_RXNE);
-	HAL_NVIC_SetPriority(USART2_IRQn, ITS_SINS_GPS_UART_IRQ_PRIORITY, 0);
-	HAL_NVIC_EnableIRQ(USART2_IRQn);
+
+	// nvic в hal_msp
 }
+
+
+void NONHAL_PPS_MspInit(void);
 
 
 //! настройка перфирии для PPS сигнала
@@ -66,8 +69,8 @@ static void _init_pps()
 	gpioa.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOA, &gpioa);
 
-	HAL_NVIC_SetPriority(EXTI0_IRQn, ITS_SINS_GPS_PPS_IRQ_PRIORITY, 0);
-	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	// nvic в hal_msp
+	NONHAL_PPS_MspInit();
 }
 
 
