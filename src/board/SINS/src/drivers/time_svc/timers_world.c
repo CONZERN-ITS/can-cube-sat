@@ -5,9 +5,8 @@
  *      Author: snork
  */
 
-#include "timers.h"
-
 #include <assert.h>
+#include <drivers/time_svc/timers_world.h>
 
 #include "../common.h"
 #include "time_util.h"
@@ -34,7 +33,7 @@ static int MX_TIM2_Init(void)
 	htim2.Instance = TIM2;
 	htim2.Init.Prescaler = 0;
 	htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim2.Init.Period = SECONDS_PER_WEEK * 1000 - 1;
+	htim2.Init.Period = (SECONDS_PER_WEEK * 1000 - 1);
 	htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	hal_error = HAL_TIM_Base_Init(&htim2);
 	if (HAL_OK != hal_error)
@@ -174,24 +173,15 @@ static int MX_TIM4_Init(void)
 //! прерывание таймера 2
 void TIM2_IRQHandler()
 {
-	// Отдаем его халу. Впринципе нас интересует только перерывание на переполнение таймера
-	// Что будет означать что прошла неделя
+	// Прошла неделя!
+	_gps_week++;
+
+	// Дальше дадим халу, чтобы он снял все флаги
 	HAL_TIM_IRQHandler(&htim2);
 }
 
 
-//! Халовский колбек на переполнение таймера
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef * htim)
-{
-	// Если это был таймер2, то значит прошла неделя
-	if (&htim2 == htim)
-	{
-		_gps_week++;
-	}
-}
-
-
-int time_svc_timers_prepare()
+int time_svc_world_timers_prepare()
 {
 	int rc;
 	// Инициализируем таймеры и все сопутствующие им железочки
@@ -224,7 +214,7 @@ int time_svc_timers_prepare()
 }
 
 
-void time_svc_timers_initial_time_preload(time_t initial_time)
+void time_svc_world_timers_initial_time_preload(time_t initial_time)
 {
 	uint32_t tow_ms;
 	uint16_t week;
@@ -241,13 +231,24 @@ void time_svc_timers_initial_time_preload(time_t initial_time)
 }
 
 
-void time_svc_timers_get_time(struct timeval * tmv)
+void time_svc_world_timers_get_time(struct timeval * tmv)
 {
-	uint16_t week;
+	uint16_t week, week2;
 	uint32_t tow_ms;
 
 	week = _gps_week;
 	tow_ms = __HAL_TIM_GET_COUNTER(&htim2);
+	week2 = _gps_week;
+
+	if (week != week2 && (tow_ms & 0xFFFFFF00) == 0)
+	{
+		// Это значит, что пока мы читали week - таймер успел переполнится
+		// И поскольку tow_ms не перевалило еще даже за 256, то мы прочли значение таймера
+		// уже после переполнения
+
+		// Значит и неделю нужно брать следующую
+		week = week2;
+	}
 
 	gps_time_to_unix_time(week, tow_ms, tmv);
 }

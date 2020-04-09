@@ -9,13 +9,15 @@
 
 #include <stm32f4xx_hal.h>
 #include <assert.h>
+#include <drivers/time_svc/timers_world.h>
 #include <errno.h>
 
 #include "sins_config.h"
 
 #include "rtc.h"
-#include "timers.h"
 #include "time_util.h"
+#include "timers_world.h"
+#include "timers_steady.h"
 
 
 //! Флаг для взаимодействия прерывания RTC и осоновного треда
@@ -26,7 +28,7 @@ static volatile int _time_svc_started = 0;
 void RTC_Alarm_IRQHandler()
 {
 	// Немедленно пускаем таймеры!
-	time_svc_timers_start();
+	time_svc_world_timers_start();
 
 
 	// Эта штука выключит все флаги, которые вызывают прерывание
@@ -73,12 +75,13 @@ static void _disable_alarm_irq()
 	HAL_PWR_DisableBkUpAccess();
 
 
+	__HAL_RTC_ALARM_EXTI_DISABLE_IT();
 	HAL_NVIC_DisableIRQ(RTC_Alarm_IRQn);
 }
 
 
 
-int time_svc_init(void)
+int time_svc_world_init(void)
 {
 	int rc;
 
@@ -88,7 +91,7 @@ int time_svc_init(void)
 		return rc;
 
 	// взводим таймеры
-	rc = time_svc_timers_prepare();
+	rc = time_svc_world_timers_prepare();
 	if (0 != rc)
 		return rc;
 
@@ -108,7 +111,7 @@ int time_svc_init(void)
 	const struct tm * next_tm = gmtime(&next_tt);
 
 	// Загружаем это время в таймеры
-	time_svc_timers_initial_time_preload(next_tt);
+	time_svc_world_timers_initial_time_preload(next_tt);
 	// Загружаем это время в будильник А RTC
 	rc = time_svc_rtc_alarm_setup(next_tm, RTC_ALARM_A);
 	if (0 != rc)
@@ -139,3 +142,16 @@ int time_svc_init(void)
 	_disable_alarm_irq();
 	return 0;
 }
+
+
+int time_svc_steady_init(void)
+{
+	return time_svc_steady_timers_start();
+}
+
+
+uint64_t time_svc_get_steady_time(void)
+{
+	return time_svc_steady_timers_get_time();
+}
+

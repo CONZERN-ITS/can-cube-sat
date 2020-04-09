@@ -5,12 +5,16 @@
  *      Author: snork
  */
 
-#ifndef DRIVERS_TIME_SVC_TIMERS_H_
-#define DRIVERS_TIME_SVC_TIMERS_H_
+#ifndef DRIVERS_TIME_SVC_TIMERS_WORLD_H_
+#define DRIVERS_TIME_SVC_TIMERS_WORLD_H_
 
 #include <time.h>
 
 #include <stm32f4xx_hal.h>
+
+
+/* В этом модуле описаны таймеры, которые держат мировое время
+ * и обеспечивают искуственный PPS на выходе */
 
 
 //! Дескриптор таймера 2. Этот таймер считает миллисекунды недели
@@ -27,17 +31,17 @@ extern TIM_HandleTypeDef htim4;
  *  Активируются все выходные линии таймеров и укладываются на 0
  *  После вызова этой функции следует чуточку подождать, чтобы все выходные линии надежно упали в 0
  *  и по пуску таймеров на выходе из чипа были красивые ровные фронты */
-int time_svc_timers_prepare(void);
+int time_svc_world_timers_prepare(void);
 
 
 //! Загрузка начального времени в таймеры
 /*! Предполагается что таймеры еще не были запущены и будут запущены отдельным вызовом
  *  time_svc_timers_start ровно в указанное время и ровно в начало указанной секунды */
-void time_svc_timers_initial_time_preload(time_t initial_time);
+void time_svc_world_timers_initial_time_preload(time_t initial_time);
 
 
 //! Пуск таймеров службы времени!
-inline void time_svc_timers_start()
+inline void time_svc_world_timers_start()
 {
 	// Запускаем все таймеры!
 	// именно в таком порядке
@@ -50,8 +54,7 @@ inline void time_svc_timers_start()
 }
 
 
-//! Получение текущего времени службы времени
-void time_svc_timers_get_time(struct timeval * tmv);
+//! Получение текущего мирового времени службы времени
+void time_svc_world_timers_get_time(struct timeval * tmv);
 
-
-#endif /* DRIVERS_TIME_SVC_TIMERS_H_ */
+#endif /* DRIVERS_TIME_SVC_TIMERS_WORLD_H_ */

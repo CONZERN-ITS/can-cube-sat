@@ -40,6 +40,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
+#include "sins_config.h"
+
 // [ILG]
 #if defined ( __GNUC__ )
 #pragma GCC diagnostic push
@@ -247,6 +249,15 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 		GPIO_InitStruct.Alternate = GPIO_AF2_TIM4;
 		HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+	}
+	else if(htim_base->Instance==TIM6)
+	{
+		/* Peripheral clock enable */
+		__HAL_RCC_TIM6_CLK_ENABLE();
+
+		/* TIM6 interrupt Init */
+		HAL_NVIC_SetPriority(TIM6_DAC_IRQn, ITS_SINS_TIME_SVC_STEADY_OVF_PRIORITY, 0);
+		HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
 	}
 }
 

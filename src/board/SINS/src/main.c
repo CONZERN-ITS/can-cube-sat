@@ -222,7 +222,7 @@ int main(int argc, char* argv[])
 
 //	init_led();
 //	initInterruptPin();
-	time_svc_init();
+	time_svc_world_init();
 	uplink_init();
 	SENSORS_Init();
 //	get_gyro_staticShift(state_zero.gyro_staticShift);
@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
 	for (;;)
 	{
 		struct timeval tmv;
-		time_svc_timers_get_time(&tmv);
+		time_svc_world_timers_get_time(&tmv);
 		struct tm * tm = gmtime(&tmv.tv_sec);
 		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
 		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
@@ -280,7 +280,7 @@ int main(int argc, char* argv[])
 		__enable_irq();
 
 		mavlink_message_t msg;
-		uint16_t len = mavlink_msg_sins_isc_encode(0, 0, &msg, &msg_sins_isc);
+		mavlink_msg_sins_isc_encode(0, 0, &msg, &msg_sins_isc);
 		uplink_write_mav(&msg);
 
 		/*

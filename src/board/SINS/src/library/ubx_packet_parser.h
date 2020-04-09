@@ -62,7 +62,7 @@ typedef enum ubx_nav_sol_flags_t
 	UBX_NAVSOL_FLAGS__WKN_SET		= 0x01 << 2,
 	//!  достоверно время недели GPS (iTOW и fTOW)
 	UBX_NAVSOL_FLAGS__TOW_SET		= 0x01 << 3
-};
+} ubx_nav_sol_flags_t;
 
 
 //! Пакет gpstime
