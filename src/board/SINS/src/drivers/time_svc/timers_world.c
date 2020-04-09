@@ -214,7 +214,7 @@ int time_svc_world_timers_prepare()
 }
 
 
-void time_svc_world_timers_initial_time_preload(time_t initial_time)
+void time_svc_world_timers_set_time(time_t initial_time)
 {
 	uint32_t tow_ms;
 	uint16_t week;
@@ -228,6 +228,19 @@ void time_svc_world_timers_initial_time_preload(time_t initial_time)
 	// Проставляем значения
 	_gps_week = week;
 	__HAL_TIM_SET_COUNTER(&htim2, tow_ms);
+}
+
+
+void time_svc_world_timers_start()
+{
+	// Запускаем все таймеры!
+	// именно в таком порядке
+	__HAL_TIM_ENABLE(&htim2);
+	__HAL_TIM_ENABLE(&htim3);
+	__HAL_TIM_ENABLE(&htim4);
+
+	// Для счёта недель.
+	__HAL_TIM_ENABLE_IT(&htim2, TIM_IT_UPDATE);
 }
 
 

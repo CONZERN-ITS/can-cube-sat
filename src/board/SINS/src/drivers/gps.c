@@ -5,13 +5,18 @@
  *      Author: developer
  */
 
+#include "gps.h"
+
+#include <time.h>
 #include <stdint.h>
 #include <string.h>
 #include <stm32f4xx.h>
 #include <diag/Trace.h>
 
-#include "gps.h"
 #include "sins_config.h"
+#include "time_svc/time_util.h"
+#include "time_svc/time_svc.h"
+
 
 //! Хендл для уарта для GPS
 static UART_HandleTypeDef uartGPS;
@@ -27,10 +32,52 @@ static uint8_t _ubx_sparser_buffer[ITS_SINS_GPS_UBX_SPARSER_BUFFER_SIZE];
 static ubx_sparser_ctx_t _sparser_ctx;
 
 
-//! Колбек для PPS метки
-static gps_pps_callback_t _pps_callback;
-//! Пользовательский аргумент для pps метки
-static void * _pps_callback_user_arg;
+//! Колбек пользователя. Мы устанавливаем свой, но пользователю тоже нужно данные
+static ubx_sparser_packet_callback_t _user_packet_callback;
+
+//! Время на следующий фронт PPS
+/*! Нулем оно быть не может, поэтому ноль показывает отсутствие
+ *  этих данных как таковых */
+static time_t _next_pps_time = 0;
+
+//! Колбек для входящих GPS пакетов.
+/*! Некоторые мы будем перехватывать для уточнения службы времени */
+void _internal_packet_callback(void * user_arg, const ubx_any_packet_t * packet_)
+{
+	// FIXME: Возможно стоит что-то сделать, чтобы не использовать оба пакета на одном такте?
+	// Если они оба придут (а они оба придут)
+	// Возможно стоит выключить TIMTP в целом?
+	switch (packet_->pid)
+	{
+	case UBX_PID_NAV_TIMEGPS:
+		{
+			struct timeval tmv;
+			const ubx_gpstime_packet_t * packet = &packet_->packet.gpstime;
+			// Мы ждем следующей секунды, поэтому округляем до следующей секунды
+			uint32_t next_tow_ms = packet->tow_ms;
+			next_tow_ms = ((next_tow_ms + 999) / 1000) * 1000;
+			gps_time_to_unix_time(packet->week, next_tow_ms, &tmv);
+			_next_pps_time = tmv.tv_sec;
+		}
+		break;
+
+	case UBX_PID_TIM_TP:
+		{
+			struct timeval tmv;
+			// Это сообщение ровно о том, что нам надо и говорит
+			const ubx_timtp_packet_t * packet = &packet_->packet.timtp;
+			gps_time_to_unix_time(packet->week, packet->tow_ms, &tmv);
+			_next_pps_time = tmv.tv_sec;
+		}
+		break;
+
+	default:
+		break;
+	}
+
+	// В конце передаем таки пакет пользователю
+	_user_packet_callback(user_arg, packet_);
+}
 
 
 //! Настойка уартовой перефирии
@@ -99,19 +146,26 @@ void USART2_IRQHandler(void)
 
 void EXTI0_IRQHandler()
 {
+	// Правим службу времени
+	if (_next_pps_time > 0)
+		time_svc_world_set_time(_next_pps_time);
+
 	HAL_NVIC_ClearPendingIRQ(EXTI0_IRQn);
 }
 
 
 void gps_init(
-		gps_packet_callback_t packet_callback, void * packet_callback_arg,
-		gps_pps_callback_t pps_callback, void * pps_callback_arg
+		gps_packet_callback_t packet_callback, void * packet_callback_arg
 )
 {
+	// У нас пока ничего не приходило и времени на следующую метку у нас нет
+	time_t next_time = 0;
+
 	// Настриваем потоковый парсер UBX пакетов
+	_user_packet_callback = packet_callback;
 	ubx_sparser_reset(&_sparser_ctx);
 	ubx_sparser_set_pbuffer(&_sparser_ctx, _ubx_sparser_buffer, sizeof(_ubx_sparser_buffer));
-	ubx_sparser_set_packet_callback(&_sparser_ctx, packet_callback, packet_callback_arg);
+	ubx_sparser_set_packet_callback(&_sparser_ctx, _internal_packet_callback, packet_callback_arg);
 
 	// Настраиваем циклобуфер для уарта
 	_uart_cycle_buffer_head = 0;
@@ -119,10 +173,6 @@ void gps_init(
 
 	// Настраиваем уартовое железо
 	_init_uart();
-
-	// Настраиваем колбек для PPS
-	_pps_callback = pps_callback;
-	_pps_callback_user_arg = pps_callback_arg;
 
 	// Настраиваем железо для работы с PPS
 	_init_pps();

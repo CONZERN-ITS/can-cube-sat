@@ -23,6 +23,9 @@
 //! Флаг для взаимодействия прерывания RTC и осоновного треда
 static volatile int _time_svc_started = 0;
 
+//! Метка времени последней коррекции
+static uint64_t _last_correction_ts;
+
 
 // Прерывание на RTC аларм для запуска таймеров службы времени
 void RTC_Alarm_IRQHandler()
@@ -107,7 +110,7 @@ int time_svc_world_init(void)
 	const struct tm * next_tm = gmtime(&next_tt);
 
 	// Загружаем это время в таймеры
-	time_svc_world_timers_initial_time_preload(next_tt);
+	time_svc_world_timers_set_time(next_tt);
 	// Загружаем это время в будильник А RTC
 	rc = time_svc_rtc_alarm_setup(next_tm, RTC_ALARM_A);
 	if (0 != rc)
@@ -133,9 +136,11 @@ int time_svc_world_init(void)
 		}
 	}
 	// Ок! Мы запустились!
+	_last_correction_ts = time_svc_steady_get_time();
 
 	// глушим прерывания от RTC
 	_disable_alarm_irq();
+
 	return 0;
 }
 
@@ -146,8 +151,21 @@ int time_svc_steady_init(void)
 }
 
 
-uint64_t time_svc_get_steady_time(void)
+uint64_t time_svc_steady_get_time(void)
 {
 	return time_svc_steady_timers_get_time();
 }
 
+
+
+void time_svc_world_set_time(time_t the_time)
+{
+	time_svc_world_timers_set_time(the_time);
+	_last_correction_ts = time_svc_steady_get_time();
+}
+
+
+uint64_t time_svc_last_adjust_timestamp(void)
+{
+	return _last_correction_ts;
+}

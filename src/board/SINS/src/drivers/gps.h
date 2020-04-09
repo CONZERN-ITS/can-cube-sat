@@ -22,8 +22,7 @@ typedef void (*gps_pps_callback_t)(void * user_arg);
 //! Инициализация драйвера GPS
 /*! Настройка нужной перефирии и потокового парсера GPS */
 void gps_init(
-		gps_packet_callback_t packet_callback, void * packet_callback_arg,
-		gps_pps_callback_t pps_callback, void * pps_callback_arg
+		gps_packet_callback_t packet_callback, void * packet_callback_arg
 );
 
 //! Обработка накопленных в прерывании байт и поиск в них сообщений.
