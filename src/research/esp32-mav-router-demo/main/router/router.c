@@ -86,19 +86,23 @@ void its_rt_route_from_isr(
 		const its_rt_sender_ctx_t * sender_ctx,
 		const mavlink_message_t * msg
 ){
-	list_node *cur = its_msg_map[msg->msgid].first;
-	BaseType_t higherPrioWoken = 0;
-	while (cur) {
-		BaseType_t higherPrioWoken2;
-		xQueueSendFromISR(cur->value.queue, &msg, &higherPrioWoken2);
-		if (higherPrioWoken2) {
-			higherPrioWoken = higherPrioWoken2;
+
+	int id = its_rt_get_hash(msg->msgid);
+	if (id != RT_CFG_LIST_SZ) {
+		list_node *cur = its_msg_map[id].first;
+		BaseType_t higherPrioWoken = 0;
+		while (cur) {
+			BaseType_t higherPrioWoken2;
+			xQueueSendFromISR(cur->value.queue, &msg, &higherPrioWoken2);
+			if (higherPrioWoken2) {
+				higherPrioWoken = higherPrioWoken2;
+			}
 		}
+		if (higherPrioWoken) {
+			portYIELD_FROM_ISR();
+		}
+		higherPrioWoken = rev_map[0];
 	}
-	if (higherPrioWoken) {
-		portYIELD_FROM_ISR();
-	}
-	higherPrioWoken = rev_map[0];
 }
 
 void its_rt_route(
