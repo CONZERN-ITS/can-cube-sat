@@ -41,6 +41,12 @@ uint16_t ubx_packet_payload_expected_size(ubx_pid_t pid)
 }
 
 
+static ubx_pid_t _make_pid(uint8_t class, uint8_t id)
+{
+	return ((uint16_t)class << 8) | id;
+}
+
+
 
 static uint32_t _read_u32(const uint8_t * data)
 {
@@ -71,7 +77,7 @@ static uint32_t _read_u16(const uint8_t * data)
 static void _ubx_parse_nav_sol(const uint8_t * payload, ubx_any_packet_t * packet_)
 {
 	// обрезание пакета до 48 байт т.к. дальше идут зарезервированные поля
-	ubx_nav_sol_packet_t * packet = &packet_->packet.navsol;
+	ubx_navsol_packet_t * packet = &packet_->packet.navsol;
 
 	packet->i_tow		= _read_u32(payload + 0);
 	packet->f_tow		= _read_i32(payload + 4);
@@ -112,6 +118,22 @@ static void _ubx_parse_nav_timegps(const uint8_t * payload, ubx_any_packet_t * p
 }
 
 
+static void _ubx_parse_ack(const uint8_t * payload, ubx_any_packet_t * packet_)
+{
+	ubx_ack_packet_t * packet = &packet_->packet.ack;
+
+	packet->packet_pid = _make_pid(payload[0], payload[1]);
+}
+
+
+static void _ubx_parse_nack(const uint8_t * payload, ubx_any_packet_t * packet_)
+{
+	ubx_nack_packet_t * packet = &packet_->packet.nack;
+
+	packet->packet_pid = _make_pid(payload[0], payload[1]);
+}
+
+
 int ubx_parse_any_packet(const uint8_t * packet_start, ubx_any_packet_t * packet)
 {
 	uint16_t pid = ubx_packet_pid(packet_start);
@@ -132,9 +154,17 @@ int ubx_parse_any_packet(const uint8_t * packet_start, ubx_any_packet_t * packet
 		_ubx_parse_tim_tp(payload_start, packet);
 		break;
 
+	case UBX_PID_CFG_ACK:
+		_ubx_parse_ack(payload_start, packet);
+		break;
+
+	case UBX_PID_CFG_NACK:
+		_ubx_parse_nack(payload_start, packet);
+		break;
+
 	default:
 		rc = -ENOSYS;
-		return -ENOSYS;
+		break;
 	};
 
 	packet->pid = pid;

@@ -28,6 +28,8 @@ typedef enum ubx_pid_t
 	UBX_PID_NAV_SOL = 0x0601,
 	UBX_PID_TIM_TP  = 0x010d,
 	UBX_PID_NAV_TIMEGPS = 0x2001,
+	UBX_PID_CFG_NACK = 0x0500,
+	UBX_PID_CFG_ACK  = 0x0501,
 } ubx_pid_t;
 
 
@@ -81,7 +83,7 @@ typedef struct ubx_timtp_packet_t
 } ubx_timtp_packet_t;
 
 
-typedef struct ubx_nav_sol_packet_t
+typedef struct ubx_navsol_packet_t
 {
 	//! Время недели GPS для эпохи навигации
 	uint32_t i_tow;
@@ -105,7 +107,24 @@ typedef struct ubx_nav_sol_packet_t
 	uint16_t p_dop;
 	// Количество спутников
 	uint8_t num_sv;
-} ubx_nav_sol_packet_t;
+} ubx_navsol_packet_t;
+
+
+//! Подтверждение получения валидного конфигурационного пакета
+typedef struct ubx_ack_packet_t
+{
+	//! Идентификатор пакета
+	ubx_pid_t packet_pid;
+} ubx_ack_packet_t;
+
+
+//! Сообщение об ошибке в полученном конфигурационном пакете
+typedef struct ubx_nack_packet_t
+{
+	//! Идентификатор пакета
+	ubx_pid_t packet_pid;
+} ubx_nack_packet_t;
+
 
 //! Структура, включающая данные любого пакета
 typedef struct ubx_any_packet_t
@@ -116,7 +135,9 @@ typedef struct ubx_any_packet_t
 	{
 		ubx_gpstime_packet_t gpstime;
 		ubx_timtp_packet_t timtp;
-		ubx_nav_sol_packet_t navsol;
+		ubx_navsol_packet_t navsol;
+		ubx_ack_packet_t ack;
+		ubx_nack_packet_t nack;
 	} packet;
 } ubx_any_packet_t;
 
