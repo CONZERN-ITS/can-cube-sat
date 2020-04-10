@@ -7,7 +7,7 @@
 
 #include "stm32f4xx_hal.h"
 #include "drivers/mems/mems.h"
-#include "drivers/gps.h"
+#include "drivers/gps/gps.h"
 
 #ifndef STATE_H_
 #define STATE_H_

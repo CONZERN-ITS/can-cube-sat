@@ -12,7 +12,7 @@
 
 uint16_t ubx_packet_pid(const uint8_t * packet_header)
 {
-	return ((uint16_t)packet_header[1] << 8) | packet_header[0];
+	return ubx_make_pid(packet_header[0], packet_header[1]);
 }
 
 
@@ -35,15 +35,50 @@ uint16_t ubx_packet_payload_expected_size(ubx_pid_t pid)
 	case UBX_PID_NAV_TIMEGPS:
 		return 16;
 
+	case UBX_PID_CFG_NACK:
+	case UBX_PID_CFG_ACK:
+		return 2;
+
 	default:
 		return 0;
 	}
 }
 
 
-static ubx_pid_t _make_pid(uint8_t class, uint8_t id)
+uint16_t ubx_packet_checksum(const uint8_t * data_start, int data_size)
 {
-	return ((uint16_t)class << 8) | id;
+	uint8_t crc_a = 0, crc_b = 0;
+	for (int i = 0; i < data_size; i++)		//алгоритм подсчета контрольной суммы
+	{
+		crc_a += data_start[i];
+		crc_b += crc_a;
+	}
+
+	return ubx_uint16crc_make(crc_a, crc_b);
+}
+
+
+uint16_t ubx_uint16crc_make(uint8_t crc_a, uint8_t crc_b)
+{
+	return (uint16_t)crc_a << 8 | crc_b;
+}
+
+
+uint8_t ubx_uint16crc_get_crca(uint16_t crc16)
+{
+	return (uint8_t)((crc16 >> 8) & 0xFF);
+}
+
+
+uint8_t ubx_uint16crc_get_crcb(uint16_t crc16)
+{
+	return (uint8_t)(crc16 & 0xFF);
+}
+
+
+uint16_t ubx_make_pid(uint8_t packet_class, uint8_t packet_id)
+{
+	return ((uint16_t)packet_class << 8) | packet_id;
 }
 
 
@@ -122,7 +157,7 @@ static void _ubx_parse_ack(const uint8_t * payload, ubx_any_packet_t * packet_)
 {
 	ubx_ack_packet_t * packet = &packet_->packet.ack;
 
-	packet->packet_pid = _make_pid(payload[0], payload[1]);
+	packet->packet_pid = ubx_make_pid(payload[0], payload[1]);
 }
 
 
@@ -130,7 +165,7 @@ static void _ubx_parse_nack(const uint8_t * payload, ubx_any_packet_t * packet_)
 {
 	ubx_nack_packet_t * packet = &packet_->packet.nack;
 
-	packet->packet_pid = _make_pid(payload[0], payload[1]);
+	packet->packet_pid = ubx_make_pid(payload[0], payload[1]);
 }
 
 

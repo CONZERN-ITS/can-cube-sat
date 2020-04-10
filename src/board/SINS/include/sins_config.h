@@ -18,8 +18,14 @@
 #define ITS_SINS_TIME_SVC_STEADY_OVF_PRIORITY (2)
 
 
+//! Количество попыток на отправку одного и тот же конфигурационного сообщения
+//! В UBX приёмник
+#define ITS_SINS_GPS_CONFIGURE_ATTEMPTS (5)
+//! Таймаут на ожидание ACK/NACK пакета при конфигурации GPS (в мс)
+#define ITS_SINS_GPS_CONFIGURE_TIMEOUT (3000)
+
 //! Размер для циклобуфера уарта, по которому приходят входящие GPS сообщения
-#define ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE (500)
+#define ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE (1500)
 
 //! Размер линейного буфера для накопления UBX сообщений
 /*! Должен быть не меньше чем самое большое обрабатываемое UBX сообщение */

@@ -25,9 +25,9 @@
 /*! Состоит из class и id пакета */
 typedef enum ubx_pid_t
 {
-	UBX_PID_NAV_SOL = 0x0601,
-	UBX_PID_TIM_TP  = 0x010d,
-	UBX_PID_NAV_TIMEGPS = 0x2001,
+	UBX_PID_NAV_SOL = 0x0106,
+	UBX_PID_TIM_TP  = 0x0d01,
+	UBX_PID_NAV_TIMEGPS = 0x0120,
 	UBX_PID_CFG_NACK = 0x0500,
 	UBX_PID_CFG_ACK  = 0x0501,
 } ubx_pid_t;
@@ -150,6 +150,22 @@ uint16_t ubx_packet_payload_size(const uint8_t * packet_header);
 //! Длина пакета, которая должна у него быть согласно протоколу
 uint16_t ubx_packet_payload_expected_size(ubx_pid_t pid);
 
+//! Вычисление контрольной суммы по ubx алгоритму
+uint16_t ubx_packet_checksum(const uint8_t * data_start, int data_size);
+
+
+//! Сборка uint16_t crc значения из отдельных crc-a и crc-b значений
+uint16_t ubx_uint16crc_make(uint8_t crc_a, uint8_t crc_b);
+
+//! Выделение crca из 16ти битного представления crc
+uint8_t ubx_uint16crc_get_crca(uint16_t crc16);
+
+//! Выделение crcb из 16ти битного представления crc
+uint8_t ubx_uint16crc_get_crcb(uint16_t crc16);
+
+
+//! Сборка PID значения из отдельных значений class и packet_id
+uint16_t ubx_make_pid(uint8_t packet_class, uint8_t packet_id);
 
 //! Разбор тела пакета
 int ubx_parse_any_packet(const uint8_t * packet_start, ubx_any_packet_t * packet);

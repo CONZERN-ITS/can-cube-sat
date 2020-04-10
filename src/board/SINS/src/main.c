@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include <mavlink/its/mavlink.h>
 
@@ -38,7 +39,7 @@
 
 #include "drivers/time_svc/time_svc.h"
 #include "drivers/mems/mems.h"
-#include "drivers/gps.h"
+#include "drivers/gps/gps.h"
 #include "drivers/uplink.h"
 
 #include "state.h"
@@ -205,6 +206,13 @@ void SINS_updatePrevData(void)
 
 //FIXME: реализовать таймер для отправки пакетов с мк по uart
 
+
+static void _on_gps_packet(void * arg, const ubx_any_packet_t * packet)
+{
+	volatile ubx_pid_t pid = packet->pid;
+}
+
+
 int main(int argc, char* argv[])
 {
 //	__disable_irq();
@@ -222,7 +230,13 @@ int main(int argc, char* argv[])
 
 //	init_led();
 //	initInterruptPin();
-	time_svc_world_init();
+	assert(0 == time_svc_steady_init());
+	assert(0 == time_svc_world_init());
+	assert(0 == gps_init(_on_gps_packet, NULL));
+
+	int rc = gps_configure();
+	trace_printf("configure rc = %d\n", rc);
+
 	uplink_init();
 	SENSORS_Init();
 //	get_gyro_staticShift(state_zero.gyro_staticShift);
