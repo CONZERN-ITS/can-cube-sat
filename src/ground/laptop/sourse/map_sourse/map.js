@@ -54,12 +54,12 @@ function get_marker_position (key) {
     return [marker.getLatLng().lat, marker.getLatLng().lng];
 }
 
-function add_polyline(key, latitude, longitude, parameters) {
+function add_polyline(key, points, parameters) {
     if (key in polylines) {
         delete_marker(key);
     }
 
-	var polyline = L.polyline([[latitude, longitude]], parameters).addTo(map);
+    var polyline = L.polyline(points, parameters).addTo(map);
 
     polylines[key] = polyline;
     return key;
