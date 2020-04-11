@@ -18,7 +18,7 @@
     <message id="50010" name="TERMAL_STATE">
       <description></description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
-      <field type="uint16_t" name="time_ms" units="ms">Thousandth of a second</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       <field type="uint16_t" name="area_id" >Observed area id</field>
       <field type="float" name="temperature" units="degC">Area temperature</field>
     </message>
@@ -26,7 +26,7 @@
     <message id="50011" name="ELECTRICAL_STATE">
       <description></description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
-      <field type="uint16_t" name="time_ms" units="ms">Thousandth of a second</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       <field type="uint16_t" name="area_id" >Observed area id</field>
       <field type="float" name="current" units="A">Area Current</field>
       <field type="float" name="voltage" units="V">Area Voltage</field>
@@ -64,17 +64,17 @@
 
     <message id="50014" name="SINS_isc">
       <description>SINS data in ISC</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       <field type="float[3]" name="accel">accelerations</field>
       <field type="float[3]" name="compass">magnetometer vector</field>
       <field type="float[4]" name="quaternion">quaternion for translating RSC into ISC</field>
-      <field type="uint32_t" name="time_s">current time in seconds</field>
-      <field type="uint32_t" name="time_ms">fractorial part of time_ms</field>
     </message>
 
     <message id="50015" name="TIMESTAMP">
       <description></description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
-      <field type="uint16_t" name="time_ms" units="ms">Thousandth of a second</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       <field type="uint8_t" name="time_base" enum="TIME_BASE_TYPE">Time base</field>
     </message>
   </messages>
