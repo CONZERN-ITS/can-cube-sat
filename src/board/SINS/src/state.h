@@ -26,7 +26,7 @@ typedef struct {
 	uint8_t lis3mdl_state;
 	uint8_t lsm6ds3_state;
 	uint8_t GPS_state;
-	uint32_t time;
+	float time;
 }state_system_t;
 
 

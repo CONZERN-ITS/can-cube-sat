@@ -41,9 +41,9 @@
 #include "drivers/mems/mems.h"
 #include "drivers/gps/gps.h"
 #include "drivers/uplink.h"
+#include "drivers/time_svc/timers_world.h"
 
 #include "state.h"
-
 
 #include "MadgwickAHRS.h"
 #include "vector.h"
@@ -66,26 +66,20 @@ stateSINS_transfer_t stateSINS_transfer;
 stateGPS_t stateGPS;
 
 
-float transfer_time	= 0.0;
-float delta_time = 0.0;
-uint8_t need_transfer_data = 0;
-
-
-
 void SENSORS_Init(void)
 {
 	int error = 0;
 	error = mems_init_bus();
-	trace_printf("mems bus init error: %d\n", error);
+//	trace_printf("mems bus init error: %d\n", error);
 
 	//	LSM6DS3_init
 	error = mems_lsm6ds3_init();
-	trace_printf("lsm6ds3 init error: %d\n", error);
+//	trace_printf("lsm6ds3 init error: %d\n", error);
 	state_system.lsm6ds3_state = error;
 
 	//	LIS3MDL init
 	error = mems_lis3mdl_init();
-	trace_printf("lis3mdl init error: %d\n", error);
+//	trace_printf("lis3mdl init error: %d\n", error);
 	state_system.lis3mdl_state = error; //FIXME: вернуть
 
 //	error = 0;
@@ -139,11 +133,11 @@ int UpdateDataAll(void)
 	/////////////////////////////////////////////////////
 	float quaternion[4] = {0, 0, 0, 0};
 
-//	taskENTER_CRITICAL();
-	float dt = _time - state_system_prev.time;
-//	taskEXIT_CRITICAL();
+	__disable_irq();
+	float dt = state_system.time - state_system_prev.time;
+	__enable_irq();
 
-	float beta = 0.041;
+	float beta = 0.33;
 	MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
 
 		//	копируем кватернион в глобальную структуру
@@ -167,19 +161,16 @@ int UpdateDataAll(void)
 	//	Copy vectors to global structure
 	__disable_irq();
 		for (int i = 0; i < 3; i++)
+		{
 			accel_ISC[i] -= state_zero.accel_staticShift[i];
+			stateSINS_isc.accel[i] = accel_ISC[i];
+			stateSINS_isc.magn[i] = magn[i];
+		}
 
-		stateSINS_isc.accel[0] = accel_ISC[0];
-		stateSINS_isc.accel[1] = accel_ISC[1];
-		stateSINS_isc.accel[2] = accel_ISC[2];
-		stateSINS_isc.magn[0] = magn[0];
-		stateSINS_isc.magn[1] = magn[1];
-		stateSINS_isc.magn[2] = magn[2];
-
-		delta_time = _time - HAL_GetTick() / 1000;
-	//		trace_printf("dt_ \t%f\n", dt);
-	//		trace_printf("delta_time\t%f\n", delta_time);
-		transfer_time += delta_time;
+//		delta_time = _time - HAL_GetTick() / 1000;
+//			trace_printf("dt_ \t%f\n", dt);
+//			trace_printf("delta_time\t%f\n", delta_time);
+//		transfer_time += delta_time;
 	__enable_irq();
 
 end:
@@ -228,57 +219,41 @@ int main(int argc, char* argv[])
 
 	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
-//	init_led();
-//	initInterruptPin();
+
 	assert(0 == time_svc_steady_init());
-	assert(0 == time_svc_world_init());
+//	assert(0 == time_svc_world_init());
 	assert(0 == gps_init(_on_gps_packet, NULL));
 
 	int rc = gps_configure();
-	trace_printf("configure rc = %d\n", rc);
+//	trace_printf("configure rc = %d\n", rc);
 
 	uplink_init();
 	SENSORS_Init();
-//	get_gyro_staticShift(state_zero.gyro_staticShift);
-//	get_accel_staticShift(state_zero.accel_staticShift);
+	for (int i = 0; i < 2; i++)
+	{
+		mems_get_gyro_staticShift(state_zero.gyro_staticShift);
+		mems_get_accel_staticShift(state_zero.accel_staticShift);
+	}
+//
 
 //	__enable_irq();
 //	uint16_t flag = 0xFEFF;
 
-	for (;;)
-	{
-		struct timeval tmv;
-		time_svc_world_timers_get_time(&tmv);
-		struct tm * tm = gmtime(&tmv.tv_sec);
-		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
-		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
-		trace_printf("time is %s\n", buffer);
-		HAL_Delay(100);
-	}
+//	for (;;)
+//	{
+//		struct timeval tmv;
+//		time_svc_world_timers_get_time(&tmv);
+//		struct tm * tm = gmtime(&tmv.tv_sec);
+//		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
+//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
+//		trace_printf("time is %s\n", buffer);
+//		HAL_Delay(100);
+//	}
 
 	for (; ; )
 	{
 		UpdateDataAll();
 		SINS_updatePrevData();
-//		trace_printf("error read gps buffer:\t%d\n", error);
-
-//		HAL_Delay(1000);
-
-//		uint32_t MasterTick = TimMaster.Instance->CNT;
-//		uint32_t SlaveTick = TimTowMs.Instance->CNT;
-//
-//		trace_printf("Master count %d\n", MasterTick);
-//		trace_printf("Slave count %d\n", SlaveTick);
-
-
-//		float accel[3] = {0};
-//		float magn[3] = {0};
-//
-//		for (int i = 0; i < 3; i++){
-//			magn[i] = stateSINS_isc.magn[i];
-//			trace_printf("accel %d:\t%f\n", i, stateSINS_rsc.accel[i]);
-//			accel[i] = stateSINS_rsc.accel[i];
-//		}
 
 		mavlink_sins_isc_t msg_sins_isc;
 		msg_sins_isc.time_s = HAL_GetTick();
@@ -297,6 +272,8 @@ int main(int argc, char* argv[])
 		mavlink_msg_sins_isc_encode(0, 0, &msg, &msg_sins_isc);
 		uplink_write_mav(&msg);
 
+
+
 		/*
 		mavlink_sins_rsc_t msg_sins_rsc;
 		msg_sins_rsc.time_s = HAL_GetTick();
@@ -314,25 +291,7 @@ int main(int argc, char* argv[])
 		uplink_write_mav(&msg);
 		*/
 
-//		for (int i = 0; i < len; i++)
-//			trace_printf("0x%x ", buffer[i]);
-//		trace_printf("\n");
-//		HAL_Delay(20);
-//		HAL_UART_Transmit(&uartTransfer_data, (uint8_t *)&gyro, sizeof(gyro), 10);
-
-//		HAL_Delay(3000);
-//		int error = read_gps_buffer();
-//		HAL_Delay(10);
-/*
-		if (transfer_time > 1.0)
-		{
-			for (int i = 0; i < 4; i++)
-				stateSINS_transfer.quaternion[i] = stateSINS_isc.quaternion[i];
-
-			trace_printf("uart transmit error: %d\n", HAL_UART_Transmit(&uartTransfer_data, (uint8_t *) &stateSINS_transfer, sizeof(stateSINS_transfer), 10));
-			transfer_time = 0.0;
-		}
-*/	}
+	}
 
 	return 0;
 }
