@@ -16,6 +16,7 @@
 #include "esp_log.h"
 #include "esp_task.h"
 #include "nvs_flash.h"
+#include "esp_sntp.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -26,8 +27,8 @@
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
-#define EXAMPLE_ESP_WIFI_SSID      "***********"
-#define EXAMPLE_ESP_WIFI_PASS      "***********"
+#define EXAMPLE_ESP_WIFI_SSID      "Boku no Wi-Fi"
+#define EXAMPLE_ESP_WIFI_PASS      "Hashi_hi_teo"
 #define EXAMPLE_ESP_MAXIMUM_RETRY  3
 
 /* FreeRTOS event group to signal when we are connected*/
@@ -71,6 +72,57 @@ struct {
 #define IP_CONFIG_SEND "Hi, Linux, it's me - esp32"
 #define IP_CONFIG_RECV "Hi, it's me - Linux"
 
+static void task_socket_comm(void *pvParameters);
+
+static void task_send_telemetry(void *pvParameters);
+
+void my_sntp_init() {
+    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    sntp_setservername(0, "pool.ntp.org");
+	sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
+	sntp_set_sync_interval(20000);
+    sntp_init();
+}
+
+void app_main(void)
+{
+
+    //Initialize NVS
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+      ESP_ERROR_CHECK(nvs_flash_erase());
+      ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+
+    ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
+    wifi_init_sta();
+    TaskHandle_t tIpComm;
+    printf("Wifi inited\n");
+    xTaskCreatePinnedToCore(task_socket_comm, "Socket communication", configMINIMAL_STACK_SIZE + 4000, "Socket comm", 1, &tIpComm, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(task_send_telemetry, "Send telemetry", configMINIMAL_STACK_SIZE + 4000, "Send telemetry", 1, &tIpComm, tskNO_AFFINITY);
+
+
+    my_sntp_init();
+    printf("Wow\n");
+}
+
+
+static void task_send_telemetry(void *pvParameters) {
+	while (1) {
+		char buf[100];
+		time_t t = time(0);
+		struct tm* tm= gmtime(&t);
+
+		strftime(buf, sizeof(buf), "%d.%m.%Y %H:%M:%S", tm);
+
+		printf("TIME: %s\n", buf);
+		vTaskDelay(1000 / portTICK_RATE_MS);
+
+	}
+}
+
+
 static void task_socket_comm(void *pvParameters) {
 	printf("Task created!\n");
 	ip_config.state = SEARCH;
@@ -109,8 +161,6 @@ static void task_socket_comm(void *pvParameters) {
 			printf("SIZE: %u\n", size);
 
 			if (strcmp(buf, IP_CONFIG_RECV) == 0) {
-		        esp_ip4_addr_t ip = {0};
-		        ip.addr = addrout.sin_addr.s_addr;
 		        printf("Found server: %s:%d \n", inet_ntoa(addrout.sin_addr), ntohs(addrout.sin_port));
 
 		        addrout.sin_port = htons(IP_CONFIG_PORT_THEIR);
@@ -148,26 +198,6 @@ static void task_socket_comm(void *pvParameters) {
 	}
 }
 
-void app_main(void)
-{
-    //Initialize NVS
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-      ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-
-    ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
-    wifi_init_sta();
-    TaskHandle_t tIpComm;
-    printf("Wifi inited\n");
-    xTaskCreatePinnedToCore(task_socket_comm, "Socket communication", configMINIMAL_STACK_SIZE + 4000, "Socket comm", 1, &tIpComm, tskNO_AFFINITY);
-    printf("Wow\n");
-}
-
-
-
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
@@ -193,7 +223,6 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 
 void wifi_init_sta(void)
 {
-	printf("HEY1!\n");
     s_wifi_event_group = xEventGroupCreate();
 
     ESP_ERROR_CHECK(esp_netif_init());
@@ -204,7 +233,6 @@ void wifi_init_sta(void)
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-	printf("HEY2!\n");
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
 
@@ -216,10 +244,10 @@ void wifi_init_sta(void)
     };
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
-	printf("HEY2.1!\n");
+	printf("Warning! Maybe wifi brownout\n");
     ESP_ERROR_CHECK(esp_wifi_start() );
     //esp_netif_set_
-	printf("HEY2.2!\n");
+	printf("Warning gone\n");
     ESP_LOGI(TAG, "wifi_init_sta finished.");
 
     /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
@@ -233,7 +261,6 @@ void wifi_init_sta(void)
     /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
      * happened. */
 
-	printf("HEY3!\n");
     if (bits & WIFI_CONNECTED_BIT) {
         ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
                  EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
@@ -248,5 +275,4 @@ void wifi_init_sta(void)
     ESP_ERROR_CHECK(esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler));
     vEventGroupDelete(s_wifi_event_group);
 
-	printf("HEY4!\n");
 }
