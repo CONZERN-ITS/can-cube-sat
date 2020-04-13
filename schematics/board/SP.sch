@@ -7145,9 +7145,9 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <attribute name="NAME" x="64.5414" y="13.97" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="69.342" y="13.97" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="PWR" gate="G$1" x="66.04" y="7.62" smashed="yes">
-<attribute name="NAME" x="69.596" y="3.048" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="71.755" y="3.048" size="1.778" layer="96" rot="R90"/>
+<instance part="PWR" gate="G$1" x="66.04" y="5.08" smashed="yes">
+<attribute name="NAME" x="69.596" y="0.508" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="71.755" y="0.508" size="1.778" layer="96" rot="R90"/>
 </instance>
 </instances>
 <busses>
@@ -7413,23 +7413,8 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <junction x="48.26" y="25.4"/>
 <wire x1="58.42" y1="25.4" x2="66.04" y2="25.4" width="0.1524" layer="91"/>
 <junction x="58.42" y="25.4"/>
-<wire x1="66.04" y1="25.4" x2="66.04" y2="22.86" width="0.1524" layer="91"/>
 <pinref part="R1" gate="G$1" pin="2"/>
-</segment>
-</net>
-<net name="BUS-1" class="0">
-<segment>
-<wire x1="-20.32" y1="-25.4" x2="-20.32" y2="-10.16" width="0.1524" layer="91"/>
-<wire x1="-20.32" y1="-10.16" x2="-17.78" y2="-10.16" width="0.1524" layer="91"/>
-<pinref part="D29" gate="G$1" pin="A"/>
-<wire x1="-17.78" y1="-25.4" x2="-20.32" y2="-25.4" width="0.1524" layer="91"/>
-<pinref part="SOL1" gate="G$1" pin="IN"/>
-<junction x="-20.32" y="-25.4"/>
-<wire x1="-20.32" y1="-25.4" x2="-25.4" y2="-25.4" width="0.1524" layer="91"/>
-<wire x1="27.94" y1="-22.86" x2="27.94" y2="-27.94" width="0.1524" layer="91"/>
-<wire x1="27.94" y1="-27.94" x2="-25.4" y2="-27.94" width="0.1524" layer="91"/>
-<wire x1="-25.4" y1="-27.94" x2="-25.4" y2="-25.4" width="0.1524" layer="91"/>
-<pinref part="S1" gate="1" pin="S"/>
+<wire x1="66.04" y1="22.86" x2="66.04" y2="25.4" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$4" class="0">
@@ -7453,7 +7438,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <junction x="38.1" y="-5.08"/>
 <pinref part="U$21" gate="G$1" pin="P$1"/>
 <wire x1="58.42" y1="5.08" x2="58.42" y2="-5.08" width="0.1524" layer="91"/>
-<wire x1="66.04" y1="2.54" x2="66.04" y2="-5.08" width="0.1524" layer="91"/>
+<wire x1="66.04" y1="0" x2="66.04" y2="-5.08" width="0.1524" layer="91"/>
 <wire x1="66.04" y1="-5.08" x2="58.42" y2="-5.08" width="0.1524" layer="91"/>
 <junction x="58.42" y="-5.08"/>
 <wire x1="58.42" y1="-5.08" x2="48.26" y2="-5.08" width="0.1524" layer="91"/>
@@ -7469,20 +7454,29 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <label x="58.42" y="-5.08" size="1.778" layer="95" rot="R90"/>
 <label x="27.94" y="-5.08" size="1.778" layer="95" rot="R90"/>
 <label x="48.26" y="-5.08" size="1.778" layer="95" rot="R90"/>
+<pinref part="PWR" gate="G$1" pin="C"/>
+</segment>
+<segment>
+<wire x1="-20.32" y1="-25.4" x2="-20.32" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="-20.32" y1="-10.16" x2="-17.78" y2="-10.16" width="0.1524" layer="91"/>
+<pinref part="D29" gate="G$1" pin="A"/>
+<wire x1="-17.78" y1="-25.4" x2="-20.32" y2="-25.4" width="0.1524" layer="91"/>
+<pinref part="SOL1" gate="G$1" pin="IN"/>
+<junction x="-20.32" y="-25.4"/>
+<wire x1="-20.32" y1="-25.4" x2="-25.4" y2="-25.4" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="-22.86" x2="27.94" y2="-27.94" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="-27.94" x2="-25.4" y2="-27.94" width="0.1524" layer="91"/>
+<wire x1="-25.4" y1="-27.94" x2="-25.4" y2="-25.4" width="0.1524" layer="91"/>
+<pinref part="S1" gate="1" pin="S"/>
+<label x="30.48" y="-27.94" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$5" class="0">
 <segment>
-<wire x1="66.04" y1="12.7" x2="66.04" y2="10.16" width="0.1524" layer="91"/>
+<wire x1="66.04" y1="12.7" x2="66.04" y2="7.62" width="0.1524" layer="91"/>
 <pinref part="R1" gate="G$1" pin="1"/>
 <pinref part="PWR" gate="G$1" pin="A"/>
-<junction x="66.04" y="10.16"/>
-</segment>
-</net>
-<net name="N$7" class="0">
-<segment>
-<pinref part="PWR" gate="G$1" pin="C"/>
-<junction x="66.04" y="2.54"/>
+<junction x="66.04" y="7.62"/>
 </segment>
 </net>
 </nets>
