@@ -7455,7 +7455,18 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <label x="27.94" y="-5.08" size="1.778" layer="95" rot="R90"/>
 <label x="48.26" y="-5.08" size="1.778" layer="95" rot="R90"/>
 <pinref part="PWR" gate="G$1" pin="C"/>
+<label x="40.64" y="-5.08" size="1.778" layer="95"/>
 </segment>
+</net>
+<net name="N$5" class="0">
+<segment>
+<wire x1="66.04" y1="12.7" x2="66.04" y2="7.62" width="0.1524" layer="91"/>
+<pinref part="R1" gate="G$1" pin="1"/>
+<pinref part="PWR" gate="G$1" pin="A"/>
+<junction x="66.04" y="7.62"/>
+</segment>
+</net>
+<net name="BUS-1" class="0">
 <segment>
 <wire x1="-20.32" y1="-25.4" x2="-20.32" y2="-10.16" width="0.1524" layer="91"/>
 <wire x1="-20.32" y1="-10.16" x2="-17.78" y2="-10.16" width="0.1524" layer="91"/>
@@ -7469,14 +7480,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="-25.4" y1="-27.94" x2="-25.4" y2="-25.4" width="0.1524" layer="91"/>
 <pinref part="S1" gate="1" pin="S"/>
 <label x="30.48" y="-27.94" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="N$5" class="0">
-<segment>
-<wire x1="66.04" y1="12.7" x2="66.04" y2="7.62" width="0.1524" layer="91"/>
-<pinref part="R1" gate="G$1" pin="1"/>
-<pinref part="PWR" gate="G$1" pin="A"/>
-<junction x="66.04" y="7.62"/>
 </segment>
 </net>
 </nets>
