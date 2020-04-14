@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.4.2">
+<eagle version="9.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -11532,6 +11532,9 @@ Source: www.kingbright.com</description>
 <part name="BME280" library="CanCubeSat" deviceset="BME280" device=""/>
 <part name="ME-O2" library="CanCubeSat" deviceset="ME-O2" device=""/>
 <part name="MICS-6814" library="CanCubeSat" deviceset="MICS-6814" device=""/>
+<part name="R1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
+<part name="R2" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
+<part name="R3" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
 </parts>
 <sheets>
 <sheet>
@@ -11632,6 +11635,18 @@ Source: www.kingbright.com</description>
 <instance part="MICS-6814" gate="G$1" x="-48.26" y="-17.78" smashed="yes">
 <attribute name="NAME" x="-54.102" y="-9.144" size="1.27" layer="95"/>
 </instance>
+<instance part="R1" gate="G$1" x="-99.06" y="0" smashed="yes" rot="R90">
+<attribute name="NAME" x="-100.5586" y="-3.81" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="-95.758" y="-3.81" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="R2" gate="G$1" x="-91.44" y="0" smashed="yes" rot="R90">
+<attribute name="NAME" x="-92.9386" y="-3.81" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="-88.138" y="-3.81" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="R3" gate="G$1" x="-83.82" y="0" smashed="yes" rot="R90">
+<attribute name="NAME" x="-85.3186" y="-3.81" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="-80.518" y="-3.81" size="1.778" layer="96" rot="R90"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -11712,6 +11727,11 @@ Source: www.kingbright.com</description>
 <pinref part="R101" gate="G$1" pin="2"/>
 <pinref part="IC2" gate="MCU" pin="PB10"/>
 </segment>
+<segment>
+<pinref part="BME280" gate="G$1" pin="SCL"/>
+<wire x1="-35.56" y1="33.02" x2="-25.4" y2="33.02" width="0.1524" layer="91"/>
+<label x="-30.48" y="33.02" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SDA" class="0">
 <segment>
@@ -11720,6 +11740,11 @@ Source: www.kingbright.com</description>
 <wire x1="157.48" y1="76.2" x2="162.56" y2="76.2" width="0.1524" layer="91"/>
 <pinref part="R102" gate="G$1" pin="2"/>
 <pinref part="IC2" gate="MCU" pin="PB11"/>
+</segment>
+<segment>
+<pinref part="BME280" gate="G$1" pin="SDA"/>
+<wire x1="-35.56" y1="27.94" x2="-25.4" y2="27.94" width="0.1524" layer="91"/>
+<label x="-30.48" y="27.94" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="VDD" class="0">
@@ -11786,6 +11811,20 @@ Source: www.kingbright.com</description>
 <pinref part="ME-O2" gate="G$1" pin="3V3"/>
 <wire x1="-35.56" y1="10.16" x2="-25.4" y2="10.16" width="0.1524" layer="91"/>
 <label x="-30.48" y="10.16" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="-99.06" y1="15.24" x2="-99.06" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="-99.06" y1="15.24" x2="-91.44" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="-91.44" y1="15.24" x2="-91.44" y2="5.08" width="0.1524" layer="91"/>
+<pinref part="R2" gate="G$1" pin="2"/>
+<pinref part="R3" gate="G$1" pin="2"/>
+<wire x1="-91.44" y1="15.24" x2="-83.82" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="-83.82" y1="15.24" x2="-83.82" y2="5.08" width="0.1524" layer="91"/>
+<junction x="-91.44" y="15.24"/>
+<pinref part="R1" gate="G$1" pin="2"/>
+<wire x1="-99.06" y1="15.24" x2="-99.06" y2="5.08" width="0.1524" layer="91"/>
+<junction x="-99.06" y="15.24"/>
+<label x="-99.06" y="20.32" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="N$133" class="0">
@@ -12005,6 +12044,70 @@ Source: www.kingbright.com</description>
 <segment>
 <pinref part="R81" gate="G$1" pin="2"/>
 <pinref part="PB5" gate="G$1" pin="C"/>
+</segment>
+</net>
+<net name="SENS_CO" class="0">
+<segment>
+<pinref part="MICS-6814" gate="G$1" pin="CO"/>
+<pinref part="R3" gate="G$1" pin="1"/>
+<wire x1="-83.82" y1="-5.08" x2="-83.82" y2="-12.7" width="0.1524" layer="91"/>
+<wire x1="-83.82" y1="-12.7" x2="-60.96" y2="-12.7" width="0.1524" layer="91"/>
+<label x="-114.3" y="-12.7" size="1.778" layer="95"/>
+<wire x1="-83.82" y1="-12.7" x2="-114.3" y2="-12.7" width="0.1524" layer="91"/>
+<junction x="-83.82" y="-12.7"/>
+</segment>
+<segment>
+<pinref part="IC2" gate="MCU" pin="PA0-WKUP"/>
+<wire x1="86.36" y1="88.9" x2="86.36" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="81.28" x2="73.66" y2="81.28" width="0.1524" layer="91"/>
+<label x="73.66" y="81.28" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SENS_NH3" class="0">
+<segment>
+<pinref part="MICS-6814" gate="G$1" pin="NH3"/>
+<pinref part="R2" gate="G$1" pin="1"/>
+<wire x1="-60.96" y1="-17.78" x2="-91.44" y2="-17.78" width="0.1524" layer="91"/>
+<wire x1="-91.44" y1="-17.78" x2="-91.44" y2="-5.08" width="0.1524" layer="91"/>
+<label x="-114.3" y="-17.78" size="1.778" layer="95"/>
+<wire x1="-91.44" y1="-17.78" x2="-114.3" y2="-17.78" width="0.1524" layer="91"/>
+<junction x="-91.44" y="-17.78"/>
+</segment>
+<segment>
+<pinref part="IC2" gate="MCU" pin="PA1"/>
+<wire x1="88.9" y1="88.9" x2="88.9" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="78.74" x2="73.66" y2="78.74" width="0.1524" layer="91"/>
+<label x="73.66" y="78.74" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SENS_NO2" class="0">
+<segment>
+<pinref part="MICS-6814" gate="G$1" pin="NO2"/>
+<pinref part="R1" gate="G$1" pin="1"/>
+<wire x1="-60.96" y1="-22.86" x2="-99.06" y2="-22.86" width="0.1524" layer="91"/>
+<wire x1="-99.06" y1="-22.86" x2="-99.06" y2="-5.08" width="0.1524" layer="91"/>
+<label x="-114.3" y="-22.86" size="1.778" layer="95"/>
+<wire x1="-99.06" y1="-22.86" x2="-114.3" y2="-22.86" width="0.1524" layer="91"/>
+<junction x="-99.06" y="-22.86"/>
+</segment>
+<segment>
+<pinref part="IC2" gate="MCU" pin="PA2"/>
+<wire x1="91.44" y1="88.9" x2="91.44" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="76.2" x2="73.66" y2="76.2" width="0.1524" layer="91"/>
+<label x="73.66" y="76.2" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SENS_O2" class="0">
+<segment>
+<pinref part="IC2" gate="MCU" pin="PA3"/>
+<wire x1="93.98" y1="88.9" x2="93.98" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="73.66" x2="73.66" y2="73.66" width="0.1524" layer="91"/>
+<label x="73.66" y="73.66" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="ME-O2" gate="G$1" pin="SIG"/>
+<wire x1="-35.56" y1="5.08" x2="-25.4" y2="5.08" width="0.1524" layer="91"/>
+<label x="-30.48" y="5.08" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
