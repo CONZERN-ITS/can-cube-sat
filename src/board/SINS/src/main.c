@@ -221,11 +221,11 @@ int main(int argc, char* argv[])
 
 
 	assert(0 == time_svc_steady_init());
-//	assert(0 == time_svc_world_init());
+	assert(0 == time_svc_world_init());
 	assert(0 == gps_init(_on_gps_packet, NULL));
 
 	int rc = gps_configure();
-//	trace_printf("configure rc = %d\n", rc);
+	trace_printf("configure rc = %d\n", rc);
 
 	uplink_init();
 	SENSORS_Init();
@@ -239,16 +239,16 @@ int main(int argc, char* argv[])
 //	__enable_irq();
 //	uint16_t flag = 0xFEFF;
 
-//	for (;;)
-//	{
-//		struct timeval tmv;
-//		time_svc_world_timers_get_time(&tmv);
-//		struct tm * tm = gmtime(&tmv.tv_sec);
-//		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
-//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
-//		trace_printf("time is %s\n", buffer);
-//		HAL_Delay(100);
-//	}
+	for (;;)
+	{
+		struct timeval tmv;
+		time_svc_world_timers_get_time(&tmv);
+		struct tm * tm = gmtime(&tmv.tv_sec);
+		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
+		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
+		trace_printf("time is %s\n", buffer);
+		HAL_Delay(100);
+	}
 
 	for (; ; )
 	{
@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
 
 		mavlink_sins_isc_t msg_sins_isc;
 		msg_sins_isc.time_s = HAL_GetTick();
-		msg_sins_isc.time_ms = 0;
+		msg_sins_isc.time_us = 0;
 		__disable_irq();
 		for (int i = 0; i < 3; i++)
 		{
