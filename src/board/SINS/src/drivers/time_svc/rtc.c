@@ -79,7 +79,10 @@ int time_svc_rtc_hardcore_init()
 	_init_rtc_handle();
 
 	// Канонично настраиваем RTC
+	HAL_PWR_EnableBkUpAccess();
 	hal_error = HAL_RTC_Init(&hrtc);
+	HAL_PWR_DisableBkUpAccess();
+
 	if (HAL_OK != hal_error)
 		return sins_hal_status_to_errno(hal_error);
 
