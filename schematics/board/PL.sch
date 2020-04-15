@@ -11528,7 +11528,7 @@ Source: www.kingbright.com</description>
 <part name="IC2" library="CanCubeSat" deviceset="STM32F103C*T" device="" technology="8"/>
 <part name="R25" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
 <part name="R26" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
-<part name="U$23" library="CanCubeSat" deviceset="USB-C" device=""/>
+<part name="USB-C" library="CanCubeSat" deviceset="USB-C" device=""/>
 <part name="BME280" library="CanCubeSat" deviceset="BME280" device=""/>
 <part name="ME-O2" library="CanCubeSat" deviceset="ME-O2" device=""/>
 <part name="MICS-6814" library="CanCubeSat" deviceset="MICS-6814" device=""/>
@@ -11625,7 +11625,7 @@ Source: www.kingbright.com</description>
 <attribute name="NAME" x="150.9014" y="57.15" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="155.702" y="57.15" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="U$23" gate="G$1" x="12.7" y="68.58" smashed="yes"/>
+<instance part="USB-C" gate="G$1" x="12.7" y="68.58" smashed="yes"/>
 <instance part="BME280" gate="G$1" x="-48.26" y="30.48" smashed="yes">
 <attribute name="NAME" x="-52.324" y="36.576" size="1.27" layer="95"/>
 </instance>
@@ -11702,7 +11702,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="-5.08" y1="73.66" x2="-22.86" y2="73.66" width="0.1524" layer="91"/>
 <label x="-22.86" y="73.66" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="GND"/>
+<pinref part="USB-C" gate="G$1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="MICS-6814" gate="G$1" pin="GND"/>
@@ -11808,7 +11808,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="-5.08" y1="66.04" x2="-22.86" y2="66.04" width="0.1524" layer="91"/>
 <label x="-22.86" y="66.04" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="3V3/BUS"/>
+<pinref part="USB-C" gate="G$1" pin="3V3/BUS"/>
 </segment>
 <segment>
 <pinref part="ME-O2" gate="G$1" pin="3V3"/>
@@ -11987,7 +11987,7 @@ Source: www.kingbright.com</description>
 <segment>
 <label x="45.72" y="71.12" size="1.778" layer="95"/>
 <wire x1="30.48" y1="71.12" x2="50.8" y2="71.12" width="0.1524" layer="91"/>
-<pinref part="U$23" gate="G$1" pin="SWC/TXD"/>
+<pinref part="USB-C" gate="G$1" pin="SWC/TXD"/>
 </segment>
 </net>
 <net name="SWD" class="0">
@@ -12001,7 +12001,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="30.48" y1="73.66" x2="50.8" y2="73.66" width="0.1524" layer="91"/>
 <label x="45.72" y="73.66" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="SWD/RXD"/>
+<pinref part="USB-C" gate="G$1" pin="SWD/RXD"/>
 </segment>
 </net>
 <net name="TX-C" class="0">
@@ -12013,7 +12013,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="50.8" y1="66.04" x2="30.48" y2="66.04" width="0.1524" layer="91"/>
 <label x="45.72" y="66.04" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="TX0"/>
+<pinref part="USB-C" gate="G$1" pin="TX0"/>
 </segment>
 </net>
 <net name="RX-C" class="0">
@@ -12025,7 +12025,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="-22.86" y1="68.58" x2="-5.08" y2="68.58" width="0.1524" layer="91"/>
 <label x="-22.86" y="68.58" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="RX0"/>
+<pinref part="USB-C" gate="G$1" pin="RX0"/>
 </segment>
 </net>
 <net name="NRST" class="0">
@@ -12040,7 +12040,7 @@ Source: www.kingbright.com</description>
 <segment>
 <wire x1="-22.86" y1="71.12" x2="-5.08" y2="71.12" width="0.1524" layer="91"/>
 <label x="-22.86" y="71.12" size="1.778" layer="95"/>
-<pinref part="U$23" gate="G$1" pin="NRST/EN"/>
+<pinref part="USB-C" gate="G$1" pin="NRST/EN"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -12060,10 +12060,10 @@ Source: www.kingbright.com</description>
 <junction x="-83.82" y="-12.7"/>
 </segment>
 <segment>
-<pinref part="IC2" gate="MCU" pin="PA0-WKUP"/>
-<wire x1="86.36" y1="88.9" x2="86.36" y2="81.28" width="0.1524" layer="91"/>
-<wire x1="86.36" y1="81.28" x2="73.66" y2="81.28" width="0.1524" layer="91"/>
-<label x="73.66" y="81.28" size="1.778" layer="95"/>
+<pinref part="IC2" gate="MCU" pin="PA2"/>
+<wire x1="91.44" y1="88.9" x2="91.44" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="76.2" x2="73.66" y2="76.2" width="0.1524" layer="91"/>
+<label x="73.66" y="76.2" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SENS_NH3" class="0">
@@ -12094,10 +12094,10 @@ Source: www.kingbright.com</description>
 <junction x="-99.06" y="-22.86"/>
 </segment>
 <segment>
-<pinref part="IC2" gate="MCU" pin="PA2"/>
-<wire x1="91.44" y1="88.9" x2="91.44" y2="76.2" width="0.1524" layer="91"/>
-<wire x1="91.44" y1="76.2" x2="73.66" y2="76.2" width="0.1524" layer="91"/>
-<label x="73.66" y="76.2" size="1.778" layer="95"/>
+<pinref part="IC2" gate="MCU" pin="PA0-WKUP"/>
+<wire x1="86.36" y1="88.9" x2="86.36" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="81.28" x2="73.66" y2="81.28" width="0.1524" layer="91"/>
+<label x="73.66" y="81.28" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SENS_O2" class="0">
