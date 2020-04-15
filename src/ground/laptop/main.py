@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore
 from sys import argv, exit
 
-from sourse.sourse import MainWindow
+from source.source import MainWindow
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setOrganizationName("ITS")
