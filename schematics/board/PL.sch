@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.0">
+<eagle version="9.4.2">
 <drawing>
 <settings>
-<setting alwaysvectorfont="no"/>
+<setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
@@ -11762,6 +11762,9 @@ Source: www.kingbright.com</description>
 <wire x1="96.52" y1="134.62" x2="96.52" y2="142.24" width="0.1524" layer="91"/>
 <label x="96.52" y="137.16" size="1.778" layer="95" rot="R90"/>
 <pinref part="IC2" gate="MCU" pin="VDDA"/>
+<pinref part="IC2" gate="MCU" pin="VBAT"/>
+<wire x1="99.06" y1="134.62" x2="96.52" y2="134.62" width="0.1524" layer="91"/>
+<junction x="96.52" y="134.62"/>
 </segment>
 <segment>
 <wire x1="73.66" y1="27.94" x2="73.66" y2="40.64" width="0.1524" layer="91"/>
