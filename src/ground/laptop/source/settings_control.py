@@ -3,7 +3,6 @@ import os.path
 from source import RES_ROOT, USER_SETTINGS_PATH
 
 DEFAULT_SETTINGS_PATH = os.path.join(RES_ROOT, "StrelA_MS_default.ini")
-print(USER_SETTINGS_PATH)
 
 APP_ICON_PATH = os.path.join(RES_ROOT, "images/StrelA_MS.png")
 WINDOW_ICON_PATH = os.path.join(RES_ROOT, "images/window.png")
