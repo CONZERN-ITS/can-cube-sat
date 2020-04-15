@@ -24,9 +24,9 @@ static int _init_rtc_clocks()
 	HAL_StatusTypeDef hal_error;
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
 
-	// Влючаем LSE
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE; // Из всех осциляторов трогаем только LSE
-	RCC_OscInitStruct.LSEState = RCC_LSE_ON; // Включаем lSE
+	// Влючаем LSI
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI; // Из всех осциляторов трогаем только LSI
+	RCC_OscInitStruct.LSIState = RCC_LSI_ON; // Включаем lSI
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE; // PLL не трогаем
 	hal_error = HAL_RCC_OscConfig(&RCC_OscInitStruct);
 	if (HAL_OK != hal_error)
@@ -34,9 +34,9 @@ static int _init_rtc_clocks()
 
 	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
-	// Указываем LSE как входной такт для RTC
+	// Указываем LSI как входной такт для RTC
 	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
-	PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+	PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
 	/*
 	A caution to be taken when HAL_RCCEx_PeriphCLKConfig() is used to select RTC clock selection, in this case
 	the Reset of Backup domain will be applied in order to modify the RTC Clock source as consequence all backup
