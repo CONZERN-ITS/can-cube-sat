@@ -24,10 +24,17 @@ static int _init_rtc_clocks()
 	HAL_StatusTypeDef hal_error;
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
 
-	// Влючаем LSI
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI; // Из всех осциляторов трогаем только LSI
-	RCC_OscInitStruct.LSIState = RCC_LSI_ON; // Включаем lSI
+	// Влючаем LSI/LSE
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI | RCC_OSCILLATORTYPE_LSE; // Из всех осциляторов трогаем только LSI
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE; // PLL не трогаем
+#if ITS_SINS_RTC_CLKSOURCE_LSI
+	RCC_OscInitStruct.LSIState = RCC_LSI_ON; // Включаем LSI
+	RCC_OscInitStruct.LSEState = RCC_LSE_OFF;
+#else
+	RCC_OscInitStruct.LSEState = RCC_LSI_OFF;
+	RCC_OscInitStruct.LSEState = RCC_LSE_ON; // Включаем LSE
+#endif
+
 	hal_error = HAL_RCC_OscConfig(&RCC_OscInitStruct);
 	if (HAL_OK != hal_error)
 		return sins_hal_status_to_errno(hal_error);
@@ -36,7 +43,11 @@ static int _init_rtc_clocks()
 
 	// Указываем LSI как входной такт для RTC
 	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+#if ITS_SINS_RTC_CLKSOURCE_LSI
 	PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
+#else
+	PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+#endif
 	/*
 	A caution to be taken when HAL_RCCEx_PeriphCLKConfig() is used to select RTC clock selection, in this case
 	the Reset of Backup domain will be applied in order to modify the RTC Clock source as consequence all backup
@@ -57,8 +68,13 @@ static void _init_rtc_handle()
 {
 	hrtc.Instance = RTC;
 	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+#if ITS_SINS_RTC_CLKSOURCE_LSI
+	hrtc.Init.AsynchPrediv = 127;
+	hrtc.Init.SynchPrediv = 255;
+#else
 	hrtc.Init.AsynchPrediv = 127; // предполагается что на LSE сидит часовой кварц на 32767
 	hrtc.Init.SynchPrediv = 255;  // Эти делители дадут нам 1 Герц для секунд
+#endif
 	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
 	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
 	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
@@ -153,6 +169,15 @@ int time_svc_rtc_simple_init()
 
 int time_svc_rtc_init(void)
 {
+
+#if ITS_SINS_RTC_FORCERESET
+	// Насильный сброс бекап домена
+	HAL_PWR_EnableBkUpAccess();
+	__HAL_RCC_BACKUPRESET_FORCE();
+	__HAL_RCC_BACKUPRESET_RELEASE();
+	HAL_PWR_DisableBkUpAccess();
+
+#endif
 	if (RCC->BDCR & RCC_BDCR_RTCEN)
 	{
 		// Значит оно уже работает. Настраиваемся по-простому

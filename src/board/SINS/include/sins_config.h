@@ -2,6 +2,18 @@
 #define INC_SINS_CONFIG_H_
 
 
+
+//! Использовать LSI в качестве источника частоты для RTC
+/*! Если эта переменная имеет значение 0 или не определена, то используется LSE */
+#define ITS_SINS_RTC_CLKSOURCE_LSI 1
+
+
+//! Нужно ли делать по запуску насильный сброс всего бекап домена?
+/*! Если используется LSE для RTC, то это делать нужно - иначе RTC не запустится */
+#define ITS_SINS_RTC_FORCERESET 1
+
+
+
 //! CORTEX-M приоритет для прерывания на байты UART-а
 #define ITS_SINS_GPS_UART_IRQ_PRIORITY (4)
 
