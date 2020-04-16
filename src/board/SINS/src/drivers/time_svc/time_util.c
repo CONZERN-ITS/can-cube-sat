@@ -24,7 +24,7 @@ void unix_time_to_gps_time(const struct timeval * tmv, uint16_t * week, uint32_t
 	const time_t gps_epoch_seconds = tmv->tv_sec - GPS_EPOCH_IN_UNIX_TIME;
 
 	*week = gps_epoch_seconds / SECONDS_PER_WEEK;
-	*tow_ms = (tmv->tv_sec % SECONDS_PER_WEEK) * 1000 + tmv->tv_usec / 1000;
+	*tow_ms = (gps_epoch_seconds % SECONDS_PER_WEEK) * 1000 + tmv->tv_usec / 1000;
 }
 
 
@@ -174,7 +174,7 @@ static int get_yday(int day, int mon, int year, int * yday)
 	};
 	int leap = yisleap(year);
 
-	*yday = days[leap][mon] + day;
+	*yday = days[leap][mon] + day - 1; // -1 потому что struct tm считает от 0
 	return 0;
 }
 

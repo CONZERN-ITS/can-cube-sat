@@ -240,6 +240,7 @@ void time_svc_world_timers_start()
 	__HAL_TIM_ENABLE(&htim4);
 
 	// Для счёта недель.
+	__HAL_TIM_CLEAR_IT(&htim2, TIM_IT_UPDATE); // почему-то по старту он стоит
 	__HAL_TIM_ENABLE_IT(&htim2, TIM_IT_UPDATE);
 }
 
