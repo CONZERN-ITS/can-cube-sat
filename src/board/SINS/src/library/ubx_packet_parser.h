@@ -67,11 +67,33 @@ typedef enum ubx_nav_sol_flags_t
 } ubx_nav_sol_flags_t;
 
 
+//! Флаги валидности времени из пакета gpstime
+typedef enum ubx_nav_gpstime_flags_t
+{
+	//! время недели GPS достоверно (iTOW и fTOW)
+	UBX_NAVGPSTIME_FLAGS__TOW_VALID = 0x01 << 0,
+	//! номер недели GPS достоверен
+	UBX_NAVGPSTIME_FLAGS__WEEK_VALID = 0x01 << 1,
+	//!  скачок секунд GPS достоверен
+	UBX_NAVGPSTIME_FLAGS__LEAPS_VALID = 0x01 << 2
+} ubx_nav_gpstime_flags_t;
+
 //! Пакет gpstime
 typedef struct ubx_gpstime_packet_t
 {
-	uint16_t week;
+	//! Время недели GPS для эпохи навигации
 	uint32_t tow_ms;
+	//! Дробная часть iTOW (диапазон ±500000).
+	//! Точность времени недели GPS: (iTOW · 1e-3) + (fTOW · 1e-9)
+	int32_t ftow;
+	//! Номер недели эпохи навигации
+	uint16_t week;
+	//! Скачок секунд GPS (GPS-UTC)
+	int8_t leaps;
+	//! Флаги достоверности (смотри ubx_nav_gpstime_flags_t)
+	uint8_t valid_flags;
+	//! Оценка точности времени
+	uint32_t t_acc;
 } ubx_gpstime_packet_t;
 
 

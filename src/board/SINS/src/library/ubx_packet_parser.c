@@ -149,7 +149,11 @@ static void _ubx_parse_nav_timegps(const uint8_t * payload, ubx_any_packet_t * p
 	ubx_gpstime_packet_t * packet = &packet_->packet.gpstime;
 
 	packet->tow_ms = _read_u32(payload);
-	packet->week = _read_u16(payload + 8);		// +8 т.к. время в неделях с 8 по 10 байт
+	packet->ftow = _read_i32(payload + 4);
+	packet->week = _read_u16(payload + 8);
+	packet->leaps = *(payload + 10);
+	packet->valid_flags = *(payload + 11);
+	packet->t_acc = _read_u32(payload + 12);
 }
 
 

@@ -79,10 +79,18 @@ void _internal_packet_callback(void * user_arg, const ubx_any_packet_t * packet_
 			struct timeval tmv;
 			const ubx_gpstime_packet_t * packet = &packet_->packet.gpstime;
 			// Мы ждем следующей секунды, поэтому округляем до следующей секунды
-			uint32_t next_tow_ms = packet->tow_ms;
-			next_tow_ms = ((next_tow_ms + 999) / 1000) * 1000;
-			gps_time_to_unix_time(packet->week, next_tow_ms, &tmv);
-			_next_pps_time = tmv.tv_sec;
+
+			if (
+					(packet->valid_flags & UBX_NAVGPSTIME_FLAGS__LEAPS_VALID)
+					&& (packet->valid_flags & UBX_NAVGPSTIME_FLAGS__TOW_VALID)
+					&& (packet->valid_flags & UBX_NAVGPSTIME_FLAGS__WEEK_VALID)
+			){
+				// Работаем с этим сообщением только если оно валидно
+				uint32_t next_tow_ms = packet->tow_ms;
+				next_tow_ms = ((next_tow_ms + 999) / 1000) * 1000;
+				gps_time_to_unix_time(packet->week, next_tow_ms, &tmv);
+				_next_pps_time = tmv.tv_sec - packet->leaps; // вычитаем липосекунды
+			}
 		}
 		break;
 

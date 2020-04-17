@@ -21,9 +21,11 @@
 
 
 //! Перевод времени GPS в UNIX время
+/*! Перевод осуществляется без учета липосекунд */
 void gps_time_to_unix_time(uint16_t week, uint32_t tow_ms, struct timeval * tmv);
 
 //! Перевод времени UNIX в GPS
+/*! Перевод осуществляется без учета липосекунд */
 void unix_time_to_gps_time(const struct timeval * tmv, uint16_t * week, uint32_t * tow_ms);
 
 
