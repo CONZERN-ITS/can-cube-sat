@@ -49,10 +49,17 @@ static void on_ubx_packet(void * userarg, const ubx_any_packet_t * packet)
 		);
 
 		{
-			if (RTC_CFG_STATE_WAIT_PACKET == rtc_cfg_state)
-			{
-				const ubx_gpstime_packet_t * pkt = &packet->packet.gpstime;
-				struct timeval tv = gps_time_to_unix_time(pkt->week, pkt->tow_ms);
+			const ubx_gpstime_packet_t * pkt = &packet->packet.gpstime;
+			if (
+					(RTC_CFG_STATE_WAIT_PACKET == rtc_cfg_state)
+					&& (pkt->valid_flags & UBX_NAVGPSTIME_FLAGS__LEAPS_VALID)
+					&& (pkt->valid_flags & UBX_NAVGPSTIME_FLAGS__TOW_VALID)
+					&& (pkt->valid_flags & UBX_NAVGPSTIME_FLAGS__WEEK_VALID)
+			){
+
+				struct timeval tv;
+				gps_time_to_unix_time(pkt->week, pkt->tow_ms, &tv);
+				tv.tv_sec -= pkt->leaps; // Вычитаем липосекунды
 				tv.tv_sec += 1; // Настраиваемся на следующий фронт PPS
 
 				struct tm * tm = gmtime(&tv.tv_sec);

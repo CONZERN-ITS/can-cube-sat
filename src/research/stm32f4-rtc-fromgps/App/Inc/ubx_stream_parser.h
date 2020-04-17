@@ -5,8 +5,8 @@
  *      Author: developer
  */
 
-#ifndef DRIVERS_GPS_H_
-#define DRIVERS_GPS_H_
+#ifndef INC_UBX_STREAM_PARSER_H_
+#define INC_UBX_STREAM_PARSER_H_
 
 
 #include <stdint.h>
@@ -62,4 +62,4 @@ void ubx_sparser_set_pbuffer(ubx_sparser_ctx_t * ctx, uint8_t * pbuffer, uint16_
 void ubx_sparser_consume_byte(ubx_sparser_ctx_t * ctx, uint8_t byte);
 
 
-#endif /* DRIVERS_GPS_H_ */
+#endif /* INC_UBX_STREAM_PARSER_H_ */

@@ -14,7 +14,10 @@
 #include <stm32f4xx_ll_rtc.h>
 
 //! Перевод времени GPS в UNIX время
-struct timeval gps_time_to_unix_time(uint16_t week, uint32_t tow_ms);
+void gps_time_to_unix_time(uint16_t week, uint32_t tow_ms, struct timeval * tmv);
+
+//! Переод UNIX времени в GPS
+void unix_time_to_gps_time(const struct timeval * tmv, uint16_t * week, uint32_t * tow_ms);
 
 
 //! Пересчет дня недели из терминов struct tm в термины RTC

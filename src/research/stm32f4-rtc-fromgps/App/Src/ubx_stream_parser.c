@@ -35,17 +35,12 @@ static int _check_whole_packet(ubx_sparser_ctx_t * ctx)
 {
 	const uint8_t actual_crc_a = ctx->pbuffer[ctx->pbuffer_size - 2];
 	const uint8_t actual_crc_b = ctx->pbuffer[ctx->pbuffer_size - 1];
+	const uint16_t actual_crc_16 = ubx_uint16crc_make(actual_crc_a, actual_crc_b);
 
 	int crc_check_len = ctx->pbuffer_size - 2;		//контрольная сумма считается без crc полей
+	uint16_t calculated_crc16 = ubx_packet_checksum(ctx->pbuffer, crc_check_len);
 
-	uint8_t crc_a = 0, crc_b = 0;
-	for (int i = 0; i < crc_check_len; i++)		//алгоритм подсчета контрольной суммы
-	{
-		crc_a += ctx->pbuffer[i];
-		crc_b += crc_a;
-	}
-
-	if (actual_crc_a == crc_a && actual_crc_b == crc_b)
+	if (calculated_crc16 == actual_crc_16)
 		return 0;
 	else
 		return -EBADMSG;

@@ -15,19 +15,25 @@
 
 //! Базовый год для RTC, так как оно работает в двух последних цифра
 #define RTC_BASE_YEAR 2000
+#define SECONDS_PER_WEEK (60 * 60 * 24 * 7)
+#define GPS_EPOCH_IN_UNIX_TIME (315964800)
 
 
-
-//! Перевод времени GPS в UNIX время
-inline struct timeval gps_time_to_unix_time(uint16_t week, uint32_t tow_ms)
+void gps_time_to_unix_time(uint16_t week, uint32_t tow_ms, struct timeval * tmv)
 {
-	struct timeval rv;
-	rv.tv_sec = week * 60 * 60 * 24 * 7 + tow_ms / 1000;
-	rv.tv_usec = (tow_ms % 1000) * 1000;
-
-	rv.tv_sec += 315964800; // эпоха GPS в UNIX времени
-	return rv;
+	tmv->tv_sec = week * SECONDS_PER_WEEK + tow_ms / 1000 + GPS_EPOCH_IN_UNIX_TIME;
+	tmv->tv_usec = (tow_ms % 1000) * 1000;
 }
+
+
+void unix_time_to_gps_time(const struct timeval * tmv, uint16_t * week, uint32_t * tow_ms)
+{
+	const time_t gps_epoch_seconds = tmv->tv_sec - GPS_EPOCH_IN_UNIX_TIME;
+
+	*week = gps_epoch_seconds / SECONDS_PER_WEEK;
+	*tow_ms = (gps_epoch_seconds % SECONDS_PER_WEEK) * 1000 + tmv->tv_usec / 1000;
+}
+
 
 
 //! Пересчет дня недели из терминов struct tm в термины RTC
