@@ -16868,6 +16868,11 @@ Copyright: Würth Elektronik</description>
 <part name="R25" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
 <part name="R26" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="5k1"/>
 <part name="MICRO" library="MicroUSB" deviceset="629105136821" device=""/>
+<part name="C15" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100nF"/>
+<part name="C16" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="10µ"/>
+<part name="C53" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100nF"/>
+<part name="C54" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100nF"/>
+<part name="C55" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100nF"/>
 </parts>
 <sheets>
 <sheet>
@@ -18542,9 +18547,9 @@ Copyright: Würth Elektronik</description>
 <instance part="U$8" gate="G$1" x="241.3" y="172.72" smashed="yes"/>
 <instance part="U$26" gate="G$1" x="58.42" y="43.18" smashed="yes"/>
 <instance part="U$1" gate="G$1" x="241.3" y="50.8" smashed="yes"/>
-<instance part="R79" gate="G$1" x="462.28" y="378.46" smashed="yes">
-<attribute name="NAME" x="458.47" y="379.9586" size="1.778" layer="95"/>
-<attribute name="VALUE" x="458.47" y="375.158" size="1.778" layer="96"/>
+<instance part="R79" gate="G$1" x="441.96" y="375.92" smashed="yes">
+<attribute name="NAME" x="438.15" y="377.4186" size="1.778" layer="95"/>
+<attribute name="VALUE" x="438.15" y="372.618" size="1.778" layer="96"/>
 </instance>
 <instance part="LED3" gate="G$1" x="297.18" y="292.1" smashed="yes" rot="R270">
 <attribute name="NAME" x="292.608" y="288.544" size="1.778" layer="95"/>
@@ -18633,6 +18638,26 @@ Copyright: Würth Elektronik</description>
 <instance part="MICRO" gate="G$1" x="515.62" y="231.14" smashed="yes">
 <attribute name="NAME" x="508" y="245.11" size="1.778" layer="95"/>
 <attribute name="VALUE" x="508" y="226.06" size="1.778" layer="96"/>
+</instance>
+<instance part="C15" gate="G$1" x="472.44" y="383.54" smashed="yes" rot="R270">
+<attribute name="NAME" x="472.821" y="382.016" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="467.741" y="382.016" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="C16" gate="G$1" x="472.44" y="388.62" smashed="yes" rot="R270">
+<attribute name="NAME" x="473.075" y="387.604" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="468.249" y="387.604" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="C53" gate="G$1" x="472.44" y="396.24" smashed="yes" rot="R270">
+<attribute name="NAME" x="472.821" y="394.716" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="467.741" y="394.716" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="C54" gate="G$1" x="472.44" y="403.86" smashed="yes" rot="R270">
+<attribute name="NAME" x="472.821" y="402.336" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="467.741" y="402.336" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="C55" gate="G$1" x="472.44" y="411.48" smashed="yes" rot="R270">
+<attribute name="NAME" x="472.821" y="409.956" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="467.741" y="409.956" size="1.778" layer="96" rot="R270"/>
 </instance>
 </instances>
 <busses>
@@ -19821,9 +19846,26 @@ Copyright: Würth Elektronik</description>
 <label x="477.52" y="408.94" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="472.44" y1="368.3" x2="472.44" y2="375.92" width="0.1524" layer="91"/>
-<label x="472.44" y="370.84" size="1.778" layer="95" rot="R90"/>
+<wire x1="472.44" y1="368.3" x2="472.44" y2="378.46" width="0.1524" layer="91"/>
+<label x="467.36" y="424.18" size="1.778" layer="95" rot="R90"/>
 <pinref part="IC2" gate="MCU" pin="VSSA"/>
+<wire x1="472.44" y1="378.46" x2="467.36" y2="378.46" width="0.1524" layer="91"/>
+<wire x1="467.36" y1="378.46" x2="467.36" y2="383.54" width="0.1524" layer="91"/>
+<pinref part="C15" gate="G$1" pin="2"/>
+<wire x1="467.36" y1="383.54" x2="467.36" y2="388.62" width="0.1524" layer="91"/>
+<junction x="467.36" y="383.54"/>
+<pinref part="C16" gate="G$1" pin="2"/>
+<wire x1="467.36" y1="388.62" x2="467.36" y2="396.24" width="0.1524" layer="91"/>
+<junction x="467.36" y="388.62"/>
+<pinref part="C53" gate="G$1" pin="2"/>
+<wire x1="467.36" y1="396.24" x2="467.36" y2="403.86" width="0.1524" layer="91"/>
+<junction x="467.36" y="396.24"/>
+<pinref part="C54" gate="G$1" pin="2"/>
+<wire x1="467.36" y1="403.86" x2="467.36" y2="411.48" width="0.1524" layer="91"/>
+<junction x="467.36" y="403.86"/>
+<pinref part="C55" gate="G$1" pin="2"/>
+<wire x1="467.36" y1="411.48" x2="467.36" y2="429.26" width="0.1524" layer="91"/>
+<junction x="467.36" y="411.48"/>
 </segment>
 <segment>
 <wire x1="45.72" y1="43.18" x2="35.56" y2="43.18" width="0.1524" layer="91"/>
@@ -20286,9 +20328,27 @@ Copyright: Würth Elektronik</description>
 <junction x="482.6" y="292.1"/>
 </segment>
 <segment>
-<wire x1="474.98" y1="368.3" x2="474.98" y2="375.92" width="0.1524" layer="91"/>
-<label x="474.98" y="370.84" size="1.778" layer="95" rot="R90"/>
+<wire x1="474.98" y1="368.3" x2="474.98" y2="383.54" width="0.1524" layer="91"/>
+<label x="474.98" y="424.18" size="1.778" layer="95" rot="R90"/>
 <pinref part="IC2" gate="MCU" pin="VDDA"/>
+<pinref part="C15" gate="G$1" pin="1"/>
+<wire x1="474.98" y1="383.54" x2="474.98" y2="388.62" width="0.1524" layer="91"/>
+<junction x="474.98" y="383.54"/>
+<pinref part="C16" gate="G$1" pin="1"/>
+<wire x1="474.98" y1="388.62" x2="474.98" y2="396.24" width="0.1524" layer="91"/>
+<junction x="474.98" y="388.62"/>
+<pinref part="C53" gate="G$1" pin="1"/>
+<wire x1="474.98" y1="396.24" x2="474.98" y2="403.86" width="0.1524" layer="91"/>
+<junction x="474.98" y="396.24"/>
+<pinref part="C54" gate="G$1" pin="1"/>
+<wire x1="474.98" y1="403.86" x2="474.98" y2="411.48" width="0.1524" layer="91"/>
+<junction x="474.98" y="403.86"/>
+<pinref part="C55" gate="G$1" pin="1"/>
+<wire x1="474.98" y1="411.48" x2="474.98" y2="429.26" width="0.1524" layer="91"/>
+<junction x="474.98" y="411.48"/>
+<pinref part="IC2" gate="MCU" pin="VBAT"/>
+<wire x1="477.52" y1="368.3" x2="474.98" y2="368.3" width="0.1524" layer="91"/>
+<junction x="474.98" y="368.3"/>
 </segment>
 <segment>
 <wire x1="535.94" y1="254" x2="535.94" y2="223.52" width="0.1524" layer="91"/>
@@ -20325,8 +20385,8 @@ Copyright: Würth Elektronik</description>
 <pinref part="AB1" gate="A" pin="3"/>
 </segment>
 <segment>
-<wire x1="457.2" y1="378.46" x2="447.04" y2="378.46" width="0.1524" layer="91"/>
-<label x="454.66" y="378.46" size="1.778" layer="95" rot="R180"/>
+<wire x1="436.88" y1="375.92" x2="426.72" y2="375.92" width="0.1524" layer="91"/>
+<label x="434.34" y="375.92" size="1.778" layer="95" rot="R180"/>
 <pinref part="R79" gate="G$1" pin="1"/>
 </segment>
 <segment>
@@ -21006,12 +21066,13 @@ Copyright: Würth Elektronik</description>
 </net>
 <net name="NRST" class="0">
 <segment>
-<wire x1="467.36" y1="368.3" x2="467.36" y2="378.46" width="0.1524" layer="91"/>
 <pinref part="R79" gate="G$1" pin="2"/>
-<wire x1="467.36" y1="378.46" x2="467.36" y2="393.7" width="0.1524" layer="91"/>
-<junction x="467.36" y="378.46"/>
-<label x="467.36" y="386.08" size="1.778" layer="95" rot="R90"/>
+<wire x1="447.04" y1="375.92" x2="447.04" y2="391.16" width="0.1524" layer="91"/>
+<label x="447.04" y="383.54" size="1.778" layer="95" rot="R90"/>
 <pinref part="IC2" gate="MCU" pin="NRST"/>
+<wire x1="447.04" y1="375.92" x2="467.36" y2="375.92" width="0.1524" layer="91"/>
+<wire x1="467.36" y1="375.92" x2="467.36" y2="368.3" width="0.1524" layer="91"/>
+<junction x="447.04" y="375.92"/>
 </segment>
 <segment>
 <wire x1="386.08" y1="218.44" x2="403.86" y2="218.44" width="0.1524" layer="91"/>
