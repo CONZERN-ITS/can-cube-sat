@@ -21,21 +21,39 @@ class ModelWidget(OpenGL.GLViewWidget):
         self.setup_ui_design()
 
     def setup_ui(self):
-        
         self.gird = OpenGL.GLGridItem()
-        self.gird.scale(10, 10, 10)
-        self.gird.translate(0, 0, -2)
         self.addItem(self.gird)
 
-        verts = self._get_mesh_points(MESH_PATH)
-        faces = NumPy.array([(i, i + 1, i + 2,) for i in range(0, len(verts), 3)])
-
-        self.mesh = OpenGL.GLMeshItem(vertexes=verts, faces=faces, drawEdges=True, smooth=False, shader='edgeHilight', computeNormals=True)
+        self.mesh = OpenGL.GLMeshItem()
         self.addItem(self.mesh)
-        self.settings.endGroup()
 
     def setup_ui_design(self):
-        self.setCameraPosition(distance=225, elevation=40, azimuth=270)
+        self.settings.beginGroup("CentralWidget/ModelWidget/Grid")
+        self.gird.scale(*[int(num) for num in self.settings.value("scale")])
+        self.gird.translate(*[int(num) for num in self.settings.value("translate")])
+        self.settings.endGroup()
+
+        self.settings.beginGroup("CentralWidget/ModelWidget/Mesh")
+        if os.path.exists(self.settings.value("path")):
+            verts = self._get_mesh_points(self.settings.value("path"))
+        else:
+            verts = self._get_mesh_points(MESH_PATH)
+        faces = NumPy.array([(i, i + 1, i + 2,) for i in range(0, len(verts), 3)])
+        self.mesh.setMeshData(vertexes=verts,
+                              faces=faces, 
+                              drawEdges=int(self.settings.value("draw_edges")), 
+                              drawFaces=int(self.settings.value("draw_faces")),
+                              smooth=int(self.settings.value("smooth")), 
+                              shader=self.settings.value("shader"), 
+                              computeNormals=int(self.settings.value("compute_normals")))
+        self.mesh.meshDataChanged()
+        self.settings.endGroup()
+
+        self.settings.beginGroup("CentralWidget/ModelWidget/Camera")
+        self.setCameraPosition(distance=int(self.settings.value("distance")),
+                               elevation=int(self.settings.value("elevation")),
+                               azimuth=int(self.settings.value("azimuth")))
+        self.settings.endGroup()
 
     def _get_mesh_points(self, mesh_path):
         mesh = StlMesh.Mesh.from_file(mesh_path)
