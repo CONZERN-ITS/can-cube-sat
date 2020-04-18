@@ -20,20 +20,26 @@ class CentralWidget(QtWidgets.QWidget):
         self.grid_layout = QtWidgets.QGridLayout(self)
         self.settings.beginGroup("CentralWidget")
 
-        if self.settings.value("GraphWidget/is_on"):
+        if int(self.settings.value("GraphWidget/is_on")):
             self.widgets_dict.update([("GraphWidget", graph_widget.GraphWidget())])
-        if self.settings.value("MapWidget/is_on"):
+        if int(self.settings.value("MapWidget/is_on")):
             self.widgets_dict.update([("MapWidget", map_widget.MapWidget())])
-        if self.settings.value("ModelWidget/is_on"):
+        if int(self.settings.value("ModelWidget/is_on")):
             self.widgets_dict.update([("ModelWidget", model_widget.ModelWidget())])
 
         for key in self.widgets_dict.keys():
             self.settings.beginGroup(key)
-            if int(self.settings.value("is_on")):
-                pos = self.settings.value("position")
-                self.grid_layout.addWidget(self.widgets_dict[key], int(pos[0]), int(pos[1]), int(pos[2]), int(pos[3]))
+            pos = self.settings.value("position")
+            self.grid_layout.addWidget(self.widgets_dict[key], int(pos[0]), int(pos[1]), int(pos[2]), int(pos[3]))
             self.settings.endGroup()
         self.settings.endGroup()
+
+        for i in range(self.grid_layout.columnCount()):
+            self.grid_layout.setColumnMinimumWidth(i, 50)
+            self.grid_layout.setColumnStretch(i, 1)
+        for i in range(self.grid_layout.rowCount()):
+            self.grid_layout.setRowMinimumHeight(i, 50)
+            self.grid_layout.setRowStretch(i, 1)
 
     def new_data_reaction(self, data):
         for widget in self.widgets_dict.items():
