@@ -8,7 +8,7 @@
 #ifndef MAIN_ROUTER_ROUTER_H_
 #define MAIN_ROUTER_ROUTER_H_
 
-#include "../mavlink/its/mavlink.h"
+#include "mavlink/its/mavlink.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

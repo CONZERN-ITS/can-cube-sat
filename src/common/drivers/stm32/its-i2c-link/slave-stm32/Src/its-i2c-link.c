@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include "main.h"
+
 
 //! Буфер для пакета (а может быть и для нескольких?
 typedef struct its_i2c_link_pbuf_t
@@ -103,6 +105,9 @@ static its_i2c_link_pbuf_t * _pbuf_queue_get_head(i2c_link_pbuf_queue_t * queue)
 	return queue->head;
 }
 
+static int _pbuf_queue_is_empty(i2c_link_pbuf_queue_t * queue) {
+    return (queue->head == queue->tail) && queue->full;
+}
 
 static void _pbuf_queue_push_head(i2c_link_pbuf_queue_t * queue)
 {
@@ -190,7 +195,12 @@ inline static HAL_StatusTypeDef _i2c_recieve(I2C_HandleTypeDef *hi2c, uint8_t *p
     }
 }
 
-
+inline static void _i2c_pull_int(void) {
+    HAL_GPIO_WritePin(I2C_INT_GPIO_Port, I2C_INT_Pin, GPIO_PIN_RESET);
+}
+inline static void _i2c_push_int(void) {
+    HAL_GPIO_WritePin(I2C_INT_GPIO_Port, I2C_INT_Pin, GPIO_PIN_SET);
+}
 /*
  * Отправляет нули
  */
@@ -300,6 +310,9 @@ static int _link_tx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 		// выкидываем его из очереди на отправку
 	    if (ctx->prev_cmd == I2C_LINK_CMD_GET_PACKET) {
 	        _pbuf_queue_pop_tail(&ctx->tx_bufs_queue);
+	        if (_pbuf_queue_is_empty(&ctx->tx_bufs_queue)) {
+	            _i2c_push_int();
+	        }
 	    }
 		ctx->stats.tx_done_cnt++;
 		break;
@@ -428,6 +441,7 @@ static int _link_rx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 }
 
 
+
 // В ряде случае HAL забрасывает I2C перефирию в состояние SWRST
 // Видимо из-за ошибки в силиконе, которая не позволяет адекватно
 // восстановиться после той или иной ситуации
@@ -485,9 +499,12 @@ int its_i2c_link_write(const void * data, size_t data_size)
 
 	buf->packet_size = data_size;
 	memcpy(buf->packet_data, data, data_size);
-	// Все остальное зануляем, чтобы не гонять мусор с предыдиущих проходов мастеру
-	//memset(buf->packet_data + data_size, 0, I2C_LINK_PACKET_SIZE - data_size);
+
 	_pbuf_queue_push_head(&ctx->tx_bufs_queue);
+
+	if (!_pbuf_queue_is_empty(&ctx->tx_bufs_queue)) {
+	    _i2c_pull_int();
+	}
 
 	return data_size;
 }
@@ -586,6 +603,9 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
 		// не будем пытаться делать это вновь
 		ctx->stats.tx_error_cnt++;
 		_pbuf_queue_pop_tail(&ctx->tx_bufs_queue);
+	    if (_pbuf_queue_is_empty(&ctx->tx_bufs_queue)) {
+	        _i2c_push_int();
+	    }
 		ctx->stats.last_error = error;
 
 		// обязательно уходим из этого состояния

@@ -29,6 +29,9 @@ void its_settimeofday(its_time_t *time);
 uint32_t its_time_gettick(void);
 
 
+void its_sync_time(its_time_t *from_bcs);
+
+
 /*
  * Delay in microseconds (not milliseconds)
  * us - count of microseconds
