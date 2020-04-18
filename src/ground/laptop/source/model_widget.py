@@ -16,11 +16,13 @@ MESH_PATH = os.path.join(RES_ROOT, "models/general_assembly_sw0001.stl")
 class ModelWidget(OpenGL.GLViewWidget):
     def __init__(self):
         super(ModelWidget, self).__init__()
+        self.settings = settings_control.init_settings()
 
         self.setup_ui()
         self.setup_ui_design()
 
     def setup_ui(self):
+        
         self.gird = OpenGL.GLGridItem()
         self.gird.scale(10, 10, 10)
         self.gird.translate(0, 0, -2)
@@ -31,6 +33,7 @@ class ModelWidget(OpenGL.GLViewWidget):
 
         self.mesh = OpenGL.GLMeshItem(vertexes=verts, faces=faces, drawEdges=True, smooth=False, shader='edgeHilight', computeNormals=True)
         self.addItem(self.mesh)
+        self.settings.endGroup()
 
     def setup_ui_design(self):
         self.setCameraPosition(distance=225, elevation=20, azimuth=270)
