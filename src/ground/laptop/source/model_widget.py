@@ -1,12 +1,11 @@
 import os
 
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui
 import pyqtgraph as PG
 import pyqtgraph.opengl as OpenGL
 import numpy as NumPy
 from stl import mesh as StlMesh
 from itertools import chain
-from math import acos, trunc
 
 from source import settings_control
 from source import RES_ROOT
@@ -36,7 +35,7 @@ class ModelWidget(OpenGL.GLViewWidget):
         self.settings.endGroup()
 
     def setup_ui_design(self):
-        self.setCameraPosition(distance=225, elevation=20, azimuth=270)
+        self.setCameraPosition(distance=225, elevation=40, azimuth=270)
 
     def _get_mesh_points(self, mesh_path):
         mesh = StlMesh.Mesh.from_file(mesh_path)
@@ -48,9 +47,14 @@ class ModelWidget(OpenGL.GLViewWidget):
         return nd_points
 
     def new_data_reaction(self, data):
-        self.clear_data()
-        quat = QtGui.QQuaternion(*data[-1])
-        self._rotate_object(self.mesh, *quat.getAxisAndAngle())
+        quat = None
+        for i in range(len(data)):
+            if (self.settings.value("CentralWidget/ModelWidget/packet_name") == data[i][0]) and ((len(data[i]) - 2) >= 4):
+                quat = data[i][2:6]
+        if quat is not None:
+            quat = QtGui.QQuaternion(*quat)
+            self.clear_data()
+            self._rotate_object(self.mesh, *quat.getAxisAndAngle())
 
     def _rotate_object(self, obj, axis, angle):
         obj.rotate(angle, axis[0], axis[1], axis[2])
