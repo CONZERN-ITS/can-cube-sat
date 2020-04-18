@@ -9,7 +9,6 @@ class MapWidget(OpenStreetMap):
         self.settings = settings_control.init_settings()
 
         self.key = None
-        self.a = 0
 
         self.loadFinished.connect(self.setup_ui_design)
 
@@ -18,9 +17,6 @@ class MapWidget(OpenStreetMap):
         self.set_center(float(self.settings.value("center")[0]), float(self.settings.value("center")[1]))
         self.set_zoom(self.settings.value("zoom"))
         self.settings.endGroup()
-        if self.a == 2:
-            self.new_data_reaction((("MAP", 0, 55.9, 37.8), ("MAP", 0, 55.91, 37.84), ("MAP", 0, 55.92, 37.83)))
-        self.a += 1
 
     def new_data_reaction(self, data):
         points = []
