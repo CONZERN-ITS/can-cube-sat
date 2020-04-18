@@ -24,6 +24,8 @@ class CentralWidget(QtWidgets.QWidget):
             self.widgets_dict.update([("GraphWidget", graph_widget.GraphWidget())])
         if self.settings.value("MapWidget/is_on"):
             self.widgets_dict.update([("MapWidget", map_widget.MapWidget())])
+        if self.settings.value("ModelWidget/is_on"):
+            self.widgets_dict.update([("ModelWidget", model_widget.ModelWidget())])
 
         for key in self.widgets_dict.keys():
             self.settings.beginGroup(key)
