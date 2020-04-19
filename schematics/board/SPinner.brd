@@ -129,10 +129,6 @@
 </layers>
 <board>
 <plain>
-<wire x1="-82" y1="-82" x2="241.2" y2="-82" width="0" layer="20"/>
-<wire x1="241.2" y1="-82" x2="170.6" y2="159.6" width="0" layer="20"/>
-<wire x1="170.6" y1="159.6" x2="-82" y2="150.6" width="0" layer="20"/>
-<wire x1="-82" y1="150.6" x2="-82" y2="-82" width="0" layer="20"/>
 <wire x1="9.1802" y1="65.748740625" x2="16.251259375" y2="72.819809375" width="0.001" layer="20"/>
 <wire x1="16.251259375" y1="9.1802" x2="9.1802" y2="16.251259375" width="0.001" layer="20"/>
 <wire x1="22.43845" y1="64.86485" x2="17.13515" y2="59.56155" width="0.001" layer="20"/>
@@ -237,7 +233,7 @@ design rules under a new name.</description>
 <param name="mdSmdSmd" value="6mil"/>
 <param name="mdViaViaSameLayer" value="6mil"/>
 <param name="mnLayersViaInSmd" value="2"/>
-<param name="mdCopperDimension" value="19mil"/>
+<param name="mdCopperDimension" value="10mil"/>
 <param name="mdDrill" value="6mil"/>
 <param name="mdSmdStop" value="0mil"/>
 <param name="msWidth" value="6mil"/>
