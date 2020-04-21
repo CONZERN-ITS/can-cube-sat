@@ -209,7 +209,14 @@ void EXTI0_IRQHandler()
 	if (_next_pps_time > 0)
 		time_svc_world_set_time(_next_pps_time);
 
-	HAL_NVIC_ClearPendingIRQ(EXTI0_IRQn);
+
+	HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_9);
+//	if (HAL_GPIO_ReadPin(GPIOF, GPIO_PIN_9))
+//		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, RESET);
+//	else
+//		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, SET);
+
+	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
 
 
