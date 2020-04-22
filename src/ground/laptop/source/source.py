@@ -93,8 +93,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 except Exception as e:
                     print(e)
                 else:
-                    data_buf.append(data)
-                    if (time.time() - start_time) > 0.1:
+                    data_buf.extend(data)
+                    if (time.time() - start_time) > 0.3:
                         self.new_data.emit(tuple(data_buf))
                         start_time = time.time()
                         data_buf = []

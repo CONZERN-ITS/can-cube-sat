@@ -46,7 +46,7 @@ class TXTLogDataSource():
                 time.sleep(0.001)
         else:
             time.sleep(self.time_delay)
-        return data
+        return [tuple(data)]
 
     def write_data(self, data):
         string_data = ''
@@ -92,7 +92,7 @@ class MAVLogDataSource():
                 time.sleep(0.001)
         else:
             time.sleep(self.time_delay)
-        return data
+        return [tuple(data)]
 
     def stop(self):
         self.connection.close()
@@ -119,12 +119,21 @@ class MAVDataSource():
         return data
 
     def get_data(self, msg):
-        if msg.get_type() == "RAW_PRESSURE":
-            return ('RAW_PRESSURE',
-                    msg.time_usec,
-                    msg.press_abs,
-                    msg.press_diff1,
-                    msg.press_diff2)
+        if msg.get_type() == "TERMAL_STATE":
+            return [('TEMPERATURE_' + str(msg.area_id),
+                    msg.time_s + msg.time_us/1000000,
+                    msg.temperature)]
+        if msg.get_type() == "ELECTRICAL_STATE":
+            return [('CURRENT_' + str(msg.area_id),
+                     msg.time_s + msg.time_us/1000000,
+                     msg.current),
+                    ('VOLTAGE_' + str(msg.area_id),
+                     msg.time_s + msg.time_us/1000000,
+                     msg.voltage)]
+        if msg.get_type() == "SINS_ISC":
+            return [tuple(['ACCEL', msg.time_s + msg.time_us/1000000] + msg.accel),
+                    tuple(['COMPASS', msg.time_s + msg.time_us/1000000] + msg.compass),
+                    tuple(['MODEL', msg.time_s + msg.time_us/1000000] + msg.quaternion)]
         else:
             return None
 
