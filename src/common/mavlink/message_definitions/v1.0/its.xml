@@ -15,7 +15,7 @@
     </enum>
   </enums>
   <messages>
-    <message id="50010" name="TERMAL_STATE">
+    <message id="50010" name="THERMAL_STATE">
       <description></description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
