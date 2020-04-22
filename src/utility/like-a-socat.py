@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import time
 import sys
 import socket
@@ -84,11 +86,4 @@ def main(argv):
 
 if __name__ == "__main__":
     argv = sys.argv[1:]
-    argv = [
-        '--serial=/dev/ttyVB00',
-        '--baud=19200',
-        '--host=localhost',
-        '--port=2020'
-    ]
-
     exit(main(argv))
