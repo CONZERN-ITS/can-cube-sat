@@ -1,12 +1,15 @@
 import time
+import sys
 import socket
 import argparse
+import logging
 
 from serial import Serial
 from serial.threaded import ReaderThread, Protocol
 
+_log = logging.getLogger(__name__)
 
-REPORT_DELTA = 10  # Периодичность отчетов
+REPORT_DELTA = 1  # Периодичность отчетов
 
 
 def build_protocol_class(target_host, target_port):
@@ -20,16 +23,23 @@ def build_protocol_class(target_host, target_port):
 
         def data_received(self, data):
             self.sock.sendall(data)
+            self.bytes_xferred += len(data)
             now = time.time()
 
             if now - self.last_report >= REPORT_DELTA:
-                print(f"{self.bytes_xferred} total bytes relayed")
+                _log.info(f"{self.bytes_xferred} total bytes relayed")
                 self.last_report = now
 
     return RelayProtocol
 
 
 def main(argv):
+
+    logging.basicConfig(
+        stream=sys.stdout,
+        level=logging.INFO,
+        format='%(asctime)-15s - %(message)s'
+    )
 
     parser = argparse.ArgumentParser(
         description="Primitive socat-like relay from serial to tcp"
@@ -46,8 +56,8 @@ def main(argv):
     target_host = args.host
     target_port = args.port
 
-    print(f"launching for serial port {serial_name}, baud {serial_baud}.")
-    print(f"relaying to {target_host}:{target_port}")
+    _log.info(f"launching for serial port {serial_name}, baud {serial_baud}.")
+    _log.info(f"relaying to {target_host}:{target_port}")
 
     tty = Serial(
         port=serial_name,
@@ -68,7 +78,6 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    import sys
     argv = sys.argv[1:]
     argv = [
         '--serial=/dev/ttyVB00',
