@@ -11,6 +11,11 @@ _log = logging.getLogger(__name__)
 
 REPORT_DELTA = 1  # Периодичность отчетов
 
+# Строчка для тестового socat порта, чтобы не потерялась
+# sudo socat -d -d
+# PTY,raw,echo=0,group=uucp,mode=0660,link=/dev/ttyVA00
+# PTY,raw,echo=0,group=uucp,mode=0660,link=/dev/ttyVB00
+
 
 def build_protocol_class(target_host, target_port):
 
