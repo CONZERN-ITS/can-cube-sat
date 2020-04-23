@@ -18,10 +18,16 @@
 #define ITS_I2CTM_FREQ 				50000
 #define ITS_I2CTM_PORT 				I2C_NUM_0
 
-#define ITS_UART_PORT 				UART_NUM_0
+#define ITS_UART_PORT 				UART_NUM_1
 #define ITS_UART_RX_BUF_SIZE		1024
 #define ITS_UART_TX_BUF_SIZE		1024
 #define ITS_UART_QUEUE_SIZE			20
+
+
+#define ITS_UART0_PORT 				UART_NUM_1
+#define ITS_UART0_RX_BUF_SIZE		1024
+#define ITS_UART0_TX_BUF_SIZE		1024
+#define ITS_UART0_QUEUE_SIZE		20
 
 void init_helper(void);
 

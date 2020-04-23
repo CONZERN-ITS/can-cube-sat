@@ -68,6 +68,7 @@ void uart_event_task(void *pvParameters)
 	while (1) {
 		//Waiting for UART event.
 		if(xQueueReceive(uart_queue, (void * )&event, (portTickType)portMAX_DELAY)) {
+			fflush(stdout);
 			bzero(buffer, TASK_BUF_SIZE);
 			ESP_LOGI(TAG, "uart[%d] event:", EX_UART_NUM);
 			switch(event.type) {
@@ -130,5 +131,5 @@ void uart_mavlink_install(uart_port_t uart_num, QueueHandle_t uart_queue) {
 	t->queue = uart_queue;
 	t->channel = chan;
 	//Create a task to handler UART event from ISR
-	xTaskCreate(uart_event_task, "uart_event_task", 2048, &t, 1, NULL);
+	xTaskCreate(uart_event_task, "uart_event_task", 2048, t, 1, NULL);
 }

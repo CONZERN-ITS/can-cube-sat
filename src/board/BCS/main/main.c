@@ -26,7 +26,7 @@
 #include "init_helper.h"
 #include "imi.h"
 #include "router.h"
-
+#include "errno.h"
 
 static const char *TAG = "main";
 
@@ -55,14 +55,14 @@ void app_main(void)
 }
 
 #define PC_PORT 50043
-#define PC_IP ""
+#define PC_IP "192.168.31.217"
 
 
 static void task_send_telemetry(void *pvParameters) {
 	its_rt_task_identifier tid;
 	tid.queue = xQueueCreate(5, MAVLINK_MAX_PACKET_LEN);
 	printf("HH: %d\n", (int)tid.queue);
-	its_rt_register(MAVLINK_MSG_ID_TERMAL_STATE, tid);
+	its_rt_register(MAVLINK_MSG_ID_THERMAL_STATE, tid);
 
 
 	struct sockaddr_in addr = {0};
@@ -72,27 +72,39 @@ static void task_send_telemetry(void *pvParameters) {
 
 	int sout;
 	while (1) {
-
-		sout = socket(AF_INET, SOCK_STREAM, 0);
-		if (sout < 0) {
-			ESP_LOGE(TAG, "Can't create socket");
-			vTaskDelete(NULL);
+/*
+		while (1) {
+			sout = socket(AF_INET, SOCK_STREAM, 0);
+			if (sout < 0) {
+				ESP_LOGE(TAG, "Can't create socket");
+				vTaskDelete(NULL);
+			}
+			if (connect(sout, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+				ESP_LOGE(TAG, "Can't connect server %d", errno);
+				close(sout);
+				vTaskDelay(5000 / portTICK_RATE_MS);
+				continue;
+			}
+			break;
 		}
-		if (connect(sout, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-			ESP_LOGE(TAG, "Can't connect server");
-			vTaskDelete(NULL);
-		}
-
+*/
 		while (1) {
 			mavlink_message_t msg;
+			fflush(stdout);
 			if (!xQueueReceive(tid.queue, &msg, portMAX_DELAY)) {
+				fflush(stdout);
 				vTaskDelay(500 / portTICK_RATE_MS);
 				continue;
 			}
+			uint8_t buf[MAVLINK_MAX_PACKET_LEN];
+			int count = mavlink_msg_to_send_buffer(buf, &msg);
+
+			uart_write_bytes(ITS_UART0_PORT, (char *)&buf, count);
+			/*
 			if (send(sout, (uint8_t *)&msg, sizeof(msg), 0) < 0) {
 				close(sout);
 				break;
-			}
+			}*/
 		}
 	}
 	vTaskDelete(NULL);

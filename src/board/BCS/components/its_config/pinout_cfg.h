@@ -14,8 +14,11 @@
 #define ITS_PIN_I2C_INT 	25//18
 #define ITS_PIN_TIME		21//19
 
-#define ITS_PIN_UART_RX		10
-#define ITS_PIN_UART_TX		11
+#define ITS_PIN_UART_RX		22
+#define ITS_PIN_UART_TX		23
+
+#define ITS_PIN_UART0_RX	22
+#define ITS_PIN_UART0_TX	23
 
 
 #endif /* MAIN_PINOUT_CFG_H_ */

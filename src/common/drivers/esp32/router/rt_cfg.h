@@ -11,7 +11,7 @@
 #include "mavlink/its/its.h"
 
 #define RT_CFG_LIST(F) \
-	F(MAVLINK_MSG_ID_TERMAL_STATE, 			0) \
+	F(MAVLINK_MSG_ID_THERMAL_STATE, 		0) \
 	F(MAVLINK_MSG_ID_SINS_isc, 				1) \
 	F(MAVLINK_MSG_ID_ELECTRICAL_STATE, 		2) \
 	F(MAVLINK_MSG_ID_GPS_UBX_NAV_SOL, 		3) \

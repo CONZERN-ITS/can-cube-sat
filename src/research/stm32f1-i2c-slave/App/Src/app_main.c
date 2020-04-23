@@ -24,7 +24,8 @@ int app_main()
 	its_time_t ts = {0};
 	its_settimeofday(&ts);
 
-	uint32_t prev_print = HAL_GetTick();
+    uint32_t prev_print = HAL_GetTick();
+    uint32_t prev_print2 = HAL_GetTick();
 	while (1)
 	{
 	    uint32_t now = HAL_GetTick();
@@ -70,24 +71,50 @@ int app_main()
 			stats.tx_done_cnt, stats.tx_zeroes_cnt, stats.tx_error_cnt,
 			stats.listen_done_cnt, stats.last_error, stats.restarts_cnt
 		);*/
-		if (now - prev_print > 1000) {
-	        its_time_t time;
-	        its_gettimeofday(&time);
-	        printf("TIME: %lu:%03hu\n", (uint32_t) time.sec, time.usec);
-	        prev_print += 1000;
 
-	        int magic = 42; //FIXME: Надо добавить системы
-	        mavlink_message_t msg;
-	        mavlink_timestamp_t mts = {0};
+        if (now - prev_print > 1000) {
+            prev_print += 1000;
+            static int tt = 0;
+
+
+            its_time_t time;
+            its_gettimeofday(&time);
+            printf("TIME: %lu:%03hu\n", (uint32_t) time.sec, time.usec);
+
+            int magic = 42; //FIXME: Надо добавить системы
+            mavlink_message_t msg;
+            mavlink_thermal_state_t mtts = {0};
+            mtts.time_s = time.sec;
+            mtts.time_us = time.usec * 1000;
+            mtts.temperature = tt++;
+            mavlink_msg_thermal_state_encode(magic, magic, &msg, &mtts);
+
+            uint8_t buf[MAVLINK_MAX_PACKET_LEN];
+            uint16_t size = mavlink_msg_to_send_buffer(buf, &msg);
+            rc = its_i2c_link_write(buf, size);
+
+        }
+        if (now - prev_print2 > 1000) {
+            prev_print2 += 1000;
+            static int tt = 0;
+
+
+            its_time_t time;
+            its_gettimeofday(&time);
+            printf("TIME: %lu:%03hu\n", (uint32_t) time.sec, time.usec);
+
+            int magic = 42; //FIXME: Надо добавить системы
+            mavlink_message_t msg;
+            mavlink_timestamp_t mts = {0};
             mts.time_s = time.sec;
             mts.time_us = time.usec * 1000;
-	        mavlink_msg_timestamp_encode(magic, magic, &msg, &mts);
+            mavlink_msg_timestamp_encode(magic, magic, &msg, &mts);
 
-	        uint8_t buf[MAVLINK_MAX_PACKET_LEN];
-	        uint16_t size = mavlink_msg_to_send_buffer(buf, &msg);
-	        rc = its_i2c_link_write(buf, size);
+            uint8_t buf[MAVLINK_MAX_PACKET_LEN];
+            uint16_t size = mavlink_msg_to_send_buffer(buf, &msg);
+            rc = its_i2c_link_write(buf, size);
 
-		}
+        }
 
 
 		HAL_Delay(100);
