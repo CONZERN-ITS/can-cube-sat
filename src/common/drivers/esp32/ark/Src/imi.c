@@ -101,7 +101,7 @@ imi_t imi_handler[ITS_IMI_DEVICE_COUNT];
 typedef struct imi_desc {
 	uint8_t* (*salloc)(uint16_t size);				//Static allocation function
 	void (*save)(uint8_t *data, uint16_t size);		//Send packet to other systems
-	xSemaphoreHandle sem;							//Handles task sleeping
+	xSemaphoreHandle is_any_read;						//Handles task sleeping
 } imi_desc;
 
 static uint8_t *_imi_alloc(uint16_t size) {
@@ -117,13 +117,13 @@ static imi_desc _imi_desc = {
 };
 
 void imi_init(void) {
-	_imi_desc.sem = xSemaphoreCreateBinary();
+	_imi_desc.is_any_read = xSemaphoreCreateBinary();
 }
 
 //If line is pulled, awoke our task immediately
 void IRAM_ATTR imi_i2c_int_isr_handler(void* arg) {
 	BaseType_t higherWoken = 0;
-	xSemaphoreGiveFromISR(_imi_desc.sem, &higherWoken);
+	xSemaphoreGiveFromISR(_imi_desc.is_any_read, &higherWoken);
 	if (higherWoken) {
 		portYIELD_FROM_ISR();
 	}
@@ -144,7 +144,7 @@ void imi_msg_rcv_task(void *pv) {
 		//If line is pulled, take semaphore to wait for the moment when line is pulled
 		//Also we try to test line every IMI_WAIT_DELAY to verify we haven't pass line pulling
 		while (gpio_get_level(ITS_PIN_I2C_INT)) {
-			xSemaphoreTake(_imi_desc.sem, IMI_WAIT_DELAY / portTICK_PERIOD_MS);
+			xSemaphoreTake(_imi_desc.is_any_read, IMI_WAIT_DELAY / portTICK_PERIOD_MS);
 		}
 
 		//Receiving packets if there are any
