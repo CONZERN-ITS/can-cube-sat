@@ -119,10 +119,10 @@ class MAVDataSource():
         return data
 
     def get_data(self, msg):
-        if msg.get_type() == "TERMAL_STATE":
+        if msg.get_type() == "THERMAL_STATE":
             return [('TEMPERATURE_' + str(msg.area_id),
-                    msg.time_s + msg.time_us/1000000,
-                    msg.temperature)]
+                     msg.time_s + msg.time_us/1000000,
+                     msg.temperature)]
         if msg.get_type() == "ELECTRICAL_STATE":
             return [('CURRENT_' + str(msg.area_id),
                      msg.time_s + msg.time_us/1000000,
