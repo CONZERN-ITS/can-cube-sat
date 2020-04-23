@@ -5,7 +5,7 @@ from source import map_widget
 from source import graph_widget
 from source import model_widget
 from source.data_control import *
-
+from source import LOG_FOLDER_PATH
 
 class CentralWidget(QtWidgets.QWidget):
     def __init__(self):
@@ -94,7 +94,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     print(e)
                 else:
                     data_buf.extend(data)
-                    if (time.time() - start_time) > 0.3:
+                    if (time.time() - start_time) > 0.1:
                         self.new_data.emit(tuple(data_buf))
                         start_time = time.time()
                         data_buf = []
@@ -190,7 +190,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                      float(self.settings.value('Log/time_delay')),
                                      int(self.settings.value('Log/time_from_zero')))
         elif sourse == 'MAVLink':
-            data = MAVDataSource(self.settings.value('MAVLink/connection'))
+            data = MAVDataSource(connection_str=self.settings.value('MAVLink/connection'),
+                                 log_path=LOG_FOLDER_PATH)
         self.settings.endGroup()
         return data
 
