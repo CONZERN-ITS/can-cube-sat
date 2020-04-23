@@ -5,9 +5,12 @@
  *      Author: developer
  */
 
+#include <time.h>
+
 #include "stm32f4xx_hal.h"
 #include "drivers/mems/mems.h"
 #include "drivers/gps/gps.h"
+
 
 #ifndef STATE_H_
 #define STATE_H_
@@ -26,11 +29,12 @@ typedef struct {
 	uint8_t lis3mdl_state;
 	uint8_t lsm6ds3_state;
 	uint8_t GPS_state;
-	float time;
+	struct timeval tv;
 }state_system_t;
 
 
 typedef struct {
+	struct timeval tv;
 	float accel[3];
 	float gyro[3];
 	float magn[3];
@@ -39,6 +43,7 @@ typedef struct {
 
 typedef struct {
 	//	zero params; this fields should be filled when device started it`s work
+	struct timeval tv;
 	float zero_quaternion[4];
 	float gyro_staticShift[3];
 	float accel_staticShift[3];
@@ -47,22 +52,23 @@ typedef struct {
 
 
 typedef struct {
-	float quaternion[4];
+	struct timeval tv;
 	float accel[3];
 	float magn[3];
+	float quaternion[4];
 }stateSINS_isc_t;
 
 
-typedef struct {
-	float time;
-	float coordinates[3];
-
-}stateGPS_t;
-
-typedef struct {
-	float quaternion[4];
-
-}__attribute__((packed, aligned(1))) stateSINS_transfer_t;
+//typedef struct {
+//	float time;
+//	float coordinates[3];
+//
+//}stateGPS_t;
+//
+//typedef struct {
+//	float quaternion[4];
+//
+//}__attribute__((packed, aligned(1))) stateSINS_transfer_t;
 
 
 extern stateSINS_rsc_t stateSINS_rsc;
@@ -71,8 +77,8 @@ extern state_zero_t state_zero;
 extern state_system_t state_system_prev;
 extern stateSINS_isc_t stateSINS_isc;
 extern stateSINS_isc_t stateSINS_isc_prev;
-extern stateSINS_transfer_t stateSINS_transfer;
-extern stateGPS_t stateGPS;
+//extern stateSINS_transfer_t stateSINS_transfer;
+//extern stateGPS_t stateGPS;
 
 
 //void SENSORS_Init(void);

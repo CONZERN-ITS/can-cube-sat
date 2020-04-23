@@ -102,7 +102,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 		GPIO_InitTypeDef gpiob;
 		gpiob.Alternate = GPIO_AF4_I2C2;
 		gpiob.Mode = GPIO_MODE_AF_OD;
-		gpiob.Pin = GPIO_PIN_10 | GPIO_PIN_11;
+		gpiob.Pin = GPIO_PIN_10 | GPIO_PIN_11;		// SCL/SDA
 		gpiob.Pull = GPIO_NOPULL;
 		gpiob.Speed = GPIO_SPEED_FREQ_HIGH;
 		HAL_GPIO_Init(GPIOB, &gpiob);
@@ -300,7 +300,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
 	}
 	else if(htim->Instance==TIM1)
 	{
-		__HAL_RCC_TIM1_CLK_ENABLE();
+		__HAL_RCC_TIM1_CLK_ENABLE();			//FIXME: delete
 		__HAL_RCC_GPIOB_CLK_ENABLE();
 		__HAL_RCC_GPIOA_CLK_ENABLE();
 		/**TIM1 GPIO Configuration
@@ -323,11 +323,6 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 		GPIO_InitStruct.Alternate = GPIO_AF1_TIM1;
 		HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-
-	    /* USER CODE BEGIN TIM1_MspPostInit 1 */
-
-	    /* USER CODE END TIM1_MspPostInit 1 */
 	}
 }
 

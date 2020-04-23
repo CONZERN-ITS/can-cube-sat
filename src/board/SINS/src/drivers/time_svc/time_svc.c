@@ -145,6 +145,12 @@ int time_svc_world_init(void)
 }
 
 
+void time_svc_world_get_time(struct timeval * tv)
+{
+	time_svc_world_timers_get_time(tv);
+}
+
+
 int time_svc_steady_init(void)
 {
 	return time_svc_steady_timers_start();
@@ -155,7 +161,6 @@ uint64_t time_svc_steady_get_time(void)
 {
 	return time_svc_steady_timers_get_time();
 }
-
 
 
 void time_svc_world_set_time(time_t the_time)

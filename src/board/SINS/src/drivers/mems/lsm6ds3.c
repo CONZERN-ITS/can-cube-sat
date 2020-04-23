@@ -84,11 +84,11 @@ int mems_lsm6ds3_init(void)
 	error |= lsm6ds3_device_id_get(&lsm6ds3_dev_ctx, &whoamI);
 	if (whoamI != LSM6DS3_ID)
 	{
-		trace_printf("lsm6ds3 not found, %d\terror: %d\n", whoamI, error);
+//		trace_printf("lsm6ds3 not found, %d\terror: %d\n", whoamI, error);
 		return -ENODEV;
 	}
 
-	trace_printf("lsm6ds3 OK\n");
+//	trace_printf("lsm6ds3 OK\n");
 
 //	error = lsm6ds3_fifo_mode_set(&lsm6ds3_dev_ctx, PROPERTY_DISABLE);
 //	if (0 != error) return error;

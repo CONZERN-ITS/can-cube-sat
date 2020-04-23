@@ -85,11 +85,11 @@ int mems_lis3mdl_init(void)
 	error = lis3mdl_device_id_get(&lis3mdl_dev_ctx, &whoamI);
 	if (whoamI != LIS3MDL_ID)
 	{
-		trace_printf("lis3mdl not found, %d\terror: %d\n", whoamI, error);
+//		trace_printf("lis3mdl not found, %d\terror: %d\n", whoamI, error);
 		return -ENODEV;
 	}
 
-	trace_printf("lis3mdl OK\n");
+//	trace_printf("lis3mdl OK\n");
 
 
 	error = lis3mdl_block_data_update_set(&lis3mdl_dev_ctx, PROPERTY_DISABLE);
