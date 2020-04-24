@@ -68,7 +68,7 @@
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       <field type="float[3]" name="accel">accelerations</field>
       <field type="float[3]" name="compass">magnetometer vector</field>
-      <field type="float[4]" name="quaternion">quaternion for translating RSC into ISC</field>
+      <field type="float[4]" name="quaternion">quaternion for translating RSC into ISC (scalar part first)</field>
     </message>
 
     <message id="50015" name="TIMESTAMP">
