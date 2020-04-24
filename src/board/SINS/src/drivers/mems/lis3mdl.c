@@ -128,9 +128,9 @@ int mems_lis3mdl_get_m_data_mG(float* magn)
 	mxv((float(*)[3])transform_matrix, magn, magn);
 
 	//	Change axes to be like in accelerometer FIXME: посмотреть в datasheet направление осей
-	float tmp = magn[0];
-	magn[0] = -magn[1];
-	magn[1] = -tmp;
+	magn[0] = -magn[0];
+	magn[1] = -magn[1];
+	magn[2] = -magn[2];
 #endif
 
 	return 0;

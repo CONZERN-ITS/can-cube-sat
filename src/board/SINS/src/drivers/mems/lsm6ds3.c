@@ -138,6 +138,11 @@ int mems_lsm6ds3_get_xl_data_g(float* accel)
 
 		vmv(accel, (float*)offset_vector, accel);
 		mxv((float(*)[3])transform_matrix, accel, accel);
+
+		float tmp = accel[0];
+		accel[0] = accel[1];
+		accel[1] = tmp;
+		accel[2] = -accel[2];
 #endif
 
 	return 0;
@@ -156,6 +161,10 @@ int mems_lsm6ds3_get_g_data_rps(float* gyro)
 	gyro[1] = lsm6ds3_from_fs1000dps_to_mdps(data_raw_angular_rate.i16bit[1]) * MDPS_TO_RAD;
 	gyro[2] = lsm6ds3_from_fs1000dps_to_mdps(data_raw_angular_rate.i16bit[2]) * MDPS_TO_RAD;
 
+	float tmp = gyro[0];
+	gyro[0] = gyro[1];
+	gyro[1] = tmp;
+	gyro[2] = -gyro[2];
 	return 0;
 }
 

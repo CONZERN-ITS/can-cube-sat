@@ -295,30 +295,15 @@ int main(int argc, char* argv[])
 	time_svc_world_get_time(&stateSINS_isc_prev.tv);
 	for (; ; )
 	{
-		UpdateDataAll();
-		SINS_updatePrevData();
+		for (int i = 0; i < 6; i++)
+		{
+			UpdateDataAll();
+			SINS_updatePrevData();
+			gps_poll();
+		}
 
 		_mavlink_sins_isc(&stateSINS_isc);
 		_mavlink_timestamp();
-
-		gps_poll();
-		/*
-		mavlink_sins_rsc_t msg_sins_rsc;
-		msg_sins_rsc.time_s = HAL_GetTick();
-		msg_sins_rsc.time_ms = 0;
-		__disable_irq();
-		for (int i = 0; i < 3; i++)
-		{
-			msg_sins_rsc.accel[i] = stateSINS_rsc.accel[i];
-			msg_sins_rsc.gyro[i] = stateSINS_rsc.gyro[i];
-			msg_sins_rsc.compass[i] = stateSINS_rsc.magn[i];
-		}
-		__enable_irq();
-
-		mavlink_msg_sins_rsc_encode(0, 0, &msg, &msg_sins_rsc);
-		uplink_write_mav(&msg);
-		*/
-
 	}
 
 	return 0;
