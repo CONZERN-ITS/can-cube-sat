@@ -6,16 +6,20 @@ import pyqtgraph.opengl as OpenGL
 import numpy as NumPy
 from stl import mesh as StlMesh
 from itertools import chain
+import struct
 
 from source import settings_control
 from source import RES_ROOT
 
-MESH_PATH = os.path.join(RES_ROOT, "models/general_assembly_sw0001.stl")
+MESH_PATH = os.path.join(RES_ROOT, "models/CanCubeSat-for-GKS.stl")
+MESH_COLOR_PATH = os.path.join(RES_ROOT, "models/CanCubeSat-for-GKS.stl")
 
 class ModelWidget(OpenGL.GLViewWidget):
     def __init__(self):
         super(ModelWidget, self).__init__()
         self.settings = settings_control.init_settings()
+
+        self.setBackgroundColor(50, 50, 50, 255)
 
         self.setup_ui()
         self.setup_ui_design()
@@ -34,13 +38,22 @@ class ModelWidget(OpenGL.GLViewWidget):
         self.settings.endGroup()
 
         self.settings.beginGroup("CentralWidget/ModelWidget/Mesh")
-        if os.path.exists(self.settings.value("path")):
+
+        model_color = None
+        try:
             verts = self._get_mesh_points(self.settings.value("path"))
-        else:
+            if int(self.settings.value("Colors/is_on")):
+                model_color = self._get_face_colors(self.settings.value("Colors/path"))                
+        except Exception:
             verts = self._get_mesh_points(MESH_PATH)
+            model_color = self._get_face_colors(MESH_COLOR_PATH)
+
         faces = NumPy.array([(i, i + 1, i + 2,) for i in range(0, len(verts), 3)])
+
         self.mesh.setMeshData(vertexes=verts,
                               faces=faces, 
+                              faceColors=model_color,
+                              edgeColor=(0, 0, 0, 1),
                               drawEdges=int(self.settings.value("draw_edges")), 
                               drawFaces=int(self.settings.value("draw_faces")),
                               smooth=int(self.settings.value("smooth")), 
@@ -53,7 +66,19 @@ class ModelWidget(OpenGL.GLViewWidget):
         self.setCameraPosition(distance=int(self.settings.value("distance")),
                                elevation=int(self.settings.value("elevation")),
                                azimuth=int(self.settings.value("azimuth")))
+        self.pan(*[int(pan_item) for pan_item in self.settings.value("pan")])
         self.settings.endGroup()
+
+    def _get_face_colors(self, color_path):
+        color_file = open(color_path, 'rb')
+        bin_data = color_file.read()
+        color_file.close()
+
+        color = NumPy.ndarray(shape=(len(bin_data) // 16, 4,))
+        for i in range(0, len(bin_data), 16):
+            color[i // 16] = struct.unpack(">4f", bin_data[i: i + 16])
+    
+        return color
 
     def _get_mesh_points(self, mesh_path):
         mesh = StlMesh.Mesh.from_file(mesh_path)
