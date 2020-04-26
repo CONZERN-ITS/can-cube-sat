@@ -4,6 +4,42 @@
   <version>3</version>
   <dialect>0</dialect>
   <enums>
+    <enum name="SYSTEMS_ID">
+      <description>Systems numered list</description>
+      <entry value="0" name="GCS">
+        <description>Ground control system id</description>
+      </entry>
+      <entry value="1" name="CUBE_1">
+        <description>Cube 1 id</description>
+      </entry>
+      <entry value="2" name="CUBE_2">
+        <description>Cube 2 id</description>
+      </entry>
+    </enum>
+    <enum name="CUBE_1_COMPONENT_ID">
+      <description>Cube 1 components numered list</description>
+      <entry value="0" name="BCU">
+        <description>Board control unit</description>
+      </entry>
+      <entry value="1" name="SINS">
+        <description>Strapdown inetrial navigation system</description>
+      </entry>
+      <entry value="2" name="PCU">
+        <description>Power control unit</description>
+      </entry>
+      <entry value="3" name="PL">
+        <description>Payload</description>
+      </entry>
+    </enum>
+    <enum name="CUBE_2_COMPONENT_ID">
+      <description>Cube 2 components numered list</description>
+      <entry value="0" name="PFU">
+        <description>Power feeder unit</description>
+      </entry>
+      <entry value="1" name="PCU">
+        <description>Power control unit</description>
+      </entry>
+    </enum>
     <enum name="TIME_BASE_TYPE">
       <description>These values define the type of time base.</description>
       <entry value="0" name="TIME_BASE_TYPE_RTC">
