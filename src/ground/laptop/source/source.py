@@ -64,6 +64,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.mutex = QtCore.QMutex()
             self._set_close_flag(True)
             self.set_time_shift(0)
+            self.last_time = 0
 
         def _set_close_flag(self, mode):
             self.mutex.lock()
@@ -73,7 +74,7 @@ class MainWindow(QtWidgets.QMainWindow):
         def set_time_shift(self, shift=None):
             self.mutex.lock()
             if shift is None:
-                self.time_shift = self.data[-1][1]
+                self.time_shift = self.last_time
             else:
                 self.time_shift = shift
             self.mutex.unlock()
@@ -86,6 +87,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_time_shift(0)
             close = False
             shift = 0
+            last_time = 0
             try:
                 self.data_obj.start()
             except Exception as e:
@@ -95,7 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
             data_buf = []
             while not close:
                 try:
-                    self.data = self.data_obj.read_data()
+                    data = self.data_obj.read_data()
                 except RuntimeError:
                     pass
                 except EOFError as e:
@@ -104,18 +106,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 except Exception as e:
                     print(e)
                 else:
-                    data_buf.extend(self.data)
+                    data_buf.extend(data)
                     if (time.time() - start_time) > 0.1:
                         for data in data_buf:
-                            print(data)
                             data[1] = data[1] - shift
                             data = tuple(data)
+                        last_time = data_buf[-1][1]
                         self.new_data.emit(tuple(data_buf))
                         start_time = time.time()
                         data_buf = []
                 self.mutex.lock()
                 close = self.close_flag
                 shift = self.time_shift
+                self.last_time = last_time
                 self.mutex.unlock()
 
         def quit(self):
