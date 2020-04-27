@@ -62,19 +62,30 @@ class MainWindow(QtWidgets.QMainWindow):
             super(MainWindow.DataManager, self).__init__()
             self.data_obj = data_obj
             self.mutex = QtCore.QMutex()
-            self.set_close_flag(False)
+            self._set_close_flag(True)
+            self.set_time_shift(0)
 
-        def set_close_flag(self, mode):
+        def _set_close_flag(self, mode):
             self.mutex.lock()
             self.close_flag = mode
+            self.mutex.unlock()
+
+        def set_time_shift(self, shift=None):
+            self.mutex.lock()
+            if shift is None:
+                self.time_shift = self.data[-1][1]
+            else:
+                self.time_shift = shift
             self.mutex.unlock()
 
         def change_data_obj(self, data_obj):
             self.data_obj = data_obj
 
         def start(self):
-            self.set_close_flag(False)
+            self._set_close_flag(False)
+            self.set_time_shift(0)
             close = False
+            shift = 0
             try:
                 self.data_obj.start()
             except Exception as e:
@@ -84,7 +95,7 @@ class MainWindow(QtWidgets.QMainWindow):
             data_buf = []
             while not close:
                 try:
-                    data = self.data_obj.read_data()
+                    self.data = self.data_obj.read_data()
                 except RuntimeError:
                     pass
                 except EOFError as e:
@@ -93,17 +104,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 except Exception as e:
                     print(e)
                 else:
-                    data_buf.extend(data)
+                    data_buf.extend(self.data)
                     if (time.time() - start_time) > 0.1:
+                        for data in data_buf:
+                            print(data)
+                            data[1] = data[1] - shift
+                            data = tuple(data)
                         self.new_data.emit(tuple(data_buf))
                         start_time = time.time()
                         data_buf = []
                 self.mutex.lock()
                 close = self.close_flag
+                shift = self.time_shift
                 self.mutex.unlock()
 
         def quit(self):
-            self.set_close_flag(True)
+            self._set_close_flag(True)
             time.sleep(0.01)
             try:
                 self.data_obj.stop()
@@ -132,6 +148,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
         self.connection_btn = self.toolbar.addAction('Connect')
         self.connection_btn.triggered.connect(self.connection_action)
+        self.time_btn = self.toolbar.addAction('Reset time')
+        self.clear_btn = self.toolbar.addAction('Clear data')
 
         self.settings_window = settings_control.SettingsWindow()
 
@@ -146,6 +164,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.central_widget = CentralWidget()
         self.setCentralWidget(self.central_widget)
+        self.clear_btn.triggered.connect(self.central_widget.clear_data)
+
         self.data_obj = self.get_data_object()
         self.data_manager = MainWindow.DataManager(self.data_obj)
         self.data_thread = QtCore.QThread(self)
@@ -153,6 +173,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data_thread.started.connect(self.data_manager.start)
         self.data_manager.new_data.connect(self.central_widget.new_data_reaction)
         self.data_manager.autoclose.connect(self.connection_action)
+        self.time_btn.triggered.connect(self.reset_time)
 
         self.settings_window.change_settings.connect(self.setup_ui_design)
 
@@ -173,6 +194,10 @@ class MainWindow(QtWidgets.QMainWindow):
         frame = self.frameGeometry()
         frame.moveCenter(QtWidgets.QDesktopWidget().availableGeometry().center())
         self.move(frame.topLeft())
+
+    def reset_time(self):
+        self.data_manager.set_time_shift()
+        self.central_widget.clear_data()
 
     def get_data_object(self):
         self.settings.beginGroup('MainWindow/DataSourse')

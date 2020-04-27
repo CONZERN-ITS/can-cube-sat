@@ -46,7 +46,7 @@ class TXTLogDataSource():
                 time.sleep(0.001)
         else:
             time.sleep(self.time_delay)
-        return [tuple(data)]
+        return [data]
 
     def write_data(self, data):
         string_data = ''
@@ -92,7 +92,7 @@ class MAVLogDataSource():
                 time.sleep(0.001)
         else:
             time.sleep(self.time_delay)
-        return [tuple(data)]
+        return [data]
 
     def stop(self):
         self.connection.close()
@@ -111,6 +111,7 @@ class MAVDataSource():
         msg = self.connection.recv_match()
         if (msg is None):
             raise RuntimeError("No Message")
+        print(msg)
         self.log.write(msg.get_msgbuf())
         data = self.get_data(msg)
         if data is None:
@@ -120,20 +121,20 @@ class MAVDataSource():
 
     def get_data(self, msg):
         if msg.get_type() == "THERMAL_STATE":
-            return [('TEMPERATURE_' + str(msg.area_id),
+            return [['TEMPERATURE_' + str(msg.area_id),
                      msg.time_s + msg.time_us/1000000,
-                     msg.temperature)]
+                     msg.temperature]]
         if msg.get_type() == "ELECTRICAL_STATE":
-            return [('CURRENT_' + str(msg.area_id),
+            return [['CURRENT_' + str(msg.area_id),
                      msg.time_s + msg.time_us/1000000,
-                     msg.current),
-                    ('VOLTAGE_' + str(msg.area_id),
+                     msg.current],
+                    ['VOLTAGE_' + str(msg.area_id),
                      msg.time_s + msg.time_us/1000000,
-                     msg.voltage)]
+                     msg.voltage]]
         if msg.get_type() == "SINS_ISC":
-            return [tuple(['ACCEL', msg.time_s + msg.time_us/1000000] + msg.accel),
-                    tuple(['COMPASS', msg.time_s + msg.time_us/1000000] + msg.compass),
-                    tuple(['MODEL', msg.time_s + msg.time_us/1000000] + msg.quaternion)]
+            return [['ACCEL', msg.time_s + msg.time_us/1000000] + msg.accel,
+                    ['COMPASS', msg.time_s + msg.time_us/1000000] + msg.compass,
+                    ['MODEL', msg.time_s + msg.time_us/1000000] + msg.quaternion]
         else:
             return None
 
