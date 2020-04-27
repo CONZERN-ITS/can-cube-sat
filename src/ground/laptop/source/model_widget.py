@@ -12,7 +12,7 @@ from source import settings_control
 from source import RES_ROOT
 
 MESH_PATH = os.path.join(RES_ROOT, "models/CanCubeSat-for-GKS.stl")
-MESH_COLOR_PATH = os.path.join(RES_ROOT, "models/CanCubeSat-for-GKS.stl")
+MESH_COLOR_PATH = os.path.join(RES_ROOT, "models/CanCubeSat-for-GKS_color.mfcl")
 
 class ModelWidget(OpenGL.GLViewWidget):
     def __init__(self):
