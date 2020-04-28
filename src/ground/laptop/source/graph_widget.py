@@ -52,6 +52,8 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
         return self.addPlot(int(pos[0]), int(pos[1]), int(pos[2]), int(pos[3]), axisItems={'left': axis_x, 'bottom': axis_y})
 
     def setup_curves(self, plot, count, color, max_data_length):
+        if max_data_length == 0:
+            max_data_length = None
         curves = []
         for i in range(count):
             curves.append(GraphWidget.Curve(plot, max_arr_len=max_data_length))
