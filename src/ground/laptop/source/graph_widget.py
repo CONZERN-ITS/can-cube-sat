@@ -6,10 +6,14 @@ from source import settings_control
 
 class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
     class Curve():
-        def __init__(self, plot, pen):
+        def __init__(self, plot, pen='w', max_arr_len=None):
             self.plot = plot
             self.arr = None
             self.curve = None
+            self.set_pen(pen)
+            self.max_arr_len = max_arr_len
+
+        def set_pen(self, pen):
             self.pen = pen
 
         def show_data(self, data):
@@ -20,6 +24,10 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
                     return
             else:
                 self.arr = NumPy.vstack((self.arr, NumPy.array(data)))
+
+            if (self.max_arr_len is not None) and (len(self.arr) > self.max_arr_len):
+                self.arr = self.arr[len(self.arr) - self.max_arr_len:-1]
+
             self.curve.setData(self.arr)
 
         def clear(self):
@@ -43,10 +51,14 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
         axis_y.setLabel("Time")
         return self.addPlot(int(pos[0]), int(pos[1]), int(pos[2]), int(pos[3]), axisItems={'left': axis_x, 'bottom': axis_y})
 
-    def setup_curves(self, plot, count, colour):
+    def setup_curves(self, plot, count, color, max_data_length):
         curves = []
+        print(color)
         for i in range(count):
-            curves.append(GraphWidget.Curve(plot, colour[i]))
+            curves.append(GraphWidget.Curve(plot, max_arr_len=max_data_length))
+            if i < len(color):
+                print(color[i])
+                curves[i].set_pen(color[i])
         return tuple(curves)
 
     def setup_ui_design(self):
@@ -66,7 +78,8 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
                 self.plot_list.append(self.setup_graph(self.settings.value("position"), group))
                 self.plot_dict.update([(group, self.setup_curves(self.plot_list[-1],
                                                                  int(self.settings.value("count")),
-                                                                 self.settings.value("colour")))])
+                                                                 self.settings.value("colour")[0:-1],
+                                                                 int(self.settings.value("max_data_length"))))])
             self.settings.endGroup()
         self.settings.endGroup()
         self.settings.endGroup()
