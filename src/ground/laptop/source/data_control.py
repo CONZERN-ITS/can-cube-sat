@@ -111,7 +111,6 @@ class MAVDataSource():
         msg = self.connection.recv_match()
         if (msg is None):
             raise RuntimeError("No Message")
-        print(msg)
         self.log.write(msg.get_msgbuf())
         data = self.get_data(msg)
         if data is None:

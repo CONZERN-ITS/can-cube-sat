@@ -73,17 +73,18 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
 
     def new_data_reaction(self, data):
         for plot in self.plot_dict.items():
-            plot_buf = []
+            plot_data_buf = [[] for i in range(len(plot[1]))]
             self.settings.beginGroup("CentralWidget/GraphWidget/Graph/" + plot[0])
-            for i in range(len(data)):
-                if (self.settings.value("packet_name") == data[i][0]) and ((len(data[i]) - 2) >= len(plot[1])):
-                    plot_buf.append(data[i])
-            if len(plot_buf) > 0:
-	            for i in range(len(plot[1])):
-	                curve_buf = []
-	                for pack in plot_buf:  
-	                    curve_buf.append((pack[1], pack[i + 2]))
-	                plot[1][i].show_data(curve_buf)
+            for pack in data:
+                for i in range(1, len(self.settings.value('packet_name')), 2):
+                    data_range = (int(self.settings.value("packet_name")[i - 1]), int(self.settings.value("packet_name")[i + 1]))
+                    if ((self.settings.value("packet_name")[i] == pack[0]) and ((len(pack) - 2) >= (data_range[1] - data_range[0]))):
+                        for i in range(*data_range):
+                            plot_data_buf[i].append((pack[1], pack[i - data_range[0] + 2]))
+                        break
+            for i in range(len(plot_data_buf)):
+                if len(plot_data_buf[i]) > 0:
+    	            plot[1][i].show_data(plot_data_buf[i])
             self.settings.endGroup()
 
     def clear_data(self):
