@@ -9,6 +9,8 @@ class MapWidget(OpenStreetMap):
         self.settings = settings_control.init_settings()
 
         self.key = None
+        self.data_len = 0
+        self.overflow = False
 
         self.loadFinished.connect(self.setup_ui_design)
 
@@ -19,9 +21,10 @@ class MapWidget(OpenStreetMap):
         self.settings.endGroup()
 
     def new_data_reaction(self, data):
+        self.settings.beginGroup("CentralWidget/MapWidget")
         points = []
         for i in range(len(data)):
-            if (self.settings.value("CentralWidget/MapWidget/packet_name") == data[i][0]) and ((len(data[i]) - 2) >= 2):
+            if (self.settings.value("packet_name") == data[i][0]) and ((len(data[i]) - 2) >= 2):
                 points.append(data[i][2:4])
         if len(points) > 0:
             if self.key is None:
@@ -32,7 +35,24 @@ class MapWidget(OpenStreetMap):
                 self.move_marker(self.key, points[-1][0], points[-1][1])
                 self.add_points_to_polyline(self.key, points)
 
+            if int(self.settings.value("follow")):
+                self.set_center(points[-1][0], points[-1][1])
+
+            if int(self.settings.value("max_data_length")) != 0:
+                if self.overflow:
+                    self.delete_first_n_points(self.key, len(points))
+                else:
+                    self.data_len = self.data_len + len(points)
+                    if self.data_len > int(self.settings.value("max_data_length")):
+                        self.delete_first_n_points(self.key, self.data_len - int(self.settings.value("max_data_length")))
+                        self.data_len = self.settings.value("max_data_length")
+                        self.overflow = True
+        self.settings.endGroup()
+
     def clear_data(self):
         if self.key is not None:
             self.delete_marker(self.key)
             self.delete_polyline(self.key)
+            self.key = None
+            self.data_len = 0
+            self.overflow = False

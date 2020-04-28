@@ -2,7 +2,7 @@ var map;
 var markers = [];
 var polylines = [];
 function init() {
-	map = L.map('mapid').setView([51.509, -0.08], 13);
+	map = L.map('mapid').setView([55.9, 37.8], 13);
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', 
     {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -68,6 +68,14 @@ function add_polyline(key, points, parameters) {
 function delete_polyline(key) {
     map.removeLayer(polylines[key]);
     delete polylines[key];
+}
+
+function delete_first_n_points(key, n) {
+    var LatLng = polylines[key].getLatLngs()
+    for (let i = 0; i < n; i++){
+        LatLng.shift()
+    }
+    polylines[key].setLatLngs(LatLng)
 }
 
 function add_point_to_polyline(key, latitude, longitude) {

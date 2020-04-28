@@ -55,6 +55,10 @@ class OpenStreetMap(QtWebKitWidgets.QWebView):
     def delete_polyline(self, key):
         self.run_script("delete_polyline(key={!r});".format(key))
 
+    def delete_first_n_points(self, key, num):
+        self.run_script("delete_first_n_points(key={!r},"
+                              "n={});".format(key, num))
+
     def add_point_to_polyline(self, key, latitude, longitude):
         self.run_script("add_point_to_polyline(key={!r},"
                        "latitude={}, "
