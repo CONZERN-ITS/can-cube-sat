@@ -71,11 +71,11 @@ function delete_polyline(key) {
 }
 
 function delete_first_n_points(key, n) {
-    var LatLng = polylines[key].getLatLngs()
+    var LatLng = polylines[key].getLatLngs();
     for (let i = 0; i < n; i++){
-        LatLng.shift()
+        LatLng.shift();
     }
-    polylines[key].setLatLngs(LatLng)
+    polylines[key].setLatLngs(LatLng);
 }
 
 function add_point_to_polyline(key, latitude, longitude) {
