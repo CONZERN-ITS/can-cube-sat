@@ -53,11 +53,9 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
 
     def setup_curves(self, plot, count, color, max_data_length):
         curves = []
-        print(color)
         for i in range(count):
             curves.append(GraphWidget.Curve(plot, max_arr_len=max_data_length))
             if i < len(color):
-                print(color[i])
                 curves[i].set_pen(color[i])
         return tuple(curves)
 
