@@ -4,6 +4,7 @@ from source import settings_control
 from source import map_widget
 from source import graph_widget
 from source import model_widget
+from source import data_widget
 from source.data_control import *
 from source import LOG_FOLDER_PATH
 
@@ -26,6 +27,8 @@ class CentralWidget(QtWidgets.QWidget):
             self.widgets_dict.update([("MapWidget", map_widget.MapWidget())])
         if int(self.settings.value("ModelWidget/is_on")):
             self.widgets_dict.update([("ModelWidget", model_widget.ModelWidget())])
+        if int(self.settings.value("DataWidget/is_on")):
+            self.widgets_dict.update([("DataWidget", data_widget.DataWidget())])
 
         for key in self.widgets_dict.keys():
             self.settings.beginGroup(key)
@@ -107,11 +110,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     print(e)
                 else:
                     data_buf.extend(data)
-                    if (time.time() - start_time) > 0.1:
+                    if (time.time() - start_time) > 0.4:
+                        last_time = data_buf[-1][1]
                         for data in data_buf:
                             data[1] = data[1] - shift
                             data = tuple(data)
-                        last_time = data_buf[-1][1]
                         self.new_data.emit(tuple(data_buf))
                         start_time = time.time()
                         data_buf = []
