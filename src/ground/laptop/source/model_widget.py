@@ -19,7 +19,7 @@ class ModelWidget(OpenGL.GLViewWidget):
         super(ModelWidget, self).__init__()
         self.settings = settings_control.init_settings()
 
-        self.setBackgroundColor(50, 50, 50, 255)
+        self.setBackgroundColor(*[int(num) for num in self.settings.value("CentralWidget/ModelWidget/background_color")])
 
         self.setup_ui()
         self.setup_ui_design()

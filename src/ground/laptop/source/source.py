@@ -182,7 +182,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setup_ui_design(self):
         if not self.data_thread.isRunning():
-            self.resize(int(self.settings.value('MainWindow/size')[0]), int(self.settings.value('MainWindow/size')[1]))
+            self.resize(*[int(num) for num in self.settings.value('MainWindow/size')])
             self.setWindowTitle("StrelA MS")
             self.menu_file.setTitle("&File")
             self.action_settings.setText("&Settings")

@@ -16,7 +16,7 @@ class MapWidget(OpenStreetMap):
 
     def setup_ui_design(self):
         self.settings.beginGroup("CentralWidget/MapWidget")
-        self.set_center(float(self.settings.value("center")[0]), float(self.settings.value("center")[1]))
+        self.set_center(*[float(num) for num in self.settings.value("center")])
         self.set_zoom(self.settings.value("zoom"))
         self.settings.endGroup()
 
