@@ -68,6 +68,8 @@ class ModelWidget(OpenGL.GLViewWidget):
                                azimuth=int(self.settings.value("azimuth")))
         self.pan(*[int(pan_item) for pan_item in self.settings.value("pan")])
         self.settings.endGroup()
+        
+        self.packet_name = self.settings.value("CentralWidget/ModelWidget/packet_name")
 
     def _get_face_colors(self, color_path):
         color_file = open(color_path, 'rb')
@@ -92,7 +94,7 @@ class ModelWidget(OpenGL.GLViewWidget):
     def new_data_reaction(self, data):
         quat = None
         for i in range(len(data)):
-            if (self.settings.value("CentralWidget/ModelWidget/packet_name") == data[i][0]) and ((len(data[i]) - 2) >= 4):
+            if (self.packet_name == data[i][0]) and ((len(data[i]) - 2) >= 4):
                 quat = data[i][2:6]
         if quat is not None:
             quat = QtGui.QQuaternion(*quat)

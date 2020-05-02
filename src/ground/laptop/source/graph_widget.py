@@ -41,8 +41,7 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
         self.setup_ui_design()
 
     def setup_ui(self):
-        self.plot_list = []
-        self.plot_dict = {}
+        self.plot_tuple = []
 
     def setup_graph(self, pos, name):
         axis_x = PyQtGraph.AxisItem(orientation='left')
@@ -62,45 +61,44 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
         return tuple(curves)
 
     def setup_ui_design(self):
-        self.plot_dict.clear()
-        for plot in self.plot_list:
+        for plot in self.plot_tuple:
             try:
-                self.removeItem(plot)
+                self.removeItem(plot[0])
             except Exception as e:
                 print(e)
-        self.setup_ui()
+        self.plot_tuple = []
 
         self.settings.beginGroup("CentralWidget/GraphWidget")
         self.settings.beginGroup("Graph")
         for group in self.settings.childGroups():
             self.settings.beginGroup(group)
             if int(self.settings.value("is_on")):
-                self.plot_list.append(self.setup_graph(self.settings.value("position"), group))
-                self.plot_dict.update([(group, self.setup_curves(self.plot_list[-1],
-                                                                 int(self.settings.value("count")),
-                                                                 self.settings.value("colour")[0:-1],
-                                                                 int(self.settings.value("max_data_length"))))])
+                graph = self.setup_graph(self.settings.value("position"), group)
+                curves = self.setup_curves(graph,
+                                           int(self.settings.value("count")),
+                                           self.settings.value("colour")[0:-1],
+                                           int(self.settings.value("max_data_length")))
+                self.plot_tuple.append((graph, curves, self.settings.value("packet_name")))
             self.settings.endGroup()
+        self.plot_tuple = tuple(self.plot_tuple)
         self.settings.endGroup()
         self.settings.endGroup()
 
     def new_data_reaction(self, data):
-        for plot in self.plot_dict.items():
+        for plot in self.plot_tuple:
             plot_data_buf = [[] for i in range(len(plot[1]))]
-            self.settings.beginGroup("CentralWidget/GraphWidget/Graph/" + plot[0])
             for pack in data:
-                for i in range(1, len(self.settings.value('packet_name')), 2):
-                    data_range = (int(self.settings.value("packet_name")[i - 1]), int(self.settings.value("packet_name")[i + 1]))
-                    if ((self.settings.value("packet_name")[i] == pack[0]) and ((len(pack) - 2) >= (data_range[1] - data_range[0]))):
+                for i in range(1, len(plot[2]), 2):
+                    data_range = (int(plot[2][i - 1]), int(plot[2][i + 1]))
+                    if ((plot[2][i] == pack[0]) and ((len(pack) - 2) >= (data_range[1] - data_range[0]))):
                         for i in range(*data_range):
                             plot_data_buf[i].append((pack[1], pack[i - data_range[0] + 2]))
                         break
             for i in range(len(plot_data_buf)):
                 if len(plot_data_buf[i]) > 0:
     	            plot[1][i].show_data(plot_data_buf[i])
-            self.settings.endGroup()
 
     def clear_data(self):
-        for plot in self.plot_dict.items():
+        for plot in self.plot_tuple:
             for curve in plot[1]:
                 curve.clear()

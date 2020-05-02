@@ -61,13 +61,14 @@ class MainWindow(QtWidgets.QMainWindow):
     class DataManager(QtCore.QObject):
         new_data = QtCore.pyqtSignal(tuple)
         autoclose = QtCore.pyqtSignal(str)
-        def __init__(self, data_obj):
+        def __init__(self, data_obj, update_time=0.2):
             super(MainWindow.DataManager, self).__init__()
             self.data_obj = data_obj
             self.mutex = QtCore.QMutex()
             self._set_close_flag(True)
             self.set_time_shift(0)
             self.last_time = 0
+            self.update_time = update_time
 
         def _set_close_flag(self, mode):
             self.mutex.lock()
@@ -110,11 +111,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     print(e)
                 else:
                     data_buf.extend(data)
-                    if (time.time() - start_time) > 0.4:
+                    if (time.time() - start_time) > self.update_time:
                         last_time = data_buf[-1][1]
-                        for data in data_buf:
-                            data[1] = data[1] - shift
-                            data = tuple(data)
+                        for i in range(len(data_buf)):
+                            data_buf[i][1] = data_buf[i][1] - shift
+                            data_buf[i] = tuple(data_buf[i])
                         self.new_data.emit(tuple(data_buf))
                         start_time = time.time()
                         data_buf = []
@@ -173,7 +174,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clear_btn.triggered.connect(self.central_widget.clear_data)
 
         self.data_obj = self.get_data_object()
-        self.data_manager = MainWindow.DataManager(self.data_obj)
+        self.data_manager = MainWindow.DataManager(self.data_obj,
+                                                   update_time=float(self.settings.value('MainWindow/update_time')))
         self.data_thread = QtCore.QThread(self)
         self.data_manager.moveToThread(self.data_thread)
         self.data_thread.started.connect(self.data_manager.start)
