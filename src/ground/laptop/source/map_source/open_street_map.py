@@ -1,24 +1,34 @@
-from PyQt5 import QtWebKitWidgets, QtCore, QtNetwork, QtGui
+from PyQt5 import QtCore, QtWebEngineWidgets, QtNetwork, QtGui
+
 import os
 import json
+import sys
+import re
 
-class OpenStreetMap(QtWebKitWidgets.QWebView):
+
+class OpenStreetMap(QtWebEngineWidgets.QWebEngineView):
+    class WebEnginePage(QtWebEngineWidgets.QWebEnginePage):
+        def acceptNavigationRequest(self, url, navtype, mainframe):
+            return False
+
     def __init__(self):
         super(OpenStreetMap, self).__init__()
 
-        cache = QtNetwork.QNetworkDiskCache()
-        cache.setCacheDirectory(os.path.abspath(os.path.dirname(__file__)) + "/cache")
-        self.page().networkAccessManager().setCache(cache)
+        self.setPage(OpenStreetMap.WebEnginePage())
 
-        url = 'file://' + os.path.abspath(os.path.dirname(__file__)) + '/map.html'
+        self.page().profile().setCachePath(os.path.abspath(os.path.dirname(__file__)) + "/cache")
+        self.page().profile().setHttpCacheType(QtWebEngineWidgets.QWebEngineProfile.DiskHttpCache)
+
+        if (os.name == "posix"):
+            url = 'file://' + os.path.abspath(os.path.dirname(__file__)) + '/map.html'
+        else:
+            pattern = r"\\"
+            url = re.sub(pattern, '/', 'file:///' + os.path.abspath(os.path.dirname(__file__)) + '/map.html')
+
         self.load(QtCore.QUrl(url))
 
-        self.page().setLinkDelegationPolicy(QtWebKitWidgets.QWebPage.DelegateAllLinks)
-
-        self.linkClicked.connect(QtGui.QDesktopServices.openUrl)
-
     def run_script(self, script):
-        return self.page().mainFrame().evaluateJavaScript(script)
+        return self.page().runJavaScript(script)
 
     def set_center(self, latitude, longitude):
         self.run_script("set_center({}, {})".format(latitude, longitude))

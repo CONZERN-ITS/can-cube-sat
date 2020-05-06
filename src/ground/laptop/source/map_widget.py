@@ -14,17 +14,23 @@ class MapWidget(OpenStreetMap):
         self.packet_name = 0
         self.follow = 0
         self.max_data_length = 0
+        self.is_load_finished = False
 
-        self.loadFinished.connect(self.setup_ui_design)
+        self.loadFinished.connect(self._on_load_finished)
 
     def setup_ui_design(self):
         self.settings.beginGroup("CentralWidget/MapWidget")
-        self.set_center(*[float(num) for num in self.settings.value("center")])
-        self.set_zoom(self.settings.value("zoom"))
+        if self.is_load_finished:
+            self.set_center(*[float(num) for num in self.settings.value("center")])
+            self.set_zoom(self.settings.value("zoom"))
         self.packet_name = self.settings.value("packet_name")
         self.follow = int(self.settings.value("follow"))
         self.max_data_length = int(self.settings.value("max_data_length"))
         self.settings.endGroup()
+
+    def _on_load_finished(self):
+        self.is_load_finished = True
+        self.setup_ui_design()
 
     def new_data_reaction(self, data):
         points = []
