@@ -72,6 +72,8 @@ int tmain(void);
 /* Private defines -----------------------------------------------------------*/
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
+#define OW_Pin GPIO_PIN_0
+#define OW_GPIO_Port GPIOB
 #define TIME_Pin GPIO_PIN_15
 #define TIME_GPIO_Port GPIOA
 #define TIME_EXTI_IRQn EXTI15_10_IRQn

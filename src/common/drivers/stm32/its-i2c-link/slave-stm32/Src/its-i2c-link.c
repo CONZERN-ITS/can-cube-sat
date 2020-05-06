@@ -59,8 +59,14 @@ typedef enum i2c_link_cmd_t
     I2C_LINK_CMD_SET_PACKET = 0x04,
 } its_i2c_link_cmd_t;
 
+
+typedef struct i2c_link_iface_t {
+    I2C_HandleTypeDef *hi2c;
+} i2c_link_iface_t;
+
 struct i2c_link_ctx_t;
 typedef struct i2c_link_ctx_t i2c_link_ctx_t;
+
 
 //! Контекст модуля
 struct i2c_link_ctx_t
@@ -85,6 +91,11 @@ struct i2c_link_ctx_t
 
 	//! Статистика модуля (для телеметрии в основном)
 	its_i2c_link_stats_t stats;
+
+	//Интерфейс, для которого используется i2c_link
+	i2c_link_iface_t iface;
+
+
 };
 
 //! Пока что мы поддерживаем ровно один i2c линк и поэтом его состояние
@@ -467,9 +478,10 @@ void _antihang(i2c_link_ctx_t * ctx)
 }
 
 
-int its_i2c_link_start()
+int its_i2c_link_start(I2C_HandleTypeDef *hi2c)
 {
 	i2c_link_ctx_t * const ctx = &_ctx;
+	ctx->iface.hi2c = hi2c;
 
 	int rc = _ctx_construct(ctx);
 	if (0 != rc)
@@ -548,6 +560,9 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t transfer_direction,
 		uint16_t addr_match_code
 ){
 	i2c_link_ctx_t * const ctx = &_ctx;
+    if (ctx->iface.hi2c != hi2c) {
+        return;
+    }
 
 	switch (transfer_direction)
 	{
@@ -568,6 +583,9 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t transfer_direction,
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	i2c_link_ctx_t * const ctx = &_ctx;
+    if (ctx->iface.hi2c != hi2c) {
+        return;
+    }
 	_link_tx_complete(hi2c, ctx);
 }
 
@@ -575,6 +593,9 @@ void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	i2c_link_ctx_t * const ctx = &_ctx;
+    if (ctx->iface.hi2c != hi2c) {
+        return;
+    }
 	_link_rx_complete(hi2c, ctx);
 }
 
@@ -582,6 +603,11 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	i2c_link_ctx_t * const ctx = &_ctx;
+
+    if (ctx->iface.hi2c != hi2c) {
+        return;
+    }
+
 	ctx->stats.listen_done_cnt++;
 
 	HAL_StatusTypeDef hal_rc = HAL_I2C_EnableListen_IT(hi2c);
@@ -594,6 +620,9 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
 {
 	i2c_link_ctx_t * const ctx = &_ctx;
+    if (ctx->iface.hi2c != hi2c) {
+        return;
+    }
 	uint32_t error = HAL_I2C_GetError(hi2c);
 
 	switch (ctx->state)

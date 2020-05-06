@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-static volatile its_time_t last_exti;
+static its_time_t last_exti;
 static volatile int is_intertupted = 0;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {

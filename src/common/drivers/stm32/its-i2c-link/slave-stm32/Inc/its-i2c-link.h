@@ -35,8 +35,7 @@ typedef struct its_i2c_link_stats_t
 
 //! Запуск модуля
 /*! Нужно вызывать лишь однажды */
-int its_i2c_link_start(void);
-
+int its_i2c_link_start(I2C_HandleTypeDef *hi2c);
 
 int its_i2c_link_write(const void * data, size_t data_size);
 
