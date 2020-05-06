@@ -8,6 +8,7 @@
 
 #include "router.h"
 #include "rt_cfg.h"
+#include "esp_log.h"
 
 
 #include <stdint.h>
@@ -112,6 +113,7 @@ void its_rt_route(
 		const mavlink_message_t * msg,
 		TickType_t ticksToWaitForOne
 ){
+	ESP_LOGI("HEY", "Got message %d:", msg->msgid);
 	int id = its_rt_get_hash(msg->msgid);
 	if (id != RT_CFG_LIST_SZ) {
 		list_node *cur = its_msg_map[id].first;

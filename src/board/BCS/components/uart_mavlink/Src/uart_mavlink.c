@@ -32,7 +32,6 @@ static const char *TAG = "uart_mavlink_events";
  * - Pin assignment: TxD (default), RxD (default)
  */
 
-#define EX_UART_NUM UART_NUM_0
 
 #define TASK_BUF_SIZE 10
 #define UART_MAV_CHAN MAVLINK_COMM_1
@@ -42,6 +41,7 @@ static const char *TAG = "uart_mavlink_events";
 struct _install_set {
 	QueueHandle_t queue;
 	mavlink_channel_t channel;
+	uart_port_t uart;
 };
 
 static void _parse_buf(mavlink_channel_t chan, uint8_t *buffer, uint16_t size) {
@@ -51,7 +51,7 @@ static void _parse_buf(mavlink_channel_t chan, uint8_t *buffer, uint16_t size) {
 		if (mavlink_parse_char(chan, buffer[i], &msg, &mst)) {
 			its_rt_sender_ctx_t ctx = {0};
 			ctx.from_isr = 0;
-			its_rt_route(&ctx, &msg, portMAX_DELAY);
+			its_rt_route(&ctx, &msg, 100 / portTICK_RATE_MS);
 		}
 	}
 }
@@ -61,6 +61,7 @@ void uart_event_task(void *pvParameters)
 	struct _install_set *is = (struct _install_set *)pvParameters;
 	QueueHandle_t uart_queue = is->queue;
 	mavlink_channel_t chan = is->channel;
+	uart_port_t uart = is->uart;
 	free(pvParameters);
 
 	uart_event_t event;
@@ -70,19 +71,20 @@ void uart_event_task(void *pvParameters)
 		if(xQueueReceive(uart_queue, (void * )&event, (portTickType)portMAX_DELAY)) {
 			fflush(stdout);
 			bzero(buffer, TASK_BUF_SIZE);
-			ESP_LOGI(TAG, "uart[%d] event:", EX_UART_NUM);
+			//ESP_LOGI(TAG, "uart[%d] event:", uart);
 			switch(event.type) {
 			//Event of UART receving data
 			/*We'd better handler data event fast, there would be much more data events than
 			other types of events. If we take too much time on data event, the queue might
 			be full.*/
-			case UART_DATA:
-				ESP_LOGI(TAG, "[UART DATA]: %d", event.size);
+			case UART_DATA:{
+				//ESP_LOGI(TAG, "[UART DATA]: %d", event.size);
 				uint16_t remain = event.size;
 
 				do {
 					uint16_t try_read = remain < TASK_BUF_SIZE ? remain : TASK_BUF_SIZE;
-					int16_t count = uart_read_bytes(EX_UART_NUM, buffer, try_read, portMAX_DELAY);
+					int16_t count = 0;
+					count = uart_read_bytes(uart, buffer, try_read, portMAX_DELAY);
 					if (count < 0) {
 						ESP_LOGE(TAG, "ERROR: uart error");
 						continue;
@@ -92,6 +94,7 @@ void uart_event_task(void *pvParameters)
 				} while (remain);
 
 				break;
+			}
 			//Event of HW FIFO overflow detected
 			case UART_FIFO_OVF:
 				ESP_LOGI(TAG, "hw fifo overflow");
@@ -130,6 +133,7 @@ void uart_mavlink_install(uart_port_t uart_num, QueueHandle_t uart_queue) {
 	struct _install_set *t = malloc(sizeof(t));
 	t->queue = uart_queue;
 	t->channel = chan;
+	t->uart = uart_num;
 	//Create a task to handler UART event from ISR
-	xTaskCreate(uart_event_task, "uart_event_task", 2048, t, 1, NULL);
+	xTaskCreate(uart_event_task, "uart_event_task", 4096, t, 1, NULL);
 }

@@ -70,6 +70,15 @@ uart_config_t init_pin_uart0 = {
 
 void common_packet_to_route(uint8_t *data, uint16_t size);
 uint8_t* common_imi_alloc(uint16_t size);
+imi_config_t imi_config = {
+	.i2c_port = ITS_I2CTM_PORT,
+	.i2c_int = ITS_PIN_I2C_INT,
+	.address_count = ITS_I2CTM_DEV_COUNT,
+	.ticksToWaitForOne = 100 / portTICK_RATE_MS,
+	.save = common_packet_to_route,
+	.alloc = common_imi_alloc
+};
+
 
 void init_basic(void) {
 	//Initialize NVS
@@ -83,11 +92,11 @@ void init_basic(void) {
 	i2c_param_config(ITS_I2CTM_PORT, &init_pin_i2c_tm);
 	i2c_driver_install(ITS_I2CTM_PORT, I2C_MODE_MASTER, 0, 0, 0);
 
-	//uart_param_config(ITS_UART_PORT, &init_pin_uart);
-	//uart_driver_install(ITS_UART_PORT, ITS_UART_RX_BUF_SIZE, ITS_UART_TX_BUF_SIZE, ITS_UART_QUEUE_SIZE, &quart, 0);
-	//uart_set_pin(ITS_UART_PORT, ITS_PIN_UART_TX, ITS_PIN_UART_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+	uart_param_config(ITS_UART_PORT, &init_pin_uart);
+	uart_driver_install(ITS_UART_PORT, ITS_UART_RX_BUF_SIZE, ITS_UART_TX_BUF_SIZE, ITS_UART_QUEUE_SIZE, &quart, 0);
+	uart_set_pin(ITS_UART_PORT, ITS_PIN_UART_TX, ITS_PIN_UART_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
-	uart_param_config(ITS_UART0_PORT, &init_pin_uart);
+	uart_param_config(ITS_UART0_PORT, &init_pin_uart0);
 	uart_driver_install(ITS_UART0_PORT, ITS_UART0_RX_BUF_SIZE, ITS_UART0_TX_BUF_SIZE, 0, 0, 0);
 	uart_set_pin(ITS_UART0_PORT, ITS_PIN_UART0_TX, ITS_PIN_UART0_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
@@ -101,17 +110,18 @@ void init_helper(void) {
 	init_basic();
 	gpio_install_isr_service(0);
 
-	imi_init();
+	//imi_init();
+
+	imi_install(&imi_config, ITS_IMI_PORT);
+	imi_start(ITS_IMI_PORT);
+
 
 	i2c_chan = mavlink_claim_channel();
-	imi_set_save_callback(common_packet_to_route);
-	imi_set_alloc_callback(common_imi_alloc);
-	imi_handler[0].address 	= ITS_ARK_1_ADDRESS;
-	imi_handler[0].i2c_port = ITS_I2CTM_PORT;
-	imi_handler[0].timeout  = 100;
-	gpio_isr_handler_add(ITS_PIN_I2C_INT, imi_i2c_int_isr_handler, 0);
+	//imi_set_save_callback(common_packet_to_route);
+	//imi_set_alloc_callback(common_imi_alloc);
+	//gpio_isr_handler_add(ITS_PIN_I2C_INT, imi_i2c_int_isr_handler, 0);
 
-	//uart_mavlink_install(ITS_UART_PORT, quart);
+	uart_mavlink_install(ITS_UART_PORT, quart);
 
     wifi_init_sta();
     my_sntp_init();
