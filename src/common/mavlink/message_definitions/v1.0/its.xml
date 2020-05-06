@@ -18,25 +18,25 @@
     </enum>
     <enum name="CUBE_1_COMPONENT_ID">
       <description>Cube 1 components numered list</description>
-      <entry value="0" name="BCU">
+      <entry value="0" name="CUBE_1_BCU">
         <description>Board control unit</description>
       </entry>
-      <entry value="1" name="SINS">
+      <entry value="1" name="CUBE_1_SINS">
         <description>Strapdown inetrial navigation system</description>
       </entry>
-      <entry value="2" name="PCU">
+      <entry value="2" name="CUBE_1_PCU">
         <description>Power control unit</description>
       </entry>
-      <entry value="3" name="PL">
+      <entry value="3" name="CUBE_1_PL">
         <description>Payload</description>
       </entry>
     </enum>
     <enum name="CUBE_2_COMPONENT_ID">
       <description>Cube 2 components numered list</description>
-      <entry value="0" name="PFU">
+      <entry value="0" name="CUBE_2_PFU">
         <description>Power feeder unit</description>
       </entry>
-      <entry value="1" name="PCU">
+      <entry value="1" name="CUBE_2_PCU">
         <description>Power control unit</description>
       </entry>
     </enum>
