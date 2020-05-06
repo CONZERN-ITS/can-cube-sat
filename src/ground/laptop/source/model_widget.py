@@ -93,9 +93,10 @@ class ModelWidget(OpenGL.GLViewWidget):
 
     def new_data_reaction(self, data):
         quat = None
-        for i in range(len(data)):
+        for i in range(len(data) - 1, -1, -1):
             if (self.packet_name == data[i][0]) and ((len(data[i]) - 2) >= 4):
                 quat = data[i][2:6]
+                break
         if quat is not None:
             quat = QtGui.QQuaternion(*quat)
             self.clear_data()
