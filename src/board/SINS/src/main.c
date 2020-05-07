@@ -282,8 +282,8 @@ int main(int argc, char* argv[])
 
 	uplink_init();
 
-	int rc = gps_configure();
-	trace_printf("configure rc = %d\n", rc);
+//	int rc = gps_configure();
+//	trace_printf("configure rc = %d\n", rc);
 
 	SENSORS_Init();
 	for (int i = 0; i < 2; i++)
@@ -295,15 +295,17 @@ int main(int argc, char* argv[])
 	time_svc_world_get_time(&stateSINS_isc_prev.tv);
 	for (; ; )
 	{
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			UpdateDataAll();
 			SINS_updatePrevData();
 			gps_poll();
 		}
 
+
 		_mavlink_sins_isc(&stateSINS_isc);
 		_mavlink_timestamp();
+
 	}
 
 	return 0;
