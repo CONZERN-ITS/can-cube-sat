@@ -100,7 +100,7 @@ struct i2c_link_ctx_t
 
 //! Пока что мы поддерживаем ровно один i2c линк и поэтом его состояние
 //! в одной глобальной переменной
-static i2c_link_ctx_t _ctx;
+volatile static i2c_link_ctx_t _ctx;
 
 static uint8_t _rx_fallback[I2C_LINK_RX_DUMP_SIZE] = {0};
 static uint8_t _tx_fallback[I2C_LINK_TX_ZEROS_SIZE] = {0};
@@ -480,10 +480,9 @@ void _antihang(i2c_link_ctx_t * ctx)
 
 int its_i2c_link_start(I2C_HandleTypeDef *hi2c)
 {
-    i2c_link_ctx_t * const ctx = &_ctx;
-    ctx->iface.hi2c = hi2c;
-
+    i2c_link_ctx_t *  ctx = &_ctx;
     int rc = _ctx_construct(ctx);
+    ctx->iface.hi2c = hi2c;
     if (0 != rc)
         return rc;
 
@@ -560,7 +559,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t transfer_direction,
         uint16_t addr_match_code
 ){
     i2c_link_ctx_t * const ctx = &_ctx;
-    if (ctx->iface.hi2c != hi2c) {
+    if (ctx->iface.hi2c->Instance != hi2c->Instance) {
         return;
     }
 

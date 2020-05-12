@@ -49,6 +49,7 @@ void app_main(void)
 	xTaskCreatePinnedToCore(ark_tsync_task, "ARK time sync", configMINIMAL_STACK_SIZE + 4000, "ARK time sync", 1, 0, tskNO_AFFINITY);
 	//xTaskCreatePinnedToCore(imi_msg_rcv_task, "IMI rcv", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(task_send_telemetry, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_socket_recv, "Recv", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);
 
 
 	printf("Wow\n");
@@ -75,6 +76,7 @@ static void task_send_telemetry(void *pvParameters) {
 	inet_aton(PC_IP, &addr.sin_addr);
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(PC_PORT);
+	//addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
 
 	int sout;
 	while (1) {

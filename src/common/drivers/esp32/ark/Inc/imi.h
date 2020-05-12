@@ -32,7 +32,7 @@
 
 
 #define IMI_WAIT_DELAY 100 //ms
-#define IMI_CYCLE_DELAY 10 //ms
+#define IMI_CYCLE_DELAY 100 //ms
 #define IMI_COUNT 1
 
 typedef int imi_port_t;

@@ -55,8 +55,10 @@ void eupdate() {
     static float voltage[TINA_COUNT];
     static uint32_t prev = 0;
     static its_time_t tim;
-    if (estate == STATE_WAIT && ina_updated && HAL_GetTick() - prev >= tsend_elect_period) {
-        prev += tsend_elect_period;
+    uint32_t now = HAL_GetTick();
+    if (estate == STATE_WAIT && now - prev >= tsend_elect_period) {
+        printf("INFO: send ina\n");
+        prev = now;
 
         tina_value_t *tv;
         int *is_valid;
@@ -114,8 +116,9 @@ void tupdate() {
     static uint32_t prev = 0;
     static int ds_count = 0;
     if (tstate == STATE_WAIT && ds_updated && HAL_GetTick() - prev >= tsend_therm_period) {
-        prev += tsend_therm_period;
-        estate = STATE_SENDING;
+        printf("INFO: send ds\n");
+        prev = HAL_GetTick();
+        tstate = STATE_SENDING;
         ds_updated = 0;
 
         float *arr;

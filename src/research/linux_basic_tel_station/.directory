@@ -1,5 +1,8 @@
 [Dolphin]
-Timestamp=2020,4,18,12,17,48
+Timestamp=2020,4,13,11,25,35
 Version=4
 ViewMode=1
 VisibleRoles=Details_text,Details_size,Details_modificationtime,Details_accesstime,CustomizedDetails
+
+[Settings]
+HiddenFilesShown=true

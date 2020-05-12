@@ -130,7 +130,7 @@ void uart_mavlink_install(uart_port_t uart_num, QueueHandle_t uart_queue) {
 	esp_log_level_set(TAG, ESP_LOG_INFO);
 	mavlink_channel_t chan = mavlink_claim_channel();
 
-	struct _install_set *t = malloc(sizeof(t));
+	struct _install_set *t = malloc(sizeof(*t));
 	t->queue = uart_queue;
 	t->channel = chan;
 	t->uart = uart_num;

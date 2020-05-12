@@ -382,6 +382,14 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+int _write(int fd, char* ptr, int len)
+{
+    (void)fd;
+    int i = 0;
+    HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, 100);
+    return len;
+}
+
 /* USER CODE END 4 */
 
 /**

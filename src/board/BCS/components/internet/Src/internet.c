@@ -22,6 +22,7 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "lwip/sockets.h"
+#include "esp_netif.h"
 
 #define EXAMPLE_ESP_WIFI_SSID      "Boku no Wi-Fi"
 #define EXAMPLE_ESP_WIFI_PASS      "Hashi_hi_teo"
@@ -70,6 +71,40 @@ void my_sntp_init() {
 	sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
 	sntp_set_sync_interval(20000);
     sntp_init();
+}
+
+void internet_set_static_ip(const char *str) {
+
+}
+
+void task_socket_recv(void *arg) {
+	int sin;
+	int rc;
+
+	sin = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sin < 0) {
+		ESP_LOGE(TAG, "Can't create socket!");
+		vTaskDelete(NULL);
+	}
+	struct sockaddr_in addr = {0};
+	inet_aton(IP2_OUR_IP, &addr.sin_addr);
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(IP2_OUR_PORT);
+	if (bind(sin, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		ESP_LOGE(TAG, "Can't bind!");
+		vTaskDelete(NULL);
+	}
+
+	while (1) {
+		const int size = 100;
+		uint8_t buffer[size];
+		size_t s = sizeof(addr);
+		rc = recvfrom(sin, buffer, sizeof(buffer), 0, (struct sockaddr *)&addr, &s);
+		if (rc > 0) {
+			printf("MESSAGE FROM %s:%u:\n%s\n", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port), buffer);
+			printf("------------------\n");
+		}
+	}
 }
 
 void task_socket_comm(void *pvParameters) {
@@ -176,8 +211,20 @@ void wifi_init_sta(void)
 
     ESP_ERROR_CHECK(esp_netif_init());
 
+
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_create_default_wifi_sta();
+    //esp_netif_t *hesp = esp_netif_create_default_wifi_sta();
+    //ESP_ERROR_CHECK(esp_netif_dhcpc_stop(hesp));
+
+    esp_netif_ip_info_t ip = {
+            .ip = { .addr = inet_addr(IP2_OUR_IP)},
+            .gw = { .addr = inet_addr("192.168.31.1") },
+            .netmask = { .addr = htonl(esp_netif_ip4_makeu32( 255, 255, 255, 0)) },
+    };
+    IP4_ADDR(&ip.ip, 192, 168, 31, 40);
+    IP4_ADDR(&ip.gw, 192, 168, 31, 1);
+    IP4_ADDR(&ip.netmask, 255, 255, 255, 0);
+    //ESP_ERROR_CHECK(esp_netif_set_ip_info(hesp, &ip));
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ;

@@ -42,7 +42,7 @@ void task_recv_update(void *arg) {
     if (!mavlink_parse_char(MAVLINK_COMM_0, buf[size - 1], &msg, &mst)) {
         return;
     }
-    for (int i = 0; i < TRECV_MAX_CALLBACK_COUNT; i++) {
+    for (int i = 0; i < count; i++) {
         (*trecv_callback_arr[i])(&msg);
     }
 }

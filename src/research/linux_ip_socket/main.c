@@ -20,6 +20,7 @@
 #define IP_CONFIG_BC "Hi, it's me - Linux"
 
 int process_broadcast() {
+	uint8_t a;
 	int fd_bc = socket(AF_INET, SOCK_DGRAM, 0);
 	if (fd_bc < 0) {
 		fprintf(stderr, "ERROR: can't create socket\n");
@@ -107,7 +108,33 @@ int process_server_listen() {
 
 }
 
+
+#define IP2_THEIR_IP "192.168.31.50"
+#define IP2_THEIR_PORT 51690
+
 int main(void) {
+	int sout;
+
+
+	sout = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sout < 0) {
+		fprintf(stderr, "Can't create socket\n");
+		return -1;
+	}
+	struct sockaddr_in addr = {0};
+	inet_aton(IP2_THEIR_IP, &addr.sin_addr);
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(IP2_THEIR_PORT);
+
+	while (1) {
+		static int t = 0;
+		char str[250];
+		int size = 1 + snprintf(str, sizeof(str), "Hello, esp32! %d\n", t++);
+		int rc = sendto(sout, str, size, 0, (struct sockaddr *)&addr, sizeof(addr));
+		(void*)&rc;
+		sleep(2);
+	}
+
 	if (!fork()) {
 		return process_broadcast();
 	}

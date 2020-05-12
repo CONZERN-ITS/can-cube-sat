@@ -58,11 +58,14 @@ void task_ds_init(void *arg) {
     int index = 0;
     while (status) {
         //Save ROM number from device
-        onewire_GetFullROM(&how, &hds[index++].rom);
+        onewire_GetFullROM(&how, &hds[index].rom);
+        hds[index].how = &how;
+        hds[index].resolution = ds18b20_Resolution_12bits;
+        index++;
         //Check for new device
         status = onewire_Next(&how);
 
-        if (index > TDS_TEMP_MAX_COUNT) {
+        if (index >= TDS_TEMP_MAX_COUNT) {
             break;
         }
     }

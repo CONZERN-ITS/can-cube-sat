@@ -33,7 +33,7 @@ static int imi_msg_send(imi_t *himi, uint8_t *data, uint16_t size) {
 	i2c_cmd_link_delete(cmd);
 
 	if (err) {
-		printf("Error: send cmd2 = %d\n", (int)err);
+		//printf("Error: send cmd2 = %d\n", (int)err);
 		return err;
 	}
 
@@ -53,7 +53,7 @@ static int imi_get_packet_size(imi_t *himi, uint16_t *size) {
 	uint16_t rsize = 0;
 	err = my_i2c_recieve(himi->i2c_port, himi->address, (uint8_t*) &rsize, sizeof(rsize), himi->timeout);
 	if (err) {
-		//printf("Error: send cmd2 = %d\n", (int)err);
+		 //printf("Error: send cmd2 = %d\n", (int)err);
 		return err;
 	}
 	*size = rsize;
@@ -164,7 +164,7 @@ static void _imi_recv_all(imi_handler_t *h) {
 				ESP_LOGE(TAG, "ERROR: IMI static alloc error\n");
 				continue;
 			}
-			imi_get_packet(&himi, pointer, size);
+			rc = imi_get_packet(&himi, pointer, size);
 			(*h->cfg.save)(pointer, size);
 		}
 	}
@@ -177,15 +177,15 @@ static void _imi_task_recv(void *arg) {
 		//If line is pulled, take semaphore to wait for the moment when line is pulled
 		//Also we try to test line every IMI_WAIT_DELAY to verify we haven't pass line pulling
 		while (gpio_get_level(h->cfg.i2c_int)) {
-			ulTaskNotifyTake(pdFALSE, IMI_WAIT_DELAY / portTICK_PERIOD_MS);
+			ulTaskNotifyTake(pdFALSE, IMI_WAIT_DELAY / portTICK_RATE_MS);
 		}
-
+		//ESP_LOGI(TAG, "Trying to read");
 		xSemaphoreTake(h->mutex, portMAX_DELAY);
 		//Receiving packets if there are any
 		_imi_recv_all(h);
 		xSemaphoreGive(h->mutex);
 
-		vTaskDelay(IMI_CYCLE_DELAY / portTICK_PERIOD_MS);
+		vTaskDelay(IMI_CYCLE_DELAY / portTICK_RATE_MS);
 	}
 }
 
@@ -194,7 +194,7 @@ void imi_install(imi_config_t *cfg, int port) {
 	imi_handler_t *h = &imi_device[port];
 	assert(h->state == IMI_STATE_STOPED);
 	h->cfg = *cfg;
-	h->adds = calloc(h->cfg.address_count, sizeof(*h->adds));
+	h->adds = malloc(h->cfg.address_count * sizeof(*h->adds));
 	h->mutex = xSemaphoreCreateMutex();
 
 	h->state = IMI_STATE_INSTALLED;
@@ -216,9 +216,19 @@ void imi_start(imi_port_t port) {
 	assert(h->state == IMI_STATE_INSTALLED);
 	char str[100];
 	snprintf(str, sizeof(str), "IMI %d recv task", port);
-	xTaskCreate(_imi_task_recv, str, 2048, h, 1, &h->taskRecv);
+	xTaskCreate(_imi_task_recv, str, 4048, h, 1, &h->taskRecv);
 
+	gpio_config_t init_pin_i2c_int = {
+		.mode = GPIO_MODE_INPUT,
+		.pull_up_en = GPIO_PULLUP_DISABLE,
+		.pull_down_en = GPIO_PULLDOWN_DISABLE,
+		.intr_type = GPIO_INTR_NEGEDGE,
+		.pin_bit_mask = 1ULL << h->cfg.i2c_int
+	};
+
+	gpio_config(&init_pin_i2c_int);
 	gpio_isr_handler_add(h->cfg.i2c_int, imi_i2c_int_isr_handler, h);
+	h->state = IMI_STATE_STARTED;
 }
 
 int imi_send(imi_port_t port, uint8_t address, uint8_t *data, uint16_t size, TickType_t ticksToWait) {
