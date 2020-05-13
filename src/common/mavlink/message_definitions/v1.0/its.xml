@@ -70,6 +70,8 @@
 
     <message id="50012" name="GPS_UBX_NAV_SOL">
       <description></description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       <field type="uint32_t" name="iTOW" units="ms">Time of week of the navigation epoch</field>
       <field type="int32_t" name="fTOW" units="ns">Fractorial part of iTOW</field>
       <field type="int16_t" name="week">GPS week number of the navigation epoch</field>
