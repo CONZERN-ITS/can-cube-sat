@@ -1,8 +1,17 @@
 import i2cdev
 import ctypes
 import time
+import datetime
+
+import numpy as NumPy
+from math import sin, cos, radians, acos, asin
+
+import wgs84
 
 srtela_ms_rpi_c = ctypes.CDLL("./native/build/libstrela-ms-rpi.so")
+
+ACCEL_SAMPLE_SIZE = 100
+MAG_SAMPLE_SIZE = 100
 
 PORT_I2C = 1
 I2C_TIMEOUT = 1
@@ -108,21 +117,11 @@ class Lsm6ds3(Stmdev_i2c_context):
         return list(accel_buf)
 
 class WMM2020():
-    def __init__(self):
-        self.location = location_data_t(0, 0, 0, 1, 1, 2020)
+    def __init__(self, lat=0, lon=0, height=0, day=1, month=1, year=2020):
+        self.location = location_data_t(lat, lon, height, day, month, year)
 
-    def setup_date(self, day, month, year):
-        self.location['day'] = day
-        self.location['month'] = month
-        self.location['year'] = year
-
-    def setup_coord(self, lat, lon, height):
-        self.location['latitude'] = lat
-        self.location['longitude'] = lon
-        self.location['altitude'] = height
-
-    def setup_location(self, location):
-        self.location = location
+    def setup_location(self, lat=0, lon=0, height=0, day=1, month=1, year=2020):
+        self.location = location_data_t(lat, lon, height, day, month, year)
 
     def get_declination(self):
         decl = ctypes.c_double()
@@ -131,31 +130,79 @@ class WMM2020():
             raise RuntimeError("find_true_north returned nonzero error: %d" % error)
         return decl.value
 
+def from_dec_to_topocentric(x, y, z):
+    pass
+
+
 
 if __name__ == '__main__':
     #i2c = i2cdev.I2C(PORT_I2C)
     #i2c.set_timeout(I2C_TIMEOUT)
-
     #lis3mdl = Lis3mdl(i2c, LIS3MDL_ADRESS)
     #lis3mdl.setup()    
-
     #lsm6ds3 = Lsm6ds3(i2c, LSM6DS3_ADRESS)
-    #lsm6ds3.setup()  
-    wwm = WMM2020()
-    wwm.setup_location(location_data_t(37.825, 55.914, 100, 14, 3, 2020))  
+    #lsm6ds3.setup() 
+    wwm = WMM2020() 
+
+    #mag = NumPy.array([0, 0, 0])
+    #for i in range(MAG_SAMPLE_SIZE):
+    #    mag = mag + NumPy.array(lis3mdl.get_mag_data_G())
+    #mag = mag / MAG_SAMPLE_SIZE
+
+    #accel = NumPy.array([0, 0, 0])
+    #for i in range(ACCEL_SAMPLE_SIZE):
+    #    accel = accel + NumPy.array(lsm6ds3.get_accel_data_mg())
+    #accel = accel / ACCEL_SAMPLE_SIZE
+
+    phi = 0
+    alpha = 0
+
+    accel = NumPy.array([2, 3, 5])
+    mag = NumPy.array([4, 5, 2])
+    gcs_coords = NumPy.array([2830356.5, 2197847.9, 5258838.4])
+
+    gps_latlonh = wgs84.wgs84_xyz_to_latlonh(*gcs_coords)
+    date = datetime.date.today()
+    wwm.setup_location(gps_latlonh[0], gps_latlonh[1], gps_latlonh[2], date.day, date.month, date.year)
+    decl = wwm.get_declination()
+
+    lat = radians(gps_latlonh[0])
+    lon = radians(gps_latlonh[1])
+
+    dec_to_top = NumPy.array([[-sin(lat)*cos(lon), -sin(lat)*sin(lon) , cos(lat)],
+    						  [sin(lon), -cos(lon), 0],
+    						  [cos(lat)*cos(lon), cos(lat)*sin(lon), sin(lat)]])
+
+    accel = accel / NumPy.linalg.norm(accel)
+    mag = mag / NumPy.linalg.norm(mag)
+
+    mag = mag - accel * NumPy.dot(accel, mag)
+    mag = mag / NumPy.linalg.norm(mag)
+    mag = mag * cos(decl) + accel * (1 - cos(decl)) * NumPy.dot(accel, mag) + sin(decl) * NumPy.cross(accel, mag)
+
+    b = NumPy.cross(accel, mag)
+    b = b / NumPy.linalg.norm(b)
+
+    top_to_gcs = NumPy.linalg.inv(NumPy.array([mag, b, accel]))
 
     while True:
-        #mag_buf = lis3mdl.get_mag_data_G()
-        #accel_buf = lsm6ds3.get_accel_data_mg()
 
-        #time.sleep(0.5)
-       
-        print(wwm.get_declination())
+        object_coords = NumPy.array([2830356.5 + 7, 2197847.9 - 2, 5258838.4 + 30])
+        vector = object_coords - gcs_coords
 
-        #print("Mag  :")
-        #print(mag_buf)
-        #print("Accel:")
-        #print(accel_buf)
+        vector = NumPy.dot(dec_to_top, vector)
+        vector = NumPy.dot(top_to_gcs, vector)
+
+        vector = vector / NumPy.linalg.norm(vector)
+        d_phi = acos(vector[2]) - phi
+        phi = acos(vector[2])
+
+        vector[2] = 0
+        vector = vector / NumPy.linalg.norm(vector)
+        d_alpha = acos(vector[2]) - alpha
+        alpha = acos(vector[2])
+
+        time.sleep(1)
 
 
     #i2c.close()
