@@ -282,8 +282,9 @@ int main(int argc, char* argv[])
 
 	uplink_init();
 
-//	int rc = gps_configure();
-//	trace_printf("configure rc = %d\n", rc);
+	int rc = gps_init(_on_gps_packet, NULL);
+	rc = gps_configure();
+	trace_printf("configure rc = %d\n", rc);
 
 	SENSORS_Init();
 	for (int i = 0; i < 2; i++)
@@ -305,7 +306,7 @@ int main(int argc, char* argv[])
 
 		_mavlink_sins_isc(&stateSINS_isc);
 		_mavlink_timestamp();
-
+		gps_poll();
 	}
 
 	return 0;
