@@ -170,7 +170,7 @@ int32_t find_true_north(location_data_t location, double * decl){
     MAG_GeodeticToSpherical(ellip, coord_geodetic, &coord_spherical); // Convert from geodetic to Spherical Equations
     MAG_TimelyModifyMagneticModel(user_date, magnetic_models[0], timed_magnetic_model); // Time adjust the coefficients
     MAG_Geomag(ellip, coord_spherical, coord_geodetic, timed_magnetic_model, &geo_magnetic_elements); // Computes the geoMagnetic field elements and their time change
-    if (MAG_CalculateGridVariation(coord_geodetic, &geo_magnetic_elements)) return ERROR_INCORRECT_VALUE;
+    MAG_CalculateGridVariation(coord_geodetic, &geo_magnetic_elements);
 
     *decl = geo_magnetic_elements.Decl; // Angle between the magnetic field vector and true north, positive east
 
