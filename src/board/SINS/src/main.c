@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
 
 	int rc = gps_init(_on_gps_packet, NULL);
 	rc = gps_configure();
-	trace_printf("configure rc = %d\n", rc);
+//	trace_printf("configure rc = %d\n", rc);
 
 	SENSORS_Init();
 	for (int i = 0; i < 2; i++)
@@ -296,7 +296,7 @@ int main(int argc, char* argv[])
 	time_svc_world_get_time(&stateSINS_isc_prev.tv);
 	for (; ; )
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 160; i++)
 		{
 			UpdateDataAll();
 			SINS_updatePrevData();

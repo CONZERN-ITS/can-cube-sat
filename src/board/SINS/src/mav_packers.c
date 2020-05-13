@@ -58,7 +58,12 @@ void _on_gps_packet(void * arg, const ubx_any_packet_t * packet)
 	{
 	case UBX_PID_NAV_SOL:
 		{
+			struct timeval tv;
+			time_svc_world_get_time(&tv);
+
 			mavlink_gps_ubx_nav_sol_t msg_gps_ubx_nav_sol;
+			msg_gps_ubx_nav_sol.time_s = tv.tv_sec;
+			msg_gps_ubx_nav_sol.time_us = tv.tv_usec;
 			msg_gps_ubx_nav_sol.iTOW = packet->packet.navsol.i_tow;
 			msg_gps_ubx_nav_sol.fTOW = packet->packet.navsol.f_tow;
 			msg_gps_ubx_nav_sol.week = packet->packet.navsol.week;
