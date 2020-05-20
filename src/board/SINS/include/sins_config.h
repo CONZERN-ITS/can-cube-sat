@@ -10,7 +10,7 @@
 
 //! Нужно ли делать по запуску насильный сброс всего бекап домена?
 /*! Если используется LSE для RTC, то это делать нужно - иначе RTC не запустится */
-#define ITS_SINS_RTC_FORCERESET 1
+#define ITS_SINS_RTC_FORCERESET 0
 
 
 

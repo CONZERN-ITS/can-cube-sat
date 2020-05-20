@@ -282,8 +282,8 @@ int main(int argc, char* argv[])
 
 	uplink_init();
 
-	int rc = gps_init(_on_gps_packet, NULL);
-	rc = gps_configure();
+//	int rc = gps_init(_on_gps_packet, NULL);
+//	rc = gps_configure();
 //	trace_printf("configure rc = %d\n", rc);
 
 	SENSORS_Init();
@@ -302,6 +302,13 @@ int main(int argc, char* argv[])
 			SINS_updatePrevData();
 			gps_poll();
 		}
+
+//		struct timeval tmv;
+//		time_svc_world_timers_get_time(&tmv);
+//		struct tm * tm = gmtime(&tmv.tv_sec);
+//		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
+//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
+//		trace_printf("time is %s\n", buffer);
 
 
 		_mavlink_sins_isc(&stateSINS_isc);
