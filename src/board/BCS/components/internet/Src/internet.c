@@ -98,10 +98,10 @@ void task_socket_recv(void *arg) {
 	while (1) {
 		const int size = 100;
 		uint8_t buffer[size];
-		size_t s = sizeof(addr);
+		socklen_t s = sizeof(addr);
 		rc = recvfrom(sin, buffer, sizeof(buffer), 0, (struct sockaddr *)&addr, &s);
 		if (rc > 0) {
-			printf("MESSAGE FROM %s:%u:\n%s\n", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port), buffer);
+			printf("\nMESSAGE FROM %s:%u:\n%.*s\n", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port), s, buffer);
 			printf("------------------\n");
 		}
 	}
@@ -145,11 +145,11 @@ void task_socket_comm(void *pvParameters) {
 			printf("SIZE: %u\n", size);
 
 			if (strcmp(buf, IP_CONFIG_RECV) == 0) {
-		        printf("Found server: %s:%d \n", inet_ntoa(addrout.sin_addr), ntohs(addrout.sin_port));
+				printf("Found server: %s:%d \n", inet_ntoa(addrout.sin_addr), ntohs(addrout.sin_port));
 
-		        addrout.sin_port = htons(IP_CONFIG_PORT_THEIR);
-		        if (connect(sout, (struct sockaddr*) &addrout, sizeof(addrout)) < 0) {
-		        	sout = socket(AF_INET, SOCK_STREAM, 0);
+				addrout.sin_port = htons(IP_CONFIG_PORT_THEIR);
+				if (connect(sout, (struct sockaddr*) &addrout, sizeof(addrout)) < 0) {
+					sout = socket(AF_INET, SOCK_STREAM, 0);
 					printf("Can't connect\n");
 					continue;
 				}
@@ -165,10 +165,10 @@ void task_socket_comm(void *pvParameters) {
 			int cnt = snprintf(str, size, "%s %d", IP_CONFIG_SEND, t++);
 			if (send(sout, str, cnt + 1, 0) < 0) {
 				ip_config.state = SEARCH;
-		        printf("Lost connection\n");
-		        shutdown(sout, 2);
-		        close(sout);
-		        continue;
+				printf("Lost connection\n");
+				shutdown(sout, 2);
+				close(sout);
+				continue;
 			}
 			printf("Hey! %d\n", t);
 
@@ -213,8 +213,8 @@ void wifi_init_sta(void)
 
 
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    //esp_netif_t *hesp = esp_netif_create_default_wifi_sta();
-    //ESP_ERROR_CHECK(esp_netif_dhcpc_stop(hesp));
+    esp_netif_t *hesp = esp_netif_create_default_wifi_sta();
+    ESP_ERROR_CHECK(esp_netif_dhcpc_stop(hesp));
 
     esp_netif_ip_info_t ip = {
             .ip = { .addr = inet_addr(IP2_OUR_IP)},
@@ -224,7 +224,7 @@ void wifi_init_sta(void)
     IP4_ADDR(&ip.ip, 192, 168, 31, 40);
     IP4_ADDR(&ip.gw, 192, 168, 31, 1);
     IP4_ADDR(&ip.netmask, 255, 255, 255, 0);
-    //ESP_ERROR_CHECK(esp_netif_set_ip_info(hesp, &ip));
+    ESP_ERROR_CHECK(esp_netif_set_ip_info(hesp, &ip));
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ;

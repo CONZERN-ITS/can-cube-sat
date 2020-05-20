@@ -12,4 +12,5 @@ set(EXTRA_COMPONENT_DIRS "components/imi"
                          "its_config"
                          "router"
                          "mavlink_comp"
-                         "uart_mavlink")
+                         "uart_mavlink"
+                         "ntp_server")
