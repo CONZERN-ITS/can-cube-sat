@@ -15,6 +15,7 @@
 #include "task_ina.h"
 #include "task_send.h"
 #include "task_recv.h"
+#include "task_battery_control.h"
 
 
 extern I2C_HandleTypeDef hi2c2;
@@ -55,6 +56,12 @@ void task_main_init(void *arg) {
     t.init = task_recv_init;
     t.update = task_recv_update;
     task_create(t, 0);
+
+    t.init = task_battery_control_init;
+    t.update = task_battery_control_update;
+    task_create(t, 0);
+
+
 }
 void task_main_update(void *arg) {
 

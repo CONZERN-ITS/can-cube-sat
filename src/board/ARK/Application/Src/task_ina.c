@@ -36,7 +36,7 @@ int tina219_get_value(tina_value_t **arr, int **is_valid) {
 
 void task_ina_init(void *arg) {
     ina219_init_default(&hina[0], &hi2c2, INA219_I2CADDR_A1_GND_A0_GND << 1);
-    ina219_init_default(&hina[1], &hi2c2, INA219_I2CADDR_A1_VSP_A0_VSP << 1);
+    ina219_init_default(&hina[1], &hi2c2, INA219_I2CADDR_A1_GND_A0_VSP << 1);
 }
 
 void task_ina_update(void *arg) {
