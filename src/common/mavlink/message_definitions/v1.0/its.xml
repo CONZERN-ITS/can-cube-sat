@@ -115,5 +115,18 @@
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       <field type="uint8_t" name="time_base" enum="TIME_BASE_TYPE">Time base</field>
     </message>
+
+    <!-- Сообщения модуля полезной нагрузки -->
+    <message id="50101" name = "PLD_BME280_DATA">
+      <description>payload module message with bme280 related data</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+      
+      <field type="double" name="temperature" units="°C">Atmospheric temerapture</field>
+      <field type="double" name="pressure" units="Pa">Atmospheric pressure</field>
+      <field type="double" name="humidity" units="%">Atmospheric relative humidity</field>
+      <field type="double" name="altitude" units="m">Cube altitude relative to cube power-on point</field>
+    </message>
+
   </messages>
 </mavlink>

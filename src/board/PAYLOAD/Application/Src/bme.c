@@ -5,11 +5,16 @@
  *      Author: snork
  */
 
+#include "bme.h"
+
+
 #include <stm32f1xx_hal.h>
 
 #include <bme280.h>
+#include <its-time.h>
 
 #include "util.h"
+
 
 
 extern I2C_HandleTypeDef hi2c2;
@@ -62,7 +67,6 @@ static int8_t _i2c_write(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t l
 }
 
 
-
 int its_pld_bme280_init()
 {
 	_device.intf = BME280_I2C_INTF;
@@ -71,6 +75,29 @@ int its_pld_bme280_init()
 	_device.delay_ms = _delay_ms;
 
 	int rc = bme280_init(&_device);
+	if (0 != rc)
+		return rc;
+
+	return 0;
 }
 
 
+int its_pld_bme280_read(mavlink_pld_bme280_data_t * data)
+{
+	struct bme280_data bme280_data;
+
+	its_time_t the_time;
+	its_gettimeofday(&the_time);
+
+	int rc = bme280_get_sensor_data(BME280_ALL, &bme280_data, &_device);
+	if (0 != rc)
+		return rc;
+
+	data->time_s = the_time.sec;
+	data->time_us = the_time.usec;
+	data->pressure = bme280_data->pressure;
+	data->temperature = bme280_data->temperature;
+	data->humidity = bme280_data.humidity;
+	data->altitude = alt;
+	return 0;
+}

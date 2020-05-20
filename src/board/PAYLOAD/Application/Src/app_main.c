@@ -33,12 +33,5 @@ int app_main()
 	}
 	__HAL_ADC_ENABLE(&hadc1);
 
-	HAL_ADC_PollForConversion(hadc, Timeout)
-
-
-	ADC_ChannelConfTypeDef adc_cc;
-	adc_cc.Channel = ADC_CHANNEL_0;
-	adc_cc.Rank = ADC_REGULAR_RANK_1;
-	adc_cc.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
-	HAL_ADC_ConfigChannel(&hadc1, &adc_cc);
+	return 0;
 }
