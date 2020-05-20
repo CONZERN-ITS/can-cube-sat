@@ -124,7 +124,9 @@ void update_dcdc(void) {
     tina_value_t *t = 0;
     int *valid = 0;
     if (tina219_get_value(&t, &valid) >= 2) {
-        battery_update_dpd_voltage(t[BATTERY_INA_BUS].voltage);
+        if (valid[BATTERY_INA_BUS]) {
+            battery_update_dpd_voltage(t[BATTERY_INA_BUS].voltage);
+        }
     }
 
 }
