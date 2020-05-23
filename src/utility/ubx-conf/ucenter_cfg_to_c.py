@@ -86,7 +86,7 @@ def main(argv):
         required=True,
     )
     parser.add_argument(
-        "-o,--output,-o", dest="ostream", type=argparse.FileType('w'),
+        "-o,--output,-o", dest="ostream", type=argparse.FileType('w', encoding='utf-8'),
         default='-'
     )
 
