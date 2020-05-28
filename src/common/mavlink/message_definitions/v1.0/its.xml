@@ -116,16 +116,49 @@
       <field type="uint8_t" name="time_base" enum="TIME_BASE_TYPE">Time base</field>
     </message>
 
+    <message id="50016" name="OWN_TEMP">
+      <description>
+        Temperature of a subsystem main computer. 
+        Subsytem can be identified by system id and component id defined in the message header.
+        The values for system id and component id are defined in enums of this file.
+      </description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="float" name="°C">Temperature of a computer</field>
+    </message>
+    
     <!-- Сообщения модуля полезной нагрузки -->
-    <message id="50101" name = "PLD_BME280_DATA">
-      <description>payload module message with bme280 related data</description>
+    <message id="50017" name = "PLD_BME280_DATA">
+      <description>Payload module message with bme280 related data</description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       
       <field type="double" name="temperature" units="°C">Atmospheric temerapture</field>
       <field type="double" name="pressure" units="Pa">Atmospheric pressure</field>
       <field type="double" name="humidity" units="%">Atmospheric relative humidity</field>
-      <field type="double" name="altitude" units="m">Cube altitude relative to cube power-on point</field>
+      <field type="double" name="altitude" units="m">Cube altitude relative to cube power-on location</field>
+    </message>
+
+    <message id="50018" name = "PLD_MICS_6814_DATA">
+      <description>Payload module message with MiCS-6814 gas sensors data</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="float" name="red_sensor_raw">MiCS-6814 RED sensor raw readings in a form for rs/r0</field>
+      <field type="float" name="co_conc" units="ppm">C0 concetration from MiCS-6814 RED sensor</field>
+      <field type="float" name="ox_sensor_raw">MiCS-6814 OX sensor raw readings in a form for rs/r0</field>
+      <field type="float" name="no2_conc" units="ppm">NO2 concentration from MiCS-6814 OX sensor</field>
+      <field type="float" name="nh3_sensor_raw">MiCS-6814 NH3 sensor raw readings in a form of rs/s0</field>
+      <field type="float" name="nh3_conc" units="ppm">NH3 concentration from MiCS-6814 NH3 sensor</field>
+    </message>
+
+    <message id="50019" name = "PLD_ME2O2_DATA">
+      <description>Payload module message with ME2-O2-F20 gas sensor data</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="float" name="o2_conc" units="%">O2 concetration</field>
     </message>
 
   </messages>
