@@ -13,6 +13,8 @@ from source import RES_ROOT
 
 MESH_PATH = os.path.join(RES_ROOT, "models/CanCubeSat-for-GKS.stl")
 MESH_COLOR_PATH = os.path.join(RES_ROOT, "models/CanCubeSat-for-GKS_color.mfcl")
+SCENE_MESH_PATH = os.path.join(RES_ROOT, "models/axis.stl")
+SCENE_MESH_COLOR_PATH = os.path.join(RES_ROOT, "models/axis.mfcl")
 
 class ModelWidget(OpenGL.GLViewWidget):
     def __init__(self):
@@ -28,13 +30,32 @@ class ModelWidget(OpenGL.GLViewWidget):
         self.gird = OpenGL.GLGridItem()
         self.addItem(self.gird)
 
+        self.axis = OpenGL.GLAxisItem()
+        self.addItem(self.axis)
+
         self.mesh = OpenGL.GLMeshItem()
         self.addItem(self.mesh)
 
+        self.scene = OpenGL.GLMeshItem()
+        self.addItem(self.scene)
+
     def setup_ui_design(self):
         self.settings.beginGroup("CentralWidget/ModelWidget/Grid")
-        self.gird.scale(*[int(num) for num in self.settings.value("scale")])
-        self.gird.translate(*[int(num) for num in self.settings.value("translate")])
+        if int(self.settings.value("is_on")):
+            self.gird.show()
+            self.gird.scale(*[float(num) for num in self.settings.value("scale")])
+            self.gird.translate(*[float(num) for num in self.settings.value("translate")])
+        else:
+            self.gird.hide()
+        self.settings.endGroup()
+
+        self.settings.beginGroup("CentralWidget/ModelWidget/Axis")
+        if int(self.settings.value("is_on")):
+            self.axis.show()
+            self.axis.scale(*[float(num) for num in self.settings.value("scale")])
+            self.axis.translate(*[float(num) for num in self.settings.value("translate")])
+        else:
+            self.axis.hide()
         self.settings.endGroup()
 
         self.settings.beginGroup("CentralWidget/ModelWidget/Mesh")
@@ -60,6 +81,33 @@ class ModelWidget(OpenGL.GLViewWidget):
                               shader=self.settings.value("shader"), 
                               computeNormals=int(self.settings.value("compute_normals")))
         self.mesh.meshDataChanged()
+        self.settings.endGroup()
+
+        self.settings.beginGroup("CentralWidget/ModelWidget/Scene")
+
+        if int(self.settings.value("is_on")):
+            model_color = None
+            try:
+                verts = self._get_mesh_points(self.settings.value("path"))
+                if int(self.settings.value("Colors/is_on")):
+                    pass
+                    #model_color = self._get_face_colors(self.settings.value("Colors/path"))                
+            except Exception:
+                verts = self._get_mesh_points(SCENE_MESH_PATH)
+                #model_color = self._get_face_colors(SCENE_MESH_COLOR_PATH)
+
+                faces = NumPy.array([(i, i + 1, i + 2,) for i in range(0, len(verts), 3)])
+                print(len(faces))
+                self.scene.setMeshData(vertexes=verts,
+                                       faces=faces, 
+                                       faceColors=model_color,
+                                       edgeColor=(0, 0, 0, 1),
+                                       drawEdges=int(self.settings.value("draw_edges")), 
+                                       drawFaces=int(self.settings.value("draw_faces")),
+                                       smooth=int(self.settings.value("smooth")), 
+                                       shader=self.settings.value("shader"), 
+                                       computeNormals=int(self.settings.value("compute_normals")))
+                self.scene.meshDataChanged()
         self.settings.endGroup()
 
         self.settings.beginGroup("CentralWidget/ModelWidget/Camera")

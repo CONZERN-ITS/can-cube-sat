@@ -3,6 +3,8 @@ import numpy as NumPy
 
 from source import settings_control
 
+import math
+
 
 class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
     class Curve():
@@ -75,7 +77,7 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
             if int(self.settings.value("is_on")):
                 graph = self.setup_graph(self.settings.value("position"), group)
                 curves = self.setup_curves(graph,
-                                           int(self.settings.value("count")),
+                                           int(self.settings.value("packet_name")[-1]),
                                            self.settings.value("colour")[0:-1],
                                            int(self.settings.value("max_data_length")))
                 self.plot_tuple.append((graph, curves, self.settings.value("packet_name")))
@@ -92,7 +94,8 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
                     data_range = (int(plot[2][i - 1]), int(plot[2][i + 1]))
                     if ((plot[2][i] == pack[0]) and ((len(pack) - 2) >= (data_range[1] - data_range[0]))):
                         for i in range(*data_range):
-                            plot_data_buf[i].append((pack[1], pack[i - data_range[0] + 2]))
+                            if not math.isnan(pack[i - data_range[0] + 2]):
+                                plot_data_buf[i].append((pack[1], pack[i - data_range[0] + 2]))
                         break
             for i in range(len(plot_data_buf)):
                 if len(plot_data_buf[i]) > 0:

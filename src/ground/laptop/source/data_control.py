@@ -5,6 +5,10 @@ from pymavlink.dialects.v20 import its as mavlink2
 from pymavlink import mavutil
 import time
 import re
+import math
+
+from source.functions.wgs84 import wgs84_xyz_to_latlonh as wgs84_conv
+
 
 class TXTLogDataSource():
     def __init__(self, log_path, real_time=0, time_delay=0.01, time_from_zero=1):
@@ -75,24 +79,25 @@ class MAVLogDataSource():
         msg = self.connection.recv_match()
         if (msg is None):
             raise RuntimeError("No Message")
-        data = MAVDataSource.get_data(MAVDataSource,msg)
+        data = MAVDataSource.get_data(MAVDataSource, msg)
         if data is None:
             raise TypeError("Message type not supported")
 
         if self.time_shift is None:
-            self.time_shift = data[0]
+            self.time_shift = data[0][1]
 
         if self.time_from_zero:
-            data[0] -= self.time_shift
+            for pack in data:
+                pack[1] -= self.time_shift
 
         if self.real_time:
             if self.time_start == None:
                 self.time_start = time.time()
-            while (time.time() - self.time_start) < (data[0] - self.time_shift):
+            while (time.time() - self.time_start) < (data[0][1] - self.time_shift):
                 time.sleep(0.001)
         else:
             time.sleep(self.time_delay)
-        return [data]
+        return data
 
     def stop(self):
         self.connection.close()
@@ -113,6 +118,7 @@ class MAVDataSource():
             raise RuntimeError("No Message")
         self.log.write(msg.get_msgbuf())
         data = self.get_data(msg)
+        print(msg)
         if data is None:
             raise TypeError("Message type not supported")
 
@@ -134,6 +140,10 @@ class MAVDataSource():
             return [['ACCEL', msg.time_s + msg.time_us/1000000] + msg.accel,
                     ['COMPASS', msg.time_s + msg.time_us/1000000] + msg.compass,
                     ['MODEL', msg.time_s + msg.time_us/1000000] + msg.quaternion]
+        if msg.get_type() == "GPS_UBX_NAV_SOL":
+            gps = wgs84_conv(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100)
+            return [['MAP', msg.time_s + msg.time_us/1000000] + gps[:2],
+                    ['HEIGHT', msg.time_s + msg.time_us/1000000] + [gps[2]]]
         else:
             return None
 
