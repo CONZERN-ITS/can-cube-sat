@@ -125,7 +125,7 @@
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
 
-      <field type="float" name="°C">Temperature of a computer</field>
+      <field type="float" name="deg">Temperature of a computer</field>
     </message>
     
     <!-- Сообщения модуля полезной нагрузки -->
@@ -134,9 +134,9 @@
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       
-      <field type="double" name="temperature" units="°C">Atmospheric temerapture</field>
+      <field type="double" name="temperature" units="deg">Atmospheric temerapture</field>
       <field type="double" name="pressure" units="Pa">Atmospheric pressure</field>
-      <field type="double" name="humidity" units="%">Atmospheric relative humidity</field>
+      <field type="double" name="humidity" units="percent">Atmospheric relative humidity</field>
       <field type="double" name="altitude" units="m">Cube altitude relative to cube power-on location</field>
     </message>
 
@@ -158,7 +158,7 @@
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
 
-      <field type="float" name="o2_conc" units="%">O2 concetration</field>
+      <field type="float" name="o2_conc" units="percent">O2 concetration</field>
     </message>
 
   </messages>
