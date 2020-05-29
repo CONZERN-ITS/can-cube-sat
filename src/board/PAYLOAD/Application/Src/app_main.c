@@ -8,6 +8,7 @@
 
 #include "app_main.h"
 
+#include <stdio.h>
 
 #include <stm32f1xx_hal.h>
 #include "main.h"
@@ -32,6 +33,11 @@ int app_main()
 		// Однако. даже если что-то пошло не так - продолжаем работать
 	}
 	__HAL_ADC_ENABLE(&hadc1);
+
+	while(1)
+	{
+		printf("hello trace\n");
+	}
 
 	return 0;
 }

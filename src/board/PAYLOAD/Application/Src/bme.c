@@ -95,9 +95,9 @@ int its_pld_bme280_read(mavlink_pld_bme280_data_t * data)
 
 	data->time_s = the_time.sec;
 	data->time_us = the_time.usec;
-	data->pressure = bme280_data->pressure;
-	data->temperature = bme280_data->temperature;
+	data->pressure = bme280_data.pressure;
+	data->temperature = bme280_data.temperature;
 	data->humidity = bme280_data.humidity;
-	data->altitude = alt;
+	data->altitude = 0;
 	return 0;
 }
