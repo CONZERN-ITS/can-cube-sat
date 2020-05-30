@@ -15,3 +15,8 @@ add_library(strela-ms-rpi SHARED
 	${SRCDIR}/WMM2020_Linux/src/GeomagnetismLibrary.c
 	${SRCDIR}/strela-ms-rpi.c
 )
+
+install(
+	TARGETS strela-ms-rpi
+	LIBRARY DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../..
+)
