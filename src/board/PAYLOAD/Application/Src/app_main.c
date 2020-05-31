@@ -36,7 +36,7 @@ int app_main()
 
 	while(1)
 	{
-		printf("hello trace\n");
+
 	}
 
 	return 0;

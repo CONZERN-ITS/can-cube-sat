@@ -5,8 +5,11 @@
  *      Author: snork
  */
 
+#include <stm32f1xx_hal.h>
 
-int its_pld_adc_sensors_init()
+
+int mics6814_init()
 {
-
+	//HAL_ADC_Start(hadc);
+	return 0;
 }

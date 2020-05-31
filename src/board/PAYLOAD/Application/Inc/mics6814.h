@@ -9,7 +9,7 @@
 #define INC_ADC_SENSORS_H_
 
 
-int its_pld_adc_sensors_init();
+int mics6814_init(void);
 
 
 #endif /* INC_ADC_SENSORS_H_ */
