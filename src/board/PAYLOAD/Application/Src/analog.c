@@ -158,6 +158,11 @@ static int _channgel_config_for_target(its_pld_analog_target_t target, ADC_Chann
 		config->SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
 		break;
 
+	case ITS_PLD_ANALOG_TARGET_INTEGRATED_TEMP:
+		config->Channel = ADC_CHANNEL_TEMPSENSOR;
+		config->Rank = ADC_REGULAR_RANK_1;
+		config->SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
+
 	default:
 		error = -ENOSYS;
 		break;
