@@ -96,7 +96,7 @@ static uint32_t _read_u32(const uint8_t * data)
 static uint32_t _read_i32(const uint8_t * data)
 {
 	uint32_t buffer = _read_u32(data);
-	return *(int16_t*)&buffer;
+	return *(int32_t*)&buffer;
 }
 
 

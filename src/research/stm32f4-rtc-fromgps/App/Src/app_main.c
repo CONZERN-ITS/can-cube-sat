@@ -96,16 +96,23 @@ static void on_ubx_packet(void * userarg, const ubx_any_packet_t * packet)
 
 int app_main()
 {
+
 	// для pritnf
 	__HAL_UART_ENABLE(&huart1);
+
+	// начинаем получать пакеты gps
+	assert(0 == gps_init(on_ubx_packet, NULL));
+	// настраиваем gps
+	int rc = gps_configure();
+	printf("rc %d", rc);
+
 
 	// Загоняем rtc в режим конфигурации
 	LL_RTC_DisableWriteProtection(RTC);
 	LL_RTC_EnterInitMode(RTC);
 	rtc_cfg_state = RTC_CFG_STATE_WAIT_PACKET;
 
-	// начинаем получать пакеты gps
-	gps_setup(on_ubx_packet, NULL);
+
 
 
 	while(1)

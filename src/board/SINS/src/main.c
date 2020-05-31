@@ -283,7 +283,7 @@ int main(int argc, char* argv[])
 	uplink_init();
 
 //	int rc = gps_init(_on_gps_packet, NULL);
-//	rc = gps_configure();
+//	int rc = gps_configure();
 //	trace_printf("configure rc = %d\n", rc);
 
 	SENSORS_Init();
