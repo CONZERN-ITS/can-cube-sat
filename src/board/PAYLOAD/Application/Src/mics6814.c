@@ -5,6 +5,8 @@
 
 #include <stm32f1xx_hal.h>
 
+#include <its-time.h>
+
 #include "analog.h"
 
 /*
@@ -79,14 +81,6 @@
 // Номинал Балансирующего резистора R3 из резисторного делителя
 #define MICS6814_CO_R3_VALUE	(10*1000)
 
-// Конценрация CO из сопротивления RED сенсора MICS-6814
-static float _rescale_co(float red_r)
-{
-	float dr = red_r / MICS6814_CO_R0;
-	return pow(dr, MICS6814_CO_COEFFS_A) * exp(MICS6814_CO_COEFFS_B);
-}
-
-
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Сенсор NO2 (OX)
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -117,14 +111,6 @@ static float _rescale_co(float red_r)
 
 // Номинал Балансирующего резистора R3 из резисторного делителя
 #define MICS6814_NO2_R3_VALUE	(10*1000)
-
-// Концентрация NO2 из сопротивления OX сенсора MICS-6814
-static float _rescale_no2(float ox_r)
-{
-	float dr = ox_r / MICS6814_NO2_R0;
-	return pow(dr, MICS6814_NO2_COEFFS_A) * exp(MICS6814_NO2_COEFFS_B);
-}
-
 
 
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -158,6 +144,7 @@ static float _rescale_no2(float ox_r)
 // Номинал Балансирующего резистора R3 из резисторного делителя
 #define MICS6814_NH3_R3_VALUE	(10*1000)
 
+
 // Общая функция пересчета значений
 /*
  * r - текущее сопротивление сенсора
@@ -168,7 +155,9 @@ static float _rescale_no2(float ox_r)
 static float _rescale(float r, float r0, float a, float b)
 {
 	float dr = r / r0;
-	return pow(dr, a) * exp(a);
+	// FIXME: Кажется, тут лучше будет прямо на уровне макросов хранить значение exp(b),
+	// а не считать его каждый раз
+	return pow(dr, a) * exp(b);
 }
 
 
@@ -177,14 +166,14 @@ static float _rescale(float r, float r0, float a, float b)
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 //! Количество резисторов в верхнем плече резисторного делителя сенсоров
-typedef enum mics6814_upper_divider_t {
+typedef enum mics6814_divider_upper_half_mode_t {
 	//! Используются три резистора в плече
 	MICS6814_DIVIER_UPPER_HALF_TRIPLE,
 	//! Используются два резистора в плече
 	MICS6814_DIVIER_UPPER_HALF_DOUBLE,
 	//! Используется один резистор в плече
 	MICS6814_DIVIER_UPPER_HALF_SINGLE,
-} mics6814_divider_upper_half_t;
+} mics6814_divider_upper_half_mode_t;
 
 
 //! С каким именно сенсором мы работаем
@@ -222,72 +211,44 @@ static void _pin_to_high_output(GPIO_TypeDef * port, uint32_t pin)
 }
 
 
-// Возвращает true, если пин в состоянии input floating
-/* Поведение при pin == 0 не определено */
-static bool _pin_is_input(GPIO_TypeDef * port, uint32_t pin)
+// Текущие режимы верхнего плеча делителя для сенсоров
+static mics6814_divider_upper_half_mode_t _co_mode;
+static mics6814_divider_upper_half_mode_t _no2_mode;
+static mics6814_divider_upper_half_mode_t _nh3_mode;
+
+
+// Устанавливаем верхнее плечо делителя для указанного сенсора
+int _divider_upper_half_set_mode(mics6814_sensor_t target, mics6814_divider_upper_half_mode_t mode)
 {
-	// Проходим по младшим битам
-	uint8_t lower_pin_mask = (uint8_t)(pin & 0xFF);
-	for (int i = 0; i < 8; i++)
-	{
-		if (0 == ((lower_pin_mask >> i) & 0x01))
-			continue; // Этот бит нас не интересует
-
-		// Режим порта задают два вот этих бита
-		const uint8_t pin_mode_value = (port->CRL >> (4*i + 2)) & 0x03;
-		// Если эти два бита имеют значение 0x01, значит пин в состоянии input floating
-		if (0x01 != pin_mode_value)
-			return false;
-	}
-
-
-	uint8_t upper_pin_mask = (uint8_t)((pin >> 8) & 0xFF);
-	for (int i = 0; i < 8; i++)
-	{
-		if (0 == ((upper_pin_mask >> i) & 0x01))
-			continue; // Этот бит нас не интересует
-
-		// Режим порта задают два вот этих бита
-		const uint8_t pin_mode_value = (port->CRH >> (4*i + 2)) & 0x03;
-		// Если эти два бита имеют значение 0x01, значит пин в состоянии input floating
-		if (0x01 != pin_mode_value)
-			return false;
-	}
-
-	// Если все тесты прошли, то все ок
-	return true;
-}
-
-
-// Возвращает _координаты_ управляющих пинов для управления плечами резисторного делителя
-static int _divider_ctrl_gpio_for_target(mics6814_sensor_t target,
-		GPIO_TypeDef ** port1, uint32_t * pin1,
-		GPIO_TypeDef ** port2, uint32_t * pin2
-)
-{
-	int error = 0;
+	int error;
+	GPIO_TypeDef * port1, * port2;
+	uint32_t pin1, pin2;
+	mics6814_divider_upper_half_mode_t * mode_var;
 
 	switch (target)
 	{
 	case MICS6814_SENSOR_CO:
-		*port1 = MICS6814_CO_CTRL_1_PORT;
-		*pin1 = MICS6814_CO_CTRL_1_PIN;
-		*port2 = MICS6814_CO_CTRL_2_PORT;
-		*pin2 = MICS6814_CO_CTRL_2_PIN;
+		port1 = MICS6814_CO_CTRL_1_PORT;
+		pin1 = MICS6814_CO_CTRL_1_PIN;
+		port2 = MICS6814_CO_CTRL_2_PORT;
+		pin2 = MICS6814_CO_CTRL_2_PIN;
+		mode_var = &_co_mode;
 		break;
 
 	case MICS6814_SENSOR_NO2:
-		*port1 = MICS6814_NO2_CTRL_1_PORT;
-		*pin1 = MICS6814_NO2_CTRL_1_PIN;
-		*port2 = MICS6814_NO2_CTRL_2_PORT;
-		*pin2 = MICS6814_NO2_CTRL_2_PIN;
+		port1 = MICS6814_NO2_CTRL_1_PORT;
+		pin1 = MICS6814_NO2_CTRL_1_PIN;
+		port2 = MICS6814_NO2_CTRL_2_PORT;
+		pin2 = MICS6814_NO2_CTRL_2_PIN;
+		mode_var = &_no2_mode;
 		break;
 
 	case MICS6814_SENSOR_NH3:
-		*port1 = MICS6814_NH3_CTRL_1_PORT;
-		*pin1 = MICS6814_NH3_CTRL_1_PIN;
-		*port2 = MICS6814_NH3_CTRL_2_PORT;
-		*pin2 = MICS6814_NH3_CTRL_2_PIN;
+		port1 = MICS6814_NH3_CTRL_1_PORT;
+		pin1 = MICS6814_NH3_CTRL_1_PIN;
+		port2 = MICS6814_NH3_CTRL_2_PORT;
+		pin2 = MICS6814_NH3_CTRL_2_PIN;
+		mode_var = &_nh3_mode;
 		break;
 
 	default:
@@ -295,28 +256,10 @@ static int _divider_ctrl_gpio_for_target(mics6814_sensor_t target,
 		break;
 	};
 
-	return error;
-}
-
-
-// Текущие режимы верхнего плеча делителя для сенсоров
-static mics6814_divider_upper_half_t _co2_mode;
-static mics6814_divider_upper_half_t _no2_mode;
-static mics6814_divider_upper_half_t _nh3_mode;
-
-
-// Устанавливаем верхнее плечо делителя для указанного сенсора
-int _divider_upper_half_set_mode(mics6814_sensor_t target, mics6814_divider_upper_half_t divider)
-{
-	int error;
-	GPIO_TypeDef * port1, * port2;
-	uint32_t pin1, pin2;
-
-	error = _divider_ctrl_gpio_for_target(target, &port1, &pin1, &port2, &pin2);
 	if (0 != error)
 		return error;
 
-	switch (divider)
+	switch (mode)
 	{
 	case MICS6814_DIVIER_UPPER_HALF_TRIPLE:
 		_pin_to_input_mode(port1, pin1);
@@ -337,40 +280,10 @@ int _divider_upper_half_set_mode(mics6814_sensor_t target, mics6814_divider_uppe
 		error = -EINVAL;
 	}
 
-	return error;
-}
-
-
-// Считаем величину верхнего плеча резисторного делителя для указанного сенсора
-static int _divider_upper_half_get_mode(mics6814_sensor_t target, mics6814_divider_upper_half_t * mode)
-{
-	GPIO_TypeDef * port1, * port2;
-	uint32_t pin1, pin2;
-
-	int error = _divider_ctrl_gpio_for_target(target, &port1, &pin1, &port2, &pin2);
 	if (0 != error)
 		return error;
 
-
-	if (_pin_is_input(port1, pin1))
-	{
-		if (_pin_is_input(port2, pin2))
-		{
-			// Оба управляющих пина отключены
-			*mode = MICS6814_DIVIER_UPPER_HALF_TRIPLE;
-		}
-		else
-		{
-			// Первый пин отключен, второй пин в питании. Работают два резистора
-			*mode = MICS6814_DIVIER_UPPER_HALF_DOUBLE;
-		}
-	}
-	else
-	{
-		// Первый пин в питании. Полюбому работает один резистор
-		*mode = MICS6814_DIVIER_UPPER_HALF_SINGLE;
-	}
-
+	*mode_var = mode;
 	return 0;
 }
 
@@ -389,16 +302,157 @@ int mics6814_init(void)
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 
-	// Все резисторы сверху
-	_co2_mode = MICS6814_DIVIER_UPPER_HALF_TRIPLE;
-	_no2_mode = MICS6814_DIVIER_UPPER_HALF_TRIPLE;
-	_nh3_mode = MICS6814_DIVIER_UPPER_HALF_TRIPLE;
+	// Настриваем все резисторы
+	_divider_upper_half_set_mode(MICS6814_SENSOR_CO, MICS6814_DIVIER_UPPER_HALF_TRIPLE);
+	_divider_upper_half_set_mode(MICS6814_SENSOR_NO2, MICS6814_DIVIER_UPPER_HALF_TRIPLE);
+	_divider_upper_half_set_mode(MICS6814_SENSOR_NH3, MICS6814_DIVIER_UPPER_HALF_TRIPLE);
+
+	return 0;
+}
+
+
+// Делает замер для одного из сенсоров датчика
+/* \arg target задает нужный сенсор
+   \arg dr возвращает сырое отношение сопротивлений сенсора
+   \arg conc возвращает концентрацию __титульного__ газа сенсора */
+static int _read_one(mics6814_sensor_t target, float * dr, float * conc)
+{
+	int error = 0;
+
+	float r0;
+	float r1, r2, r3;
+	float a, b;
+	its_pld_analog_target_t analog_target;
+	mics6814_divider_upper_half_mode_t mode;
+
+	// Определяемся с параметрами сенсора
+	// FIXME: Мне кажется будет лучше оформить все эти параметры в виде структуры
+	// а структуру сделать дескриптором.
+	// Но так как у нас код и так очень ситуативный (под три резистора в верхнем плече делителя)...
+	// Переделывать вижу мало смысла
+	switch (target)
+	{
+	case MICS6814_SENSOR_CO:
+		r0 = MICS6814_CO_R0;
+		r1 = MICS6814_CO_R1_VALUE;
+		r2 = MICS6814_CO_R2_VALUE;
+		r3 = MICS6814_CO_R3_VALUE;
+		a  = MICS6814_CO_COEFFS_A;
+		b  = MICS6814_CO_COEFFS_B;
+		analog_target = ITS_PLD_ANALOG_TARGET_MICS6814_CO;
+		mode = _co_mode;
+		break;
+
+	case MICS6814_SENSOR_NO2:
+		r0 = MICS6814_CO_R0;
+		r1 = MICS6814_CO_R1_VALUE;
+		r2 = MICS6814_CO_R2_VALUE;
+		r3 = MICS6814_CO_R3_VALUE;
+		a  = MICS6814_CO_COEFFS_A;
+		b  = MICS6814_CO_COEFFS_B;
+		analog_target = ITS_PLD_ANALOG_TARGET_MICS6814_NO2;
+		mode = _no2_mode;
+		break;
+
+	case MICS6814_SENSOR_NH3:
+		r0 = MICS6814_CO_R0;
+		r1 = MICS6814_CO_R1_VALUE;
+		r2 = MICS6814_CO_R2_VALUE;
+		r3 = MICS6814_CO_R3_VALUE;
+		a  = MICS6814_CO_COEFFS_A;
+		b  = MICS6814_CO_COEFFS_B;
+		analog_target = ITS_PLD_ANALOG_TARGET_MICS6814_NH3;
+		mode = _nh3_mode;
+		break;
+
+	default:
+		error = -EINVAL;
+		break;
+	}
+
+	if (0 != error)
+		return error;
+
+
+	// FIXME: Так то тут нужно написать некоторый итерационный алгорим
+	// который будет пробовать разные значения в верхнем плече делителя
+	// и выбирать наиболее оптимальный
+	// но мы будем оптимистами и решим, что нам хватит фиксированного режима
+	// и будем считать все только в текущем режиме
+
+	// Считаем сопротивление плеча для этого режима
+	float rb;
+	switch (mode)
+	{
+	case MICS6814_DIVIER_UPPER_HALF_TRIPLE:
+		rb = r1 + r2 + r3;
+		break;
+
+	case MICS6814_DIVIER_UPPER_HALF_DOUBLE:
+		rb = r2 + r3;
+		break;
+
+	case MICS6814_DIVIER_UPPER_HALF_SINGLE:
+		rb = r3;
+		break;
+
+	default:
+		error = -EINVAL;
+		break;
+	}
+
+	if (0 != error)
+		return error;
+
+
+	// делаем замер через АЦП
+	// Несколько замеров, чтобы фильтрануть шум
+	uint16_t raw;
+	uint32_t raw_sum = 0;
+	const int oversampling = 10;
+	for (int i = 0; i < oversampling; i++)
+	{
+		error = its_pld_analog_get_raw(analog_target, &raw);
+		if (0 != error)
+			return error;
+
+		raw_sum += raw;
+	}
+
+	raw = raw_sum / oversampling;
+	// Считаем сопротивление сенсора
+	float rx = rb * (float)raw/(0x0FFF - raw); // 0x0FFF - потолок нашего АЦП
+
+	// Пересчитываем в концентрацию
+	*conc = _rescale(rx, r0, a, b);
+	*dr = rx/r0;
+	return 0;
 }
 
 
 
 int mics6814_read(mavlink_pld_mics_6814_data_t * msg)
 {
-	// Читаем значения АЦП
-	float raw_co = its_pld_analog_get_mv(target, value);
+	// Берем время
+	its_time_t time;
+	its_gettimeofday(&time);
+
+	msg->time_s = time.sec;
+	msg->time_us = time.usec;
+
+	// Теперь опрашиваем все сенсоры
+	int error;
+	error = _read_one(MICS6814_SENSOR_CO, &msg->red_sensor_raw, &msg->co_conc);
+	if (0 != error)
+		return error;
+
+	error = _read_one(MICS6814_SENSOR_CO, &msg->ox_sensor_raw, &msg->no2_conc);
+	if (0 != error)
+		return error;
+
+	error = _read_one(MICS6814_SENSOR_CO, &msg->nh3_sensor_raw, &msg->nh3_conc);
+	if (0 != error)
+		return error;
+
+	return 0;
 }
