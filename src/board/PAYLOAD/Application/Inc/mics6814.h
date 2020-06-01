@@ -4,18 +4,13 @@
 #include <mavlink/its/mavlink.h>
 
 
-//! Концентрация NH3 из сопротивления NH3 сенсора MICS-6814
-float mics6814_rescale_nh3(float nh3_r);
-
-//! Концентрация NO2 из сопротивления OX сенсора MICS-6814
-float mics6814_rescale_no2(float ox_r);
-
-//! Конценрация CO из сопротивления RED сенсора MICS-6814
-float mics6814_rescale_co(float red_r);
+//! Настройка балансирующих резисторов в основном
+/*! АЦП должно быть уже включено */
+int mics6814_init(void);
 
 
 //! Собираем все данные с mics6814
-int mics6814_read(mavlink_pld_mics_6814_data_t * data);
+int mics6814_read(mavlink_pld_mics_6814_data_t * msg);
 
 
 #endif /* INC_MICS6814_H_ */
