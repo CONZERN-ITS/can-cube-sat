@@ -22,6 +22,7 @@
 #include "analog.h"
 #include "bme.h"
 #include "me2o2.h"
+#include "integrated_temperature.h"
 
 
 its_pld_status_t pld_g_status = {0};
@@ -45,6 +46,9 @@ int app_main()
 	rc = me2o2_init();
 	pld_g_status.me2o2_init_error = rc;
 
+	rc = its_pld_inttemp_init();
+	pld_g_status.inttemp_init_error = rc;
+
 	while(1)
 	{
 		/*
@@ -56,9 +60,15 @@ int app_main()
 		printf("%f, %f, %f, %f\n", msg.temperature, msg.pressure, msg.humidity, msg.altitude);
 		*/
 
+		/*
 		mavlink_pld_me2o2_data_t me2o2_msg = {0};
 		rc = me2o2_read(&me2o2_msg);
 		printf("%f\n", me2o2_msg.o2_conc);
+		*/
+
+		mavlink_own_temp_t own_temp_msg;
+		its_pld_inttemp_read(&own_temp_msg);
+		printf("%f\n", own_temp_msg.deg);
 	}
 
 	return 0;

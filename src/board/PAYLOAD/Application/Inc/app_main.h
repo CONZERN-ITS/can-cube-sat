@@ -24,6 +24,10 @@ typedef struct its_pld_status_t
 	int32_t me2o2_init_error;
 	int32_t me2o2_last_error;
 	uint16_t me2o2_errors_counter;
+
+	int32_t inttemp_init_error;
+	int32_t inttemp_last_error;
+	uint16_t inttemp_error_counter;
 } its_pld_status_t;
 
 

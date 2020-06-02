@@ -60,6 +60,7 @@ static int _channgel_config_for_target(its_pld_analog_target_t target, ADC_Chann
 		config->Channel = ADC_CHANNEL_TEMPSENSOR;
 		config->Rank = ADC_REGULAR_RANK_1;
 		config->SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
+		break;
 
 	default:
 		error = -ENOSYS;
