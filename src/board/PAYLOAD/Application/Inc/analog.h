@@ -34,9 +34,5 @@ int its_pld_analog_init(void);
 //! Чтение сырого значения АЦП для указанного датчика
 int its_pld_analog_get_raw(its_pld_analog_target_t target, uint16_t * value);
 
-//! Чтение напряжение с АЦП в милливольтах
-/*! Довольно тупая функция, предполагающая что мы питаемся ровно от 3.3 вольта */
-int its_pld_analog_get_mv(its_pld_analog_target_t target, float * value);
-
 
 #endif /* INC_ADC_H_ */

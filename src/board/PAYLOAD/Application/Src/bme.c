@@ -37,7 +37,7 @@ static int8_t _i2c_read(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t le
 {
 	HAL_StatusTypeDef hrc = HAL_I2C_Mem_Read(
 			&ITS_PLD_BME280_BUS_HANDLE,
-			ITS_PLD_BME280_I2C_ADDR,
+			ITS_PLD_BME280_I2C_ADDR << 1,
 			reg_addr,
 			1,
 			data,
@@ -54,7 +54,7 @@ static int8_t _i2c_write(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t l
 {
 	HAL_StatusTypeDef hrc = HAL_I2C_Mem_Write(
 			&ITS_PLD_BME280_BUS_HANDLE,
-			ITS_PLD_BME280_I2C_ADDR,
+			ITS_PLD_BME280_I2C_ADDR << 1,
 			reg_addr,
 			1,
 			data,
@@ -75,6 +75,19 @@ int its_pld_bme280_init()
 	_device.delay_ms = _delay_ms;
 
 	int rc = bme280_init(&_device);
+	if (0 != rc)
+		return rc;
+
+	_device.settings.filter = BME280_FILTER_COEFF_OFF;
+	_device.settings.osr_h = BME280_OVERSAMPLING_16X;
+	_device.settings.osr_p = BME280_OVERSAMPLING_16X;
+	_device.settings.osr_t = BME280_OVERSAMPLING_16X;
+	_device.settings.standby_time = BME280_STANDBY_TIME_500_MS;
+	rc = bme280_set_sensor_settings(BME280_ALL_SETTINGS_SEL, &_device);
+	if (0 != rc)
+		return rc;
+
+	rc = bme280_set_sensor_mode(BME280_NORMAL_MODE, &_device);
 	if (0 != rc)
 		return rc;
 

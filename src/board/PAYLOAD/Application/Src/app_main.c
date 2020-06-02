@@ -11,11 +11,19 @@
 #include <stdio.h>
 
 #include <stm32f1xx_hal.h>
+
+#include <mavlink/its/mavlink.h>
+
 #include "main.h"
 
-#include "util.h"
+#include <its-time.h>
 
-its_pld_status_t its_pld_status = {0};
+#include "util.h"
+#include "analog.h"
+#include "bme.h"
+
+
+its_pld_status_t pld_g_status = {0};
 
 
 extern ADC_HandleTypeDef hadc1;
@@ -23,20 +31,24 @@ extern ADC_HandleTypeDef hadc1;
 
 int app_main()
 {
-	// Калибруем ацп
-	int error = its_pld_hal_status_to_errno(HAL_ADCEx_Calibration_Start(&hadc1));
-	if (0 != error)
-	{
-		its_pld_status.adc_errors_counter++;
-		its_pld_status.adc_last_error = error;
+	int rc;
 
-		// Однако. даже если что-то пошло не так - продолжаем работать
-	}
-	__HAL_ADC_ENABLE(&hadc1);
+	its_time_init();
+
+	rc = its_pld_analog_init();
+	pld_g_status.adc_init_error = rc;
+
+	rc = its_pld_bme280_init();
+	pld_g_status.bme_init_error = rc;
 
 	while(1)
 	{
+		mavlink_pld_bme280_data_t msg = {0};
+		rc = its_pld_bme280_read(&msg);
+		pld_g_status.bme_last_error = rc;
+		pld_g_status.bme_error_counter += (0 == rc) ? 1 : 0;
 
+		printf("%f, %f, %f, %f\n", msg.temperature, msg.pressure, msg.humidity, msg.altitude);
 	}
 
 	return 0;

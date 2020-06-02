@@ -70,8 +70,6 @@ static int _channgel_config_for_target(its_pld_analog_target_t target, ADC_Chann
 }
 
 
-
-
 int its_pld_analog_init()
 {
 	// Предположим, что куб все правильно настроил
@@ -89,7 +87,14 @@ int its_pld_analog_init()
 	//	Error_Handler();
 	//	}
 
-	return 0;
+	// Калибруем ацп
+	int error = its_pld_hal_status_to_errno(HAL_ADCEx_Calibration_Start(&hadc1));
+	// Ошибку тут проигнорируем. Вдруг как-то да заработает дальше
+
+	// Включаем АЦП
+	__HAL_ADC_ENABLE(&hadc1);
+
+	return error;
 }
 
 
@@ -120,43 +125,3 @@ int its_pld_analog_get_raw(its_pld_analog_target_t target, uint16_t * value)
 	*value = (uint16_t)HAL_ADC_GetValue(_ITS_PLD_ADC_HANDLE);
 	return 0;
 }
-
-
-int its_pld_analog_get_mv(its_pld_analog_target_t target, float * value)
-{
-	int error;
-	uint16_t raw;
-	error = its_pld_analog_get_raw(target, &raw);
-	if (0 != error)
-		return error;
-
-	*value = raw * 3.3f/0xFFF;
-	return 0;
-}
-
-
-//
-//
-//int its_pld_analog_get_res(its_pld_analog_target_t target, float * value)
-//{
-//	int error;
-//
-//	// Добываем сырое значение с ацп
-//	uint16_t raw;
-//	error = its_pld_analog_get_raw(target, &raw);
-//	if (0 != error)
-//		return error;// 0x0FFF - максимальное значение ацп == напряжение питания делителя
-//
-//	// Находим текущее сопротивление плеча для этого таргета
-//	float arm_value;
-//	error = _(target, divider)(target, &arm_value);
-//	if (0 != error)
-//		return error;
-//
-//	// Ну и теперь зная сопротивление плеча пересчитываем rx
-//	float rx = arm_value * (float)raw/(0x0FFF - raw);
-//	// выше 0x0FFF - максимальное значение ацп == напряжение питания делителя
-//
-//	return rx;
-//}
-

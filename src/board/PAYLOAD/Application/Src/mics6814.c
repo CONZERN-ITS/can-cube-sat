@@ -132,20 +132,6 @@
 #define MICS6814_NH3_CTRL_1_PIN		GPIO_PIN_7
 
 
-// Общая функция пересчета значений
-/*
- * r - текущее сопротивление сенсора
- * r0 - сопротивление сенсора в калибровочной атмосфере
- * a, b - коэффициенты пересчёта
- *
- * returns - значение ppm концентрации */
-static float _rescale(float r, float r0, float a, float exp_b)
-{
-	const float dr = r / r0;
-	return pow(dr, a) * exp_b;
-}
-
-
 //! С каким именно сенсором мы работаем
 typedef enum mics6814_sensor_t {
 	MICS6814_SENSOR_CO,
@@ -353,8 +339,9 @@ static int _read_one(mics6814_sensor_t target, float * dr, float * conc)
 	float rx = rb * (float)raw/(0x0FFF - raw); // 0x0FFF - потолок нашего АЦП
 
 	// Пересчитываем в концентрацию
-	*conc = _rescale(rx, r0, a, exp_b);
 	*dr = rx/r0;
+	*conc = pow(*dr, a) * exp_b;
+
 	return 0;
 }
 
@@ -375,11 +362,11 @@ int mics6814_read(mavlink_pld_mics_6814_data_t * msg)
 	if (0 != error)
 		return error;
 
-	error = _read_one(MICS6814_SENSOR_CO, &msg->ox_sensor_raw, &msg->no2_conc);
+	error = _read_one(MICS6814_SENSOR_NO2, &msg->ox_sensor_raw, &msg->no2_conc);
 	if (0 != error)
 		return error;
 
-	error = _read_one(MICS6814_SENSOR_CO, &msg->nh3_sensor_raw, &msg->nh3_conc);
+	error = _read_one(MICS6814_SENSOR_NH3, &msg->nh3_sensor_raw, &msg->nh3_conc);
 	if (0 != error)
 		return error;
 
