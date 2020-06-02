@@ -21,6 +21,7 @@
 #include "util.h"
 #include "analog.h"
 #include "bme.h"
+#include "me2o2.h"
 
 
 its_pld_status_t pld_g_status = {0};
@@ -35,20 +36,29 @@ int app_main()
 
 	its_time_init();
 
-	rc = its_pld_analog_init();
-	pld_g_status.adc_init_error = rc;
-
 	rc = its_pld_bme280_init();
 	pld_g_status.bme_init_error = rc;
 
+	rc = its_pld_analog_init();
+	pld_g_status.adc_init_error = rc;
+
+	rc = me2o2_init();
+	pld_g_status.me2o2_init_error = rc;
+
 	while(1)
 	{
+		/*
 		mavlink_pld_bme280_data_t msg = {0};
 		rc = its_pld_bme280_read(&msg);
 		pld_g_status.bme_last_error = rc;
 		pld_g_status.bme_error_counter += (0 == rc) ? 1 : 0;
 
 		printf("%f, %f, %f, %f\n", msg.temperature, msg.pressure, msg.humidity, msg.altitude);
+		*/
+
+		mavlink_pld_me2o2_data_t me2o2_msg = {0};
+		rc = me2o2_read(&me2o2_msg);
+		printf("%f\n", me2o2_msg.o2_conc);
 	}
 
 	return 0;
