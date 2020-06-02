@@ -14,10 +14,10 @@
 #include <stm32f4xx.h>
 //#include <diag/Trace.h>
 
-//#include "sins_config.h"
-//#include "../common.h"
-//#include "../time_svc/time_util.h"
-//#include "../time_svc/time_svc.h"
+#include "config.h"
+#include "common.h"
+#include "time_util.h"
+//#include "time_svc.h"
 
 // ==========================================
 // Это для фонового приёма пакетиков
@@ -160,7 +160,7 @@ static int _init_uart()
 }
 
 
-void NONHAL_PPS_MspInit(void);
+//void NONHAL_PPS_MspInit(void);
 
 
 //! настройка перфирии для PPS сигнала
@@ -176,7 +176,7 @@ static void _init_pps()
 	HAL_GPIO_Init(GPIOA, &gpioa);
 
 	// nvic в hal_msp
-	NONHAL_PPS_MspInit();
+//	NONHAL_PPS_MspInit();
 }
 
 
@@ -202,7 +202,7 @@ void USART2_IRQHandler(void)
 	}
 }
 
-
+/*
 void EXTI0_IRQHandler()
 {
 	// Правим службу времени
@@ -218,7 +218,7 @@ void EXTI0_IRQHandler()
 
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
-
+*/
 
 int gps_init(
 		gps_packet_callback_t packet_callback, void * packet_callback_arg
@@ -283,7 +283,7 @@ int gps_poll(void)
 
 
 // Конфигурация приёмника
-extern const uint8_t * gps_ubx_neo7_cfg_msgs[];
+extern const uint8_t * ublox_cfg_msgs[];
 
 
 //! Отправка одного конфигурационного пакета
@@ -329,7 +329,7 @@ static int _send_conf_packet(const uint8_t * packet)
 int gps_configure()
 {
 	// Перебираем все сообщения по одному
-	const uint8_t ** packet_ptr = gps_ubx_neo7_cfg_msgs;
+	const uint8_t ** packet_ptr = ublox_cfg_msgs;
 	for ( ; *packet_ptr != 0; packet_ptr++)
 	{
 		const uint8_t * packet = *packet_ptr;
