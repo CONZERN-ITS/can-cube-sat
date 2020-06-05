@@ -20,7 +20,7 @@
 #define ME202_OA_AMP (121) // Через делитель в обратной связи в 12 кОм и 100 Ом
 
 // Коэффициент a при формуле пересчета тока из попугаев в проценты концентрации ax + b
-#define ME2O2_COEFF_A (0.16666666666666666)
+#define ME2O2_COEFF_A (0.21091302582667465)
 
 // Коэффициент b при формуле пересчета тока из попугаев в проценты концентрации ax + b
 #define ME2O2_COEFF_B (0.0)
@@ -61,7 +61,7 @@ static int _read(float * value)
 	float res_mv = amp_mv / ME202_OA_AMP;
 
 	// Теперь по закону Ома считаем ток, который идет через нагрузочный резистор
-	float sensor_ma = res_mv / ME2O2_R_LOAD;
+	float sensor_ma = res_mv / ME2O2_R_LOAD ;
 
 	*value =  ME2O2_COEFF_A * (sensor_ma * 1000) + ME2O2_COEFF_B; // * 1000 потому что мА в мкА
 	return 0;
