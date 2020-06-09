@@ -62,7 +62,8 @@ int app_main()
 		rc = its_pld_bme280_read(&msg);
 		pld_g_status.bme_last_error = rc;
 		pld_g_status.bme_error_counter += (0 == rc) ? 1 : 0;
-		printf("bme: t=%fC, p=%fpa, hum=%f%%, alt=%fm\n", msg.temperature, msg.pressure, msg.humidity, msg.altitude);
+		printf("bme: e=%ld, t=%fC, p=%fpa, hum=%f%%, alt=%fm\n",
+				pld_g_status.bme_last_error, msg.temperature, msg.pressure, msg.humidity, msg.altitude);
 		printf("time = %"PRIu64", %"PRIu32"\n", msg.time_s, msg.time_us);
 
 		mavlink_pld_me2o2_data_t me2o2_msg = {0};

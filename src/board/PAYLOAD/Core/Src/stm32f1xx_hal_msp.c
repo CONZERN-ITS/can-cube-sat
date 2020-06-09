@@ -162,7 +162,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
   if(hi2c->Instance==I2C1)
   {
   /* USER CODE BEGIN I2C1_MspInit 0 */
-
+  __HAL_RCC_I2C1_CLK_ENABLE();
+  // Это нужно сделать тут, иначе попадаем в проблему вечнего busy
+  // https://electronics.stackexchange.com/questions/272427/stm32-busy-flag-is-set-after-i2c-initialization
   /* USER CODE END I2C1_MspInit 0 */
   
     __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -220,7 +222,8 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
   else if(hi2c->Instance==I2C2)
   {
   /* USER CODE BEGIN I2C2_MspInit 0 */
-
+  __HAL_RCC_I2C2_CLK_ENABLE();
+  // Иначе попадаем в проблему вечного busy
   /* USER CODE END I2C2_MspInit 0 */
   
     __HAL_RCC_GPIOB_CLK_ENABLE();
