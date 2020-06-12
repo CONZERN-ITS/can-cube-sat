@@ -74,13 +74,13 @@ int time_svc_steady_timers_start()
 uint64_t time_svc_steady_timers_get_time()
 {
 	uint32_t ovf, ovf2;
-	uint32_t mcs;
+	uint16_t mcs;
 
 	ovf = _ovf_counter;
 	mcs = __HAL_TIM_GET_COUNTER(&htim6);
 	ovf2 = _ovf_counter;
 
-	if (ovf != ovf2 && (mcs & 0xFFFF0000) == 0)
+	if (ovf != ovf2 && (mcs & 0xFF00) == 0)
 	{
 		// Это значит что после того как мы прочитали переполнения
 		// таймер переполнился и мы взяли значение счетчика для следующей итерации таймера
