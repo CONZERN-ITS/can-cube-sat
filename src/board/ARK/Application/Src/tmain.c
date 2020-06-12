@@ -89,6 +89,6 @@ void time_recv_callback(const mavlink_message_t *msg) {
 
     its_time_t t;
     t.sec = mts.time_s;
-    t.usec = mts.time_s / 1000;
+    t.usec = mts.time_us / 1000;
     its_sync_time(&t);
 }
