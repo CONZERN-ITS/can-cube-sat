@@ -1,7 +1,9 @@
 #ifndef SRC_INTEGERATED_TEMPERATURE_H_
 #define SRC_INTEGERATED_TEMPERATURE_H_
 
-#include <mavlink/its/mavlink.h>
+
+#include <mavlink_main.h>
+
 
 int its_pld_inttemp_init(void);
 

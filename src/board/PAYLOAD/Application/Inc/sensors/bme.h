@@ -8,9 +8,7 @@
 #ifndef INC_BME280_H_
 #define INC_BME280_H_
 
-
-#include <mavlink/its/mavlink.h>
-
+#include <mavlink_main.h>
 
 int its_pld_bme280_init(void);
 

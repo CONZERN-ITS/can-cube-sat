@@ -1,13 +1,12 @@
-#include "mics6814.h"
+#include "sensors/mics6814.h"
 
 #include <math.h>
 #include <errno.h>
 
 #include <stm32f1xx_hal.h>
 
-#include <its-time.h>
-
-#include "analog.h"
+#include "time_svc.h"
+#include "sensors/analog.h"
 
 /*
 	Будем делать вот как. В даташите есть красивые графики,
@@ -347,11 +346,11 @@ static int _read_one(mics6814_sensor_t target, float * dr, float * conc)
 int mics6814_read(mavlink_pld_mics_6814_data_t * msg)
 {
 	// Берем время
-	its_time_t time;
-	its_gettimeofday(&time);
+	struct timeval tv;
+	time_svc_gettimeofday(&tv);
 
-	msg->time_s = time.sec;
-	msg->time_us = time.usec;
+	msg->time_s = tv.tv_sec;
+	msg->time_us = tv.tv_usec;
 
 	// Теперь опрашиваем все сенсоры
 	int error;

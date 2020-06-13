@@ -3,8 +3,10 @@
 
 #include <stm32f1xx_hal.h>
 
+#include <mavlink_main.h>
+
 //! Размер пакета передаваемого/принимаемого за одну транзакцию
-#define I2C_LINK_PACKET_SIZE	(279)
+#define I2C_LINK_PACKET_SIZE	(MAVLINK_MAX_PACKET_LEN)
 
 //! Количество приёмных буферов (каждый по I2C_LINK_PACKET_SIZE байт)
 #define I2C_LINK_RXBUF_COUNT	(5)
@@ -14,7 +16,7 @@
 #define I2C_LINK_RX_DUMP_SIZE	(20)
 
 //! Количество отправных буферов (каждый по I2C_LINK_PACKET_SIZE байт)
-#define I2C_LINK_TXBUF_COUNT (5)
+#define I2C_LINK_TXBUF_COUNT (10)
 //! Размер пачки нулей для отправки вместо пакетов
 /*! Массив такого размера инициализируется нулями и циклически отправляется
 	в тех случаях, когда мастер чего-то просит, но отправлять нам нечего.

@@ -5,13 +5,12 @@
  *      Author: snork
  */
 
-#include "me2o2.h"
+#include "sensors/me2o2.h"
 
 #include <stm32f1xx_hal.h>
 
-#include <its-time.h>
-
-#include "analog.h"
+#include "time_svc.h"
+#include "sensors/analog.h"
 
 // Нагрузочный резистор сенсора (в Омах)
 #define ME2O2_R_LOAD (100)
@@ -72,11 +71,11 @@ int me2o2_read(mavlink_pld_me2o2_data_t * msg)
 {
 
 	// Берем время
-	its_time_t time;
-	its_gettimeofday(&time);
+	struct timeval tv;
+	time_svc_gettimeofday(&tv);
 
-	msg->time_s = time.sec;
-	msg->time_us = time.usec;
+	msg->time_s = tv.tv_sec;
+	msg->time_us = tv.tv_usec;
 
 	int error = 0;
 	error = _read(&msg->o2_conc);

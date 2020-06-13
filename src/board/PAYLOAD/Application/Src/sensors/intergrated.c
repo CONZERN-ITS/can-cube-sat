@@ -1,9 +1,8 @@
 
-#include "integrated_temperature.h"
+#include "sensors/integrated.h"
 
-#include <its-time.h>
-
-#include "analog.h"
+#include "time_svc.h"
+#include "sensors/analog.h"
 
 
 // Напряжение со встроенного термистра при 25 градусах (в милливольта)
@@ -24,8 +23,8 @@ int its_pld_inttemp_read(mavlink_own_temp_t * msg)
 {
 	int error = 0;
 
-	its_time_t time;
-	its_gettimeofday(&time);
+	struct timeval tv;
+	time_svc_gettimeofday(&tv);
 
 	const int oversampling = 10;
 	uint32_t raw_sum = 0;
@@ -44,8 +43,8 @@ int its_pld_inttemp_read(mavlink_own_temp_t * msg)
 	float mv = raw * 3300.0f / 0x0FFF;
 	float temp = (INTERNAL_TEMP_V25 - mv) / INTERNAL_TEMP_AVG_SLOPE + 25;
 
-	msg->time_s = time.sec;
-	msg->time_us = time.usec;
+	msg->time_s = tv.tv_sec;
+	msg->time_us = tv.tv_usec;
 	msg->deg = temp;
 
 	return 0;

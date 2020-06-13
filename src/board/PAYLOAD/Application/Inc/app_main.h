@@ -19,19 +19,19 @@ typedef struct its_pld_status_t
 
 	int32_t adc_init_error;
 	int32_t adc_last_error;
-	uint16_t adc_errors_counter;
+	uint16_t adc_error_counter;
 
 	int32_t me2o2_init_error;
 	int32_t me2o2_last_error;
-	uint16_t me2o2_errors_counter;
+	uint16_t me2o2_error_counter;
 
-	int32_t mics6814_init_error;
+	int32_t mics6815_init_error;
 	int32_t mics6814_last_error;
-	uint16_t mics6814_errors_counter;
+	uint16_t mics6814_error_counter;
 
-	int32_t inttemp_init_error;
-	int32_t inttemp_last_error;
-	uint16_t inttemp_error_counter;
+	int32_t integrated_init_error;
+	int32_t integrated_last_error;
+	uint16_t integrated_error_counter;
 } its_pld_status_t;
 
 

@@ -100,7 +100,7 @@ struct i2c_link_ctx_t
 
 //! Пока что мы поддерживаем ровно один i2c линк и поэтом его состояние
 //! в одной глобальной переменной
-volatile static i2c_link_ctx_t _ctx;
+static i2c_link_ctx_t _ctx;
 
 static uint8_t _rx_fallback[I2C_LINK_RX_DUMP_SIZE] = {0};
 static uint8_t _tx_fallback[I2C_LINK_TX_ZEROS_SIZE] = {0};

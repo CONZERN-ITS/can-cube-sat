@@ -1,8 +1,7 @@
 #ifndef INC_MICS6814_H_
 #define INC_MICS6814_H_
 
-#include <mavlink/its/mavlink.h>
-
+#include <mavlink_main.h>
 
 //! Настройка балансирующих резисторов в основном
 /*! АЦП должно быть уже включено */

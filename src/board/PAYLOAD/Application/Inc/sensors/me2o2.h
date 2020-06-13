@@ -8,8 +8,7 @@
 #ifndef INC_ME2O2_H_
 #define INC_ME2O2_H_
 
-#include <mavlink/its/mavlink.h>
-
+#include <mavlink_main.h>
 
 int me2o2_init(void);
 

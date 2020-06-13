@@ -5,7 +5,7 @@
  *      Author: snork
  */
 
-#include "analog.h"
+#include "sensors/analog.h"
 
 #include <assert.h>
 #include <errno.h>
