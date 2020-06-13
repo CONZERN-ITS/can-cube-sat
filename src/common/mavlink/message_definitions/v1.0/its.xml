@@ -129,7 +129,7 @@
     </message>
     
     <!-- Сообщения модуля полезной нагрузки -->
-    <message id="50017" name = "PLD_BME280_DATA">
+    <message id="50017" name="PLD_BME280_DATA">
       <description>Payload module message with bme280 related data</description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
@@ -140,7 +140,7 @@
       <field type="double" name="altitude" units="m">Cube altitude relative to cube power-on location</field>
     </message>
 
-    <message id="50018" name = "PLD_MICS_6814_DATA">
+    <message id="50018" name="PLD_MICS_6814_DATA">
       <description>Payload module message with MiCS-6814 gas sensors data</description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
@@ -153,12 +153,62 @@
       <field type="float" name="nh3_conc" units="ppm">NH3 concentration from MiCS-6814 NH3 sensor</field>
     </message>
 
-    <message id="50019" name = "PLD_ME2O2_DATA">
+    <message id="50019" name="PLD_ME2O2_DATA">
       <description>Payload module message with ME2-O2-F20 gas sensor data</description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
 
       <field type="float" name="o2_conc" units="percent">O2 concetration</field>
+    </message>
+
+
+    <message id="50020" name="I2C_LINK_STATS">
+      <description>
+        This message contains a statistics for its-i2c-link module which is present in BCU, ARK and PAYLOAD subsystems 
+      </description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="uint16_t" name="rx_done_cnt">received packets count</field>
+      <field type="uint16_t" name="rx_dropped_cnt">received and dropped packets count (no free buffers)</field>
+      <field type="uint16_t" name="rx_error_cnt">errors count on packet receival</field>
+      <field type="uint16_t" name="tx_done_cnt">sent packets count</field>
+      <field type="uint16_t" name="tx_zeroes_cnt">amount of situations where master requested data, but we had not any</field>
+      <field type="uint16_t" name="tx_error_cnt">errors count on packet transmission</field>
+      <field type="uint16_t" name="restarts_cnt">i2c peripheral restarts count</field>
+      <field type="uint16_t" name="listen_done_cnt">listen done HAL events count</field>
+      <field type="uint32_t" name="last_error">last error code</field>
+    </message>
+
+
+    <message id="50021" name="PLD_STATS">
+      <description>
+        This message contains internal statistics of PAYLOAD subsystem
+      </description>
+
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+
+      <field type="int32_t" name="bme_init_error">initialization error of bme280</field>
+      <field type="int32_t" name="bme_last_error">last error of bme280</field>
+      <field type="uint16_t" name="bme_error_counter">bme280 errors counter</field>
+
+      <field type="int32_t" name="adc_init_error">adc initialization error</field>
+      <field type="int32_t" name="adc_last_error">adc last error code</field>
+      <field type="uint16_t" name="adc_error_counter">adc errors counter</field>
+
+      <field type="int32_t" name="me2o2_init_error">me2o2 intialization error</field>
+      <field type="int32_t" name="me2o2_last_error">me2o2 last error code</field>
+      <field type="uint16_t" name="me2o2_error_counter">me2o2 errors counter</field>
+
+      <field type="int32_t" name="mics6814_init_error">mics6815 initialization errors</field>
+      <field type="int32_t" name="mics6814_last_error">mics6815 last error code</field>
+      <field type="uint16_t" name="mics6814_error_counter">mics6815 errors counter</field>
+
+      <field type="int32_t" name="integrated_init_error">integrated (temperature) sensors initialization error</field>
+      <field type="int32_t" name="integrated_last_error">code of last error of integrated sensors</field>
+      <field type="uint16_t" name="integrated_error_counter">integrated sensors errors counter</field>
     </message>
 
   </messages>
