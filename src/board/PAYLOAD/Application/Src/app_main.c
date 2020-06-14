@@ -32,6 +32,7 @@
 its_pld_status_t pld_g_status = {0};
 
 extern I2C_HandleTypeDef hi2c1;
+extern IWDG_HandleTypeDef hiwdg;
 
 // Скидывать сообщения в текстовом виде в консольку для отладки
 #define PROCESS_TO_PRINTF
@@ -55,13 +56,14 @@ static void _process_i2c_link_stats(mavlink_i2c_link_stats_t * msg);
 
 // TODO:
 /* tx_overrun в i2c-link-stats
-   watchdog
    i2c reset и полная реинициализация по ошибке bme280
+   ассерты и ErrorHandler-ы хала адекватно работают
    калибрануть все и вся
    убедиться в том, что счетчики в мавлинк пакетах работают правильно
    не отправлять пакеты при ошибках
    вставить ассерты в error-handler-ы
    настроить частоты пакетов
+
  */
 
 int app_main()
@@ -75,6 +77,9 @@ int app_main()
 
 	while(1)
 	{
+		// Сбрасываем вотчдог
+		HAL_IWDG_Refresh(&hiwdg);
+
 		uint32_t teak_start = HAL_GetTick();
 		// Повторная попытка на инициализацию сенсоров, которые еще не
 		_init_sensors(false);
