@@ -17,6 +17,7 @@
 #include <its-i2c-link.h>
 
 #include "main.h"
+#include "led.h"
 
 #include "mavlink_main.h"
 #include "util.h"
@@ -35,7 +36,7 @@ extern I2C_HandleTypeDef hi2c1;
 extern IWDG_HandleTypeDef hiwdg;
 
 // Скидывать сообщения в текстовом виде в консольку для отладки
-#define PROCESS_TO_PRINTF
+//#define PROCESS_TO_PRINTF
 // Скидывать сообщения в its_link
 #define PROCESS_TO_ITSLINK
 
@@ -69,18 +70,45 @@ static void _process_i2c_link_stats(mavlink_i2c_link_stats_t * msg);
 int app_main()
 {
 	int rc;
-	int64_t teak = 0;
+	int64_t tock = 0;
+
+	led_init();
 
 	time_svc_init();
+
 	its_i2c_link_start(&hi2c1);
+
 	_init_sensors(true);
+
+	// После перезагрузки будем аж пол секунды светить лампочкой
+	uint32_t tick_begin = HAL_GetTick();
+	uint32_t tick_led_unlock = tick_begin + 1000;
+	led_set(true);
 
 	while(1)
 	{
 		// Сбрасываем вотчдог
 		HAL_IWDG_Refresh(&hiwdg);
 
-		uint32_t teak_start = HAL_GetTick();
+		// Запоминаем когда этот такт начался
+		uint32_t tock_start_tick = HAL_GetTick();
+		// Планируем начало следующего
+		uint32_t next_tock_start_tick = tock_start_tick + 200;
+
+		// В начале такта включаем диод (если после загрузки прошло нужное время)
+		// И запоминаем не раньше какого времени нужно выключить светодиод
+		uint32_t led_off_tick;
+		if (HAL_GetTick() >= tick_led_unlock)
+		{
+			led_set(true);
+			led_off_tick = tock_start_tick + 10;
+		}
+		else
+		{
+			// Если еще не пора - то и выключать не будем диод в конце такта
+			led_off_tick = tick_led_unlock;
+		}
+
 		// Повторная попытка на инициализацию сенсоров, которые еще не
 		_init_sensors(false);
 
@@ -93,7 +121,7 @@ int app_main()
 			time_svc_on_mav_message(&input_msg);
 		}
 
-		if (0 == teak % 10)
+		if (0 == tock % 10)
 		{
 			mavlink_pld_bme280_data_t bme_msg = {0};
 			rc = its_pld_bme280_read(&bme_msg);
@@ -102,7 +130,7 @@ int app_main()
 			_process_bme_message(&bme_msg);
 		}
 
-		if (0 == teak % 10)
+		if (0 == tock % 10)
 		{
 			mavlink_pld_me2o2_data_t me2o2_msg = {0};
 			rc = me2o2_read(&me2o2_msg);
@@ -111,7 +139,7 @@ int app_main()
 			_process_me2o2_message(&me2o2_msg);
 		}
 
-		if (0 == teak % 10)
+		if (0 == tock % 10)
 		{
 			mavlink_pld_mics_6814_data_t mics_msg = {0};
 			rc = mics6814_read(&mics_msg);
@@ -120,7 +148,7 @@ int app_main()
 			_process_mics_message(&mics_msg);
 		}
 
-		if (0 == teak % 10)
+		if (0 == tock % 10)
 		{
 			mavlink_own_temp_t own_temp_msg;
 			rc = its_pld_inttemp_read(&own_temp_msg);
@@ -129,14 +157,14 @@ int app_main()
 			_process_owntemp_message(&own_temp_msg);
 		}
 
-		if (0 == teak % 20)
+		if (0 == tock % 20)
 		{
 			mavlink_pld_stats_t pld_stats_msg;
 			_collect_own_stats(&pld_stats_msg);
 			_process_own_stats(&pld_stats_msg);
 		}
 
-		if (0 == teak % 30)
+		if (0 == tock % 30)
 		{
 			mavlink_i2c_link_stats_t i2c_stats_msg;
 			_collect_i2c_link_stats(&i2c_stats_msg);
@@ -144,13 +172,20 @@ int app_main()
 		}
 
 		// Ждем начала следующего такта
-		uint32_t next_teak_start = teak_start + 100;
-		while (HAL_GetTick() < next_teak_start)
-		{
-			volatile int x = 0;
-			(void)x;
-		}
-		teak++;
+		uint32_t now;
+		bool led_done  = false;
+		do {
+			now = HAL_GetTick();
+			// Выключаем диод если пора
+			if (!led_done && now >= led_off_tick)
+			{
+				led_set(false);
+				led_done  = true;
+			}
+
+		} while(now < next_tock_start_tick);
+		// К следующему такту
+		tock++;
 	}
 
 	return 0;
