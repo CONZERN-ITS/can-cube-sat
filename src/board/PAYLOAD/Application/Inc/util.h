@@ -10,7 +10,7 @@
 
 #include <stm32f1xx_hal.h>
 
-int its_pld_hal_status_to_errno(HAL_StatusTypeDef status);
+int hal_status_to_errno(HAL_StatusTypeDef status);
 
 
 #endif /* INC_UTIL_H_ */

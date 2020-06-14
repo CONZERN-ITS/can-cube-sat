@@ -10,9 +10,16 @@
 
 #include <mavlink_main.h>
 
-int its_pld_bme280_init(void);
 
-int its_pld_bme280_read(mavlink_pld_bme280_data_t * data);
+//! Инициализация сенсора
+int bme_init(void);
+
+//! Реинициализация сенсора.
+//! Сброс всего до чего можно дотянуться и повторная попытка инициализации
+int bme_restart(void);
+
+//! Получение mavlink пакета с данными BME
+int bme_read(mavlink_pld_bme280_data_t * data);
 
 
 #endif /* INC_BME280_H_ */

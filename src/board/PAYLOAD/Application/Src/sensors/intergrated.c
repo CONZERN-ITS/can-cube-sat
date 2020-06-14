@@ -11,15 +11,7 @@
 #define INTERNAL_TEMP_AVG_SLOPE (4.3f)
 
 
-
-int its_pld_inttemp_init(void)
-{
-
-	return 0;
-}
-
-
-int its_pld_inttemp_read(mavlink_own_temp_t * msg)
+int integrated_read(mavlink_own_temp_t * msg)
 {
 	int error = 0;
 
@@ -31,7 +23,7 @@ int its_pld_inttemp_read(mavlink_own_temp_t * msg)
 	uint16_t raw;
 	for (int i = 0; i < oversampling; i++)
 	{
-		error = its_pld_analog_get_raw(ITS_PLD_ANALOG_TARGET_INTEGRATED_TEMP, &raw);
+		error = analog_get_raw(ANALOG_TARGET_INTEGRATED_TEMP, &raw);
 		if (0 != error)
 			return error;
 

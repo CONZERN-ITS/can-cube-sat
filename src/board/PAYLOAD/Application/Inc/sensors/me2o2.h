@@ -10,8 +10,8 @@
 
 #include <mavlink_main.h>
 
-int me2o2_init(void);
-
+//! Получение пакета данных от me2o2
+/*! АЦП должно быть уже включено */
 int me2o2_read(mavlink_pld_me2o2_data_t * msg);
 
 

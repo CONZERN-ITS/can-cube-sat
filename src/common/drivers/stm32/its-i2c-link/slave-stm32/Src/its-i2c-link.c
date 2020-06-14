@@ -460,19 +460,19 @@ static int _link_rx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
 void _antihang(i2c_link_ctx_t * ctx)
 {
     HAL_StatusTypeDef hal_rc;
-    I2C_HandleTypeDef * h2ic = I2C_LINK_BUS_HANDLE;
+    I2C_HandleTypeDef * hi2c = I2C_LINK_BUS_HANDLE;
 
-    if (READ_BIT(h2ic->Instance->CR1, I2C_CR1_SWRST))
+    if (READ_BIT(hi2c->Instance->CR1, I2C_CR1_SWRST))
     {
         ctx->stats.restarts_cnt++;
 
-        CLEAR_BIT(I2C_LINK_BUS_HANDLE->Instance->CR1, I2C_CR1_SWRST);
-        __HAL_I2C_RESET_HANDLE_STATE(h2ic);
+        CLEAR_BIT(hi2c->Instance->CR1, I2C_CR1_SWRST);
+        __HAL_I2C_RESET_HANDLE_STATE(hi2c);
 
-        hal_rc = HAL_I2C_Init(h2ic);
+        hal_rc = HAL_I2C_Init(hi2c);
         assert(HAL_OK == hal_rc);
 
-        hal_rc = HAL_I2C_EnableListen_IT(I2C_LINK_BUS_HANDLE);
+        hal_rc = HAL_I2C_EnableListen_IT(hi2c);
         assert(HAL_OK == hal_rc);
     }
 }

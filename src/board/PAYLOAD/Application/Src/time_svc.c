@@ -44,7 +44,7 @@ static bool _check_swap_sync()
 }
 
 
-int time_svc_init(void)
+void time_svc_init(void)
 {
 	// Просто включаем прерывания таймера и включаем его
 	__HAL_TIM_ENABLE_IT(TIMESVC_TIM_HANDLE, TIM_IT_UPDATE);
@@ -53,12 +53,10 @@ int time_svc_init(void)
 	// Таймер настроен так, что тикает два раза в секунду
 	// и переполняется раз в секунду.
 	// (частота на входе таймера 2 кГц, период 2000 циклов)
-
-	return 0;
 }
 
 
-int time_svc_gettimeofday(struct timeval * tmv)
+void time_svc_gettimeofday(struct timeval * tmv)
 {
 	time_t seconds, seconds2;
 	suseconds_t subseconds;
@@ -77,12 +75,10 @@ int time_svc_gettimeofday(struct timeval * tmv)
 
 	tmv->tv_sec = seconds;
 	tmv->tv_usec = 1000 * (subseconds / 2) + 500 * (subseconds % 2);
-
-	return 0;
 }
 
 
-int time_svc_settimeofday(const struct timeval * tmv)
+void time_svc_settimeofday(const struct timeval * tmv)
 {
 	// Останавливаем таймер
 	__HAL_TIM_DISABLE(TIMESVC_TIM_HANDLE);
@@ -97,7 +93,6 @@ int time_svc_settimeofday(const struct timeval * tmv)
 
 	// Запускаем таймер
 	__HAL_TIM_ENABLE(TIMESVC_TIM_HANDLE);
-	return 0;
 }
 
 

@@ -23,13 +23,13 @@ extern TIM_HandleTypeDef htim4;
 /*! таймер, указанный TIMESVC_TIM_HANDLE должен быть настроен так, чтобы частота
  *  у него была 2000 кГц а период 2000. То есть один тик весит пол
  *  миллисекунды а переполняется таймер раз в секунду */
-int time_svc_init(void);
+void time_svc_init(void);
 
 //! Получение текущего времени
-int time_svc_gettimeofday(struct timeval * tmv);
+void time_svc_gettimeofday(struct timeval * tmv);
 
 //! Установка текущего времени
-int time_svc_settimeofday(const struct timeval * tmv);
+void time_svc_settimeofday(const struct timeval * tmv);
 
 
 //! Эту функцию нужно вызывать в обработчике прерывания целевого таймера

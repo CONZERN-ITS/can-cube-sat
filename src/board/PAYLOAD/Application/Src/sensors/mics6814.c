@@ -249,7 +249,7 @@ int _divider_upper_half_set_mode(mics6814_sensor_t target, mics6814_divider_uppe
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
-int mics6814_init()
+void mics6814_init()
 {
 	// Нужно настроить GPIO для упрваления плечами
 	// но они правильно настроены с резета (в in)
@@ -262,8 +262,6 @@ int mics6814_init()
 	_divider_upper_half_set_mode(MICS6814_SENSOR_CO,  MICS6814_DIVIER_UPPER_HALF_TRIPLE);
 	_divider_upper_half_set_mode(MICS6814_SENSOR_NO2, MICS6814_DIVIER_UPPER_HALF_TRIPLE);
 	_divider_upper_half_set_mode(MICS6814_SENSOR_NH3, MICS6814_DIVIER_UPPER_HALF_TRIPLE);
-
-	return 0;
 }
 
 
@@ -278,7 +276,7 @@ static int _read_one(mics6814_sensor_t target, float * dr, float * conc)
 	float r0;
 	float rb;
 	float a, exp_b;
-	its_pld_analog_target_t analog_target;
+	analog_target_t analog_target;
 
 	// Определяемся с параметрами сенсора
 	switch (target)
@@ -288,7 +286,7 @@ static int _read_one(mics6814_sensor_t target, float * dr, float * conc)
 		rb = MICS6814_CO_RB;
 		a  = MICS6814_CO_COEFFS_A;
 		exp_b  = MICS6814_CO_COEFFS_EXP_B;
-		analog_target = ITS_PLD_ANALOG_TARGET_MICS6814_CO;
+		analog_target = ANALOG_TARGET_MICS6814_CO;
 		break;
 
 	case MICS6814_SENSOR_NO2:
@@ -296,7 +294,7 @@ static int _read_one(mics6814_sensor_t target, float * dr, float * conc)
 		rb = MICS6814_NO2_RB;
 		a  = MICS6814_NO2_COEFFS_A;
 		exp_b  = MICS6814_NO2_COEFFS_EXP_B;
-		analog_target = ITS_PLD_ANALOG_TARGET_MICS6814_NO2;
+		analog_target = ANALOG_TARGET_MICS6814_NO2;
 		break;
 
 	case MICS6814_SENSOR_NH3:
@@ -304,7 +302,7 @@ static int _read_one(mics6814_sensor_t target, float * dr, float * conc)
 		rb = MICS6814_NH3_RB;
 		a  = MICS6814_NH3_COEFFS_A;
 		exp_b  = MICS6814_NH3_COEFFS_EXP_B;
-		analog_target = ITS_PLD_ANALOG_TARGET_MICS6814_NH3;
+		analog_target = ANALOG_TARGET_MICS6814_NH3;
 		break;
 
 	default:
@@ -323,7 +321,7 @@ static int _read_one(mics6814_sensor_t target, float * dr, float * conc)
 	const int oversampling = 10;
 	for (int i = 0; i < oversampling; i++)
 	{
-		error = its_pld_analog_get_raw(analog_target, &raw);
+		error = analog_get_raw(analog_target, &raw);
 		if (0 != error)
 			return error;
 

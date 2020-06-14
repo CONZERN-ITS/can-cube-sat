@@ -25,14 +25,6 @@
 #define ME2O2_COEFF_B (0.0)
 
 
-
-int me2o2_init()
-{
-	// Ацп уже настроено...
-	return 0;
-}
-
-
 // Добывает значение через АЦП и пересчитывает его проценты концентрации
 static int _read(float * value)
 {
@@ -43,7 +35,7 @@ static int _read(float * value)
 	uint16_t raw;
 	for (int i = 0; i < oversamapling; i++)
 	{
-		error = its_pld_analog_get_raw(ITS_PLD_ANALOG_TARGET_ME202_O2, &raw);
+		error = analog_get_raw(ANALOG_TARGET_ME202_O2, &raw);
 		if (0 != error)
 			return error;
 
