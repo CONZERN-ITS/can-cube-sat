@@ -138,13 +138,6 @@ static void task_send_telemetry_inet(void *pvParameters) {
 
 
 static void task_send_telemetry_uart(void *pvParameters) {
-	while (1) {
-		ESP_LOGI("SNTP", "status: %d %d", sntp_enabled(), sntp_get_sync_interval());
-		for (int i = 0; i < SNTP_MAX_SERVERS; i++) {
-			ESP_LOGI("SNTP", "server: %s %u", sntp_getservername(i), sntp_getserver(i)->u_addr.ip4.addr);
-		}
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
-	}
 	its_rt_task_identifier tid;
 	tid.queue = xQueueCreate(10, MAVLINK_MAX_PACKET_LEN);
 	its_rt_register(MAVLINK_MSG_ID_THERMAL_STATE, tid);

@@ -13,8 +13,8 @@
 /*
  * May be 0 - 0x00FFFFFF
  */
-#define ITS_TIME_PRESCALER 0xFFFFFFFF
-#define ITS_TIME_AUTO_PRESCALER 1
+#define ITS_TIME_PRESCALER 39740
+#define ITS_TIME_AUTO_PRESCALER 0
 
 typedef struct {
     uint64_t sec;

@@ -112,7 +112,6 @@ void init_helper(void) {
 
     wifi_init_sta();
     my_sntp_init();
-    printf("HIIII!!!!!!!!!!\n");
 }
 
 uint8_t mv_packet[MAVLINK_MAX_PACKET_LEN];

@@ -16,7 +16,7 @@
 
 
 
-static int tsend_therm_period = 1000;
+static int tsend_therm_period = 3000;
 static int tsend_elect_period = 1000;
 
 static int ds_updated;
@@ -117,6 +117,10 @@ void tupdate() {
     static int ds_count = 0;
     if (tstate == STATE_WAIT && ds_updated && HAL_GetTick() - prev >= tsend_therm_period) {
         printf("INFO: send ds\n");
+
+        its_time_t timm;
+        its_gettimeofday(&timm);
+        //printf("TIME: %u.%03u\n", (uint32_t)timm.sec, (uint32_t)timm.usec);
         prev = HAL_GetTick();
         tstate = STATE_SENDING;
         ds_updated = 0;
@@ -167,6 +171,13 @@ void tupdate() {
 }
 
 void task_send_update(void *arg) {
+    static uint32_t prev = 0;
+    if (HAL_GetTick() - prev >= 1000){
+        prev = HAL_GetTick();
+        static its_time_t tim;
+        its_gettimeofday(&tim);
+        printf("TIME: %u.%03u\n", (uint32_t)tim.sec, (uint32_t)tim.usec);
+    }
     eupdate();
     tupdate();
 
