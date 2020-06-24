@@ -18,6 +18,7 @@
 #include "esp_bit_defs.h"
 
 #include "esp_sntp.h"
+#include "lwip/dns.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -65,17 +66,25 @@ void hang_task(const char *name) {
 	vTaskSuspend(NULL);
 }
 
+void sntp_notify(struct timeval *tv) {
+	ESP_LOGI("SNTP", "We've just synced");
+}
+
 void my_sntp_init() {
+	ip_addr_t addr = IPADDR4_INIT_BYTES(192, 168, 31, 1);
+
+	dns_setserver(0, &addr);
+
+	sntp_set_time_sync_notification_cb(sntp_notify);
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
     sntp_setservername(0, "pool.ntp.org");
 	sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
-	sntp_set_sync_interval(20000);
+	sntp_set_sync_interval(0);
     sntp_init();
+    sntp_restart();
+    printf("SNTP start!!!!!!!!!!!!!!!!!\n");
 }
 
-void internet_set_static_ip(const char *str) {
-
-}
 
 void task_socket_recv(void *arg) {
 	int sin;

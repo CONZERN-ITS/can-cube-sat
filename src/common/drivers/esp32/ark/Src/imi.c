@@ -1,3 +1,12 @@
+/*
+ * This module adds more features to the usual I2C
+ * using additional wire.
+ *
+ * This new additional wire (I2C_INT) is used by slaves
+ * to notify master, that they want to send something.
+ */
+
+
 #include "imi.h"
 #include "pinout_cfg.h"
 
@@ -9,7 +18,9 @@
 ////////////////////////////////////////////////////////////////
 //Basic driver
 ////////////////////////////////////////////////////////////////
-
+/*
+ *
+ */
 static int imi_send_cmd(imi_t *himi, imi_cmd_t cmd) {
 	return my_i2c_send(himi->i2c_port, himi->address, (uint8_t*) &cmd, 1, himi->timeout);
 }

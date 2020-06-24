@@ -35,34 +35,49 @@ static const char *TAG = "main";
 
 
 static void task_print_telemetry(void *pvParameters);
-static void task_send_telemetry(void *pvParameters);
+static void task_send_telemetry_inet(void *pvParameters);
+static void task_send_telemetry_uart(void *pvParameters);
 
 
 void app_main(void)
 {
 	init_helper();
 
-	printf("Wifi inited\n");
+	ESP_LOGI("SYSTEM", "Wifi inited");
 
 	xTaskCreatePinnedToCore(task_socket_comm, "Socket communication", configMINIMAL_STACK_SIZE + 4000, "Socket comm", 1, 0, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(task_print_telemetry, "Print telemetry", configMINIMAL_STACK_SIZE + 4000, "Print telemetry", 1, 0, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(ark_tsync_task, "ARK time sync", configMINIMAL_STACK_SIZE + 4000, "ARK time sync", 1, 0, tskNO_AFFINITY);
-	//xTaskCreatePinnedToCore(imi_msg_rcv_task, "IMI rcv", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);
-	xTaskCreatePinnedToCore(task_send_telemetry, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
+	//xTaskCreatePinnedToCore(task_send_telemetry_inet, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_send_telemetry_uart, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(task_socket_recv, "Recv", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);
 
 
-	printf("Wow\n");
+	ESP_LOGI("SYSTEM", "Tasks created");
+
+
+	struct sockaddr_in addr = {0};
+
+
+	inet_aton("8.8.8.8", &addr.sin_addr);
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(80);
+	//addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+
+	int sout = socket(AF_INET, SOCK_DGRAM, 0);
+	char *str = "Hello!";
+	sendto(sout, str, sizeof(str), 0, &addr, sizeof(addr));
+
 }
 
 #define PC_PORT 53043
 #define PC_IP "192.168.31.217"
 
 
-static void task_send_telemetry(void *pvParameters) {
+static void task_send_telemetry_inet(void *pvParameters) {
+
 	its_rt_task_identifier tid;
 	tid.queue = xQueueCreate(10, MAVLINK_MAX_PACKET_LEN);
-	printf("HH: %d\n", (int)tid.queue);
 	its_rt_register(MAVLINK_MSG_ID_THERMAL_STATE, tid);
 	its_rt_register(MAVLINK_MSG_ID_ELECTRICAL_STATE, tid);
 	its_rt_register(MAVLINK_MSG_ID_SINS_isc, tid);
@@ -110,8 +125,6 @@ static void task_send_telemetry(void *pvParameters) {
 			uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 			int count = mavlink_msg_to_send_buffer(buf, &msg);
 
-			//uart_write_bytes(ITS_UART0_PORT, (char *) buf, count);
-
 			if (send(sout, (uint8_t *) buf, count, 0) < 0) {
 
 				close(sout);
@@ -123,6 +136,39 @@ static void task_send_telemetry(void *pvParameters) {
 	vTaskDelete(NULL);
 }
 
+
+static void task_send_telemetry_uart(void *pvParameters) {
+	while (1) {
+		ESP_LOGI("SNTP", "status: %d %d", sntp_enabled(), sntp_get_sync_interval());
+		for (int i = 0; i < SNTP_MAX_SERVERS; i++) {
+			ESP_LOGI("SNTP", "server: %s %u", sntp_getservername(i), sntp_getserver(i)->u_addr.ip4.addr);
+		}
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+	}
+	its_rt_task_identifier tid;
+	tid.queue = xQueueCreate(10, MAVLINK_MAX_PACKET_LEN);
+	its_rt_register(MAVLINK_MSG_ID_THERMAL_STATE, tid);
+	its_rt_register(MAVLINK_MSG_ID_ELECTRICAL_STATE, tid);
+	its_rt_register(MAVLINK_MSG_ID_SINS_isc, tid);
+	its_rt_register(MAVLINK_MSG_ID_GPS_UBX_NAV_SOL, tid);
+	its_rt_register(MAVLINK_MSG_ID_TIMESTAMP, tid);
+
+	while (1) {
+		mavlink_message_t msg;
+
+		if (xQueueReceive(tid.queue, &msg, portMAX_DELAY) == pdFALSE) {
+			ESP_LOGE("UART_RADIO", "BAD");
+			vTaskDelay(500 / portTICK_RATE_MS);
+			continue;
+		}
+		ESP_LOGI("UART_RADIO", "Got smthng to send");
+		uint8_t buf[MAVLINK_MAX_PACKET_LEN];
+		int count = mavlink_msg_to_send_buffer(buf, &msg);
+
+		uart_write_bytes(ITS_UART0_PORT, (char *) buf, count);
+	}
+	vTaskDelete(NULL);
+}
 
 static void task_print_telemetry(void *pvParameters) {
 	its_rt_task_identifier tid;

@@ -89,9 +89,9 @@ void init_basic(void) {
 	uart_driver_install(ITS_UART_PORT, ITS_UART_RX_BUF_SIZE, ITS_UART_TX_BUF_SIZE, ITS_UART_QUEUE_SIZE, &quart, 0);
 	uart_set_pin(ITS_UART_PORT, ITS_PIN_UART_TX, ITS_PIN_UART_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
-	//uart_param_config(ITS_UART0_PORT, &init_pin_uart0);
-	//uart_driver_install(ITS_UART0_PORT, ITS_UART0_RX_BUF_SIZE, ITS_UART0_TX_BUF_SIZE, 0, 0, 0);
-	//uart_set_pin(ITS_UART0_PORT, ITS_PIN_UART0_TX, ITS_PIN_UART0_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+	uart_param_config(ITS_UART0_PORT, &init_pin_uart0);
+	uart_driver_install(ITS_UART0_PORT, ITS_UART0_RX_BUF_SIZE, ITS_UART0_TX_BUF_SIZE, 0, 0, 0);
+	uart_set_pin(ITS_UART0_PORT, ITS_PIN_UART0_TX, ITS_PIN_UART0_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
 	gpio_config(&init_pin_time);
 

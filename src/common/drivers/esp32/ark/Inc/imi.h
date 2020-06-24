@@ -89,8 +89,6 @@ int imi_send(int port, uint8_t address, uint8_t *data, uint16_t size, TickType_t
 
 int imi_send_all(int port, uint8_t *data, uint16_t size, TickType_t ticksToWaitForOne);
 
-void imi_init(void);
-
 #endif /* MAIN_INC_IMI_H_ */
 /*
  * imi.h
