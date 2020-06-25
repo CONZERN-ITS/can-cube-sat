@@ -23,6 +23,8 @@ typedef struct its_i2c_link_stats_t
 	uint16_t tx_zeroes_cnt;
 	//! Количество ошибок при передаче пакетов
 	uint16_t tx_error_cnt;
+	//! Количество попыток отправить сообщение при полном отправном буфере
+	uint16_t tx_overrun_cnt;
 
 	//! Количетво рестартов i2c перефирии из-за ошибок на шине
 	uint16_t restarts_cnt;

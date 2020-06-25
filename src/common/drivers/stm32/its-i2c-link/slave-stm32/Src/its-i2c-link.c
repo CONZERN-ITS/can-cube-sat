@@ -37,12 +37,13 @@ typedef struct i2c_link_pbuf_queue_t
 //! Состояние i2c линка
 typedef enum i2c_link_state_t
 {
-    //! Мы передаем пакет
+    //! Мы принимаем пакет
     I2C_LINK_STATE_RX,
     //! Мы закончили (а то и никогда не начинали) передавть пакет
     /*! И гоним вместо него нолики */
     I2C_LINK_STATE_RX_DONE,
 
+    //! Мы передаем пакет
     I2C_LINK_STATE_TX,
 
     //! Мы закончили (а то и никогда не начинали) получать пакет
@@ -506,7 +507,10 @@ int its_i2c_link_write(const void * data, size_t data_size)
 
     its_i2c_link_pbuf_t * buf = _pbuf_queue_get_head(&ctx->tx_bufs_queue);
     if (0 == buf)
+    {
+        ctx->stats.tx_overrun_cnt++;
         return -EAGAIN;
+    }
 
     buf->packet_size = data_size;
     memcpy(buf->packet_data, data, data_size);

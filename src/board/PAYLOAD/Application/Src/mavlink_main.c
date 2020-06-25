@@ -49,7 +49,7 @@ int mav_main_get_packet(mavlink_message_t * msg)
 
 void mav_main_process_bme_message(const mavlink_pld_bme280_data_t * msg)
 {
-//#ifdef PROCESS_TO_PRINTF
+#ifdef PROCESS_TO_PRINTF
 	printf("bme: t=%fC, p=%fpa, hum=%f%%, alt=%fm\n",
 			msg->temperature, msg->pressure, msg->humidity, msg->altitude
 	);
@@ -59,7 +59,7 @@ void mav_main_process_bme_message(const mavlink_pld_bme280_data_t * msg)
 	);
 
 	printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-//#endif
+#endif
 
 #ifdef PROCESS_TO_ITSLINK
 	mavlink_msg_pld_bme280_data_send_struct(MAVLINK_COMM_0, msg);
@@ -166,15 +166,15 @@ void mav_main_process_own_stats(mavlink_pld_stats_t * msg)
 void mav_main_process_i2c_link_stats(mavlink_i2c_link_stats_t * msg)
 {
 #ifdef PROCESS_TO_PRINTF
-	printf("it2link rx-> done: %"PRIu16", dropped: %"PRIu16", errors: %"PRIu16":\n",
+	printf("it2link rx-> done: %"PRIu16", dropped: %"PRIu16", errors: %"PRIu16"\n",
 			msg->rx_done_cnt, msg->rx_dropped_cnt, msg->rx_error_cnt
 	);
 
-	printf("it2link tx-> done: %"PRIu16", dropped: %"PRIu16", errors: %"PRIu16":\n",
-			msg->tx_done_cnt, msg->tx_zeroes_cnt, msg->tx_error_cnt
+	printf("it2link tx-> done: %"PRIu16", dropped: %"PRIu16", errors: %"PRIu16" ovr: %"PRIu16"\n",
+			msg->tx_done_cnt, msg->tx_zeroes_cnt, msg->tx_error_cnt, msg->tx_overrun_cnt
 	);
 
-	printf("it2link restarts: %"PRIu16", listen done: %"PRIu16", last error: %"PRIi32":\n",
+	printf("it2link restarts: %"PRIu16", listen done: %"PRIu16", last error: %"PRIi32"\n",
 			msg->restarts_cnt, msg->listen_done_cnt, msg->last_error
 	);
 

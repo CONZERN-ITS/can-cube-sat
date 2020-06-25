@@ -66,13 +66,10 @@ static int _analog_restart_if_need_so(void);
 static void _process_input_packets(void);
 
 // TODO:
-/* tx_overrun в i2c-link-stats
-   ассерты и ErrorHandler-ы хала адекватно работают
+/* ассерты и ErrorHandler-ы хала адекватно работают
    калибрануть все и вся
-   убедиться в том, что счетчики в мавлинк пакетах работают правильно
    вставить ассерты в error-handler-ы
    настроить частоты пакетов
-   проверить настройки i2c1 (который i2c-link)
    проверить как работает рестарт АЦП
    вставить задержку после bme280_soft_reset - иначе первые данные получаются кривые
  */
@@ -235,6 +232,7 @@ static void _collect_i2c_link_stats(mavlink_i2c_link_stats_t * msg)
 	msg->tx_done_cnt = statsbuf.tx_done_cnt;
 	msg->tx_zeroes_cnt = statsbuf.tx_zeroes_cnt;
 	msg->tx_error_cnt = statsbuf.tx_error_cnt;
+	msg->tx_overrun_cnt = statsbuf.tx_overrun_cnt;
 	msg->restarts_cnt = statsbuf.restarts_cnt;
 	msg->listen_done_cnt = statsbuf.listen_done_cnt;
 	msg->last_error = statsbuf.last_error;
