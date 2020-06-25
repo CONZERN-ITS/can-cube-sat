@@ -50,7 +50,7 @@ void app_main(void)
 	xTaskCreatePinnedToCore(ark_tsync_task, "ARK time sync", configMINIMAL_STACK_SIZE + 4000, "ARK time sync", 1, 0, tskNO_AFFINITY);
 	//xTaskCreatePinnedToCore(task_send_telemetry_inet, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(task_send_telemetry_uart, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
-	xTaskCreatePinnedToCore(task_socket_recv, "Recv", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_socket_recv, "Recv", configMINIMAL_STACK_SIZE + 4000, 0, 4, 0, tskNO_AFFINITY);
 
 
 
