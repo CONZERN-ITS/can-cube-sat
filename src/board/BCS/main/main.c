@@ -53,9 +53,10 @@ void app_main(void)
 	xTaskCreatePinnedToCore(task_socket_recv, "Recv", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);
 
 
+
 	ESP_LOGI("SYSTEM", "Tasks created");
 
-
+/*
 	struct sockaddr_in addr = {0};
 
 
@@ -68,6 +69,7 @@ void app_main(void)
 	char *str = "Hello!";
 	sendto(sout, str, sizeof(str), 0, &addr, sizeof(addr));
 
+	printf("HHHHHHHHHHHHHHHHH\n");*/
 }
 
 #define PC_PORT 53043
@@ -164,6 +166,12 @@ static void task_send_telemetry_uart(void *pvParameters) {
 }
 
 static void task_print_telemetry(void *pvParameters) {
+	while (1) {
+		struct timeval tm;
+		gettimeofday(&tm, 0);
+		printf("TIME: %d.%06d\n", (uint32_t)tm.tv_sec, (uint32_t)tm.tv_usec);
+		vTaskDelay(1);
+	}
 	its_rt_task_identifier tid;
 	tid.queue = xQueueCreate(5, MAVLINK_MAX_PACKET_LEN);
 	printf("HH: %d\n", (int)tid.queue);

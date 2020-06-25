@@ -19,5 +19,7 @@ void task_socket_recv(void *arg);
 
 void wifi_init_sta(void);
 
+void ntp_server_task(void *arg);
+
 
 #endif /* COMPONENTS_INTERNET_INC_INTERNET_H_ */

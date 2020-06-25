@@ -5,7 +5,9 @@
  *      Author: sereshotes
  */
 
+
 #include "../Inc/internet.h"
+#include "init_helper.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -70,6 +72,85 @@ void sntp_notify(struct timeval *tv) {
 	ESP_LOGI("SNTP", "We've just synced");
 }
 
+#define NTP_BUF_SIZE 12 * 4
+#define NTP_PORT 123
+#define NTP_CONN_COUNT 4
+#define NTP_LI 0
+#define NTP_VN 3
+#define NTP_MODE 4
+#define NTP_STRATUM 1
+#define NTP_POLL 4
+#define NTP_PREC -6
+#define NTP_UTC_OFFSET 		2208988800L
+#define NTP_DELAY 1 << 16
+#define NTP_DISP 1 << 16
+#define NTP_REFID *((uint32_t *)("GPS"))
+
+void ntp_server_task(void *arg) {
+	printf("WWWW!\n");
+	ESP_LOGV("SNTP", "ntp_server_task: start");
+	int sin = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sin < 0) {
+		ESP_LOGE("SNTP", "Can't create socket");
+		vTaskDelete(NULL);
+	}
+	struct sockaddr_in addr = {0};
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(NTP_PORT);
+
+	if (bind(sin, (struct sockaddr *)&addr, sizeof(addr))) {
+		ESP_LOGE("SNTP", "Can't bind socket");
+		vTaskDelete(NULL);
+	}
+	ESP_LOGV("SNTP", "ntp_server_task: start reading");
+
+	printf("WWWW!2\n");
+	while (1) {
+		uint8_t buf[NTP_BUF_SIZE + 1];
+		socklen_t len = sizeof(addr);
+		//Пытаемся прочесть чуть больше, чтобы убедиться, что полученное сообщение
+		//ровно той же длины, что и ожидаемый пакет
+		int size = recvfrom(sin, &buf, sizeof(buf), 0, (struct sockaddr *)&addr, &len);
+		printf("WWWW!3\n");
+		if (size < 0) {
+			ESP_LOGE("SNTP", "Receive Error: %d", errno);
+			continue;
+		}
+		if (size != NTP_BUF_SIZE) {
+			printf("WHAT?!: %d\n", size);
+			ESP_LOGV("SNTP", "ntp_server_task: not a ntp msg - dumping it");
+			continue;
+		}
+		/*
+		 * Авторы NTP определили формат пакета с порядком байт Интернета
+		 * в том смысле, что порядок 32-битных слов определяется
+		 * спецификацией, а порядок байт внутри слов - BE, как и общий
+		 * порядок байт сетях.
+		 */
+		uint32_t *data = (uint32_t *)buf;
+
+		data[0] = htonl((NTP_LI << 30) | (NTP_VN << 27) | (NTP_MODE << 24) |
+				(NTP_STRATUM << 16) | (NTP_POLL << 8) | (NTP_PREC & 0xff)); //Разные флаги
+		data[1] = htonl(NTP_DELAY);	//Задержка между двумя обновлениями времени на сервере
+		data[2] = htonl(NTP_DISP);	//Дисперсия (см. спец-ию)
+		data[3] = htonl(NTP_REFID);	//Идентификатор использумых часов
+
+		struct timeval tm;
+		gettimeofday(&tm, 0);
+
+		data[6] = data[10]; //То, что было временем отправлением клиента,
+		data[7] = data[11]; //стало начальным временем
+
+		//Время отправки с сервера. Переводим с UTC в NTP.
+		//Также это время приема, так как мы не можем иметь
+		//что-то лучше, чем это без влезаний в ядро ESP.
+		data[8] = data[10] = htonl(tm.tv_sec + NTP_UTC_OFFSET);
+		data[9] = data[11] = htonl(((unsigned long long)tm.tv_usec << 32LL) / 1000000.0);
+		printf("SEND TO: %d:%d\n", addr.sin_addr.s_addr, addr.sin_port);
+		sendto(sin, data, NTP_BUF_SIZE, 0, (struct sockaddr *)&addr, sizeof(addr));
+	}
+}
+
 void my_sntp_init() {
 	ip_addr_t addr = IPADDR4_INIT_BYTES(192, 168, 31, 1);
 
@@ -77,7 +158,13 @@ void my_sntp_init() {
 
 	sntp_set_time_sync_notification_cb(sntp_notify);
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
+#if ITS_WIFI_SERVER
+	xTaskCreatePinnedToCore(ntp_server_task, "SNTP server", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);
     sntp_setservername(0, "pool.ntp.org");
+#else
+    ip_addr_t addr2 = IPADDR4_INIT_BYTES(192, 168, 31, 40);
+    sntp_setserver(0, &addr2);
+#endif
 	sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
 	sntp_set_sync_interval(0);
     sntp_init();
@@ -230,7 +317,11 @@ void wifi_init_sta(void)
             .gw = { .addr = inet_addr("192.168.31.1") },
             .netmask = { .addr = htonl(esp_netif_ip4_makeu32( 255, 255, 255, 0)) },
     };
+#if ITS_WIFI_SERVER
     IP4_ADDR(&ip.ip, 192, 168, 31, 40);
+#else
+    IP4_ADDR(&ip.ip, 192, 168, 31, 41);
+#endif
     IP4_ADDR(&ip.gw, 192, 168, 31, 1);
     IP4_ADDR(&ip.netmask, 255, 255, 255, 0);
     ESP_ERROR_CHECK(esp_netif_set_ip_info(hesp, &ip));
