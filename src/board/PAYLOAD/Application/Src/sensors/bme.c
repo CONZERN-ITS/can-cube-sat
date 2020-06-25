@@ -100,6 +100,7 @@ int bme_init()
 	if (0 != rc)
 		return rc;
 
+	HAL_Delay(10); // Иначе первые данные получаются плохие
 	return 0;
 }
 

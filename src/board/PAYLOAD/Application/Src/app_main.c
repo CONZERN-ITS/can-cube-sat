@@ -27,14 +27,45 @@
 #include "sensors/mics6814.h"
 #include "sensors/integrated.h"
 
+//! Длина одного такта в мс
+#define TICK_LEN_MS (200)
+//! Сколько времени диод будет гореть а не мигать после рестарта (в мс)
+#define LED_RESTART_LOCK (1500)
+
+//! Периодичность выдачи BME пакета (в тактах)
+#define PACKET_PERIOD_BME (5)
+#define PACKET_OFFSET_BME (0)
+//! Периодичность выдачи ME202 пакета (в тактах)
+#define PACKET_PERIOD_ME2O2 (5)
+#define PACKET_OFFSET_ME2O2 (1)
+//! Периодичность выдачи MICS6814 пакета (в тактах)
+#define PACKET_PERIOD_MICS6814 (5)
+#define PACKET_OFFSET_MICS6814 (2)
+//! Периодичность выдачи данных со встроенных сенсоров (в тактах)
+#define PACKET_PERIOD_INTEGRATED (5)
+#define PACKET_OFFSET_INTEGRATED (3)
+//! Периодичность выдачи собственной статистики (в тактах)
+#define PACKET_PERIOD_OWN_STATS (15)
+#define PACKET_OFFSET_OWN_STATS (0)
+//! Периодичность выдачи its-link статистики (в тактах)
+#define PACKET_PERIOD_ITS_LINK_STATS (15)
+#define PACKET_OFFSET_ITS_LINK_STATS (7)
+
+
+//! Статистика об ошибках этого модуля
 typedef struct its_pld_status_t
 {
+	//! Код последней ошибки работы с bme
 	int32_t bme_last_error;
+	//! Количество ошибок при работе с bme
 	uint16_t bme_error_counter;
 
+	//! Код последней ошибки при работе с АЦП
 	int32_t adc_last_error;
+	//! Количество ошибок при работе с АЦП
 	uint16_t adc_error_counter;
 
+	//! Количество перезагрузок модуля
 	uint16_t restarts_count;
 } its_pld_status_t;
 
@@ -66,12 +97,8 @@ static int _analog_restart_if_need_so(void);
 static void _process_input_packets(void);
 
 // TODO:
-/* ассерты и ErrorHandler-ы хала адекватно работают
-   калибрануть все и вся
-   вставить ассерты в error-handler-ы
-   настроить частоты пакетов
+/* калибрануть все и вся
    проверить как работает рестарт АЦП
-   вставить задержку после bme280_soft_reset - иначе первые данные получаются кривые
  */
 
 int app_main()
@@ -92,7 +119,7 @@ int app_main()
 
 	// После перезагрузки будем аж пол секунды светить лампочкой
 	uint32_t tick_begin = HAL_GetTick();
-	uint32_t tick_led_unlock = tick_begin + 1000;
+	uint32_t tick_led_unlock = tick_begin + LED_RESTART_LOCK;
 
 	led_set(true);
 
@@ -105,7 +132,7 @@ int app_main()
 		// Запоминаем когда этот такт начался
 		uint32_t tock_start_tick = HAL_GetTick();
 		// Планируем начало следующего
-		uint32_t next_tock_start_tick = tock_start_tick + 200;
+		uint32_t next_tock_start_tick = tock_start_tick + TICK_LEN_MS;
 
 		// В начале такта включаем диод (если после загрузки прошло нужное время)
 		// И запоминаем не раньше какого времени нужно выключить светодиод
@@ -124,7 +151,7 @@ int app_main()
 		// Проверяем входящие пакеты
 		_process_input_packets();
 
-		if (0 == tock % 10)
+		if (tock % PACKET_PERIOD_BME == PACKET_OFFSET_BME)
 		{
 			if (0 == _bme_restart_if_need_so())
 			{
@@ -136,7 +163,7 @@ int app_main()
 		}
 
 
-		if (0 == tock % 10)
+		if (tock % PACKET_PERIOD_ME2O2 == PACKET_OFFSET_ME2O2)
 		{
 			if (0 == _analog_restart_if_need_so())
 			{
@@ -148,7 +175,7 @@ int app_main()
 		}
 
 
-		if (0 == tock % 10)
+		if (tock % PACKET_PERIOD_MICS6814 == PACKET_OFFSET_MICS6814)
 		{
 			if (0 == _analog_restart_if_need_so())
 			{
@@ -159,7 +186,7 @@ int app_main()
 		}
 
 
-		if (0 == tock % 10)
+		if (tock % PACKET_PERIOD_INTEGRATED == PACKET_OFFSET_INTEGRATED)
 		{
 			if (0 == _analog_restart_if_need_so())
 			{
@@ -170,7 +197,7 @@ int app_main()
 		}
 
 
-		if (0 == tock % 20)
+		if (tock % PACKET_PERIOD_OWN_STATS == PACKET_OFFSET_OWN_STATS)
 		{
 			mavlink_pld_stats_t pld_stats_msg;
 			_collect_own_stats(&pld_stats_msg);
@@ -178,7 +205,7 @@ int app_main()
 		}
 
 
-		if (0 == tock % 30)
+		if (tock % PACKET_PERIOD_ITS_LINK_STATS == PACKET_OFFSET_ITS_LINK_STATS)
 		{
 			mavlink_i2c_link_stats_t i2c_stats_msg;
 			_collect_i2c_link_stats(&i2c_stats_msg);
