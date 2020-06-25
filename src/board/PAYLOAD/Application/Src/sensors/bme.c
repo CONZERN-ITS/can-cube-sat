@@ -28,6 +28,7 @@ extern I2C_HandleTypeDef hi2c2;
 #define BME_HAL_TIMEOUT (300)
 
 
+#ifndef ITS_IMITATOR
 static struct bme280_dev _device;
 
 
@@ -35,7 +36,6 @@ static void _delay_ms(uint32_t ms)
 {
 	HAL_Delay(ms);
 }
-
 
 
 static int8_t _i2c_read(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t len)
@@ -70,8 +70,14 @@ static int8_t _i2c_write(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t l
 	int rc = hal_status_to_errno(hrc);
 	return rc;
 }
+#endif
 
-
+#ifdef ITS_IMITATOR
+int bme_init()
+{
+	return 0;
+}
+#else
 int bme_init()
 {
 	_device.intf = BME280_I2C_INTF;
@@ -103,8 +109,15 @@ int bme_init()
 	HAL_Delay(10); // Иначе первые данные получаются плохие
 	return 0;
 }
+#endif
 
 
+#ifdef ITS_IMITATOR
+int bme_restart()
+{
+	return 0;
+}
+#else
 int bme_restart()
 {
 	I2C_HandleTypeDef * bus_handle = BME_BUS_HANDLE;
@@ -129,8 +142,25 @@ int bme_restart()
 
 	return bme_init();
 }
+#endif
 
 
+#ifdef ITS_IMITATOR
+int bme_read(mavlink_pld_bme280_data_t * data)
+{
+	struct timeval tv;
+	time_svc_gettimeofday(&tv);
+
+	data->time_s = tv.tv_sec;
+	data->time_us = tv.tv_usec;
+	data->pressure = 100*1000;
+	data->temperature = 36.6;
+	data->humidity = 42;
+	data->altitude = 0;
+
+	return 0;
+}
+#else
 int bme_read(mavlink_pld_bme280_data_t * data)
 {
 	struct bme280_data bme280_data;
@@ -150,3 +180,4 @@ int bme_read(mavlink_pld_bme280_data_t * data)
 	data->altitude = 0;
 	return 0;
 }
+#endif

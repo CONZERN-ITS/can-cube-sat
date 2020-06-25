@@ -25,6 +25,7 @@
 #define ME2O2_COEFF_B (0.0)
 
 
+#ifndef ITS_IMITATOR
 // Добывает значение через АЦП и пересчитывает его проценты концентрации
 static int _read(float * value)
 {
@@ -57,11 +58,26 @@ static int _read(float * value)
 	*value =  ME2O2_COEFF_A * (sensor_ma * 1000) + ME2O2_COEFF_B; // * 1000 потому что мА в мкА
 	return 0;
 }
+#endif
 
 
+#ifdef ITS_IMITATOR
 int me2o2_read(mavlink_pld_me2o2_data_t * msg)
 {
+	// Берем время
+	struct timeval tv;
+	time_svc_gettimeofday(&tv);
 
+	msg->time_s = tv.tv_sec;
+	msg->time_us = tv.tv_usec;
+
+	msg->o2_conc = 20.0;
+
+	return 0;
+}
+#else
+int me2o2_read(mavlink_pld_me2o2_data_t * msg)
+{
 	// Берем время
 	struct timeval tv;
 	time_svc_gettimeofday(&tv);
@@ -74,3 +90,4 @@ int me2o2_read(mavlink_pld_me2o2_data_t * msg)
 
 	return error;
 }
+#endif

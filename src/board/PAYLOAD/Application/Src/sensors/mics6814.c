@@ -265,6 +265,7 @@ void mics6814_init()
 }
 
 
+#ifndef ITS_IMITATOR
 // Делает замер для одного из сенсоров датчика
 /* \arg target задает нужный сенсор
    \arg dr возвращает сырое отношение сопротивлений сенсора
@@ -338,9 +339,28 @@ static int _read_one(mics6814_sensor_t target, float * dr, float * conc)
 
 	return 0;
 }
+#endif
 
+#ifdef ITS_IMITATOR
+int mics6814_read(mavlink_pld_mics_6814_data_t * msg)
+{
+	// Берем время
+	struct timeval tv;
+	time_svc_gettimeofday(&tv);
 
+	msg->time_s = tv.tv_sec;
+	msg->time_us = tv.tv_usec;
 
+	msg->red_sensor_raw = 0;
+	msg->ox_sensor_raw = 1;
+	msg->nh3_sensor_raw = 2;
+
+	msg->co_conc = 10;
+	msg->no2_conc = 20;
+	msg->nh3_conc = 30;
+	return 0;
+}
+#else
 int mics6814_read(mavlink_pld_mics_6814_data_t * msg)
 {
 	// Берем время
@@ -366,3 +386,4 @@ int mics6814_read(mavlink_pld_mics_6814_data_t * msg)
 
 	return 0;
 }
+#endif
