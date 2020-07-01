@@ -118,7 +118,7 @@ class MAVDataSource():
             raise RuntimeError("No Message")
         self.log.write(msg.get_msgbuf())
         data = self.get_data(msg)
-        #print(msg)
+        print(msg)
         if data is None:
             raise TypeError("Message type not supported")
 
@@ -130,12 +130,8 @@ class MAVDataSource():
                      msg.time_s + msg.time_us/1000000,
                      msg.temperature]]
         if msg.get_type() == "ELECTRICAL_STATE":
-            return [['CURRENT_' + str(msg.area_id),
-                     msg.time_s + msg.time_us/1000000,
-                     msg.current],
-                    ['VOLTAGE_' + str(msg.area_id),
-                     msg.time_s + msg.time_us/1000000,
-                     msg.voltage]]
+            return [['CURRENT_' + str(msg.area_id), msg.time_s + msg.time_us/1000000, msg.current],
+                    ['VOLTAGE_' + str(msg.area_id), msg.time_s + msg.time_us/1000000, msg.voltage]]
         if msg.get_type() == "SINS_ISC":
             return [['ACCEL', msg.time_s + msg.time_us/1000000] + msg.accel,
                     ['COMPASS', msg.time_s + msg.time_us/1000000] + msg.compass,
@@ -144,6 +140,50 @@ class MAVDataSource():
             gps = wgs84_conv(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100)
             return [['MAP', msg.time_s + msg.time_us/1000000] + gps[:2],
                     ['HEIGHT', msg.time_s + msg.time_us/1000000] + [gps[2]]]
+        if msg.get_type() == "OWN_TEMP":
+            return [['OWN_TEMP', msg.time_s + msg.time_us/1000000, msg.deg]]
+        if msg.get_type() == "PLD_BME280_DATA":
+            return [['BME280_TEMP', msg.time_s + msg.time_us/1000000, msg.temperature],
+                    ['BME280_PRESS', msg.time_s + msg.time_us/1000000, msg.pressure],
+                    ['BME280_HUM', msg.time_s + msg.time_us/1000000, msg.humidity],
+                    ['BME280_ALT', msg.time_s + msg.time_us/1000000, msg.altitude]]
+        if msg.get_type() == "PLD_MICS_6814_DATA":
+            return [['MICS_6814_CO', msg.time_s + msg.time_us/1000000, msg.co_conc],
+                    ['MICS_6814_NO2', msg.time_s + msg.time_us/1000000, msg.no2_conc],
+                    ['MICS_6814_NH3', msg.time_s + msg.time_us/1000000, msg.nh3_conc]]
+        if msg.get_type() == "PLD_ME2O2_DATA":
+            return [['ME2O2', msg.time_s + msg.time_us/1000000, msg.o2_conc]]
+        if msg.get_type() == "PLD_STATS":
+            return [['PLD_STATS',
+                     msg.time_s + msg.time_us/1000000,
+                     msg.bme_init_error,
+                     msg.bme_last_error,
+                     msg.bme_error_counter,
+                     msg.adc_init_error,
+                     msg.adc_last_error,
+                     msg.adc_error_counter,
+                     msg.me2o2_init_error,
+                     msg.me2o2_last_error,
+                     msg.me2o2_error_counter,
+                     msg.mics6814_init_error,
+                     msg.mics6814_last_error,
+                     msg.mics6814_error_counter,
+                     msg.integrated_init_error,
+                     msg.integrated_last_error,
+                     msg.integrated_error_counter]]
+        if msg.get_type() == "I2C_LINK_STATS":
+            return [['I2C_LINK_STATS',
+                     msg.time_s + msg.time_us/1000000,
+                     msg.rx_done_cnt,
+                     msg.rx_dropped_cnt,
+                     msg.rx_error_cnt,
+                     msg.tx_done_cnt,
+                     msg.tx_zeroes_cnt,
+                     msg.tx_overrun_cnt,
+                     msg.tx_error_cnt,
+                     msg.restarts_cnt,
+                     msg.listen_done_cnt,
+                     msg.last_error]]
         else:
             return None
 

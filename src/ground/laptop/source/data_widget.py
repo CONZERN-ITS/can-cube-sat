@@ -15,7 +15,8 @@ class DataWidget(QtWidgets.QTableWidget):
 
         def timeout_reaction(self):
             for i in range(self.table_len):
-                self.table.item(self.row_num + i, 1).setBackground(self.color);
+                self.table.item(self.row_num + i, 0).setBackground(self.color)
+                self.table.item(self.row_num + i, 1).setBackground(self.color)
 
 
     def __init__(self):
@@ -76,10 +77,13 @@ class DataWidget(QtWidgets.QTableWidget):
                         self.setItem(table[1][0] + i, 1, QtWidgets.QTableWidgetItem(str(pack[i + 2])))
                         print(table[1][2])
                         if (pack[i + 2] < table[1][2][2 * i]):
+                            self.item(table[1][0] + i, 0).setBackground(self.colors[0])
                             self.item(table[1][0] + i, 1).setBackground(self.colors[0])
                         elif (pack[i + 2] > table[1][2][2 * i + 1]):
+                            self.item(table[1][0] + i, 0).setBackground(self.colors[1])
                             self.item(table[1][0] + i, 1).setBackground(self.colors[1])
                         else:
+                            self.item(table[1][0] + i, 0).setBackground(self.background_color)
                             self.item(table[1][0] + i, 1).setBackground(self.background_color)
                     table[1][3].start()
                     break
