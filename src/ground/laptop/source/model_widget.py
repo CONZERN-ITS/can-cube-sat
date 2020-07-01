@@ -59,7 +59,6 @@ class ModelWidget(OpenGL.GLViewWidget):
         self.settings.endGroup()
 
         self.settings.beginGroup("CentralWidget/ModelWidget/Mesh")
-
         model_color = None
         try:
             verts = self._get_mesh_points(self.settings.value("path"))
@@ -84,20 +83,18 @@ class ModelWidget(OpenGL.GLViewWidget):
         self.settings.endGroup()
 
         self.settings.beginGroup("CentralWidget/ModelWidget/Scene")
-
         if int(self.settings.value("is_on")):
             model_color = None
             try:
                 verts = self._get_mesh_points(self.settings.value("path"))
                 if int(self.settings.value("Colors/is_on")):
-                    pass
-                    #model_color = self._get_face_colors(self.settings.value("Colors/path"))                
+                    model_color = self._get_face_colors(self.settings.value("Colors/path"))                
             except Exception:
                 verts = self._get_mesh_points(SCENE_MESH_PATH)
-                #model_color = self._get_face_colors(SCENE_MESH_COLOR_PATH)
+                model_color = self._get_face_colors(SCENE_MESH_COLOR_PATH)
 
                 faces = NumPy.array([(i, i + 1, i + 2,) for i in range(0, len(verts), 3)])
-                print(len(faces))
+
                 self.scene.setMeshData(vertexes=verts,
                                        faces=faces, 
                                        faceColors=model_color,
