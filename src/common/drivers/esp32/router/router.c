@@ -70,7 +70,7 @@ void list_delete(struct list* list) {
 }
 
 static struct list its_msg_map[RT_CFG_LIST_SZ];
-
+static struct list its_msg_all;
 
 int its_rt_register(int msgid, its_rt_task_identifier task_id) {
 	int id = its_rt_get_hash(msgid);
@@ -78,48 +78,68 @@ int its_rt_register(int msgid, its_rt_task_identifier task_id) {
 	return list_push(&its_msg_map[id], &task_id);
 }
 
+int its_rt_register_for_all(its_rt_task_identifier task_id) {
+	return list_push(&its_msg_all, &task_id);
+}
+
 void its_rt_uninit() {
 	for (int i = 0; i < MAVLINK_MAX_ID_COUNT; i++) {
 		list_delete(&its_msg_map[i]);
 	}
+	list_delete(&its_msg_all);
 }
 
+BaseType_t _route_from_isr(list_node *cur,
+		const mavlink_message_t * msg) {
+
+	BaseType_t higherPrioWoken = 0;
+	while (cur) {
+		BaseType_t higherPrioWoken2;
+		xQueueSendFromISR(cur->value.queue, &msg, &higherPrioWoken2);
+		if (higherPrioWoken2) {
+			higherPrioWoken = higherPrioWoken2;
+		}
+	}
+	return higherPrioWoken;
+}
 
 void its_rt_route_from_isr(
 		const its_rt_sender_ctx_t * sender_ctx,
 		const mavlink_message_t * msg
 ){
 
+	list_node *cur = 0;
 	int id = its_rt_get_hash(msg->msgid);
+
+	BaseType_t higherPrioWoken = 0;
 	if (id != RT_CFG_LIST_SZ) {
-		list_node *cur = its_msg_map[id].first;
-		BaseType_t higherPrioWoken = 0;
-		while (cur) {
-			BaseType_t higherPrioWoken2;
-			xQueueSendFromISR(cur->value.queue, &msg, &higherPrioWoken2);
-			if (higherPrioWoken2) {
-				higherPrioWoken = higherPrioWoken2;
-			}
-		}
-		if (higherPrioWoken) {
-			portYIELD_FROM_ISR();
-		}
-		higherPrioWoken = rev_map[0];
+		higherPrioWoken |= _route_from_isr(its_msg_map[id].first, msg);
 	}
+	higherPrioWoken |= _route_from_isr(its_msg_all.first, msg);
+	if (higherPrioWoken) {
+		portYIELD_FROM_ISR();
+	}
+	higherPrioWoken = rev_map[0];
 }
 
+void _route(list_node *cur,
+		const mavlink_message_t * msg,
+		TickType_t ticksToWaitForOne) {
+	while (cur) {
+		xQueueSend(cur->value.queue, msg, ticksToWaitForOne);
+		cur = cur->next;
+	}
+}
 void its_rt_route(
 		const its_rt_sender_ctx_t * sender_ctx,
 		const mavlink_message_t * msg,
 		TickType_t ticksToWaitForOne
 ){
 	ESP_LOGI("HEY", "TGot message %d:", msg->msgid);
+	list_node *cur = 0;
 	int id = its_rt_get_hash(msg->msgid);
 	if (id != RT_CFG_LIST_SZ) {
-		list_node *cur = its_msg_map[id].first;
-		while (cur) {
-			xQueueSend(cur->value.queue, msg, ticksToWaitForOne);
-			cur = cur->next;
-		}
+		_route(its_msg_map[id].first, msg, ticksToWaitForOne);
 	}
+	_route(its_msg_all.first, msg, ticksToWaitForOne);
 }

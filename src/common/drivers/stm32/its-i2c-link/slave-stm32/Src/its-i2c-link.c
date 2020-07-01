@@ -118,7 +118,7 @@ static its_i2c_link_pbuf_t * _pbuf_queue_get_head(i2c_link_pbuf_queue_t * queue)
 }
 
 static int _pbuf_queue_is_empty(i2c_link_pbuf_queue_t * queue) {
-    return (queue->head == queue->tail) && queue->full;
+    return (queue->head == queue->tail) && !queue->full;
 }
 
 static void _pbuf_queue_push_head(i2c_link_pbuf_queue_t * queue)
@@ -339,6 +339,9 @@ static int _link_tx_complete(I2C_HandleTypeDef *hi2c, i2c_link_ctx_t * ctx)
         assert(0);
     };
 
+    if(_pbuf_queue_is_empty(&ctx->tx_bufs_queue)) {
+        _i2c_push_int();
+    }
     // Шлем нолики, на случай, если хост вдруг попросит еще данных
     return _link_tx_start_zeroes(hi2c, ctx);
     //ctx->state = I2C_LINK_STATE_TX_DONE;
@@ -635,9 +638,7 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
         // не будем пытаться делать это вновь
         ctx->stats.tx_error_cnt++;
         _pbuf_queue_pop_tail(&ctx->tx_bufs_queue);
-        if (_pbuf_queue_is_empty(&ctx->tx_bufs_queue)) {
-            _i2c_push_int();
-        }
+
         ctx->stats.last_error = error;
 
         // обязательно уходим из этого состояния
@@ -650,6 +651,7 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
         {
             // Это совершенно нормальная ситуация - NACK на последний байт от мастера
             _link_rx_complete(hi2c, ctx);
+
         }
         else
         {

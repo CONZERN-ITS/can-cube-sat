@@ -152,6 +152,7 @@ static void _imi_recv_all(imi_handler_t *h) {
 
 	for (int i = 0; i < h->add_count; i++) {
 		int isAny = 1;
+		printf("Hmmm %X\n", h->adds[i]);
 		//If device has a packet, we will try to get one more. So, we will all packets
 		//one device, then from another and so on.
 		while (isAny) {
@@ -165,6 +166,10 @@ static void _imi_recv_all(imi_handler_t *h) {
 				.timeout = h->cfg.ticksToWaitForOne
 			};
 			int rc = imi_get_packet_size(&himi, &size);
+			if (!rc) {
+
+				printf("C: %d I: %d S: %d A: %X\n", h->add_count, i, size, h->adds[i]);
+			}
 			if (rc || size == 0) {
 				isAny = 0;
 				continue;
@@ -173,6 +178,11 @@ static void _imi_recv_all(imi_handler_t *h) {
 			uint8_t *pointer = (*h->cfg.alloc)(size);
 			if (!pointer) {
 				ESP_LOGE(TAG, "ERROR: IMI static alloc error\n");
+				/*
+				 * Мы хотим больше не читать от этого глупого устройства,
+				 * который послал безумно большой пакет
+				 */
+				isAny = 0;
 				continue;
 			}
 			rc = imi_get_packet(&himi, pointer, size);

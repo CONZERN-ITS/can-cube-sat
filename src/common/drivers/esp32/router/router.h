@@ -32,6 +32,7 @@ void its_rt_route(
 		TickType_t ticksToWaitForOne
 );
 int its_rt_register(int msg_id, its_rt_task_identifier task_id);
+int its_rt_register_for_all(its_rt_task_identifier task_id);
 void its_rt_uninit();
 
 
