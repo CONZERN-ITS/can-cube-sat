@@ -50,20 +50,20 @@ class DataWidget(QtWidgets.QTableWidget):
             row_count = row_count + len(self.settings.value(group +"/name")) - 1
         self.setRowCount(row_count)
         row_count = 0
+        self.table_dict = {}
         for group in self.settings.childGroups():
             self.settings.beginGroup(group)
-            table_len = len(self.settings.value("name")) - 1
-            timer = DataWidget.Timer(self, row_count, table_len, self.colors[2])
+            packet_len = len(self.settings.value("name")) - 1
+            for i in range(packet_len):
+                self.setItem(row_count + i, 0, QtWidgets.QTableWidgetItem(self.settings.value("name")[i]))
+            timer = DataWidget.Timer(self, row_count, packet_len, self.colors[2])
             timer.setSingleShot(True)
             timer.setInterval(int(float(self.settings.value("time_limit"))*1000))
             self.table_dict.update([(self.settings.value("packet_name"), (row_count, 
-                                                                          table_len,
-                                                                          float(self.settings.value("range")[0]),
-                                                                          float(self.settings.value("range")[1]),
+                                                                          packet_len,
+                                                                          tuple([float(num) for num in self.settings.value("range")]),
                                                                           timer))])
-            for i in range(table_len):
-                self.setItem(row_count + i, 0, QtWidgets.QTableWidgetItem(self.settings.value("name")[i]))
-            row_count = row_count + table_len
+            row_count = row_count + packet_len
             self.settings.endGroup()
         self.settings.endGroup()
         self.settings.endGroup()
@@ -74,13 +74,14 @@ class DataWidget(QtWidgets.QTableWidget):
                 if ((table[0] == pack[0]) and ((len(pack) - 2) >= table[1][1])):
                     for i in range(table[1][1]):
                         self.setItem(table[1][0] + i, 1, QtWidgets.QTableWidgetItem(str(pack[i + 2])))
-                        if (pack[i + 2] < table[1][2]):
+                        print(table[1][2])
+                        if (pack[i + 2] < table[1][2][2 * i]):
                             self.item(table[1][0] + i, 1).setBackground(self.colors[0])
-                        elif (pack[i + 2] > table[1][3]):
+                        elif (pack[i + 2] > table[1][2][2 * i + 1]):
                             self.item(table[1][0] + i, 1).setBackground(self.colors[1])
                         else:
                             self.item(table[1][0] + i, 1).setBackground(self.background_color)
-                    table[1][4].start()
+                    table[1][3].start()
                     break
 
     def clear_data(self):

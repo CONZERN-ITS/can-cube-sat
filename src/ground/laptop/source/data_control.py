@@ -25,7 +25,7 @@ class TXTLogDataSource():
 
     def read_data(self):
         string_data = self.log.readline()
-        if string_data is '':
+        if string_data == '':
             raise EOFError("Log file end")
         data = re.findall(r"[\w.]+", string_data)
         if data is []:
@@ -118,7 +118,7 @@ class MAVDataSource():
             raise RuntimeError("No Message")
         self.log.write(msg.get_msgbuf())
         data = self.get_data(msg)
-        print(msg)
+        #print(msg)
         if data is None:
             raise TypeError("Message type not supported")
 

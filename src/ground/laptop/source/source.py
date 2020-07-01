@@ -19,8 +19,8 @@ class CentralWidget(QtWidgets.QWidget):
 
     def setup_ui(self):
         self.grid_layout = QtWidgets.QGridLayout(self)
-        self.settings.beginGroup("CentralWidget")
 
+        self.settings.beginGroup("CentralWidget")
         if int(self.settings.value("GraphWidget/is_on")):
             self.widgets_dict.update([("GraphWidget", graph_widget.GraphWidget())])
         if int(self.settings.value("MapWidget/is_on")):
@@ -108,7 +108,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.autoclose.emit(str(e))
                     break
                 except Exception as e:
-                    print(e)
+                    pass#print(e)
                 else:
                     data_buf.extend(data)
                     if (time.time() - start_time) > self.update_time:
@@ -159,6 +159,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clear_btn = self.toolbar.addAction('Clear data')
 
         self.settings_window = settings_control.SettingsWindow()
+        self.settings_window.change_settings.connect(self.setup_ui_design)
 
         self.menu_bar = self.menuBar()
         self.menu_file = self.menu_bar.addMenu("&File")
@@ -183,12 +184,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data_manager.autoclose.connect(self.connection_action)
         self.time_btn.triggered.connect(self.reset_time)
 
-        self.settings_window.change_settings.connect(self.setup_ui_design)
-
     def setup_ui_design(self):
         if not self.data_thread.isRunning():
             self.resize(*[int(num) for num in self.settings.value('MainWindow/size')])
             self.setWindowTitle("StrelA MS")
+
             self.menu_file.setTitle("&File")
             self.action_settings.setText("&Settings")
             self.action_settings.setStatusTip("Settings")
@@ -212,12 +212,12 @@ class MainWindow(QtWidgets.QMainWindow):
         sourse = self.settings.value('type')
         if sourse == 'Log':
             log = self.settings.value('Log/type')
-            if log == "TXT":
-                data = TXTLogDataSource(self.settings.value('Log/path'),
-                                 int(self.settings.value('Log/real_time')),
-                                 float(self.settings.value('Log/time_delay')),
-                                 int(self.settings.value('Log/time_from_zero')))
-            elif log == "MAV":
+            #if log == "TXT":
+            #    data = TXTLogDataSource(self.settings.value('Log/path'),
+            #                     int(self.settings.value('Log/real_time')),
+            #                     float(self.settings.value('Log/time_delay')),
+            #                     int(self.settings.value('Log/time_from_zero')))
+            if log == "MAV":
                 data = MAVLogDataSource(self.settings.value('Log/path'),
                                      int(self.settings.value('Log/real_time')),
                                      float(self.settings.value('Log/time_delay')),
@@ -245,7 +245,7 @@ class MainWindow(QtWidgets.QMainWindow):
             time.sleep(0.1)
             self.settings_window.settings_enabled(True)
         if (stat_bar_msg is not None) and (stat_bar_msg != False):
-            print(stat_bar_msg)
+            pass#print(stat_bar_msg)
 
 
 
