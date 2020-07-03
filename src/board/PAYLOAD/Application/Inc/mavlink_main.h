@@ -16,7 +16,7 @@
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
 // Скидывать сообщения в текстовом виде в консольку для отладки
 #ifdef DEBUG
-#define PROCESS_TO_PRINTF
+//#define PROCESS_TO_PRINTF
 #endif
 // Скидывать сообщения в its_link
 #define PROCESS_TO_ITSLINK

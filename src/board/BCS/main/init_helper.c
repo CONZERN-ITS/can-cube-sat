@@ -26,9 +26,9 @@
 static i2c_config_t init_pin_i2c_tm  = {
 	.mode = I2C_MODE_MASTER,
 	.sda_io_num = ITS_PIN_I2CTM_SDA,
-	.sda_pullup_en = GPIO_PULLUP_ENABLE,
+	.sda_pullup_en = GPIO_PULLUP_DISABLE,
 	.scl_io_num = ITS_PIN_I2CTM_SCL,
-	.scl_pullup_en = GPIO_PULLUP_ENABLE,
+	.scl_pullup_en = GPIO_PULLUP_DISABLE,
 	.master.clk_speed = ITS_I2CTM_FREQ
 };
 
@@ -106,6 +106,7 @@ void init_helper(void) {
 	i2c_chan = mavlink_claim_channel();
 	imi_install(&imi_config, ITS_IMI_PORT);
 	imi_add_address(ITS_IMI_PORT, ITS_ARK_ADDRESS);
+	imi_add_address(ITS_IMI_PORT, ITS_PLD_ADDRESS);
 	imi_start(ITS_IMI_PORT);
 
 	uart_mavlink_install(ITS_UART_PORT, quart);

@@ -9,6 +9,7 @@
 
 int my_i2c_send(i2c_port_t i2c_port, uint8_t address, uint8_t *data, int size, int timeout) {
 	if (size <= 0) {
+		printf("Error size: size <= 0");
 		return -1;
 	}
 	esp_err_t err;
@@ -20,6 +21,7 @@ int my_i2c_send(i2c_port_t i2c_port, uint8_t address, uint8_t *data, int size, i
 	i2c_master_stop(cmd);
 
 	err = i2c_master_cmd_begin(i2c_port, cmd, timeout);
+
 	i2c_cmd_link_delete(cmd);
 	return err;
 }

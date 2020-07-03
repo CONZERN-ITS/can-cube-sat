@@ -64,7 +64,7 @@ static int imi_get_packet_size(imi_t *himi, uint16_t *size) {
 	uint16_t rsize = 0;
 	err = my_i2c_recieve(himi->i2c_port, himi->address, (uint8_t*) &rsize, sizeof(rsize), himi->timeout);
 	if (err) {
-		 //printf("Error: send cmd2 = %d\n", (int)err);
+		//printf("Error: send cmd2 = %d\n", (int)err);
 		return err;
 	}
 	*size = rsize;
@@ -74,7 +74,7 @@ static int imi_get_packet_size(imi_t *himi, uint16_t *size) {
 static int imi_get_packet(imi_t *himi, uint8_t *data, uint16_t size) {
 	int err = imi_send_cmd(himi, IMI_CMD_GET_PACKET);
 	if (err) {
-		//printf("Error: send cmd3 = %d\n", (int)err);
+		printf("Error: send cmd3 = %d\n", (int)err);
 		return err;
 	}
 
@@ -152,7 +152,6 @@ static void _imi_recv_all(imi_handler_t *h) {
 
 	for (int i = 0; i < h->add_count; i++) {
 		int isAny = 1;
-		printf("Hmmm %X\n", h->adds[i]);
 		//If device has a packet, we will try to get one more. So, we will all packets
 		//one device, then from another and so on.
 		while (isAny) {
@@ -166,10 +165,6 @@ static void _imi_recv_all(imi_handler_t *h) {
 				.timeout = h->cfg.ticksToWaitForOne
 			};
 			int rc = imi_get_packet_size(&himi, &size);
-			if (!rc) {
-
-				printf("C: %d I: %d S: %d A: %X\n", h->add_count, i, size, h->adds[i]);
-			}
 			if (rc || size == 0) {
 				isAny = 0;
 				continue;

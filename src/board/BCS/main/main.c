@@ -80,11 +80,7 @@ static void task_send_telemetry_inet(void *pvParameters) {
 
 	its_rt_task_identifier tid;
 	tid.queue = xQueueCreate(10, MAVLINK_MAX_PACKET_LEN);
-	its_rt_register(MAVLINK_MSG_ID_THERMAL_STATE, tid);
-	its_rt_register(MAVLINK_MSG_ID_ELECTRICAL_STATE, tid);
-	its_rt_register(MAVLINK_MSG_ID_SINS_isc, tid);
-	its_rt_register(MAVLINK_MSG_ID_GPS_UBX_NAV_SOL, tid);
-	its_rt_register(MAVLINK_MSG_ID_TIMESTAMP, tid);
+	its_rt_register_for_all(tid);
 
 
 	struct sockaddr_in addr = {0};
@@ -123,7 +119,7 @@ static void task_send_telemetry_inet(void *pvParameters) {
 				vTaskDelay(500 / portTICK_RATE_MS);
 				continue;
 			}
-			ESP_LOGI("INET", "Got smthng to send");
+			//ESP_LOGI("INET", "Got smthng to send");
 			uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 			int count = mavlink_msg_to_send_buffer(buf, &msg);
 
@@ -142,11 +138,7 @@ static void task_send_telemetry_inet(void *pvParameters) {
 static void task_send_telemetry_uart(void *pvParameters) {
 	its_rt_task_identifier tid;
 	tid.queue = xQueueCreate(10, MAVLINK_MAX_PACKET_LEN);
-	its_rt_register(MAVLINK_MSG_ID_THERMAL_STATE, tid);
-	its_rt_register(MAVLINK_MSG_ID_ELECTRICAL_STATE, tid);
-	its_rt_register(MAVLINK_MSG_ID_SINS_isc, tid);
-	its_rt_register(MAVLINK_MSG_ID_GPS_UBX_NAV_SOL, tid);
-	its_rt_register(MAVLINK_MSG_ID_TIMESTAMP, tid);
+	its_rt_register_for_all(tid);
 
 	while (1) {
 		mavlink_message_t msg;
@@ -156,7 +148,7 @@ static void task_send_telemetry_uart(void *pvParameters) {
 			vTaskDelay(500 / portTICK_RATE_MS);
 			continue;
 		}
-		ESP_LOGI("UART_RADIO", "Got smthng to send");
+		//ESP_LOGI("UART_RADIO", "Got smthng to send");
 		uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 		int count = mavlink_msg_to_send_buffer(buf, &msg);
 
@@ -170,7 +162,7 @@ static void task_print_telemetry(void *pvParameters) {
 		struct timeval tm;
 		gettimeofday(&tm, 0);
 		printf("TIME: %d.%06d\n", (uint32_t)tm.tv_sec, (uint32_t)tm.tv_usec);
-		vTaskDelay(1);
+		vTaskDelay(2000 / portTICK_PERIOD_MS);
 	}
 	its_rt_task_identifier tid;
 	tid.queue = xQueueCreate(5, MAVLINK_MAX_PACKET_LEN);

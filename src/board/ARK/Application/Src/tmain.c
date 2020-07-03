@@ -63,8 +63,16 @@ void task_main_init(void *arg) {
 
 
 }
-void task_main_update(void *arg) {
 
+
+void task_main_update(void *arg) {
+    static uint32_t t = 0;
+    uint32_t now = HAL_GetTick();
+    if (now - t > 1000) {
+        printf("WOW!\n");
+        t = now;
+        HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+    }
 }
 
 int tmain(void) {

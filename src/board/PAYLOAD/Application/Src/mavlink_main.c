@@ -15,7 +15,7 @@
 #include <its-i2c-link.h>
 
 mavlink_system_t mavlink_system = {CUBE_1, CUBE_1_PL};
-
+static uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 
 void mav_main_send_to_its_link(mavlink_channel_t channel, const uint8_t * buffer, uint16_t buffer_size)
 {
@@ -63,8 +63,9 @@ void mav_main_process_bme_message(const mavlink_pld_bme280_data_t * msg)
 
 #ifdef PROCESS_TO_ITSLINK
     mavlink_message_t ms;
-    uint16_t size = mavlink_msg_pld_bme280_data_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
-    its_i2c_link_write(&ms, size);
+    mavlink_msg_pld_bme280_data_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
+    uint16_t size = mavlink_msg_to_send_buffer(buf, &ms);
+    its_i2c_link_write(&buf, size);
 #endif
 
 }
@@ -86,8 +87,9 @@ void mav_main_process_me2o2_message(mavlink_pld_me2o2_data_t * msg)
 
 #ifdef PROCESS_TO_ITSLINK
 	mavlink_message_t ms;
-	uint16_t size = mavlink_msg_pld_me2o2_data_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
-	its_i2c_link_write(&ms, size);
+	mavlink_msg_pld_me2o2_data_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
+    uint16_t size = mavlink_msg_to_send_buffer(buf, &ms);
+    its_i2c_link_write(&buf, size);
 #endif
 }
 
@@ -108,8 +110,9 @@ void mav_main_process_mics_message(mavlink_pld_mics_6814_data_t * msg)
 
 #ifdef PROCESS_TO_ITSLINK
     mavlink_message_t ms;
-    uint16_t size = mavlink_msg_pld_mics_6814_data_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
-    its_i2c_link_write(&ms, size);
+    mavlink_msg_pld_mics_6814_data_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
+    uint16_t size = mavlink_msg_to_send_buffer(buf, &ms);
+    its_i2c_link_write(&buf, size);
 #endif
 }
 
@@ -130,8 +133,9 @@ void mav_main_process_owntemp_message(mavlink_own_temp_t * msg)
 
 #ifdef PROCESS_TO_ITSLINK
     mavlink_message_t ms;
-    uint16_t size = mavlink_msg_own_temp_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
-    its_i2c_link_write(&ms, size);
+    mavlink_msg_own_temp_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
+    uint16_t size = mavlink_msg_to_send_buffer(buf, &ms);
+    its_i2c_link_write(&buf, size);
 #endif
 }
 
@@ -167,8 +171,9 @@ void mav_main_process_own_stats(mavlink_pld_stats_t * msg)
 
 #ifdef PROCESS_TO_ITSLINK
     mavlink_message_t ms;
-    uint16_t size = mavlink_msg_pld_stats_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
-    its_i2c_link_write(&ms, size);
+    mavlink_msg_pld_stats_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
+    uint16_t size = mavlink_msg_to_send_buffer(buf, &ms);
+    its_i2c_link_write(&buf, size);
 #endif
 }
 
@@ -196,8 +201,9 @@ void mav_main_process_i2c_link_stats(mavlink_i2c_link_stats_t * msg)
 
 #ifdef PROCESS_TO_ITSLINK
     mavlink_message_t ms;
-    uint16_t size = mavlink_msg_i2c_link_stats_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
-    its_i2c_link_write(&ms, size);
+    mavlink_msg_i2c_link_stats_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
+    uint16_t size = mavlink_msg_to_send_buffer(buf, &ms);
+    its_i2c_link_write(&buf, size);
 #endif
 }
 

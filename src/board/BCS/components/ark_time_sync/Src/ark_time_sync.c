@@ -47,7 +47,7 @@ void ark_tsync_task(void *pvParametres) {
 		size_t size = sizeof(packet);
 		ark_tsync_send_signal(packet, &size);
 
-		imi_send_all(0, packet, size, 100 / portTICK_RATE_MS);
+		imi_send_all(ITS_IMI_PORT, packet, size, 100 / portTICK_RATE_MS);
 		vTaskDelay(ARK_TIME_SYNC_PRIOD / portTICK_RATE_MS);
 	}
 }

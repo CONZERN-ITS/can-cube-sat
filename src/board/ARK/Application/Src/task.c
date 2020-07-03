@@ -18,8 +18,8 @@ typedef struct {
 
 
 static task_private_t task_array[TASK_MAX_TCOUNT];
-static int count;
-static task_id cur_task;
+static int count = 0;
+static task_id cur_task = 0;
 
 void task_create(task_t task, task_id *tid) {
     assert(count < TASK_MAX_TCOUNT);
@@ -27,11 +27,12 @@ void task_create(task_t task, task_id *tid) {
     if (tid) {
         *tid = count;
     }
-    task_array[count].task = task;
-    task_array[count].is_used = 1;
-    (*task.init)(task.arg);
-    task_array[count].is_inited = 1;
+    task_private_t *tp = &task_array[count];
     count++;
+    tp->task = task;
+    tp->is_used = 1;
+    (*task.init)(task.arg);
+    tp->is_inited = 1;
 }
 
 void task_init_all(void) {
