@@ -116,7 +116,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         for i in range(len(data_buf)):
                             data_buf[i][1] = data_buf[i][1] - shift
                             data_buf[i] = tuple(data_buf[i])
-                        data_buf.append(tuple(['TIME', data_buf[-1][1], last_time]))
+                        data_buf.append(tuple(['TIME',data_buf[-1][1], time.time(), last_time, data_buf[-1][1]]))
                         self.new_data.emit(tuple(data_buf))
                         start_time = time.time()
                         data_buf = []

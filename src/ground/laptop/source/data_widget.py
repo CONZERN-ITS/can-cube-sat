@@ -75,7 +75,6 @@ class DataWidget(QtWidgets.QTableWidget):
                 if ((table[0] == pack[0]) and ((len(pack) - 2) >= table[1][1])):
                     for i in range(table[1][1]):
                         self.setItem(table[1][0] + i, 1, QtWidgets.QTableWidgetItem(str(pack[i + 2])))
-                        print(table[1][2])
                         if (pack[i + 2] < table[1][2][2 * i]):
                             self.item(table[1][0] + i, 0).setBackground(self.colors[0])
                             self.item(table[1][0] + i, 1).setBackground(self.colors[0])
