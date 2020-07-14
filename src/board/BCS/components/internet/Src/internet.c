@@ -26,9 +26,10 @@
 #include "lwip/sys.h"
 #include "lwip/sockets.h"
 #include "esp_netif.h"
+#include "lwipopts.h"
 
-#define EXAMPLE_ESP_WIFI_SSID      "Boku no Wi-Fi"
-#define EXAMPLE_ESP_WIFI_PASS      "Hashi_hi_teo"
+#define WIFI_AP_SSID			CONFIG_ESP_WIFI_SSID
+#define WIFI_AP_PASS			CONFIG_ESP_WIFI_PASSWORD
 #define EXAMPLE_ESP_MAXIMUM_RETRY  3
 #define SEARCH_PERIOD 5000 //milliseconds
 #define IP_CONFIG_PORT_OUR 54003
@@ -86,9 +87,12 @@ void sntp_notify(struct timeval *tv) {
 #define NTP_DISP 1 << 16
 #define NTP_REFID *((uint32_t *)("GPS"))
 
+
+static ip_addr_t ipaddr_cli = IPADDR4_INIT_BYTES(192, 168, 4, 40);
+static ip_addr_t ipaddr_ser = IPADDR4_INIT_BYTES(192, 168, 4, 1);
+
 void ntp_server_task(void *arg) {
-	printf("WWWW!\n");
-	ESP_LOGV("SNTP", "ntp_server_task: start");
+	ESP_LOGI("SNTP", "ntp_server_task: start");
 	int sin = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sin < 0) {
 		ESP_LOGE("SNTP", "Can't create socket");
@@ -102,23 +106,20 @@ void ntp_server_task(void *arg) {
 		ESP_LOGE("SNTP", "Can't bind socket");
 		vTaskDelete(NULL);
 	}
-	ESP_LOGV("SNTP", "ntp_server_task: start reading");
+	ESP_LOGI("SNTP", "ntp_server_task: start reading");
 
-	printf("WWWW!2\n");
 	while (1) {
 		uint8_t buf[NTP_BUF_SIZE + 1];
 		socklen_t len = sizeof(addr);
 		//Пытаемся прочесть чуть больше, чтобы убедиться, что полученное сообщение
 		//ровно той же длины, что и ожидаемый пакет
 		int size = recvfrom(sin, &buf, sizeof(buf), 0, (struct sockaddr *)&addr, &len);
-		printf("WWWW!3\n");
 		if (size < 0) {
 			ESP_LOGE("SNTP", "Receive Error: %d", errno);
 			continue;
 		}
 		if (size != NTP_BUF_SIZE) {
-			printf("WHAT?!: %d\n", size);
-			ESP_LOGV("SNTP", "ntp_server_task: not a ntp msg - dumping it");
+			ESP_LOGI("SNTP", "ntp_server_task: not a ntp msg - dumping it");
 			continue;
 		}
 		/*
@@ -146,30 +147,35 @@ void ntp_server_task(void *arg) {
 		//что-то лучше, чем это без влезаний в ядро ESP.
 		data[8] = data[10] = htonl(tm.tv_sec + NTP_UTC_OFFSET);
 		data[9] = data[11] = htonl(((unsigned long long)tm.tv_usec << 32LL) / 1000000.0);
-		printf("SEND TO: %d:%d\n", addr.sin_addr.s_addr, addr.sin_port);
+		ESP_LOGI("SNTP", "SEND TO: %d:%d\n", addr.sin_addr.s_addr, addr.sin_port);
 		sendto(sin, data, NTP_BUF_SIZE, 0, (struct sockaddr *)&addr, sizeof(addr));
 	}
 }
 
-void my_sntp_init() {
+void my_sntp_client_init() {
+	sntp_set_time_sync_notification_cb(sntp_notify);
+    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    sntp_setserver(0, &ipaddr_ser);
+	sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
+	sntp_set_sync_interval(0);
+    sntp_init();
+    sntp_restart();
+    ESP_LOGI("SNTP", "client started");
+}
+void my_sntp_server_init() {
+	xTaskCreatePinnedToCore(ntp_server_task, "SNTP server", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);/*
 	ip_addr_t addr = IPADDR4_INIT_BYTES(192, 168, 31, 1);
 
 	dns_setserver(0, &addr);
 
 	sntp_set_time_sync_notification_cb(sntp_notify);
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
-#if ITS_WIFI_SERVER
-	xTaskCreatePinnedToCore(ntp_server_task, "SNTP server", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);
     sntp_setservername(0, "pool.ntp.org");
-#else
-    ip_addr_t addr2 = IPADDR4_INIT_BYTES(192, 168, 31, 40);
-    sntp_setserver(0, &addr2);
-#endif
 	sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
 	sntp_set_sync_interval(0);
     sntp_init();
     sntp_restart();
-    printf("SNTP start!!!!!!!!!!!!!!!!!\n");
+    ESP_LOGI("SNTP", "server started");*/
 }
 
 
@@ -277,28 +283,32 @@ void task_socket_comm(void *pvParameters) {
 		vTaskDelay(1000 / portTICK_RATE_MS);
 	}
 }
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 
+#define WIFI_AP_CHANNEL			5
+#define WIFI_AP_MAX_STA_CONN	4
 static void event_handler(void* arg, esp_event_base_t event_base,
-                                int32_t event_id, void* event_data)
+								int32_t event_id, void* event_data)
 {
-    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
-        esp_wifi_connect();
-    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
-            esp_wifi_connect();
-            s_retry_num++;
-            ESP_LOGI(TAG, "retry to connect to the AP");
-        } else {
-            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
-        }
-        ESP_LOGI(TAG,"connect to the AP fail");
-    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
-        ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
-        ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-        ip_config.address = event->ip_info.ip;
-        s_retry_num = 0;
-        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
-    }
+	if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+		esp_wifi_connect();
+	} else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+		if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
+			esp_wifi_connect();
+			s_retry_num++;
+			ESP_LOGI(TAG, "retry to connect to the AP");
+		} else {
+			xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+		}
+		ESP_LOGI(TAG,"connect to the AP fail");
+	} else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+		ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
+		ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
+		ip_config.address = event->ip_info.ip;
+		s_retry_num = 0;
+		xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+	}
 }
 
 void wifi_init_sta(void)
@@ -314,15 +324,11 @@ void wifi_init_sta(void)
 
     esp_netif_ip_info_t ip = {
             .ip = { .addr = inet_addr(IP2_OUR_IP)},
-            .gw = { .addr = inet_addr("192.168.31.1") },
+            .gw = { .addr = inet_addr("192.168.31.40") },
             .netmask = { .addr = htonl(esp_netif_ip4_makeu32( 255, 255, 255, 0)) },
     };
-#if ITS_WIFI_SERVER
-    IP4_ADDR(&ip.ip, 192, 168, 31, 40);
-#else
-    IP4_ADDR(&ip.ip, 192, 168, 31, 41);
-#endif
-    IP4_ADDR(&ip.gw, 192, 168, 31, 1);
+    IP4_ADDR(&ip.ip, 192, 168, 4, 40);
+    IP4_ADDR(&ip.gw, 192, 168, 4, 1);
     IP4_ADDR(&ip.netmask, 255, 255, 255, 0);
     ESP_ERROR_CHECK(esp_netif_set_ip_info(hesp, &ip));
 
@@ -335,20 +341,16 @@ void wifi_init_sta(void)
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = EXAMPLE_ESP_WIFI_SSID,
-            .password = EXAMPLE_ESP_WIFI_PASS
+            .ssid = WIFI_AP_SSID,
+            .password = WIFI_AP_PASS
         },
     };
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
     int8_t pow = 0;
-	printf("Warning! Maybe wifi brownout\n");
     ESP_ERROR_CHECK(esp_wifi_start() );
     ESP_ERROR_CHECK(esp_wifi_get_max_tx_power(&pow));
-    printf("POWER: %d\n", pow);
     ESP_ERROR_CHECK(esp_wifi_set_max_tx_power(40));
-    //esp_netif_set_
-	printf("Warning gone\n");
     ESP_LOGI(TAG, "wifi_init_sta finished.");
 
     /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
@@ -364,10 +366,10 @@ void wifi_init_sta(void)
 
     if (bits & WIFI_CONNECTED_BIT) {
         ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
-                 EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+                 WIFI_AP_SSID, WIFI_AP_PASS);
     } else if (bits & WIFI_FAIL_BIT) {
         ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
-                 EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+                 WIFI_AP_SSID, WIFI_AP_PASS);
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
@@ -377,3 +379,67 @@ void wifi_init_sta(void)
     vEventGroupDelete(s_wifi_event_group);
 
 }
+
+
+
+static void wifi_ap_event_handler(void* arg, esp_event_base_t event_base,
+									int32_t event_id, void* event_data)
+{
+	if (event_id == WIFI_EVENT_AP_STACONNECTED) {
+		wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*) event_data;
+		ESP_LOGI("WIFI_AP", "station "MACSTR" join, AID=%d",
+				 MAC2STR(event->mac), event->aid);
+	} else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) {
+		wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*) event_data;
+		ESP_LOGI("WIFI_AP", "station "MACSTR" leave, AID=%d",
+				 MAC2STR(event->mac), event->aid);
+	}
+}
+
+void wifi_init_ap(void) {
+	ESP_ERROR_CHECK(esp_netif_init());
+	ESP_ERROR_CHECK(esp_event_loop_create_default());
+	esp_netif_t *hesp = esp_netif_create_default_wifi_ap();
+	ESP_ERROR_CHECK(esp_netif_dhcpc_stop(hesp));
+
+	    esp_netif_ip_info_t ip = {
+	            .ip = { .addr = inet_addr(IP2_OUR_IP)},
+	            .gw = { .addr = inet_addr("192.168.31.40") },
+	            .netmask = { .addr = htonl(esp_netif_ip4_makeu32( 255, 255, 255, 0)) },
+	    };
+
+    IP4_ADDR(&ip.ip, 192, 168, 31, 40);
+    IP4_ADDR(&ip.gw, 192, 168, 31, 40);
+    IP4_ADDR(&ip.netmask, 255, 255, 255, 0);
+    //ESP_ERROR_CHECK(esp_netif_set_ip_info(hesp, &ip));
+	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+	ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+														ESP_EVENT_ANY_ID,
+														&wifi_ap_event_handler,
+														NULL,
+														NULL));
+
+	wifi_config_t wifi_config = {
+		.ap = {
+			.ssid = WIFI_AP_SSID,
+			.ssid_len = strlen(WIFI_AP_SSID),
+			.channel = WIFI_AP_CHANNEL,
+			.password = WIFI_AP_PASS,
+			.max_connection = WIFI_AP_MAX_STA_CONN,
+			.authmode = WIFI_AUTH_WPA_WPA2_PSK
+		},
+	};
+	if (strlen(WIFI_AP_PASS) == 0) {
+		wifi_config.ap.authmode = WIFI_AUTH_OPEN;
+	}
+
+	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+	ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+	ESP_ERROR_CHECK(esp_wifi_start());
+
+	ESP_LOGI("WIFI_AP", "wifi_init_softap finished. SSID:%s password:%s channel:%d",
+	WIFI_AP_SSID, WIFI_AP_PASS, WIFI_AP_CHANNEL);
+}
+

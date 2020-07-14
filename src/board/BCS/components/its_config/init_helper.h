@@ -32,7 +32,7 @@
 #define ITS_UART0_TX_BUF_SIZE		1024
 #define ITS_UART0_QUEUE_SIZE		20
 
-#define ITS_WIFI_SERVER				1
+#define ITS_WIFI_SERVER				0
 #if !defined(ITS_WIFI_SERVER) || !ITS_WIFI_SERVER
 #define ITS_WIFI_CLIENT				1
 #else

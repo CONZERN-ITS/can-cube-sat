@@ -43,7 +43,6 @@ void app_main(void)
 {
 	init_helper();
 
-	ESP_LOGI("SYSTEM", "Wifi inited");
 
 	xTaskCreatePinnedToCore(task_socket_comm, "Socket communication", configMINIMAL_STACK_SIZE + 4000, "Socket comm", 1, 0, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(task_print_telemetry, "Print telemetry", configMINIMAL_STACK_SIZE + 4000, "Print telemetry", 1, 0, tskNO_AFFINITY);

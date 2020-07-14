@@ -12,6 +12,7 @@
 #include "driver/uart.h"
 
 #include "nvs_flash.h"
+#include "esp_log.h"
 
 #include "internet.h"
 #include "pinout_cfg.h"
@@ -111,8 +112,16 @@ void init_helper(void) {
 
 	uart_mavlink_install(ITS_UART_PORT, quart);
 
-    wifi_init_sta();
-    my_sntp_init();
+	ESP_LOGI("SYSTEM", "Start wifi init");
+#if ITS_WIFI_SERVER
+	wifi_init_ap();
+	my_sntp_server_init();
+#else
+	wifi_init_sta();
+	my_sntp_client_init();
+#endif
+
+	ESP_LOGI("SYSTEM", "Wifi inited");
 }
 
 uint8_t mv_packet[MAVLINK_MAX_PACKET_LEN];

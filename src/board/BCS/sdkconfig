@@ -122,8 +122,8 @@ CONFIG_PARTITION_TABLE_MD5=y
 #
 # Example Configuration
 #
-CONFIG_ESP_WIFI_SSID="Boku no Wi-Fi"
-CONFIG_ESP_WIFI_PASSWORD="Hashi_hi_teo"
+CONFIG_ESP_WIFI_SSID="CONZERN_NET"
+CONFIG_ESP_WIFI_PASSWORD="Have_a_nice_day!"
 # end of Example Configuration
 
 #
