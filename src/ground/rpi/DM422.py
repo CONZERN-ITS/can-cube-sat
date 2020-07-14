@@ -1,9 +1,9 @@
 import RPi.GPIO as GPIO
 import time
 
-PUL_PIN = 7
-DIR_PIN = 10
-ENABLE_PIN = 13
+PUL_PIN = 12
+DIR_PIN = 14
+ENABLE_PIN = 16
 
 class DM422_control_client ():
 	def __init__ (self, pul_pin=PUL_PIN, dir_pin=DIR_PIN, enable_pin=ENABLE_PIN, gearbox_num=1, deg_per_step=1):
@@ -52,3 +52,8 @@ class DM422_control_client ():
 
 
         
+if __name__ == '__main__':
+    dm422 = DM422_control_client()
+    dm422.setup(gearbox_num=102, deg_per_step=1.8)
+    while True:
+        dm422.rotate_using_angle(90)
