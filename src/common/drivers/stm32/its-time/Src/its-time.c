@@ -84,7 +84,7 @@ int its_time_init(void)
  * we have to save microseconds in variable and add everytime
  * when we want to get time
  */
-void its_gettimeofday(its_time_t *time) {
+void __attribute__((weak)) its_gettimeofday(its_time_t *time) {
     uint32_t cnt, div;
     _read_DIV_CNT_timesafe(its_time_h.RTCx, &div, &cnt);
     uint16_t usec = _div_tick_to_usec(div + 1, its_time_h.div_load + 1);
@@ -98,7 +98,7 @@ void its_gettimeofday(its_time_t *time) {
  * We have to save microseconds because of reasons
  * explained in comments for its_gettimeofday
  */
-void its_settimeofday(its_time_t *time) {
+void __attribute__((weak)) its_settimeofday(its_time_t *time) {
     its_time_h.usec_shift = time->usec;
     LL_RTC_DisableWriteProtection(its_time_h.RTCx);
     LL_RTC_TIME_Set(its_time_h.RTCx, time->sec);

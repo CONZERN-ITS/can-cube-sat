@@ -75,6 +75,7 @@ void Error_Handler(void);
 #define LED_REL_BOARD_GPIO_Port GPIOA
 #define TIME_Pin GPIO_PIN_15
 #define TIME_GPIO_Port GPIOA
+#define TIME_EXTI_IRQn EXTI15_10_IRQn
 #define I2C_INT_Pin GPIO_PIN_5
 #define I2C_INT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
