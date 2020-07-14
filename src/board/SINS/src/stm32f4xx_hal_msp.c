@@ -298,32 +298,6 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
 		GPIO_InitStruct.Alternate = GPIO_AF2_TIM4;
 		HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 	}
-	else if(htim->Instance==TIM1)
-	{
-		__HAL_RCC_TIM1_CLK_ENABLE();			//FIXME: delete
-		__HAL_RCC_GPIOB_CLK_ENABLE();
-		__HAL_RCC_GPIOA_CLK_ENABLE();
-		/**TIM1 GPIO Configuration
-		PA8     ------> TIM1_CH1    //для самодольного pps сигнала
-		*/
-		GPIO_InitStruct.Pin = GPIO_PIN_8;
-		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-		GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-		GPIO_InitStruct.Alternate = GPIO_AF1_TIM1;
-		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-
-		/**TIM1 GPIO Configuration
-		PB12 —----> TIM1_BKIN
-		*/
-		GPIO_InitStruct.Pin = GPIO_PIN_12;
-		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-		GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-		GPIO_InitStruct.Alternate = GPIO_AF1_TIM1;
-		HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-	}
 }
 
 

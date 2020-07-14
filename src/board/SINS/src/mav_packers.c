@@ -13,6 +13,9 @@
 #include "drivers/uplink.h"
 #include "state.h"
 
+#define SYSTEM_ID CUBE_1
+#define COMPONENT_ID CUBE_1_SINS
+
 int _mavlink_sins_isc(stateSINS_isc_t * state_isc)
 {
 		mavlink_sins_isc_t msg_sins_isc;
@@ -29,7 +32,7 @@ int _mavlink_sins_isc(stateSINS_isc_t * state_isc)
 
 
 		mavlink_message_t msg;
-		mavlink_msg_sins_isc_encode(0, 0, &msg, &msg_sins_isc);
+		mavlink_msg_sins_isc_encode(SYSTEM_ID, COMPONENT_ID, &msg, &msg_sins_isc);
 		int error = uplink_write_mav(&msg);
 		return error;
 }
@@ -45,7 +48,7 @@ int _mavlink_timestamp()
 	msg_timestamp.time_base = 0;		//FIXME: исправить
 
 	mavlink_message_t msg;
-	mavlink_msg_timestamp_encode(0, 0, &msg, &msg_timestamp);
+	mavlink_msg_timestamp_encode(SYSTEM_ID, COMPONENT_ID, &msg, &msg_timestamp);
 	int error = uplink_write_mav(&msg);
 	return error;
 }
@@ -81,10 +84,13 @@ void _on_gps_packet(void * arg, const ubx_any_packet_t * packet)
 			msg_gps_ubx_nav_sol.numSV = packet->packet.navsol.num_sv;
 
 			mavlink_message_t msg;
-			mavlink_msg_gps_ubx_nav_sol_encode(0, 0, &msg, &msg_gps_ubx_nav_sol);
+			mavlink_msg_gps_ubx_nav_sol_encode(SYSTEM_ID, COMPONENT_ID, &msg, &msg_gps_ubx_nav_sol);
 			uplink_write_mav(&msg);
 			break;
 		}
+
+	default:
+		break;
 
 	}
 }
