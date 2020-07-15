@@ -12,6 +12,8 @@
 #include "driver/gpio.h"
 #include "driver/uart.h"
 
+#include "lwip/ip_addr.h"
+
 #define ITS_I2CTM_DEV_COUNT			2
 #define ITS_ARK_ADDRESS 			0x68
 #define ITS_PLD_ADDRESS 			0x69
@@ -38,6 +40,11 @@
 #else
 #define ITS_WIFI_CLIENT				0
 #endif
+
+
+static const ip_addr_t ITS_WIFI_SERVER_ADDRESS = IPADDR4_INIT_BYTES(192, 168, 4, 1);
+static const ip_addr_t ITS_WIFI_CLIENT_ADDRESS = IPADDR4_INIT_BYTES(192, 168, 4, 40);
+#define ITS_WIFI_PORT 53442
 
 void init_helper(void);
 

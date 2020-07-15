@@ -79,7 +79,7 @@ extern void initialise_monitor_handles(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  initialise_monitor_handles();
+  //initialise_monitor_handles();
 
   /* USER CODE END 1 */
 
@@ -385,7 +385,6 @@ static void MX_GPIO_Init(void)
 int _write(int fd, char* ptr, int len)
 {
     (void)fd;
-    int i = 0;
     HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, 100);
     return len;
 }

@@ -12,20 +12,20 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
+
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_task.h"
 #include "esp_bit_defs.h"
-
 #include "esp_sntp.h"
-#include "lwip/dns.h"
+#include "esp_netif.h"
 
+#include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "lwip/sockets.h"
-#include "esp_netif.h"
 #include "lwipopts.h"
 
 #define WIFI_AP_SSID			CONFIG_ESP_WIFI_SSID
@@ -346,7 +346,11 @@ void wifi_init_ap(void) {
 
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
 	ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+	//ESP_ERROR_CHECK(esp_wifi_get_max_tx_power(&pow));
+	ESP_LOGI("DANGER","WIFI BURNOUT");
 	ESP_ERROR_CHECK(esp_wifi_start());
+	ESP_ERROR_CHECK(esp_wifi_set_max_tx_power(40));
+	ESP_LOGI("DANGER","NO WIFI BURNOUT");
 
 	ESP_LOGI("WIFI_AP", "wifi_init_softap finished. SSID:%s password:%s channel:%d",
 	WIFI_AP_SSID, WIFI_AP_PASS, WIFI_AP_CHANNEL);

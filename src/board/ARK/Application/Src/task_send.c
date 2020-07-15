@@ -13,6 +13,7 @@
 #include "task_ds.h"
 #include "task_ina.h"
 #include "stdlib.h"
+#include "inttypes.h"
 
 
 
@@ -176,7 +177,7 @@ void task_send_update(void *arg) {
         prev = HAL_GetTick();
         static its_time_t tim;
         its_gettimeofday(&tim);
-        printf("TIME: %u.%03u\n", (uint32_t)tim.sec, (uint32_t)tim.usec);
+        printf("TIME: %"PRIu32".%03"PRIu32"\n", (uint32_t)tim.sec, (uint32_t)tim.usec);
     }
     eupdate();
     tupdate();
