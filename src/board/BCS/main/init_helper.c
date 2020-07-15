@@ -99,6 +99,9 @@ void init_basic(void) {
 
 	gpio_install_isr_service(0);
 }
+#include "esp_netif.h"
+static ip_addr_t ipaddr_cli = IPADDR4_INIT_BYTES(192, 168, 4, 40);
+static ip_addr_t ipaddr_ser = IPADDR4_INIT_BYTES(192, 168, 4, 1);
 
 void init_helper(void) {
 	init_basic();
@@ -116,13 +119,12 @@ void init_helper(void) {
 	ESP_LOGI("SYSTEM", "Start wifi init");
 #if ITS_WIFI_SERVER
 	wifi_init_ap();
-	my_sntp_server_init();
 	static ts_sync ts = {0};
 	ts.pin = ITS_PIN_UART_INT;
-	time_sync_sins_install(&ts);
+	time_sync_from_sins_install(&ts);
 #else
 	wifi_init_sta();
-	my_sntp_client_init();
+	void time_sync_from_bcs_install(server_ip)
 #endif
 
 	ESP_LOGI("SYSTEM", "Wifi inited");

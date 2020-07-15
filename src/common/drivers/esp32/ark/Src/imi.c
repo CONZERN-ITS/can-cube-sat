@@ -1,9 +1,29 @@
 /*
- * This module adds more features to the usual I2C
- * using additional wire.
+ * Данный модуль IMI (I2C Messaging Interface) есть расширение
+ * I2c с помощью дополнительной линии I2C_INT.
  *
- * This new additional wire (I2C_INT) is used by slaves
- * to notify master, that they want to send something.
+ * Зачем: для того, чтобы мастер не опрашивал всех каждые N мс
+ * мы используем дополнительную линию, опускаемую одним из
+ * подчиненных, если тому есть что сказать.
+ *
+ * Реализация:
+ * 1) На низком уровне есть система команд, отправляемые мастером
+ * подчиненным:
+ * IMI_CMD_NONE - Нет команды, поведение не определенно
+ * IMI_CMD_GET_SIZE - Получить размер сообщения. Если нет сообщения,
+ * котоое подчиненный хочет отправить, то отправляется 0
+ * IMI_CMD_GET_PACKET - Полчучиь само сообщение
+ * IMI_CMD_SET_PACKET - Отправка сообщения. При этом перед отправкой
+ * отправляется размер сообщения.
+ * Размер - двухбайтовая величина.
+ * 2)На высоком уровне
+ * каждый может отправить сообщение длиной не больше
+ * максимального. При этом подчиненный опускает линию, а мастер
+ * спрашивает у каждого, есть ли у того сообщение. Подчиненный
+ * отправляет размер сообщения или 0, если нет сообщений. Таким
+ * образом, мастер сможет прочитать ровно столько, сколько
+ * подчиненный хочет ему отправить (в I2C именно мастер указывает,
+ * сколько он хочет прочитать).
  */
 
 
@@ -52,7 +72,9 @@ static int imi_msg_send(imi_t *himi, uint8_t *data, uint16_t size) {
 }
 
 
-
+/*
+ * Запрашивает размер сообщения, которое подчиненный хочет отправить
+ */
 static int imi_get_packet_size(imi_t *himi, uint16_t *size) {
 	int err = imi_send_cmd(himi, IMI_CMD_GET_SIZE);
 	if (err) {
@@ -71,6 +93,9 @@ static int imi_get_packet_size(imi_t *himi, uint16_t *size) {
 	return 0;
 }
 
+/*
+ * Запрашивает у подчиненного само сообщение
+ */
 static int imi_get_packet(imi_t *himi, uint8_t *data, uint16_t size) {
 	int err = imi_send_cmd(himi, IMI_CMD_GET_PACKET);
 	if (err) {
@@ -85,7 +110,11 @@ static int imi_get_packet(imi_t *himi, uint8_t *data, uint16_t size) {
 	}
 	return 0;
 }
-
+/*
+ * Заправшивает у подчиненного размер, и если не 0, то запрашивает само
+ * сообщение.
+ * retval == 0 - нет сообщений у этого подчиненного
+ */
 static int imi_msg_recieve(imi_t *himi, uint8_t *data, uint16_t *size) {
 	uint16_t rsize = 0;
 	int rc = 0;
@@ -115,7 +144,7 @@ typedef struct imi_desc {
 
 	uint8_t* (*salloc)(uint16_t size);				//Static allocation function
 	void (*save)(uint8_t *data, uint16_t size);		//Send packet to other systems
-	xSemaphoreHandle is_any_read;						//Handles task sleeping
+	xSemaphoreHandle is_any_read;					//Handles task sleeping
 } imi_desc;
 
 typedef enum {
@@ -148,6 +177,10 @@ static void IRAM_ATTR imi_i2c_int_isr_handler(void *arg) {
 	}
 }
 
+/*
+ * Считывает сообщения у всех на линии. Адреса определены
+ * в imi_handler_t *h. Сообщения сохраяняются через h->cfg.save.
+ */
 static void _imi_recv_all(imi_handler_t *h) {
 
 	for (int i = 0; i < h->add_count; i++) {
@@ -186,6 +219,10 @@ static void _imi_recv_all(imi_handler_t *h) {
 	}
 }
 
+/*
+ * Таск постоянно проверяет линию на опускание. Если опущена,
+ * то считывает сообщение у всех на линии.
+ */
 static void _imi_task_recv(void *arg) {
 	imi_handler_t *h = (imi_handler_t *)arg;
 
@@ -205,6 +242,9 @@ static void _imi_task_recv(void *arg) {
 	}
 }
 
+/*
+ * Установка imi линии
+ */
 void imi_install(imi_config_t *cfg, int port) {
 	assert(port < IMI_COUNT);
 	imi_handler_t *h = &imi_device[port];
@@ -226,6 +266,9 @@ void imi_install_static(imi_config_t *cfg, imi_port_t port, uint8_t *addrs) {
 
 	h->state = IMI_STATE_INSTALLED;
 }
+/*
+ * Запуск imi линии.
+ */
 void imi_start(imi_port_t port) {
 	assert(port < IMI_COUNT);
 	imi_handler_t *h = &imi_device[port];
@@ -247,6 +290,9 @@ void imi_start(imi_port_t port) {
 	h->state = IMI_STATE_STARTED;
 }
 
+/*
+ * Отправляет сообщение по указанному адресу.
+ */
 int imi_send(imi_port_t port, uint8_t address, uint8_t *data, uint16_t size, TickType_t ticksToWait) {
 	int rc = 0;
 	imi_handler_t *h;
@@ -268,7 +314,9 @@ int imi_send(imi_port_t port, uint8_t address, uint8_t *data, uint16_t size, Tic
 	xSemaphoreGive(h->mutex);
 	return rc;
 }
-
+/*
+ * Отправляет сообщение по всем адресам.
+ */
 int imi_send_all(imi_port_t port, uint8_t *data, uint16_t size, TickType_t ticksToWaitForOne) {
 	int rc = 0;
 	imi_handler_t *h;
@@ -293,7 +341,10 @@ int imi_send_all(imi_port_t port, uint8_t *data, uint16_t size, TickType_t ticks
 	xSemaphoreGive(h->mutex);
 	return rc;
 }
-
+/*
+ * Добавляет адрес в список адресов. Список заранее создан в виде
+ * массива.
+ */
 void imi_add_address(int port, uint8_t address) {
 	imi_handler_t *h;
 
@@ -304,43 +355,4 @@ void imi_add_address(int port, uint8_t address) {
 
 	h->adds[h->add_count++] = address;
 }
-
-/*
-
-//The main task
-void imi_msg_rcv_task(void *pv) {
-	while (1) {
-		//If line is pulled, take semaphore to wait for the moment when line is pulled
-		//Also we try to test line every IMI_WAIT_DELAY to verify we haven't pass line pulling
-		while (gpio_get_level(ITS_PIN_I2C_INT)) {
-			xSemaphoreTake(_imi_desc.is_any_read, IMI_WAIT_DELAY / portTICK_PERIOD_MS);
-		}
-
-		//Receiving packets if there are any
-		for (int i = 0; i < ITS_IMI_DEVICE_COUNT; i++) {
-			int isAny = 1;
-			//If device has a packet, we will try to get one more. So, we will all packets
-			//one device, then from another and so on.
-			while (isAny) {
-				uint16_t size = 0;
-
-				//Getting size. size == 0 means that the device has no packets
-				int rc = imi_get_packet_size(&imi_handler[i], &size);
-				if (rc || size == 0) {
-					isAny = 0;
-					continue;
-				}
-				//Get space for paket
-				uint8_t *pointer = (*_imi_desc.salloc)(size);
-				if (!pointer) {
-					ESP_LOGE(TAG, "ERROR: IMI static alloc error\n");
-					continue;
-				}
-				imi_get_packet(&imi_handler[i], pointer, size);
-				(*_imi_desc.save)(pointer, size);
-			}
-		}
-		vTaskDelay(IMI_CYCLE_DELAY / portTICK_PERIOD_MS);
-	}
-}*/
 

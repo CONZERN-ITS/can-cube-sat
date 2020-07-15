@@ -39,7 +39,7 @@ typedef int imi_port_t;
 
 typedef enum imi_cmd_t
 {
-    IMI_CMD_NONE = 0x00,
+	IMI_CMD_NONE = 0x00,
 	IMI_CMD_GET_SIZE = 0x01,
 	IMI_CMD_GET_PACKET = 0x02,
 	IMI_CMD_SET_PACKET = 0x04,
