@@ -283,7 +283,7 @@ int gps_poll(void)
 
 
 // Конфигурация приёмника
-extern const uint8_t * ublox_cfg_msgs[];
+extern const uint8_t * ublox_neo6_cfg_msgs[];
 
 
 //! Отправка одного конфигурационного пакета
@@ -329,7 +329,7 @@ static int _send_conf_packet(const uint8_t * packet)
 int gps_configure()
 {
 	// Перебираем все сообщения по одному
-	const uint8_t ** packet_ptr = ublox_cfg_msgs;
+	const uint8_t ** packet_ptr = ublox_neo6_cfg_msgs;
 	for ( ; *packet_ptr != 0; packet_ptr++)
 	{
 		const uint8_t * packet = *packet_ptr;
