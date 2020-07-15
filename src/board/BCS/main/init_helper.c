@@ -18,6 +18,7 @@
 #include "pinout_cfg.h"
 #include "imi.h"
 #include "uart_mavlink.h"
+#include "time_sync.h"
 
 #include "esp_intr_alloc.h"
 #include "router.h"
@@ -116,6 +117,9 @@ void init_helper(void) {
 #if ITS_WIFI_SERVER
 	wifi_init_ap();
 	my_sntp_server_init();
+	static ts_sync ts = {0};
+	ts.pin = ITS_PIN_UART_INT;
+	time_sync_sins_install(&ts);
 #else
 	wifi_init_sta();
 	my_sntp_client_init();

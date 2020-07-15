@@ -139,7 +139,7 @@ static const char *TAG = "imi";
 imi_handler_t imi_device[IMI_COUNT];
 
 //If line is pulled, awoke our task immediately
-static void IRAM_ATTR imi_i2c_int_isr_handler(void* arg) {
+static void IRAM_ATTR imi_i2c_int_isr_handler(void *arg) {
 	imi_handler_t *h = (imi_handler_t *)arg;
 	BaseType_t higherWoken = 0;
 	vTaskNotifyGiveFromISR(h->taskRecv, &higherWoken);
