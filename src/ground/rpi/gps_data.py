@@ -16,15 +16,21 @@ class GPS_data():
                 return data
         return None
 
-    def tpv_get_lat_lon_alt(self, data):
-        lan_lot_alt = (getattr(data,'lat', None),
-                       getattr(data,'lon', None),
-                       getattr(data,'alt', None))
+    def tpv_get_lat_lon(self, data):
+        lan_lot = (getattr(data,'lat', None),
+                   getattr(data,'lon', None))
 
-        for element in lan_lot_alt:
+        for element in lan_lot:
             if element is None:
                 return None 
-        return lan_lot_alt
+        return lan_lot
+
+    def tpv_get_alt(self, data):
+        alt = (getattr(data,'alt', None))
+
+        if alt is None:
+            return None 
+        return alt
 
     def tpv_get_x_y_z(self, data):
         x_y_z = (getattr(data,'ecefx', None),
