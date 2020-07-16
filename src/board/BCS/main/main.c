@@ -52,8 +52,8 @@ void app_main(void)
 	xTaskCreatePinnedToCore(task_print_telemetry, "Print telemetry", configMINIMAL_STACK_SIZE + 4000, "Print telemetry", 1, 0, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(ark_tsync_task, "ARK time sync", configMINIMAL_STACK_SIZE + 4000, "ARK time sync", 1, 0, tskNO_AFFINITY);
 #if ITS_WIFI_SERVER
-	xTaskCreatePinnedToCore(task_send_telemetry_uart, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
-	xTaskCreatePinnedToCore(task_recv_telemetry_wifi, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_send_telemetry_uart, "Send tel", configMINIMAL_STACK_SIZE + 2048, 0, 2, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_recv_telemetry_wifi, "Send tel", configMINIMAL_STACK_SIZE + 5000, 0, 2, 0, tskNO_AFFINITY);
 #else
 	xTaskCreatePinnedToCore(task_send_telemetry_wifi, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
 #endif
@@ -139,10 +139,10 @@ static void task_recv_telemetry_wifi(void *pvParameters) {
 		uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 		socklen_t len = sizeof(addr);
 		int size = recvfrom(sin, buf, sizeof(buf), 0, (struct sockaddr *)&addr, &len);
-		ESP_LOGI("INET", "Ok, we have somthng");
 		for (int i = 0; i < size; ++i) {
-			if(mavlink_parse_char(buf[i], chan, &msg, &mst)) {
-				ESP_LOGV("INET", "Got smthng from other guy");
+			//printf("%02X", buf[i]);
+
+			if(mavlink_parse_char(chan, buf[i], &msg, &mst)) {
 				its_rt_sender_ctx_t ctx = {0};
 				ctx.from_isr = 0;
 				its_rt_route(&ctx, &msg, 0);

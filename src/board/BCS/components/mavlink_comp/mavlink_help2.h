@@ -10,6 +10,7 @@
 
 #include "mavlink/its/mavlink.h"
 #include "init_helper.h"
+#include "assert.h"
 
 #if ITS_WIFI_SERVER
 const static mavlink_system_t mavlink_system = {CUBE_1, CUBE_1_BCU};
@@ -23,6 +24,7 @@ const static mavlink_system_t mavlink_system = {CUBE_2, CUBE_2_PFU};
 static mavlink_channel_t mavlink_claim_channel(void) {
 	static int channel = -1;
 	channel++;
+	assert(channel < MAVLINK_COMM_NUM_BUFFERS);
 	return (mavlink_channel_t) channel;
 }
 
