@@ -8,7 +8,7 @@
 #ifndef INC_TASK_RECV_H_
 #define INC_TASK_RECV_H_
 
-#include "mavlink/its/mavlink.h"
+#include "mavlink_help2.h"
 
 #define TRECV_MAX_CALLBACK_COUNT 5
 

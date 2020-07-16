@@ -7,7 +7,7 @@
 
 #include "main.h"
 
-#include "mavlink/its/mavlink.h"
+#include "mavlink_help2.h"
 #include "its-time.h"
 #include "its-i2c-link.h"
 #include "task_ds.h"
@@ -93,9 +93,7 @@ void eupdate() {
             mest.current = current[ina_index];
             mest.voltage = voltage[ina_index];
 
-            int system_id = 42;
-            int component_id = 42; //FIXME: Добавить системы и компоненты
-            mavlink_msg_electrical_state_encode(system_id, component_id, &msg, &mest);
+            mavlink_msg_electrical_state_encode(mavlink_system.sysid, mavlink_system.compid, &msg, &mest);
 
             size = mavlink_msg_to_send_buffer(buf, &msg);
         }
@@ -153,9 +151,7 @@ void tupdate() {
             mtst.area_id = ds_index;
             mtst.temperature = temp[ds_index];
 
-            int system_id = 42;
-            int component_id = 42; //FIXME: Добавить системы и компоненты
-            mavlink_msg_thermal_state_encode(system_id, component_id, &msg, &mtst);
+            mavlink_msg_thermal_state_encode(mavlink_system.sysid, mavlink_system.compid, &msg, &mtst);
 
             size = mavlink_msg_to_send_buffer(buf, &msg);
         }

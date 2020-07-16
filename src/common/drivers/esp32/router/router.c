@@ -134,7 +134,7 @@ void its_rt_route(
 		const mavlink_message_t * msg,
 		TickType_t ticksToWaitForOne
 ){
-	ESP_LOGI("ROUTER", "Got message %d:", msg->msgid);
+	ESP_LOGI("ROUTER", "Got message %d from %d:%d", msg->msgid, msg->sysid, msg->compid);
 	int id = its_rt_get_hash(msg->msgid);
 	if (id != RT_CFG_LIST_SZ) {
 		_route(its_msg_map[id].first, msg, ticksToWaitForOne);
