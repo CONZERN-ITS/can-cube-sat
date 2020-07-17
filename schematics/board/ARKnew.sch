@@ -454,6 +454,18 @@
 <smd name="47" x="-4.25" y="-2.25" dx="1.2" dy="0.3" layer="1"/>
 <smd name="48" x="-4.25" y="-2.75" dx="1.2" dy="0.3" layer="1"/>
 </package>
+<package name="INVERTER">
+<wire x1="-1.5" y1="0.85" x2="1.5" y2="0.85" width="0.127" layer="21"/>
+<wire x1="1.5" y1="0.85" x2="1.5" y2="-0.85" width="0.127" layer="21"/>
+<wire x1="1.5" y1="-0.85" x2="-1.5" y2="-0.85" width="0.127" layer="21"/>
+<wire x1="-1.5" y1="-0.85" x2="-1.5" y2="0.85" width="0.127" layer="21"/>
+<smd name="P$1" x="-0.95" y="-1.3" dx="1.27" dy="0.635" layer="1" rot="R90"/>
+<smd name="P$2" x="0" y="-1.3" dx="1.27" dy="0.635" layer="1" rot="R90"/>
+<smd name="P$3" x="0.95" y="-1.3" dx="1.27" dy="0.635" layer="1" rot="R90"/>
+<smd name="P$4" x="0.95" y="1.3" dx="1.27" dy="0.635" layer="1" rot="R90"/>
+<smd name="P$5" x="-0.95" y="1.3" dx="1.27" dy="0.635" layer="1" rot="R90"/>
+<text x="-1.778" y="-1.397" size="0.6096" layer="21" rot="R90">&gt;NAME</text>
+</package>
 </packages>
 <symbols>
 <symbol name="HY2120">
@@ -660,6 +672,18 @@
 <pin name="PC15" x="-22.86" y="7.62" length="middle"/>
 <pin name="VSSA" x="-22.86" y="-33.02" length="middle" direction="pwr"/>
 <pin name="VBAT" x="-22.86" y="-27.94" length="middle" direction="pwr"/>
+</symbol>
+<symbol name="INVERTER">
+<wire x1="-7.62" y1="-5.08" x2="7.62" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="7.62" y1="-5.08" x2="7.62" y2="5.08" width="0.254" layer="94"/>
+<wire x1="7.62" y1="5.08" x2="-7.62" y2="5.08" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="5.08" x2="-7.62" y2="-5.08" width="0.254" layer="94"/>
+<pin name="NC" x="-5.08" y="-10.16" length="middle" rot="R90"/>
+<pin name="A" x="0" y="-10.16" length="middle" rot="R90"/>
+<pin name="GND" x="5.08" y="-10.16" length="middle" rot="R90"/>
+<pin name="Y" x="2.54" y="10.16" length="middle" rot="R270"/>
+<pin name="VCC" x="-2.54" y="10.16" length="middle" rot="R270"/>
+<text x="-8.382" y="-5.588" size="2.54" layer="95" rot="R90">inverter</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -955,6 +979,25 @@
 <technology name="6"/>
 <technology name="8"/>
 <technology name="B"/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="INVERTER">
+<gates>
+<gate name="G$1" symbol="INVERTER" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="INVERTER">
+<connects>
+<connect gate="G$1" pin="A" pad="P$2"/>
+<connect gate="G$1" pin="GND" pad="P$3"/>
+<connect gate="G$1" pin="NC" pad="P$1"/>
+<connect gate="G$1" pin="VCC" pad="P$5"/>
+<connect gate="G$1" pin="Y" pad="P$4"/>
+</connects>
+<technologies>
+<technology name=""/>
 </technologies>
 </device>
 </devices>
@@ -16812,7 +16855,6 @@ Copyright: Würth Elektronik</description>
 <part name="C31" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="4.7µ"/>
 <part name="C49" library="CanCubeSat" deviceset="ECAP" device="ECAP150" value="150µ"/>
 <part name="C50" library="CanCubeSat" deviceset="ECAP" device="ECAP220" value="220µ"/>
-<part name="R63" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="1M"/>
 <part name="R62" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="232k"/>
 <part name="R87" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="680k"/>
 <part name="R88" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="100R"/>
@@ -16873,6 +16915,7 @@ Copyright: Würth Elektronik</description>
 <part name="C55" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100nF"/>
 <part name="U$57" library="CanCubeSat" deviceset="INA219AID" device=""/>
 <part name="INA219#1" library="CanCubeSat" deviceset="INA219AID" device=""/>
+<part name="U$2" library="CanCubeSat" deviceset="INVERTER" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -18444,10 +18487,6 @@ Copyright: Würth Elektronik</description>
 <attribute name="NAME" x="796.544" y="142.621" size="1.778" layer="95"/>
 <attribute name="VALUE" x="796.544" y="137.541" size="1.778" layer="96"/>
 </instance>
-<instance part="R63" gate="G$1" x="787.4" y="146.05" smashed="yes" rot="R90">
-<attribute name="NAME" x="785.9014" y="142.24" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="790.702" y="142.24" size="1.778" layer="96" rot="R90"/>
-</instance>
 <instance part="R62" gate="G$1" x="541.02" y="109.22" smashed="yes" rot="R90">
 <attribute name="NAME" x="539.5214" y="105.41" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="544.322" y="105.41" size="1.778" layer="96" rot="R90"/>
@@ -18661,6 +18700,7 @@ Copyright: Würth Elektronik</description>
 </instance>
 <instance part="U$57" gate="G$1" x="548.64" y="238.76" smashed="yes" rot="R90"/>
 <instance part="INA219#1" gate="G$1" x="576.58" y="238.76" smashed="yes" rot="R90"/>
+<instance part="U$2" gate="G$1" x="632.46" y="213.36" smashed="yes"/>
 </instances>
 <busses>
 </busses>
@@ -20003,6 +20043,11 @@ Copyright: Würth Elektronik</description>
 <label x="401.32" y="132.08" size="1.778" layer="95" rot="R90"/>
 <pinref part="R70" gate="G$1" pin="2"/>
 </segment>
+<segment>
+<pinref part="U$2" gate="G$1" pin="GND"/>
+<wire x1="637.54" y1="203.2" x2="637.54" y2="190.5" width="0.1524" layer="91"/>
+<label x="637.54" y="190.5" size="1.778" layer="95" rot="R90"/>
+</segment>
 </net>
 <net name="INA_BUS+" class="0">
 <segment>
@@ -20186,13 +20231,10 @@ Copyright: Würth Elektronik</description>
 <wire x1="764.54" y1="143.51" x2="762" y2="143.51" width="0.1524" layer="91"/>
 <wire x1="795.02" y1="151.13" x2="810.006" y2="151.13" width="0.1524" layer="91"/>
 <wire x1="795.02" y1="144.78" x2="795.02" y2="151.13" width="0.1524" layer="91"/>
-<wire x1="764.54" y1="151.13" x2="787.4" y2="151.13" width="0.1524" layer="91"/>
+<wire x1="764.54" y1="151.13" x2="795.02" y2="151.13" width="0.1524" layer="91"/>
 <junction x="764.54" y="151.13"/>
 <junction x="795.02" y="151.13"/>
-<wire x1="787.4" y1="151.13" x2="795.02" y2="151.13" width="0.1524" layer="91"/>
 <pinref part="C50" gate="G$1" pin="1"/>
-<pinref part="R63" gate="G$1" pin="2"/>
-<junction x="787.4" y="151.13"/>
 </segment>
 </net>
 <net name="SCL" class="0">
@@ -20405,6 +20447,11 @@ Copyright: Würth Elektronik</description>
 <wire x1="538.48" y1="223.52" x2="552.45" y2="223.52" width="0.1524" layer="91"/>
 <junction x="552.45" y="223.52"/>
 <label x="553.72" y="223.52" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$2" gate="G$1" pin="VCC"/>
+<wire x1="629.92" y1="223.52" x2="629.92" y2="236.22" width="0.1524" layer="91"/>
+<label x="629.92" y="231.14" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="N$133" class="0">
@@ -20852,13 +20899,6 @@ Copyright: Würth Elektronik</description>
 <wire x1="731.52" y1="166.116" x2="723.9" y2="166.116" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$53" class="0">
-<segment>
-<pinref part="U$16" gate="G$1" pin="RUN"/>
-<pinref part="R63" gate="G$1" pin="1"/>
-<wire x1="762" y1="140.97" x2="787.4" y2="140.97" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="N$55" class="0">
 <segment>
 <pinref part="R87" gate="G$1" pin="1"/>
@@ -21070,9 +21110,9 @@ Copyright: Würth Elektronik</description>
 <pinref part="U$16" gate="G$1" pin="FB"/>
 <wire x1="731.52" y1="138.43" x2="690.88" y2="138.43" width="0.1524" layer="91"/>
 <pinref part="R61" gate="G$1" pin="1"/>
-<wire x1="690.88" y1="138.43" x2="690.88" y2="139.7" width="0.1524" layer="91"/>
-<wire x1="690.88" y1="139.7" x2="690.88" y2="141.732" width="0.1524" layer="91"/>
+<wire x1="690.88" y1="138.43" x2="690.88" y2="141.732" width="0.1524" layer="91"/>
 <wire x1="690.88" y1="119.38" x2="690.88" y2="138.43" width="0.1524" layer="91"/>
+<junction x="690.88" y="138.43"/>
 </segment>
 </net>
 <net name="N$25" class="0">
@@ -21145,31 +21185,6 @@ Copyright: Würth Elektronik</description>
 <wire x1="546.1" y1="322.58" x2="546.1" y2="309.88" width="0.1524" layer="91"/>
 <label x="546.1" y="309.88" size="1.778" layer="95" rot="R90"/>
 <pinref part="IC2" gate="MCU" pin="PB15"/>
-</segment>
-</net>
-<net name="N$45" class="0">
-<segment>
-<pinref part="C43" gate="G$1" pin="1"/>
-<wire x1="429.768" y1="109.22" x2="439.42" y2="109.22" width="0.1524" layer="91"/>
-<pinref part="C32" gate="G$1" pin="1"/>
-<junction x="429.768" y="109.22"/>
-<pinref part="U$60" gate="G$1" pin="VDD"/>
-<wire x1="426.72" y1="109.22" x2="429.768" y2="109.22" width="0.1524" layer="91"/>
-<pinref part="U$59" gate="G$1" pin="SVCC"/>
-<wire x1="485.14" y1="133.35" x2="480.06" y2="133.35" width="0.1524" layer="91"/>
-<wire x1="480.06" y1="133.35" x2="480.06" y2="121.92" width="0.1524" layer="91"/>
-<wire x1="480.06" y1="121.92" x2="500.38" y2="121.92" width="0.1524" layer="91"/>
-<pinref part="U$59" gate="G$1" pin="VCC"/>
-<wire x1="500.38" y1="121.92" x2="518.16" y2="121.92" width="0.1524" layer="91"/>
-<wire x1="518.16" y1="121.92" x2="518.16" y2="128.27" width="0.1524" layer="91"/>
-<wire x1="518.16" y1="128.27" x2="515.62" y2="128.27" width="0.1524" layer="91"/>
-<wire x1="500.38" y1="119.38" x2="500.38" y2="121.92" width="0.1524" layer="91"/>
-<junction x="500.38" y="121.92"/>
-<pinref part="C39" gate="G$1" pin="1"/>
-<wire x1="439.42" y1="109.22" x2="480.06" y2="109.22" width="0.1524" layer="91"/>
-<wire x1="480.06" y1="109.22" x2="480.06" y2="121.92" width="0.1524" layer="91"/>
-<junction x="439.42" y="109.22"/>
-<junction x="480.06" y="121.92"/>
 </segment>
 </net>
 <net name="N$47" class="0">
@@ -21247,6 +21262,51 @@ Copyright: Würth Elektronik</description>
 <junction x="431.038" y="116.84"/>
 <wire x1="436.88" y1="129.54" x2="421.64" y2="129.54" width="0.1524" layer="91"/>
 <pinref part="R70" gate="G$1" pin="1"/>
+</segment>
+</net>
+<net name="Y" class="0">
+<segment>
+<pinref part="U$2" gate="G$1" pin="Y"/>
+<wire x1="635" y1="223.52" x2="635" y2="236.22" width="0.1524" layer="91"/>
+<label x="635" y="233.68" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="U$16" gate="G$1" pin="RUN"/>
+<wire x1="762" y1="140.97" x2="774.7" y2="140.97" width="0.1524" layer="91"/>
+<label x="771.398" y="141.224" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="A" class="0">
+<segment>
+<pinref part="U$2" gate="G$1" pin="A"/>
+<wire x1="632.46" y1="203.2" x2="632.46" y2="190.5" width="0.1524" layer="91"/>
+<label x="632.46" y="193.04" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="C43" gate="G$1" pin="1"/>
+<wire x1="429.768" y1="109.22" x2="439.42" y2="109.22" width="0.1524" layer="91"/>
+<pinref part="C32" gate="G$1" pin="1"/>
+<junction x="429.768" y="109.22"/>
+<pinref part="U$60" gate="G$1" pin="VDD"/>
+<wire x1="426.72" y1="109.22" x2="429.768" y2="109.22" width="0.1524" layer="91"/>
+<pinref part="U$59" gate="G$1" pin="SVCC"/>
+<wire x1="485.14" y1="133.35" x2="480.06" y2="133.35" width="0.1524" layer="91"/>
+<wire x1="480.06" y1="133.35" x2="480.06" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="480.06" y1="121.92" x2="500.38" y2="121.92" width="0.1524" layer="91"/>
+<pinref part="U$59" gate="G$1" pin="VCC"/>
+<wire x1="500.38" y1="121.92" x2="518.16" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="518.16" y1="121.92" x2="518.16" y2="128.27" width="0.1524" layer="91"/>
+<wire x1="518.16" y1="128.27" x2="515.62" y2="128.27" width="0.1524" layer="91"/>
+<wire x1="500.38" y1="119.38" x2="500.38" y2="121.92" width="0.1524" layer="91"/>
+<junction x="500.38" y="121.92"/>
+<pinref part="C39" gate="G$1" pin="1"/>
+<wire x1="439.42" y1="109.22" x2="480.06" y2="109.22" width="0.1524" layer="91"/>
+<wire x1="480.06" y1="109.22" x2="480.06" y2="121.92" width="0.1524" layer="91"/>
+<junction x="439.42" y="109.22"/>
+<junction x="480.06" y="121.92"/>
+<wire x1="518.16" y1="121.92" x2="518.16" y2="114.3" width="0.1524" layer="91"/>
+<junction x="518.16" y="121.92"/>
+<label x="518.16" y="115.57" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 </nets>
