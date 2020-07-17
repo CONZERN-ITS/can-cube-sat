@@ -1,20 +1,16 @@
+import os
+os.environ['MAVLINK_DIALECT'] = "its"
+os.environ['MAVLINK20'] = "its"
 from pymavlink import mavutil
-
 from logs import *
+from parse_arguments import *
 
 # TODO: добавить системные логи (дата и время включения, открытие, закрытие файлов и соединенй, ошибки рабооты программы
-# TODO: сделать запись глобальных переменных через консоль
-dir_logs_path = "logs"
-
-serial = "COM3"
-baudrate = 9600
-protocol = "udp"
-address = "127.0.0.22"
 
 
 def input_connection(input_serial, serial_baudrate):
     try:
-        input_conn = mavutil.mavserial(device=input_serial, baud=serial_baudrate)
+        input_conn = mavutil.mavserial(device=input_serial, baud=serial_baudrate, autoreconnect=True)
     except BaseException as ex:
         print("input connection error", ex)
         return
@@ -22,31 +18,34 @@ def input_connection(input_serial, serial_baudrate):
     #     добавить в лог запись об установке входящего соединения
 
 
-def output_connection(output_protocol, output_addr):
+def output_connection(output_protocol, output_addr, output_port):
     try:
-        output_conn = mavutil.mavlink_connection("{}:{}".format(output_protocol, output_addr))
+        output_conn = mavutil.mavlink_connection("{}:{}:{}".format(output_protocol, output_addr, output_port),
+                                                 input=False)
     except BaseException as ex:
         print("output connection error", ex)
         return
     return output_conn
 
 
-def parse(input_connection, output_connection, list_log_files):
-    while True:
-        packet = input_connection.recv_match(blocking=False)    # прием пакетов
-        write_logs(list_log_files, packet)      # запись логов
-        output_connection.write(packet)     # отправка пакета дальше
+def parse(input_connection, output_connection, list_log_files, print_logs):
 
+    input_connection.setup_logfile_raw(str(list_log_files))
+    while True:
+        packet = input_connection.recv()    # прием пакетов
+        if packet:
+            output_connection.write(packet)     # отправка пакета дальше
+            if print_logs:
+                print(packet)
 
 def main():
-    make_logs_directory(dir_logs_path)
-    last = find_lats_file(dir_logs_path)
-    log_list_filename = generate_next_logs_filename(last, dir_logs_path)
-    log_list = open_log_files(log_list_filename)
+    arg = arguments()
+    make_logs_directory(arg.logs_path)
+    log_list_filename = generate_new_logs_filename(arg.logs_path, arg.mavlink_packet_log_filename, arg.extantion)
 
-    input_conn = input_connection(serial, baudrate)
-    output_conn = output_connection(protocol, address)
-    parse(input_conn, output_conn, log_list)
+    input_conn = input_connection(arg.serial_device, arg.serial_baudrate)
+    output_conn = output_connection(arg.output_protocol, arg.output_address, arg.output_port)
+    parse(input_conn, output_conn, log_list_filename, arg.print)
 
 
 if __name__ == '__main__':
