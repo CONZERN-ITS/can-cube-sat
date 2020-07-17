@@ -2,7 +2,7 @@ import argparse
 
 
 def arguments():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(add_help=True)
 
     # input
     input_group = parser.add_argument_group("arguments for input connection")
@@ -11,23 +11,22 @@ def arguments():
 
     # output
     outout_group = parser.add_argument_group("arguments for output connection")
-    outout_group.add_argument("-pr", "--output_protocol", help="your output protocol", default="udp")
-    outout_group.add_argument("-a", "--output_address", help="your output address", default="127.0.0.1")
-    outout_group.add_argument("-p", "--output_port", help="your output port", default="13131")
+    outout_group.add_argument("-pr", "--output", help="your output mavutil stream", default="udp:localhost:4444")
 
     # logs
     logs_group = parser.add_argument_group("arguments for logs")
     logs_group.add_argument("-lp", "--logs_path", help="path to logs directory with name logs directory",
                             default="logs")
-    logs_group.add_argument("-plf", "--mavlink_packet_log_filename", help="name for file with logs without extantion",
-                            default="mavlink_packet_log_")
-    logs_group.add_argument("-tplf", "--mavlink_time_packet_log_filename",
-                            help="name for file with logs without extantion",default="mavlink_time_packet_log_")
-    logs_group.add_argument("-e", "--extantion", help="extantion for log files without dot", default="txt")
+    logs_group.add_argument("-plf", "--packet_logfile_basename", help="base name for packet logfile",
+                            default="its_packet_log_")
+    logs_group.add_argument("-rlf", "--raw_logfile_basename", help="base name for raw logfile",
+                            default="its_raw_log_")
+    logs_group.add_argument("-e", "--logfile_extension", help="extantion for log files without dot",
+                            default="mavlog")
 
     # other
     other_group = parser.add_argument_group("other arguments")
-    other_group.add_argument("--print", help="print recieve packets", type=bool, default=0)
+    other_group.add_argument("--print", help="print received packets in stdout", action='store_true', default=False)
 
     args = parser.parse_args()
     return args

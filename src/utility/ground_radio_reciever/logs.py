@@ -26,11 +26,13 @@ def now_datetime_str():
 #     return max(file_list_logs, key=os.path.getctime)
 
 
-# генерация новых лог файлов
-def generate_new_logs_filename(logs_path, packet_log_filename, extantion):
+
+def generate_new_logs_filename(logs_path, basename, extension):
+    """ генерация новых лог файлов """
     datetime_str = now_datetime_str()
-    return "{}{}{}{}{}{}".format(logs_path, "/", packet_log_filename, datetime_str, ".", extantion)
-            # "{}{}{}{}{}{}".format(logs_path, "/", time_packet_log_filename, datetime_str, ".", extantion)
+    file_name = "{}_{}.{}".format(basename, datetime_str, extension)
+    return os.path.join(logs_path, file_name)
+    # "{}{}{}{}{}{}".format(logs_path, "/", time_packet_log_filename, datetime_str, ".", extantion)
 
 
 # генерация следующих лог файлов

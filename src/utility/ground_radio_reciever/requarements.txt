@@ -1,4 +1,0 @@
-pymavlink
-serial
-pyserial
-argparse
