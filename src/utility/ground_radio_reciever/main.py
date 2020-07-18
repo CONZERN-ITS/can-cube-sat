@@ -30,7 +30,7 @@ def parse(input_connection, output_connection, packet_log, raw_log, print_logs):
         if not packet:
             continue
 
-        output_connection.write(packet)     # отправка пакета дальше
+        output_connection.mav.send(packet)     # отправка пакета дальше
         if print_logs:
             print(packet)
 
