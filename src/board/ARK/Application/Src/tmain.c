@@ -2,6 +2,7 @@
 #include "main.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #include "ds18b20.h"
 //#include "i2c.h"
@@ -16,6 +17,8 @@
 #include "task_send.h"
 #include "task_recv.h"
 #include "task_battery_control.h"
+#include "adc.h"
+
 
 
 extern I2C_HandleTypeDef hi2c2;
@@ -43,24 +46,33 @@ void task_main_init(void *arg) {
 
     t.init = task_ina_init;
     t.update = task_ina_update;
+    strcpy(t.name, "INA read");
     task_create(t, 0);
 
     t.init = task_ds_init;
     t.update = task_ds_update;
+    strcpy(t.name, "DS read");
     task_create(t, 0);
 
     t.init = task_send_init;
     t.update = task_send_update;
+    strcpy(t.name, "I2C send");
     task_create(t, 0);
 
     t.init = task_recv_init;
     t.update = task_recv_update;
+    strcpy(t.name, "I2C recv");
     task_create(t, 0);
 
     t.init = task_battery_control_init;
     t.update = task_battery_control_update;
+    strcpy(t.name, "Battery control");
     task_create(t, 0);
 
+    t.init = adc_task_init;
+    t.update = adc_task_update;
+    strcpy(t.name, "ADC control");
+    task_create(t, 0);
 
 }
 
@@ -69,17 +81,19 @@ void task_main_update(void *arg) {
     static uint32_t t = 0;
     uint32_t now = HAL_GetTick();
     if (now - t > 1000) {
-        printf("WOW!\n");
         t = now;
         HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
     }
 }
 
 int tmain(void) {
-    task_t m = {0};
-    m.arg = 0;
-    m.init = task_main_init;
-    m.update = task_main_update;
+    task_t m = {
+
+            .arg = 0,
+            .init = task_main_init,
+            .update = task_main_update,
+            .name = "Main"
+    };
     task_create(m, 0);
     while (1) {
         task_update_all();

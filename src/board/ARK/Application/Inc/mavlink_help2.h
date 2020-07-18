@@ -13,7 +13,7 @@
 
 #include "assert.h"
 
-const static mavlink_system_t mavlink_system = {CUBE_1, CUBE_1_PCU};
+const static mavlink_system_t mavlink_system = {CUBE_2, CUBE_2_PCU};
 
 static mavlink_channel_t mavlink_claim_channel(void) {
     static int channel = -1;

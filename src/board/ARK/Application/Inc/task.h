@@ -11,12 +11,14 @@
 
 #define TASK_MAX_PRIO 2
 #define TASK_MAX_TCOUNT 10
-
+#define TASK_DEBUG 0
+#define TASK_NAME_MAX_LENGTH 20
 
 typedef struct {
     void (*init)(void *arg);
     void (*update)(void *arg);
     void *arg;
+    char name[TASK_NAME_MAX_LENGTH];
 } task_t;
 
 typedef int task_id;

@@ -119,7 +119,6 @@ void tupdate() {
 
         its_time_t timm;
         its_gettimeofday(&timm);
-        //printf("TIME: %u.%03u\n", (uint32_t)timm.sec, (uint32_t)timm.usec);
         prev = HAL_GetTick();
         tstate = STATE_SENDING;
         ds_updated = 0;
@@ -167,6 +166,7 @@ void tupdate() {
     }
 }
 
+
 void task_send_update(void *arg) {
     static uint32_t prev = 0;
     if (HAL_GetTick() - prev >= 1000){
@@ -179,3 +179,4 @@ void task_send_update(void *arg) {
     tupdate();
 
 }
+

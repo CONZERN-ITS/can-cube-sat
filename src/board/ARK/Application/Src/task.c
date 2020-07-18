@@ -7,8 +7,11 @@
 
 #include "task.h"
 
-#include "assert.h"
+#include "main.h"
 
+#include "stdio.h"
+#include "string.h"
+#include "assert.h"
 
 typedef struct {
     task_t task;
@@ -29,7 +32,7 @@ void task_create(task_t task, task_id *tid) {
     }
     task_private_t *tp = &task_array[count];
     count++;
-    tp->task = task;
+    memcpy(&tp->task, &task, sizeof(task));
     tp->is_used = 1;
     (*task.init)(task.arg);
     tp->is_inited = 1;
@@ -51,7 +54,14 @@ void task_update_all(void) {
         task_private_t *tp = &task_array[cur_task];
 
         if (tp->is_used) {
+#if TASK_DEBUG
+            uint32_t start = HAL_GetTick();
+#endif
             (*tp->task.update)(tp->task.arg);
+#if TASK_DEBUG
+            printf("TASK: task %s update time is: %d\n",
+                    tp->task.name, (int)(HAL_GetTick() - start));
+#endif
         }
     }
 
