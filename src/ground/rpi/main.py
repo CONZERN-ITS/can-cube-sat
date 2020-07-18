@@ -14,40 +14,8 @@ from strela_ms_rpi import Lis3mdl, Lsm6ds3, WMM2020
 from gps_data import GPSD_data
 from strela_ms_math import dec_to_top_matix, top_to_gcscs_matix
 from DM422 import DM422_control_client
+from config import *
 
-AUTOMODE = False
-
-DATA_CONNECTION_STR = 
-
-GCS_PC_CONNECTION_STRS = []
-
-PORT_I2C = 1
-I2C_TIMEOUT = 1
-
-LIS3MDL_ADRESS = 0x1e
-LSM6DS3_ADRESS = 0x6B
-
-ACCEL_SAMPLE_SIZE = 100
-MAG_SAMPLE_SIZE = 100
-GPS_SAMPLE_SIZE = 20
-
-V_PUL_PIN = 11
-V_DIR_PIN = 13
-V_ENABLE_PIN = 15
-V_GEARBOX_NUM = 102
-V_DEG_PER_STEP = 1.8
-V_LIMIT_PINS_MAP = {11:-10, 12:-10}
-V_STOP_STATE = 0
-
-H_PUL_PIN = 11
-H_DIR_PIN = 13
-H_ENABLE_PIN = 15
-H_GEARBOX_NUM = 102
-H_DEG_PER_STEP = 1.8
-H_LIMIT_PINS_MAP = {}
-H_STOP_STATE = 0
-
-ANTENNA_AIMING_PERIOD = 0.5
 
 class AutoGuidance():
     def __init__ (self, lis3mdl, 
