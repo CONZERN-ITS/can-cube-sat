@@ -12,7 +12,7 @@
 
 #include "main.h"
 
-int ina219_init_default(ina219_t * self, I2C_HandleTypeDef *hi2c, ina219_i2c_addr_t addr);
+int ina219_init_default(ina219_t * self, I2C_HandleTypeDef *hi2c, ina219_i2c_addr_t addr, uint32_t timeout);
 
 // Current is given in amperes, power is in watts
 int ina219_read(ina219_t * self, float * current, float * power);

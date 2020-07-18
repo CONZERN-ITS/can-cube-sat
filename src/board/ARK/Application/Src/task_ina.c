@@ -22,7 +22,6 @@ static ina219_t hina[2];
 static void (*ina_callback_arr[TINA_CALLBACK_COUNT])(void);
 static int ina_callback_count;
 
-
 void tina219_add_ina_callback(void (*f)(void)) {
     assert(ina_callback_count < TINA_CALLBACK_COUNT);
     ina_callback_arr[ina_callback_count++] = f;
@@ -35,8 +34,8 @@ int tina219_get_value(tina_value_t **arr, int **is_valid) {
 }
 
 void task_ina_init(void *arg) {
-    ina219_init_default(&hina[0], &hi2c2, INA219_I2CADDR_A1_GND_A0_GND << 1);
-    ina219_init_default(&hina[1], &hi2c2, INA219_I2CADDR_A1_GND_A0_VSP << 1);
+    ina219_init_default(&hina[0], &hi2c2, INA219_I2CADDR_A1_GND_A0_GND << 1, INA_TIMEOUT);
+    ina219_init_default(&hina[1], &hi2c2, INA219_I2CADDR_A1_GND_A0_VSP << 1, INA_TIMEOUT);
 }
 
 void task_ina_update(void *arg) {

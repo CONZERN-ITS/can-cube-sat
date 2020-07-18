@@ -147,6 +147,7 @@ typedef struct
 {
 	I2C_HandleTypeDef * bus;
 	uint8_t address;
+    uint32_t timeout;
 	ina219_cfg_t cfg;
 } ina219_t;
 
@@ -183,7 +184,7 @@ void ina219_load_default_cfg(ina219_cfg_t * cfg);
 
 
 //! инициализация дескриптора устройства
-void ina219_init(ina219_t * device, I2C_HandleTypeDef * bus, uint8_t i2c_addr);
+void ina219_init(ina219_t * device, I2C_HandleTypeDef * bus, uint8_t i2c_addr, uint32_t timeout);
 
 //! деинициализация дескриптора устройства
 void ina219_deinit(ina219_t * device);

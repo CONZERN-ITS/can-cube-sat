@@ -12,6 +12,7 @@
 #define TINA_CALLBACK_COUNT 3
 #define TINA_COUNT 2
 
+#define INA_TIMEOUT 100
 
 typedef struct {
     float current;

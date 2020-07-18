@@ -5,10 +5,10 @@
 #define INA_VOLTAGE_BUS_LSB     0.004
 #define INA_VOLTAGE_SHUNT_LSB   0.01
 
-int ina219_init_default(ina219_t * self, I2C_HandleTypeDef *hi2c, ina219_i2c_addr_t addr) {
+int ina219_init_default(ina219_t * self, I2C_HandleTypeDef *hi2c, ina219_i2c_addr_t addr, uint32_t timeout) {
     int error = 0;
 
-    ina219_init(self, hi2c, addr);
+    ina219_init(self, hi2c, addr, timeout);
 
     error = ina219_sw_reset(self);
     // подождем после резета
