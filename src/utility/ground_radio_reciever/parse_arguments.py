@@ -2,7 +2,7 @@ import argparse
 
 
 def arguments():
-    parser = argparse.ArgumentParser(add_help=True)
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # input
     input_group = parser.add_argument_group("arguments for input connection")
@@ -11,7 +11,7 @@ def arguments():
 
     # output
     outout_group = parser.add_argument_group("arguments for output connection")
-    outout_group.add_argument("-pr", "--output", help="your output mavutil stream", default="udp:localhost:4444")
+    outout_group.add_argument("-o", "--output", help="your output mavutil stream", default="udp:localhost:4444")
 
     # logs
     logs_group = parser.add_argument_group("arguments for logs")
@@ -21,7 +21,7 @@ def arguments():
                             default="its_packet_log_")
     logs_group.add_argument("-rlf", "--raw_logfile_basename", help="base name for raw logfile",
                             default="its_raw_log_")
-    logs_group.add_argument("-e", "--logfile_extension", help="extantion for log files without dot",
+    logs_group.add_argument("-e", "--logfile_extension", help="extension for log files without dot",
                             default="mavlog")
 
     # other
