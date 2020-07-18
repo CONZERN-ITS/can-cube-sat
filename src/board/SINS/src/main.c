@@ -211,24 +211,27 @@ int main(int argc, char* argv[])
 	time_svc_world_get_time(&stateSINS_isc_prev.tv);
 	for (; ; )
 	{
-		for (int i = 0; i < 160; i++)
+		for (int u = 0; u < 5; u++)
 		{
-			UpdateDataAll();
-			SINS_updatePrevData();
+			for (int i = 0; i < 160; i++)
+			{
+				UpdateDataAll();
+				SINS_updatePrevData();
+				gps_poll();
+			}
+
+	//		struct timeval tmv;
+	//		time_svc_world_timers_get_time(&tmv);
+	//		struct tm * tm = gmtime(&tmv.tv_sec);
+	//		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
+	//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
+	//		trace_printf("time is %s\n", buffer);
+
+
+			_mavlink_sins_isc(&stateSINS_isc);
 			gps_poll();
 		}
-
-//		struct timeval tmv;
-//		time_svc_world_timers_get_time(&tmv);
-//		struct tm * tm = gmtime(&tmv.tv_sec);
-//		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
-//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
-//		trace_printf("time is %s\n", buffer);
-
-
-		_mavlink_sins_isc(&stateSINS_isc);
 		_mavlink_timestamp();
-		gps_poll();
 	}
 
 	return 0;
