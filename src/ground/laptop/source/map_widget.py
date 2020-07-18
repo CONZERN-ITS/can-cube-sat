@@ -28,16 +28,19 @@ class MapWidget(OpenStreetMap):
         self.max_data_length = int(self.settings.value("max_data_length"))
         self.settings.endGroup()
 
+    def update_current_values (self):
+        pass
+
     def _on_load_finished(self):
         self.is_load_finished = True
         self.setup_ui_design()
+        self.update_current_values()
 
     def new_data_reaction(self, data):
-        points = []
-        for i in range(len(data)):
-            if (self.packet_name == data[i][0]) and ((len(data[i]) - 2) >= 2):
-                points.append(data[i][2:4])
-        if len(points) > 0:
+        points = data.get(self.packet_name, None)
+        if points is not None:
+            points = points[:,[1, 2]]
+            points = points.tolist()
             if self.key is None:
                 self.key = 0
                 self.add_marker(self.key, points[-1][0], points[-1][1], **dict())

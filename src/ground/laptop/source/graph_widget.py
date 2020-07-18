@@ -14,18 +14,19 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
             self.curve = None
             self.set_pen(pen)
             self.max_arr_len = max_arr_len
+            self.time_shift = 0
 
         def set_pen(self, pen):
             self.pen = pen
 
         def show_data(self, data):
             if self.arr is None:
-                self.arr = NumPy.array(data)
+                self.arr = data
                 if self.curve is None:
                     self.curve = self.plot.plot(self.arr, pen=self.pen)
                     return
             else:
-                self.arr = NumPy.vstack((self.arr, NumPy.array(data)))
+                self.arr = NumPy.vstack((self.arr, data))
 
             if (self.max_arr_len is not None) and (len(self.arr) > self.max_arr_len):
                 self.arr = self.arr[len(self.arr) - self.max_arr_len:-1]
@@ -41,6 +42,7 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
 
         self.setup_ui()
         self.setup_ui_design()
+        self.update_current_values()
 
     def setup_ui(self):
         self.plot_tuple = []
@@ -86,20 +88,21 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
         self.settings.endGroup()
         self.settings.endGroup()
 
+    def update_current_values (self):
+        self.time_shift = float(self.settings.value("CurrentValues/time_shift"))
+
     def new_data_reaction(self, data):
         for plot in self.plot_tuple:
-            plot_data_buf = [[] for i in range(len(plot[1]))]
-            for pack in data:
-                for i in range(1, len(plot[2]), 2):
-                    data_range = (int(plot[2][i - 1]), int(plot[2][i + 1]))
-                    if ((plot[2][i] == pack[0]) and ((len(pack) - 2) >= (data_range[1] - data_range[0]))):
-                        for i in range(*data_range):
-                            if not math.isnan(pack[i - data_range[0] + 2]):
-                                plot_data_buf[i].append((pack[1], pack[i - data_range[0] + 2]))
-                        break
-            for i in range(len(plot_data_buf)):
-                if len(plot_data_buf[i]) > 0:
-    	            plot[1][i].show_data(plot_data_buf[i])
+            for i in range(1, len(plot[2]), 2):
+                pack = data.get(plot[2][i], None)
+                if pack is not None:
+                    data_len = int(plot[2][i + 1]) - int(plot[2][i - 1])
+                    if ((pack.shape[1] - 1) >= data_len):
+                        for j in range(data_len):
+                            curve = pack[:,[0, j + 1]]
+                            curve = curve[~NumPy.isnan(curve).any(axis=1)]
+                            curve[:, 0] -= self.time_shift
+                            plot[1][int(plot[2][i - 1]) + j].show_data(curve)
 
     def clear_data(self):
         for plot in self.plot_tuple:

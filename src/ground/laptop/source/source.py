@@ -1,5 +1,9 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
+import numpy as NumPy
 import time
+
+from math import nan
+
 from source import settings_control
 from source import map_widget
 from source import graph_widget
@@ -9,10 +13,11 @@ from source.data_control import *
 from source import LOG_FOLDER_PATH
 
 class CentralWidget(QtWidgets.QWidget):
+    current_values_changed = QtCore.pyqtSignal()
     def __init__(self):
         super(CentralWidget, self).__init__()
         self.settings = settings_control.init_settings()
-        self.widgets_dict = {}
+        self.widgets_dict = {} 
 
         self.setup_ui()
         self.setup_ui_design()
@@ -44,9 +49,21 @@ class CentralWidget(QtWidgets.QWidget):
             self.grid_layout.setRowMinimumHeight(i, 50)
             self.grid_layout.setRowStretch(i, 1)
 
-    def new_data_reaction(self, data):
+        self.connect_widgets()
+
+    def new_data_reaction (self, data):
         for widget in self.widgets_dict.items():
             widget[1].new_data_reaction(data)
+
+    def connect_widgets (self):
+        for widget in self.widgets_dict.items():
+            self.current_values_changed.connect(widget[1].update_current_values)
+
+    def set_time_shift (self, shift=None):
+        if shift is None:
+            self.settings.setValue("CurrentValues/time_shift", self.settings.value("DefaultValues/time_shift"))
+        else:
+            self.settings.setValue("CurrentValues/time_shift", float(shift))
 
     def clear_data(self):
         for widget in self.widgets_dict.items():
@@ -56,17 +73,18 @@ class CentralWidget(QtWidgets.QWidget):
         for widget in self.widgets_dict.items():
             widget[1].setup_ui_design()
 
+        self.set_time_shift()
+
 
 class MainWindow(QtWidgets.QMainWindow):
     class DataManager(QtCore.QObject):
-        new_data = QtCore.pyqtSignal(tuple)
+        new_data = QtCore.pyqtSignal(dict)
         autoclose = QtCore.pyqtSignal(str)
         def __init__(self, data_obj, update_time=0.2):
             super(MainWindow.DataManager, self).__init__()
             self.data_obj = data_obj
             self.mutex = QtCore.QMutex()
             self._set_close_flag(True)
-            self.set_time_shift(0)
             self.last_time = 0
             self.update_time = update_time
 
@@ -75,22 +93,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.close_flag = mode
             self.mutex.unlock()
 
-        def set_time_shift(self, shift=None):
+        def get_last_time(self):
             self.mutex.lock()
-            if shift is None:
-                self.time_shift = self.last_time
-            else:
-                self.time_shift = shift
+            last_time = self.last_time
             self.mutex.unlock()
+            return last_time
 
         def change_data_obj(self, data_obj):
             self.data_obj = data_obj
 
         def start(self):
             self._set_close_flag(False)
-            self.set_time_shift(0)
             close = False
-            shift = 0
             last_time = 0
             try:
                 self.data_obj.start()
@@ -98,7 +112,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.autoclose.emit(str(e))
                 return
             start_time = time.time()
-            data_buf = []
+            data_buf = {}
             while not close:
                 try:
                     data = self.data_obj.read_data()
@@ -108,21 +122,21 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.autoclose.emit(str(e))
                     break
                 except Exception as e:
-                    pass#print(e)
+                    print(e)
                 else:
-                    data_buf.extend(data)
+                    for pack in data:
+                        buf = data_buf.get(pack[0], None)
+                        if buf is not None:
+                            data_buf[pack[0]] = NumPy.vstack((buf, pack[1]))
+                        else:
+                            data_buf[pack[0]] = pack[1]
                     if (time.time() - start_time) > self.update_time:
-                        last_time = data_buf[-1][1]
-                        for i in range(len(data_buf)):
-                            data_buf[i][1] = data_buf[i][1] - shift
-                            data_buf[i] = tuple(data_buf[i])
-                        data_buf.append(tuple(['TIME', data_buf[-1][1], time.time(), last_time, data_buf[-1][1]]))
-                        self.new_data.emit(tuple(data_buf))
+                        last_time = pack[1][-1][0]
+                        self.new_data.emit(data_buf)
                         start_time = time.time()
-                        data_buf = []
+                        data_buf = {}
                 self.mutex.lock()
                 close = self.close_flag
-                shift = self.time_shift
                 self.last_time = last_time
                 self.mutex.unlock()
 
@@ -133,6 +147,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.data_obj.stop()
             except Exception as e:
                 pass
+            last_time = 0
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -205,7 +220,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.move(frame.topLeft())
 
     def reset_time(self):
-        self.data_manager.set_time_shift()
+        self.central_widget.set_time_shift(self.data_manager.get_last_time())
+        self.central_widget.current_values_changed.emit()
         self.central_widget.clear_data()
 
     def get_data_object(self):
@@ -237,6 +253,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if not self.data_thread.isRunning():
             self.central_widget.clear_data()
             self.settings_window.settings_enabled(False)
+            self.central_widget.set_time_shift()
+            self.central_widget.current_values_changed.emit()
             self.data_thread.start()
             self.connection_btn.setText("&Disconnect")
         else:

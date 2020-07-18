@@ -25,6 +25,7 @@ class DataWidget(QtWidgets.QTableWidget):
 
         self.setup_ui()
         self.setup_ui_design()
+        self.update_current_values()
 
     def setup_ui(self):
         self.setColumnCount(2)
@@ -34,8 +35,6 @@ class DataWidget(QtWidgets.QTableWidget):
         self.verticalHeader().hide()
         self.horizontalHeader().hide()
         self.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.table_dict = {}
-        pass
 
     def setup_ui_design(self):
         self.settings.beginGroup("CentralWidget/DataWidget")
@@ -45,13 +44,40 @@ class DataWidget(QtWidgets.QTableWidget):
         self.setPalette(palette)
         self.colors = tuple([QtGui.QColor(self.settings.value("colors")[i]) for i in range(3)])
 
-        self.settings.beginGroup("Data_table")
         row_count = 0
+        if int(self.settings.value("Time_table/is_on")):
+            self.settings.beginGroup("Time_table")
+            row_count = len(self.settings.childGroups())
+            self.settings.endGroup()
+        else:
+            row_count = 0
+            
+        self.settings.beginGroup("Data_table")
         for group in self.settings.childGroups():
             row_count = row_count + len(self.settings.value(group +"/name")) - 1
+        self.settings.endGroup()
+
         self.setRowCount(row_count)
-        row_count = 0
+
         self.table_dict = {}
+        self.time_tuple = []
+
+        row_count = 0
+        if int(self.settings.value("Time_table/is_on")):
+            self.settings.beginGroup("Time_table")
+            for group in self.settings.childGroups():
+                self.settings.beginGroup(group)
+                self.setItem(row_count, 0, QtWidgets.QTableWidgetItem(self.settings.value("name")))
+                timer = DataWidget.Timer(self, row_count, 1, self.colors[2])
+                timer.setSingleShot(True)
+                timer.setInterval(int(float(self.settings.value("time_limit"))*1000))
+                self.time_tuple.append(tuple([row_count, timer] + self.settings.value("packet_name")[:-1]))
+                row_count += 1
+                self.settings.endGroup()
+            self.time_tuple = tuple(self.time_tuple)
+            self.settings.endGroup()
+            
+        self.settings.beginGroup("Data_table")
         for group in self.settings.childGroups():
             self.settings.beginGroup(group)
             packet_len = len(self.settings.value("name")) - 1
@@ -69,23 +95,39 @@ class DataWidget(QtWidgets.QTableWidget):
         self.settings.endGroup()
         self.settings.endGroup()
 
+    def update_current_values (self):
+        pass
+
     def new_data_reaction(self, data):
-        for pack in data:
-            for table in self.table_dict.items():
-                if ((table[0] == pack[0]) and ((len(pack) - 2) >= table[1][1])):
+        for table in self.table_dict.items():
+            pack = data.get(table[0], None)
+            if pack is not None:
+                pack = pack[-1]
+                if ((pack.shape[0] - 1) >= table[1][1]):
                     for i in range(table[1][1]):
-                        self.setItem(table[1][0] + i, 1, QtWidgets.QTableWidgetItem(str(pack[i + 2])))
-                        if (pack[i + 2] < table[1][2][2 * i]):
+                        self.setItem(table[1][0] + i, 1, QtWidgets.QTableWidgetItem(str(pack[i + 1])))
+                        if (pack[i + 1] < table[1][2][2 * i]):
                             self.item(table[1][0] + i, 0).setBackground(self.colors[0])
                             self.item(table[1][0] + i, 1).setBackground(self.colors[0])
-                        elif (pack[i + 2] > table[1][2][2 * i + 1]):
+                        elif (pack[i + 1] > table[1][2][2 * i + 1]):
                             self.item(table[1][0] + i, 0).setBackground(self.colors[1])
                             self.item(table[1][0] + i, 1).setBackground(self.colors[1])
                         else:
                             self.item(table[1][0] + i, 0).setBackground(self.background_color)
                             self.item(table[1][0] + i, 1).setBackground(self.background_color)
                     table[1][3].start()
-                    break
+        for row in self.time_tuple:
+            time = None
+            for packet in row[2:]:
+                pack = data.get(packet, None)
+                if pack is not None:
+                    if (time is None) or (time < pack[-1][0]):
+                        time = pack[-1][0]
+            if time is not None:
+                self.setItem(row[0], 1, QtWidgets.QTableWidgetItem(str(time)))
+                self.item(row[0], 0).setBackground(self.background_color)
+                self.item(row[0], 1).setBackground(self.background_color)
+                row[1].start()
 
     def clear_data(self):
         self.clear()

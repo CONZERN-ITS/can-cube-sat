@@ -25,6 +25,7 @@ class ModelWidget(OpenGL.GLViewWidget):
 
         self.setup_ui()
         self.setup_ui_design()
+        self.update_current_values()
 
     def setup_ui(self):
         self.gird = OpenGL.GLGridItem()
@@ -116,6 +117,9 @@ class ModelWidget(OpenGL.GLViewWidget):
         
         self.packet_name = self.settings.value("CentralWidget/ModelWidget/packet_name")
 
+    def update_current_values (self):
+        pass
+
     def _get_face_colors(self, color_path):
         color_file = open(color_path, 'rb')
         bin_data = color_file.read()
@@ -138,14 +142,13 @@ class ModelWidget(OpenGL.GLViewWidget):
 
     def new_data_reaction(self, data):
         quat = None
-        for i in range(len(data) - 1, -1, -1):
-            if (self.packet_name == data[i][0]) and ((len(data[i]) - 2) >= 4):
-                quat = data[i][2:6]
-                break
-        if quat is not None:
-            quat = QtGui.QQuaternion(*quat)
-            self.clear_data()
-            self._rotate_object(self.mesh, *quat.getAxisAndAngle())
+        pack = data.get(self.packet_name, None)
+        if pack is not None:
+            if (pack.shape[1] - 1) >= 4:
+                quat = pack[-1][1:]
+                quat = QtGui.QQuaternion(*quat)
+                self.clear_data()
+                self._rotate_object(self.mesh, *quat.getAxisAndAngle())
 
     def _rotate_object(self, obj, axis, angle):
         obj.rotate(angle, axis[0], axis[1], axis[2])
