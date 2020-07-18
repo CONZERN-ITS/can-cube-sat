@@ -7,6 +7,8 @@
 
 #include "ark_time_sync.h"
 
+#include "esp_log.h"
+
 #include "mavlink/its/mavlink.h"
 #include "driver/gpio.h"
 
@@ -48,6 +50,7 @@ void ark_tsync_task(void *pvParametres) {
 		ark_tsync_send_signal(packet, &size);
 
 		imi_send_all(ITS_IMI_PORT, packet, size, 100 / portTICK_RATE_MS);
+		ESP_LOGI("TIME", "synced i2c devices");
 		vTaskDelay(ARK_TIME_SYNC_PRIOD / portTICK_RATE_MS);
 	}
 }
