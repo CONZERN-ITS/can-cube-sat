@@ -1,9 +1,9 @@
 import RPi.GPIO as GPIO
 import time
 
-PUL_PIN = 11
-DIR_PIN = 13
-ENABLE_PIN = 15
+PUL_PIN = 18
+DIR_PIN = 16
+ENABLE_PIN = 32
 
 class DM422_control_client ():
     def __init__ (self, pul_pin=PUL_PIN,
@@ -11,14 +11,13 @@ class DM422_control_client ():
                         enable_pin=ENABLE_PIN,
                         gearbox_num=1,
                         deg_per_step=1,
-                        stop_triggers=[],
                         stop_state=0):
         self.pul_pin = pul_pin
         self.dir_pin = dir_pin
         self.enable_pin = enable_pin
         self.gearbox_num = gearbox_num
         self.deg_per_step = deg_per_step
-        self.stop_triggers = stop_triggers
+        self.stop_triggers = []
         self.stop_state = stop_state
         self.last_steps_num = None
         self.last_steps_direction = None
@@ -26,8 +25,8 @@ class DM422_control_client ():
     def setup_stop_triggers(self, stop_triggers=[]):
         self.stop_triggers = stop_triggers
 
-        for pin in self.stop_pin:
-            GPIO.setup(self.pin, GPIO.IN)
+        for pin in self.stop_triggers:
+            GPIO.setup(pin, GPIO.IN)
 
     def setup (self):
         GPIO.setmode(GPIO.BOARD)
@@ -54,14 +53,14 @@ class DM422_control_client ():
         return ang
 
     def rotate_using_angle (self, ang):
-        steps = angle_to_steps(ang)
+        steps = self.angle_to_steps(ang)
         if ang > 0:
             return self.rotate_using_steps(steps, False)
         else:
             return self.rotate_using_steps(steps, True)
 
     def rotate_using_steps (self, steps, direction=True):
-        limit_trigger_num = None
+        trigger_num = None
         self.last_steps_num = steps
         self.last_steps_direction = direction
         GPIO.output(self.pul_pin, True)
@@ -72,8 +71,8 @@ class DM422_control_client ():
         time.sleep(0.000005)
 
         for i in range(steps):
-            for pin in self.stop_pin:
-                if GPIO.input(pin) == stop_state:
+            for pin in self.stop_triggers:
+                if GPIO.input(pin) == self.stop_state:
                     trigger_num = pin
                     self.last_steps_num = i
                     break
@@ -93,5 +92,6 @@ class DM422_control_client ():
 if __name__ == '__main__':
     dm422 = DM422_control_client(gearbox_num=102, deg_per_step=1.8)
     dm422.setup()
+    dm422.setup_stop_triggers([7, 11])
     while True:
         dm422.rotate_using_angle(90)
