@@ -81,9 +81,11 @@ static void time_sync_task(void *arg) {
 		there.tv_usec = mts.time_us;
 		const struct timeval delta = {
 				.tv_sec = there.tv_sec - ts->here.tv_sec,
-				.tv_usec = there.tv_usec - ts->here.tv_usec
+				.tv_usec = 0 - ts->here.tv_usec
 		};
 
+		printf("TTTTHERE: %d.%06d\n", (int)there.tv_sec, (int)there.tv_usec);
+		printf("HHHHHERE: %d.%06d\n", (int)ts->here.tv_sec, (int)ts->here.tv_usec);
 		/*
 		 * Если разница слишком большая, то ставим время мгновенно.
 		 * Если нет, то пытаемся приблизить время без больших
@@ -96,10 +98,11 @@ static void time_sync_task(void *arg) {
 			t.tv_sec += delta.tv_sec;
 			t.tv_usec += delta.tv_usec;
 			settimeofday(&t, 0);
-			continue;
 		} else {
+			ESP_LOGI("TIME SYNC","Small diff. smooth sync!");
 			adjtime(&delta, 0);
 		}
+		ts->is_updated = 0;
 	}
 
 }
@@ -122,6 +125,14 @@ void time_sync_from_sins_install(ts_sync *cfg) {
 	cfg->is_updated = 0;
 	xTaskCreatePinnedToCore(ntp_server_task, "SNTP server", configMINIMAL_STACK_SIZE + 4000, 0, 1, 0, tskNO_AFFINITY);
 	xTaskCreate(time_sync_task, "timesync", 4096, cfg, 1, NULL);
+	gpio_config_t init_pin_int = {
+		.mode = GPIO_MODE_INPUT,
+		.pull_up_en = GPIO_PULLUP_DISABLE,
+		.pull_down_en = GPIO_PULLDOWN_DISABLE,
+		.intr_type = GPIO_INTR_POSEDGE,
+		.pin_bit_mask = 1ULL << cfg->pin
+	};
+	gpio_config(&init_pin_int);
 	gpio_isr_handler_add(cfg->pin, isr_handler, cfg);
 }
 
