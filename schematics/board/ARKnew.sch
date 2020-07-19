@@ -16886,17 +16886,11 @@ Copyright: Würth Elektronik</description>
 <part name="U$26" library="CanCubeSat" deviceset="FS8205A-" device=""/>
 <part name="U$1" library="CanCubeSat" deviceset="FS8205A-" device=""/>
 <part name="R79" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
-<part name="LED3" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R80" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
-<part name="LED4" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R83" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
-<part name="LED5" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R84" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
-<part name="LED6" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R85" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
-<part name="LED7" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R86" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
-<part name="LED8" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 <part name="R100" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="C32" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="0,1µ"/>
 <part name="C43" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2" value="10µ"/>
@@ -16922,6 +16916,12 @@ Copyright: Würth Elektronik</description>
 <part name="U$28" library="CanCubeSat" deviceset="FS8205A-" device=""/>
 <part name="U$29" library="CanCubeSat" deviceset="FS8205A-" device=""/>
 <part name="U$30" library="CanCubeSat" deviceset="FS8205A-" device=""/>
+<part name="LED4" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
+<part name="LED3" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
+<part name="LED5" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
+<part name="LED6" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
+<part name="LED7" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
+<part name="LED8" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
 </parts>
 <sheets>
 <sheet>
@@ -18596,49 +18596,25 @@ Copyright: Würth Elektronik</description>
 <attribute name="NAME" x="438.15" y="377.4186" size="1.778" layer="95"/>
 <attribute name="VALUE" x="438.15" y="372.618" size="1.778" layer="96"/>
 </instance>
-<instance part="LED3" gate="G$1" x="297.18" y="312.42" smashed="yes" rot="R270">
-<attribute name="NAME" x="292.608" y="308.864" size="1.778" layer="95"/>
-<attribute name="VALUE" x="292.608" y="306.705" size="1.778" layer="96"/>
-</instance>
 <instance part="R80" gate="G$1" x="304.8" y="312.42" smashed="yes" rot="R180">
 <attribute name="NAME" x="308.61" y="310.9214" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="308.61" y="315.722" size="1.778" layer="96" rot="R180"/>
-</instance>
-<instance part="LED4" gate="G$1" x="114.3" y="312.42" smashed="yes" rot="R270">
-<attribute name="NAME" x="109.728" y="308.864" size="1.778" layer="95"/>
-<attribute name="VALUE" x="109.728" y="306.705" size="1.778" layer="96"/>
 </instance>
 <instance part="R83" gate="G$1" x="121.92" y="312.42" smashed="yes" rot="R180">
 <attribute name="NAME" x="125.73" y="310.9214" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="125.73" y="315.722" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="LED5" gate="G$1" x="114.3" y="180.34" smashed="yes" rot="R270">
-<attribute name="NAME" x="109.728" y="176.784" size="1.778" layer="95"/>
-<attribute name="VALUE" x="109.728" y="174.625" size="1.778" layer="96"/>
-</instance>
 <instance part="R84" gate="G$1" x="121.92" y="180.34" smashed="yes" rot="R180">
 <attribute name="NAME" x="125.73" y="178.8414" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="125.73" y="183.642" size="1.778" layer="96" rot="R180"/>
-</instance>
-<instance part="LED6" gate="G$1" x="297.18" y="177.8" smashed="yes" rot="R270">
-<attribute name="NAME" x="292.608" y="174.244" size="1.778" layer="95"/>
-<attribute name="VALUE" x="292.608" y="172.085" size="1.778" layer="96"/>
 </instance>
 <instance part="R85" gate="G$1" x="304.8" y="177.8" smashed="yes" rot="R180">
 <attribute name="NAME" x="308.61" y="176.3014" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="308.61" y="181.102" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="LED7" gate="G$1" x="111.76" y="40.64" smashed="yes" rot="R270">
-<attribute name="NAME" x="107.188" y="37.084" size="1.778" layer="95"/>
-<attribute name="VALUE" x="107.188" y="34.925" size="1.778" layer="96"/>
-</instance>
 <instance part="R86" gate="G$1" x="119.38" y="40.64" smashed="yes" rot="R180">
 <attribute name="NAME" x="123.19" y="39.1414" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="123.19" y="43.942" size="1.778" layer="96" rot="R180"/>
-</instance>
-<instance part="LED8" gate="G$1" x="294.64" y="48.26" smashed="yes" rot="R270">
-<attribute name="NAME" x="290.068" y="44.704" size="1.778" layer="95"/>
-<attribute name="VALUE" x="290.068" y="42.545" size="1.778" layer="96"/>
 </instance>
 <instance part="R100" gate="G$1" x="302.26" y="48.26" smashed="yes" rot="R180">
 <attribute name="NAME" x="306.07" y="46.7614" size="1.778" layer="95" rot="R180"/>
@@ -18713,6 +18689,30 @@ Copyright: Würth Elektronik</description>
 <instance part="U$28" gate="G$1" x="241.3" y="180.34" smashed="yes"/>
 <instance part="U$29" gate="G$1" x="58.42" y="40.64" smashed="yes"/>
 <instance part="U$30" gate="G$1" x="241.3" y="48.26" smashed="yes"/>
+<instance part="LED4" gate="G$1" x="111.76" y="312.42" smashed="yes" rot="R90">
+<attribute name="NAME" x="116.332" y="315.976" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="116.332" y="318.135" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="LED3" gate="G$1" x="294.64" y="312.42" smashed="yes" rot="R90">
+<attribute name="NAME" x="299.212" y="315.976" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="299.212" y="318.135" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="LED5" gate="G$1" x="111.76" y="180.34" smashed="yes" rot="R90">
+<attribute name="NAME" x="116.332" y="183.896" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="116.332" y="186.055" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="LED6" gate="G$1" x="294.64" y="177.8" smashed="yes" rot="R90">
+<attribute name="NAME" x="299.212" y="181.356" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="299.212" y="183.515" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="LED7" gate="G$1" x="109.22" y="40.64" smashed="yes" rot="R90">
+<attribute name="NAME" x="113.792" y="44.196" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="113.792" y="46.355" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="LED8" gate="G$1" x="292.1" y="48.26" smashed="yes" rot="R90">
+<attribute name="NAME" x="296.672" y="51.816" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="296.672" y="53.975" size="1.778" layer="96" rot="R180"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -18943,34 +18943,34 @@ Copyright: Würth Elektronik</description>
 <junction x="132.08" y="33.02"/>
 </segment>
 <segment>
-<pinref part="LED4" gate="G$1" pin="C"/>
 <wire x1="109.22" y1="312.42" x2="96.52" y2="312.42" width="0.1524" layer="91"/>
 <label x="96.52" y="312.42" size="1.778" layer="95"/>
+<pinref part="LED4" gate="G$1" pin="A"/>
 </segment>
 <segment>
-<pinref part="LED5" gate="G$1" pin="C"/>
 <wire x1="109.22" y1="180.34" x2="96.52" y2="180.34" width="0.1524" layer="91"/>
 <label x="96.52" y="180.34" size="1.778" layer="95"/>
+<pinref part="LED5" gate="G$1" pin="A"/>
 </segment>
 <segment>
-<pinref part="LED7" gate="G$1" pin="C"/>
 <wire x1="106.68" y1="40.64" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
 <label x="93.98" y="40.64" size="1.778" layer="95"/>
+<pinref part="LED7" gate="G$1" pin="A"/>
 </segment>
 <segment>
-<pinref part="LED8" gate="G$1" pin="C"/>
 <wire x1="289.56" y1="48.26" x2="276.86" y2="48.26" width="0.1524" layer="91"/>
 <label x="276.86" y="48.26" size="1.778" layer="95"/>
+<pinref part="LED8" gate="G$1" pin="A"/>
 </segment>
 <segment>
-<pinref part="LED6" gate="G$1" pin="C"/>
 <wire x1="292.1" y1="177.8" x2="279.4" y2="177.8" width="0.1524" layer="91"/>
 <label x="279.4" y="177.8" size="1.778" layer="95"/>
+<pinref part="LED6" gate="G$1" pin="A"/>
 </segment>
 <segment>
-<pinref part="LED3" gate="G$1" pin="C"/>
 <wire x1="292.1" y1="312.42" x2="279.4" y2="312.42" width="0.1524" layer="91"/>
 <label x="279.4" y="312.42" size="1.778" layer="95"/>
+<pinref part="LED3" gate="G$1" pin="A"/>
 </segment>
 </net>
 <net name="N$8" class="0">
@@ -21091,42 +21091,6 @@ Copyright: Würth Elektronik</description>
 <wire x1="444.5" y1="132.08" x2="444.5" y2="134.112" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$54" class="0">
-<segment>
-<pinref part="R80" gate="G$1" pin="2"/>
-<pinref part="LED3" gate="G$1" pin="A"/>
-</segment>
-</net>
-<net name="N$56" class="0">
-<segment>
-<pinref part="R83" gate="G$1" pin="2"/>
-<pinref part="LED4" gate="G$1" pin="A"/>
-</segment>
-</net>
-<net name="N$57" class="0">
-<segment>
-<pinref part="R84" gate="G$1" pin="2"/>
-<pinref part="LED5" gate="G$1" pin="A"/>
-</segment>
-</net>
-<net name="N$58" class="0">
-<segment>
-<pinref part="R85" gate="G$1" pin="2"/>
-<pinref part="LED6" gate="G$1" pin="A"/>
-</segment>
-</net>
-<net name="N$59" class="0">
-<segment>
-<pinref part="R86" gate="G$1" pin="2"/>
-<pinref part="LED7" gate="G$1" pin="A"/>
-</segment>
-</net>
-<net name="N$60" class="0">
-<segment>
-<pinref part="R100" gate="G$1" pin="2"/>
-<pinref part="LED8" gate="G$1" pin="A"/>
-</segment>
-</net>
 <net name="DPC_RST" class="0">
 <segment>
 <pinref part="U$60" gate="G$1" pin="RESET"/>
@@ -21415,6 +21379,42 @@ Copyright: Würth Elektronik</description>
 <pinref part="R98" gate="G$1" pin="2"/>
 <pinref part="U$30" gate="G$1" pin="G1"/>
 <wire x1="231.14" y1="58.42" x2="236.22" y2="58.42" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$56" class="0">
+<segment>
+<pinref part="LED4" gate="G$1" pin="C"/>
+<pinref part="R83" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$54" class="0">
+<segment>
+<pinref part="LED3" gate="G$1" pin="C"/>
+<pinref part="R80" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$57" class="0">
+<segment>
+<pinref part="LED5" gate="G$1" pin="C"/>
+<pinref part="R84" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$58" class="0">
+<segment>
+<pinref part="LED6" gate="G$1" pin="C"/>
+<pinref part="R85" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$59" class="0">
+<segment>
+<pinref part="LED7" gate="G$1" pin="C"/>
+<pinref part="R86" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$60" class="0">
+<segment>
+<pinref part="LED8" gate="G$1" pin="C"/>
+<pinref part="R100" gate="G$1" pin="2"/>
 </segment>
 </net>
 </nets>
