@@ -212,5 +212,13 @@
       <field type="uint16_t" name="integrated_error_counter">integrated sensors errors counter</field>
     </message>
 
+    <message id="50022" name="RSSI">
+      <description>
+        This message contains RSSI
+      </description>
+
+      <field type="float" name="rssi"></field>
+    </message>
+
   </messages>
 </mavlink>
