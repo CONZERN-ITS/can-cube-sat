@@ -14,6 +14,8 @@
 #include "its-i2c-link-conf.h"
 #include <its-i2c-link.h>
 
+//#define PROCESS_TO_PRINTF
+
 mavlink_system_t mavlink_system = {CUBE_1, CUBE_1_PL};
 static uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 
@@ -131,6 +133,9 @@ void mav_main_process_owntemp_message(mavlink_own_temp_t * msg)
 	printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
 #endif
 
+    printf("otemp: %fC\n",
+            msg->deg
+    );
 #ifdef PROCESS_TO_ITSLINK
     mavlink_message_t ms;
     mavlink_msg_own_temp_encode(mavlink_system.sysid, mavlink_system.compid, &ms, msg);
