@@ -30,7 +30,8 @@ def parse(input_connection, output_connection, packet_log, raw_log, print_logs):
         if not packet:
             continue
 
-        output_connection.mav.send(packet)     # отправка пакета дальше
+        if packet.get_type() != 'BAD_DATA':
+            output_connection.mav.send(packet)     # отправка пакета дальше
         if print_logs:
             print(packet)
 
