@@ -2,6 +2,11 @@ import os
 os.environ['MAVLINK_DIALECT'] = "its"
 os.environ['MAVLINK20'] = "its"
 from pymavlink import mavutil
+from pymavlink.dialects.v20 import its as its_mav
+
+import serial
+import time
+import struct
 
 from logs import *
 from parse_arguments import *
@@ -9,10 +14,13 @@ from parse_arguments import *
 # TODO: добавить системные логи (дата и время включения, открытие, закрытие файлов и соединенй, ошибки рабооты программы
 
 
+def msg_rssi(rssi):
+    return its_mav.MAVLink_rssi_message(rssi=rssi)
+
+
 def input_connection(input_serial, serial_baudrate):
-    input_conn = mavutil.mavserial(device=input_serial, baud=serial_baudrate, autoreconnect=True)
+    input_conn = serial.Serial(port=input_serial, baudrate=serial_baudrate)
     return input_conn
-    #     добавить в лог запись об установке входящего соединения
 
 
 def output_connection(output_mavutil_def):
@@ -20,20 +28,49 @@ def output_connection(output_mavutil_def):
     return output_conn
 
 
-def parse(input_connection, output_connection, packet_log, raw_log, print_logs):
+def parse(input_connection, output_connection, packet_log, raw_log, print_logs, RSSI):
+    mav = its_mav.MAVLink(file=None)
+    mav.robust_parsing = True
 
-    input_connection.setup_logfile_raw(raw_log)
-    input_connection.setup_logfile(packet_log)
+    rssi = None
+
+    stream_packet_log = open_log_file(packet_log, 'wb')
+    stream_raw_log = open_log_file(raw_log, 'wb')
 
     while True:
-        packet = input_connection.recv_match(blocking=True)    # прием пакетов
-        if not packet:
-            continue
+        input_connection.timeout = None
+        r1 = input_connection.read(1)
 
-        if packet.get_type() != 'BAD_DATA':
-            output_connection.mav.send(packet)     # отправка пакета дальше
-        if print_logs:
-            print(packet)
+        input_connection.timeout = 1.0
+        r2 = input_connection.read(400)
+        data = r1 + r2
+
+        stream_raw_log.write(data)
+
+        if RSSI:
+            rssi = data[-1]
+            data = data[:-1]
+            if print_logs:
+                print("rssi level = %s" % rssi)
+
+        msgs = mav.parse_buffer(data)
+        for msg in msgs or []:
+            if msg.get_type() != 'BAD_DATA':
+                output_connection.mav.send(msg)     # отправка пакета дальше
+                usec = int(time.time() * 1.0e6) & -3
+                stream_packet_log.write(struct.pack('>Q', usec) + msg.get_msgbuf())
+            if print_logs:
+                print(msg)
+
+        if RSSI and rssi != None:
+            msg = msg_rssi(rssi)
+            output_connection.mav.send(msg)
+
+            # FIXME: не работает
+            # usec = int(time.time() * 1.0e6) & -3
+            # its_mav.MAVLink_message.pack()
+            # stream_packet_log.write(struct.pack('>Q', usec) + msg)
+
 
 def main():
     arg = arguments()
@@ -44,7 +81,7 @@ def main():
 
     input_conn = input_connection(arg.serial_device, arg.serial_baudrate)
     output_conn = output_connection(arg.output)
-    parse(input_conn, output_conn, packet_log_file_path, raw_log_file_path, arg.print)
+    parse(input_conn, output_conn, packet_log_file_path, raw_log_file_path, arg.print, arg.RSSI)
 
 
 if __name__ == '__main__':
