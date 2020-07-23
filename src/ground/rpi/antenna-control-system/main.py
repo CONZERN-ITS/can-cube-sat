@@ -10,18 +10,19 @@ import datetime
 import numpy as NumPy
 from math import sin, cos, radians, acos, asin
 
+import i2cdev
 from strela_ms_rpi import Lis3mdl, Lsm6ds3, WMM2020
-from gps_data import GPSD_data
+from gps_data import GPS_data
 from strela_ms_math import dec_to_top_matix, top_to_gcscs_matix
 from DM422 import DM422_control_client
 from config import *
 
 
 class AutoGuidance():
-    def __init__ (self, lis3mdl, 
-                        lsm6ds3, 
-                        gpsd, 
-                        wwm, 
+    def __init__ (self, lis3mdl,
+                        lsm6ds3,
+                        gpsd,
+                        wwm,
                         v_stepper_motor,
                         h_stepper_motor,
                         mag_sample_size=1, 
@@ -188,8 +189,8 @@ if __name__ == '__main__':
                            gps_sample_size=GPS_SAMPLE_SIZE,
                            act_timeout=5)
         ACS.setup()
-        ACS.setup_v_limit_pins_map(V_LIMIT_PINS_MAP)
-        ACS.setup_h_limit_pins_map(H_LIMIT_PINS_MAP)
+        ACS.setup_v_limit_pins_map(V_P_LIMIT_PINS_MAP.keys(), V_N_LIMIT_PINS_MAP.keys())
+        ACS.setup_h_limit_pins_map(H_P_LIMIT_PINS_MAP.keys(), H_N_LIMIT_PINS_MAP.keys())
         ACS.setup_coord_system()
         ACS.setup_v_limit_pos_as_beg()
         ACS.setup_nort_as_zero()
@@ -204,8 +205,9 @@ if __name__ == '__main__':
         if automode:
             if msg.get_type() == "GPS_UBX_NAV_SOL":
                 gps = NumPy.array(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100)
-            if gps is not None:
-                if (time.time() - start_time) < ANTENNA_AIMING_PERIOD:
+            
+            if (time.time() - start_time) < ANTENNA_AIMING_PERIOD:
+                if gps is not None:
                    ACS.aiming(gps) 
 
     i2c.close()
