@@ -24,5 +24,9 @@
 
 #define RADIO_DEFAULT_PERIOD 10
 
+/*
+ * Инициализирует отправку сообщений по радио с заданными через
+ * RADIO_SEND_ID_ARRAY, RADIO_SEND_BAN, RADIO_DEFAULT_PERIOD их частотами.
+ */
 void radio_send_init(void);
 #endif /* COMPONENTS_RADIO_INC_RADIO_H_ */

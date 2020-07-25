@@ -12,13 +12,14 @@
 #include "assert.h"
 #include "esp_log.h"
 
+#define RADIO_SEND_DELAY 50
 
 typedef struct  {
 	int id; //ID сообщения
 	float period; //Период отправки сообщений (в кол-ве сообщений)
 	int last; //Номер сообщения, когда был отправлен
 	int is_updated; //Обновлен ли после последнего отправления
-	mavlink_message_t last_msg;
+	mavlink_message_t last_msg; //Сообщение на отправку
 } send_type;
 
 /*
@@ -31,7 +32,14 @@ static send_type arr_id[] = {
 #undef F
 
 
-
+/*
+ * Хэш-функция для получения индекса в массиве arr_id для заданного
+ * номера сообщения.
+ * Работает через switch/case. В теории C компилятор способен
+ * оптимизировать это при больших кол-ах case. Поэтому через
+ * define определенно switch/case выражение, которое возвращает
+ * индекс в массиве arr_id для msgid данного сообщения.
+ */
 static int get_hash(int id) {
 #define F(x,a,b) case a: return x;
 	switch(id) {
@@ -49,23 +57,31 @@ send_type default_msg = {0, RADIO_DEFAULT_PERIOD, 0, 0, {0}};
 
 static void task_recv(void *arg) {
 	its_rt_task_identifier tid;
+	//Регистрируем на сообщения всех типов
 	tid.queue = xQueueCreate(10, MAVLINK_MAX_PACKET_LEN);
 	its_rt_register_for_all(tid);
 
 
 	while (1) {
 		mavlink_message_t msg;
+		//Ожидаем получения сообщения
 		xQueueReceive(tid.queue, &msg, portMAX_DELAY);
 
+
+		//Ищем, есть ли он в массиве
 		int hash = get_hash(msg.msgid);
 		if (hash >= 0) {
 			arr_id[hash].last_msg = msg;
 			arr_id[hash].is_updated = 1;
 		} else {
 #define F(a) case a:
+			//Проверяем, забанено ли это сообщение
 			switch (msg.msgid) {
 			RADIO_SEND_BAN(F)	break;
 			default:
+				//Этого сообщения нет ни в массиве, ни в списке забаненных
+				// - будем отправлять его, как обычное. Все сообщения,
+				//попадающие сюда, не различаются при отборе на отправку.
 				default_msg.last_msg = msg;
 				default_msg.is_updated = 1;
 				break;
@@ -74,23 +90,40 @@ static void task_recv(void *arg) {
 		}
 	}
 }
-
+/*
+ * Настройки safe_uart_send
+ */
 typedef struct  {
-	uint32_t baud_send;
-	uint32_t buffer_size;
-	uart_port_t port;
-	uint32_t low_thrld;
-	uint32_t high_thrld;
+	uint32_t baud_send; //Баудрейт устр-ва в бит/сек
+	uint32_t buffer_size; //Размер буфера внутри устр-ва
+	uart_port_t port; //Порт уарта
+	uint32_t low_thrld; //Нижная граница буфера
+	uint32_t high_thrld;//Верхняя граница буфера
 } safe_send_cfg_t;
 
+/*
+ * Параметры safe_uart_send
+ */
 typedef struct  {
-	safe_send_cfg_t cfg;
-	int32_t filled;
-	int64_t last_checked;
+	safe_send_cfg_t cfg; //Настройки
+	int32_t filled;	//Заполненность буферв
+	int64_t last_checked; //Время в мс последнего изменения filled
 } safe_send_t;
-static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
-	uint32_t Bs = h->cfg.baud_send / 8;
 
+/*
+ * Безопасная отправка данных через уарт. Необходимо инициализировать
+ * h->cfg.
+ *
+ * Безопасность заключается в отпрвке данных с такой частотой, чтобы
+ * не превысить отправляющую способность устройства по ту сторону от
+ * уарта.
+ *
+ * Границы буфера позволяют отправлять данные пачками
+ */
+static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
+	uint32_t Bs = h->cfg.baud_send / 8; //Перевод из бит/сек в Байт/сек
+
+	//Буфер успел освободиться за то время, пока эта ф-ия не вызывалась
 	int64_t now = esp_timer_get_time();
 	h->filled -= ((now - h->last_checked) * Bs) / 1000000;
 	h->filled = h->filled > 0 ? h->filled : 0;
@@ -98,6 +131,7 @@ static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
 
 	while (size > 0) {
 		if (h->filled >= h->cfg.high_thrld) {
+			//Если буфер достаточно заполнен, то можно пока не отправлять.
 			uint32_t ttt = Bs * portTICK_PERIOD_MS;
 			uint32_t ticks = ((h->filled - h->cfg.low_thrld) * 1000 + ttt - 1) / ttt;
 			vTaskDelay(ticks);
@@ -125,10 +159,18 @@ static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
 	h->last_checked = esp_timer_get_time();
 
 }
+/*
+ * Коэффициент важности/срочности/хорошести отправки данного сообщения.
+ * Больше - важнее.
+ */
 static float get_coef(const send_type *a, int now) {
 	//assert(a->period > 0);
 	return (now - a->last) / a->period;
 }
+/*
+ * Отбирает самое важное/срочное/лучшее сообщение для отправки.
+ * now - количество отпраленных сообщений до этого момента.
+ */
 static send_type *get_best(int now) {
 	send_type *st_best = 0;
 	float coef_best = 0;
@@ -150,10 +192,10 @@ static send_type *get_best(int now) {
 	}
 	return st_best;
 }
-void task_send(void *arg) {
+static void task_send(void *arg) {
 	safe_send_t sst = {0};
 	sst.cfg.low_thrld = 0;
-	sst.cfg.high_thrld = 300;
+	sst.cfg.high_thrld = 100;
 	sst.cfg.baud_send = 720;
 	sst.cfg.buffer_size = 1000;
 	sst.cfg.port = ITS_UART0_PORT;
@@ -168,15 +210,16 @@ void task_send(void *arg) {
 			st = get_best(msg_count);
 
 			if (st == 0) {
-				vTaskDelay(5);
+				//Нет сообщений, которые можно было бы отправить! Подождем...
+				vTaskDelay(RADIO_SEND_DELAY / portTICK_PERIOD_MS);
 			} else {
 				break;
 			}
 		}
 		uint8_t buf[MAVLINK_MAX_PACKET_LEN] = {0};
 		int count = mavlink_msg_to_send_buffer(buf, &st->last_msg);
-		st->is_updated = 0;
-		st->last = msg_count;
+		st->is_updated = 0; //Сообщение внутри контейнера уже не свежее
+		st->last = msg_count;//Запоминаем, когда сообщение было отправленно в последний раз
 		safe_uart_send(&sst, buf, count);
 		msg_count++;
 	}

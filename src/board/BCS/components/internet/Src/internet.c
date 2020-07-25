@@ -64,29 +64,6 @@ static EventGroupHandle_t s_wifi_event_group;
 static int s_retry_num = 0;
 static const char *TAG = "wifi station";
 
-void hang_task(const char *name) {
-	printf("Oh no! The %s is hanged!\n", name);
-	vTaskSuspend(NULL);
-}
-
-/*
-
-void my_sntp_server_init() {
-
-	ip_addr_t addr = IPADDR4_INIT_BYTES(192, 168, 31, 1);
-
-	dns_setserver(0, &addr);
-
-	sntp_set_time_sync_notification_cb(sntp_notify);
-    sntp_setoperatingmode(SNTP_OPMODE_POLL);
-    sntp_setservername(0, "pool.ntp.org");
-	sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
-	sntp_set_sync_interval(0);
-    sntp_init();
-    sntp_restart();
-    ESP_LOGI("SNTP", "server started");
-}*/
-
 
 void task_socket_recv(void *arg) {
 	int sin;
@@ -124,12 +101,12 @@ void task_socket_comm(void *pvParameters) {
 
 	int sin = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sin < 0) {
-		hang_task("hi");
+		vTaskDelete(NULL);
 	}
 	int broadcast_allow = 1;
 	if (setsockopt(sin, SOL_SOCKET, SO_BROADCAST, &broadcast_allow, sizeof(broadcast_allow)) < 0) {
 		printf("ERROR: can't set settings\n");
-		hang_task("Heh");
+		vTaskDelete(NULL);
 	}
 
 	struct sockaddr_in addrin;
@@ -138,7 +115,7 @@ void task_socket_comm(void *pvParameters) {
 	addrin.sin_port = htons(IP_CONFIG_PORT_OUR);
 	if (bind(sin, (struct sockaddr*) &addrin, sizeof(addrin)) < 0) {
 		printf("ERROR: bind\n");
-		hang_task("Heh");
+		vTaskDelete(NULL);
 	}
 
 
@@ -188,9 +165,7 @@ void task_socket_comm(void *pvParameters) {
 
 	}
 
-	while (1) {
-		vTaskDelay(1000 / portTICK_RATE_MS);
-	}
+	vTaskDelete(NULL);
 }
 //------------------------------------------------------------------
 //------------------------------------------------------------------

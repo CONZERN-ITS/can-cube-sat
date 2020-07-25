@@ -47,13 +47,11 @@ void app_main(void)
 	xTaskCreatePinnedToCore(task_print_telemetry, "Print telemetry", configMINIMAL_STACK_SIZE + 4000, "Print telemetry", 1, 0, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(ark_tsync_task, "ARK time sync", configMINIMAL_STACK_SIZE + 4000, "ARK time sync", 1, 0, tskNO_AFFINITY);
 #if ITS_WIFI_SERVER
-	//xTaskCreatePinnedToCore(task_send_telemetry_uart, "Send tel", configMINIMAL_STACK_SIZE + 2048, 0, 2, 0, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(task_recv_telemetry_wifi, "Send tel", configMINIMAL_STACK_SIZE + 5000, 0, 2, 0, tskNO_AFFINITY);
 #else
 	xTaskCreatePinnedToCore(task_send_telemetry_wifi, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
 #endif
 
-	//xTaskCreatePinnedToCore(task_socket_recv, "Recv", configMINIMAL_STACK_SIZE + 4000, 0, 4, 0, tskNO_AFFINITY);
 
 
 
@@ -127,87 +125,6 @@ static void task_recv_telemetry_wifi(void *pvParameters) {
 			}
 		}
 		//TODO: надо бы запоминать, когда не отправилось
-	}
-	vTaskDelete(NULL);
-}
-#define PERIOD 700 //ms
-
-typedef struct  {
-	uint32_t baud_send;
-	uint32_t buffer_size;
-	uart_port_t port;
-	uint32_t low_thrld;
-	uint32_t high_thrld;
-} safe_send_cfg_t;
-
-typedef struct  {
-	safe_send_cfg_t cfg;
-	int32_t filled;
-	int64_t last_checked;
-} safe_send_t;
-void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
-	uint32_t Bs = h->cfg.baud_send / 8;
-
-	int64_t now = esp_timer_get_time();
-	h->filled -= ((now - h->last_checked) * Bs) / 1000000;
-	h->filled = h->filled > 0 ? h->filled : 0;
-
-
-	while (size > 0) {
-		if (h->filled >= h->cfg.high_thrld) {
-			uint32_t ttt = Bs * portTICK_PERIOD_MS;
-			uint32_t ticks = ((h->filled - h->cfg.low_thrld) * 1000 + ttt - 1) / ttt;
-			vTaskDelay(ticks);
-			h->filled -= ticks * portTICK_PERIOD_MS * Bs / 1000;
-		} else {
-			uint32_t maxSend = (h->cfg.buffer_size - h->filled);
-
-			uint16_t s = size;
-			if (size >= maxSend) {
-				s = maxSend;
-			}
-			int64_t start = esp_timer_get_time();
-			uart_write_bytes(h->cfg.port, (char *) buf, s);
-			int64_t now = esp_timer_get_time();
-
-			h->filled -= (Bs * (now - start)) / 1000000;
-			h->filled += s;
-			h->filled = h->filled > 0 ? h->filled : 0;
-
-			buf += s;
-			size -= s;
-
-		}
-	}
-	h->last_checked = esp_timer_get_time();
-
-}
-
-static void task_send_telemetry_uart(void *pvParameters) {
-	its_rt_task_identifier tid;
-	tid.queue = xQueueCreate(40, MAVLINK_MAX_PACKET_LEN);
-	its_rt_register_for_all(tid);
-	safe_send_t sst = {0};
-	sst.cfg.low_thrld = 0;
-	sst.cfg.high_thrld = 1000;
-	sst.cfg.baud_send = 720;
-	sst.cfg.buffer_size = 1000;
-	sst.cfg.port = ITS_UART0_PORT;
-
-	while (1) {
-		mavlink_message_t msg;
-
-		if (xQueueReceive(tid.queue, &msg, portMAX_DELAY) == pdFALSE) {
-			ESP_LOGE("UART_RADIO", "BAD");
-			vTaskDelay(500 / portTICK_RATE_MS);
-			continue;
-		}
-		//ESP_LOGI("UART_RADIO", "Got smthng to send");
-		uint8_t buf[MAVLINK_MAX_PACKET_LEN];
-		int count = mavlink_msg_to_send_buffer(buf, &msg);
-		safe_uart_send(&sst, buf, count);
-		//uart_write_bytes(ITS_UART0_PORT, (char *) buf, count);
-		//vTaskDelay(PERIOD / portTICK_PERIOD_MS);
 	}
 	vTaskDelete(NULL);
 }

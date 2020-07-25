@@ -184,9 +184,11 @@ static void IRAM_ATTR imi_i2c_int_isr_handler(void *arg) {
 static void _imi_recv_all(imi_handler_t *h) {
 
 	for (int i = 0; i < h->add_count; i++) {
+
 		int isAny = 1;
 		//If device has a packet, we will try to get one more. So, we will all packets
 		//one device, then from another and so on.
+
 		while (isAny) {
 			uint16_t size = 0;
 
@@ -216,6 +218,7 @@ static void _imi_recv_all(imi_handler_t *h) {
 			rc = imi_get_packet(&himi, pointer, size);
 			(*h->cfg.save)(pointer, size);
 		}
+
 	}
 }
 
