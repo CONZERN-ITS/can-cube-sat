@@ -24,6 +24,7 @@
 #include "router.h"
 #include "mavlink/its/mavlink.h"
 #include "mavlink_help2.h"
+#include "radio.h"
 
 static i2c_config_t init_pin_i2c_tm  = {
 	.mode = I2C_MODE_MASTER,
@@ -54,7 +55,7 @@ QueueHandle_t quart;
 mavlink_channel_t i2c_chan;
 
 uart_config_t init_pin_uart0 = {
-	.baud_rate = 115200,
+	.baud_rate = 9600,
 	.data_bits = UART_DATA_8_BITS,
 	.parity = UART_PARITY_DISABLE,
 	.stop_bits = UART_STOP_BITS_1,
@@ -93,7 +94,7 @@ void init_basic(void) {
 
 	uart_param_config(ITS_UART0_PORT, &init_pin_uart0);
 	uart_driver_install(ITS_UART0_PORT, ITS_UART0_RX_BUF_SIZE, ITS_UART0_TX_BUF_SIZE, 0, 0, 0);
-	uart_set_pin(ITS_UART0_PORT, ITS_PIN_UART0_TX, ITS_PIN_UART0_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+	uart_set_pin(ITS_UART0_PORT, ITS_PIN_UART0_TX, ITS_PIN_UART0_RX, UART_PIN_NO_CHANGE, ITS_PIN_UART0_CTS);
 
 	gpio_config(&init_pin_time);
 
@@ -126,6 +127,8 @@ void init_helper(void) {
 #endif
 
 	ESP_LOGI("SYSTEM", "Wifi inited");
+
+	radio_send_init();
 }
 
 uint8_t mv_packet[MAVLINK_MAX_PACKET_LEN];

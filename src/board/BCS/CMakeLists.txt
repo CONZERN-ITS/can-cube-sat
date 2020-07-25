@@ -13,4 +13,6 @@ set(EXTRA_COMPONENT_DIRS "components/imi"
                          "router"
                          "mavlink_comp"
                          "uart_mavlink"
-                         "ntp_server")
+                         "ntp_server"
+                         "radio"
+                         "time_sync")
