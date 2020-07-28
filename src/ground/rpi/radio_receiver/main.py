@@ -57,7 +57,7 @@ def parse(input_connection, output_connections, packet_log, raw_log, print_logs,
         stream_raw_log.write(data)
 
         if rssi_on:
-            rssi, *_ = RSSI_STRUCT.unpack(bytes(data[-1]))
+            rssi, *_ = RSSI_STRUCT.unpack(bytes((data[-1],)))
             data = data[:-1]
 
         msgs = mav.parse_buffer(data)
