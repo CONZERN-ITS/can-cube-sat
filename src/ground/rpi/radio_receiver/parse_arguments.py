@@ -11,7 +11,10 @@ def arguments():
 
     # output
     outout_group = parser.add_argument_group("arguments for output connection")
-    outout_group.add_argument("-o", "--output", help="your output mavutil stream", default="udp:localhost:4444")
+    outout_group.add_argument(
+        "-o", "--output", nargs="+", help="your output mavutil stream",
+        default="udp:localhost:4444"
+    )
 
     # logs
     logs_group = parser.add_argument_group("arguments for logs")

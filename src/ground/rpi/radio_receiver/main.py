@@ -13,6 +13,8 @@ from parse_arguments import *
 
 # TODO: добавить системные логи (дата и время включения, открытие, закрытие файлов и соединенй, ошибки рабооты программы
 
+RSSI_STRUCT = struct.Struct("b")
+
 
 def msg_rssi(rssi):
     return its_mav.MAVLink_rssi_message(rssi=rssi)
@@ -28,7 +30,14 @@ def output_connection(output_mavutil_def):
     return output_conn
 
 
-def parse(input_connection, output_connection, packet_log, raw_log, print_logs, rssi_on):
+def hacky_send(mav_con, msg):
+    """ asdasd """
+    mav_con.mav.srcSystem = msg.get_header().srcSystem
+    mav_con.mav.srcComponent = msg.get_header().srcComponent
+    mav_con.mav.send(msg)  # отправка пакета дальше
+
+
+def parse(input_connection, output_connections, packet_log, raw_log, print_logs, rssi_on):
     mav = its_mav.MAVLink(file=None)
     mav.robust_parsing = True
 
@@ -48,13 +57,14 @@ def parse(input_connection, output_connection, packet_log, raw_log, print_logs, 
         stream_raw_log.write(data)
 
         if rssi_on:
-            rssi = data[-1]
+            rssi, *_ = RSSI_STRUCT.unpack(bytes(data[-1]))
             data = data[:-1]
 
         msgs = mav.parse_buffer(data)
         for msg in msgs or []:
             if msg.get_type() != 'BAD_DATA':
-                output_connection.mav.send(msg)     # отправка пакета дальше
+                for output_connection in output_connections:
+                    hacky_send(output_connection, msg)  # отправка пакета дальше
 
                 usec = int(time.time() * 1.0e6) & -3
                 stream_packet_log.write(struct.pack('>Q', usec) + msg.get_msgbuf())
@@ -66,7 +76,8 @@ def parse(input_connection, output_connection, packet_log, raw_log, print_logs, 
 
         if rssi_on and rssi != None:
             msg = msg_rssi(rssi=rssi)
-            output_connection.mav.send(msg)
+            for output_connection in output_connections:
+                hacky_send(output_connection, msg)  # отправка пакета дальше
 
             usec = int(time.time() * 1.0e6) & -3
             stream_packet_log.write(struct.pack('>Q', usec) + msg.get_msgbuf())
