@@ -91,8 +91,8 @@ def main():
     raw_log_file_path = generate_new_logs_filename(arg.logs_path, arg.raw_logfile_basename, arg.logfile_extension)
 
     input_conn = input_connection(arg.serial_device, arg.serial_baudrate)
-    output_conn = output_connection(arg.output)
-    parse(input_conn, output_conn, packet_log_file_path, raw_log_file_path, arg.print, arg.RSSI)
+    output_conns = [output_connection(x) for x in arg.output]
+    parse(input_conn, output_conns, packet_log_file_path, raw_log_file_path, arg.print, arg.RSSI)
 
 
 if __name__ == '__main__':
