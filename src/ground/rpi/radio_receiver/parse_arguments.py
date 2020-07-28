@@ -11,7 +11,10 @@ def arguments():
 
     # output
     outout_group = parser.add_argument_group("arguments for output connection")
-    outout_group.add_argument("-o", "--output", help="your output mavutil stream", default="udp:localhost:4444")
+    outout_group.add_argument(
+        "-o", "--output", nargs="+", help="your output mavutil stream",
+        default="udp:localhost:4444"
+    )
 
     # logs
     logs_group = parser.add_argument_group("arguments for logs")
@@ -26,7 +29,8 @@ def arguments():
 
     # other
     other_group = parser.add_argument_group("other arguments")
-    other_group.add_argument("--print", help="print received packets in stdout", action='store_true', default=False)
+    other_group.add_argument("--print", help="print received packets in stdout", action="store_true", default=False)
+    other_group.add_argument("--RSSI", help="receive packets have RSSI byte", action="store_true", default=False)
 
     args = parser.parse_args()
     return args
