@@ -232,13 +232,11 @@ class MainWindow(QtWidgets.QMainWindow):
             #if log == "TXT":
             #    data = TXTLogDataSource(self.settings.value('Log/path'),
             #                     int(self.settings.value('Log/real_time')),
-            #                     float(self.settings.value('Log/time_delay')),
-            #                     int(self.settings.value('Log/time_from_zero')))
+            #                     float(self.settings.value('Log/time_delay')))
             if log == "MAV":
                 data = MAVLogDataSource(self.settings.value('Log/path'),
                                      int(self.settings.value('Log/real_time')),
-                                     float(self.settings.value('Log/time_delay')),
-                                     int(self.settings.value('Log/time_from_zero')))
+                                     float(self.settings.value('Log/time_delay')))
         elif sourse == 'MAVLink':
             data = MAVDataSource(connection_str=self.settings.value('MAVLink/connection'),
                                  log_path=LOG_FOLDER_PATH)
