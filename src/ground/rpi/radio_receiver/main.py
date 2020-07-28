@@ -28,7 +28,7 @@ def output_connection(output_mavutil_def):
     return output_conn
 
 
-def parse(input_connection, output_connection, packet_log, raw_log, print_logs, RSSI):
+def parse(input_connection, output_connection, packet_log, raw_log, print_logs, rssi_on):
     mav = its_mav.MAVLink(file=None)
     mav.robust_parsing = True
 
@@ -47,29 +47,29 @@ def parse(input_connection, output_connection, packet_log, raw_log, print_logs, 
 
         stream_raw_log.write(data)
 
-        if RSSI:
+        if rssi_on:
             rssi = data[-1]
             data = data[:-1]
-            if print_logs:
-                print("rssi level = %s" % rssi)
 
         msgs = mav.parse_buffer(data)
         for msg in msgs or []:
             if msg.get_type() != 'BAD_DATA':
                 output_connection.mav.send(msg)     # отправка пакета дальше
+
                 usec = int(time.time() * 1.0e6) & -3
                 stream_packet_log.write(struct.pack('>Q', usec) + msg.get_msgbuf())
             if print_logs:
                 print(msg)
 
-        if RSSI and rssi != None:
-            msg = msg_rssi(rssi)
+        if print_logs and rssi_on:
+            print("rssi level = %s" % rssi)
+
+        if rssi_on and rssi != None:
+            msg = msg_rssi(rssi=rssi)
             output_connection.mav.send(msg)
 
-            # FIXME: не работает
-            # usec = int(time.time() * 1.0e6) & -3
-            # its_mav.MAVLink_message.pack()
-            # stream_packet_log.write(struct.pack('>Q', usec) + msg)
+            usec = int(time.time() * 1.0e6) & -3
+            stream_packet_log.write(struct.pack('>Q', usec) + msg.get_msgbuf())
 
 
 def main():
