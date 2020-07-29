@@ -49,6 +49,12 @@
         <description>time based on GPS</description>
       </entry>
     </enum>
+    <enum name="GCS_COMPONENT_ID">
+      <description>GCS components numered list</description>
+      <entry value="0" name="GCS_RADIO">
+        <description>Ground radio</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="50010" name="THERMAL_STATE">

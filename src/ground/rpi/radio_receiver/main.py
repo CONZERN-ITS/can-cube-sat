@@ -14,6 +14,8 @@ from parse_arguments import *
 # TODO: добавить системные логи (дата и время включения, открытие, закрытие файлов и соединенй, ошибки рабооты программы
 
 RSSI_STRUCT = struct.Struct("b")
+GCS_SYSTEM_ID = 0
+GCS_RADIO_COMPONENT_ID = 0
 
 
 def msg_rssi(rssi):
@@ -32,6 +34,11 @@ def output_connection(output_mavutil_def):
 
 def hacky_send(mav_con, msg):
     """ asdasd """
+    if msg.get_msgId() == its_mav.MAVLINK_MSG_ID_RSSI:
+        mav_con.mav.srcSystem = GCS_SYSTEM_ID
+        mav_con.mav.srcComponent = GCS_RADIO_COMPONENT_ID
+        mav_con.mav.send(msg)
+
     mav_con.mav.srcSystem = msg.get_header().srcSystem
     mav_con.mav.srcComponent = msg.get_header().srcComponent
     mav_con.mav.send(msg)  # отправка пакета дальше
@@ -62,14 +69,15 @@ def parse(input_connection, output_connections, packet_log, raw_log, print_logs,
 
         msgs = mav.parse_buffer(data)
         for msg in msgs or []:
+            if print_logs:
+                print(msg)
+
             if msg.get_type() != 'BAD_DATA':
                 for output_connection in output_connections:
                     hacky_send(output_connection, msg)  # отправка пакета дальше
 
                 usec = int(time.time() * 1.0e6) & -3
                 stream_packet_log.write(struct.pack('>Q', usec) + msg.get_msgbuf())
-            if print_logs:
-                print(msg)
 
         if print_logs and rssi_on:
             print("rssi level = %s" % rssi)
