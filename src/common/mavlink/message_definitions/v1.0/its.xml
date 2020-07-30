@@ -9,52 +9,59 @@
       <entry value="0" name="GCS">
         <description>Ground control system id</description>
       </entry>
-      <entry value="1" name="CUBE_1">
-        <description>Cube 1 id</description>
+      <entry value="1" name="GCS_RADIO">
+        <description>Ground radio</description>
       </entry>
-      <entry value="2" name="CUBE_2">
-        <description>Cube 2 id</description>
-      </entry>
-    </enum>
-    <enum name="CUBE_1_COMPONENT_ID">
-      <description>Cube 1 components numered list</description>
-      <entry value="0" name="CUBE_1_BCU">
+      <entry value="10" name="CUBE_1_BCU">
         <description>Board control unit</description>
       </entry>
-      <entry value="1" name="CUBE_1_SINS">
+      <entry value="11" name="CUBE_1_SINS">
         <description>Strapdown inetrial navigation system</description>
       </entry>
-      <entry value="2" name="CUBE_1_PCU">
+      <entry value="12" name="CUBE_1_PCU">
         <description>Power control unit</description>
       </entry>
-      <entry value="3" name="CUBE_1_PL">
+      <entry value="13" name="CUBE_1_PL">
         <description>Payload</description>
       </entry>
-    </enum>
-    <enum name="CUBE_2_COMPONENT_ID">
-      <description>Cube 2 components numered list</description>
-      <entry value="0" name="CUBE_2_PFU">
+      <entry value="20" name="CUBE_2_PFU">
         <description>Power feeder unit</description>
       </entry>
-      <entry value="1" name="CUBE_2_PCU">
+      <entry value="21" name="CUBE_2_PCU">
         <description>Power control unit</description>
       </entry>
     </enum>
     <enum name="TIME_BASE_TYPE">
       <description>These values define the type of time base.</description>
-      <entry value="0" name="TIME_BASE_TYPE_RTC">
+      <entry value="0" name="TIME_BASE_TYPE_NONE">
         <description>time based on RTC</description>
       </entry>
-      <entry value="1" name="TIME_BASE_TYPE_GPS">
+      <entry value="1" name="TIME_BASE_TYPE_RTC">
+        <description>time based on RTC</description>
+      </entry>
+      <entry value="2" name="TIME_BASE_TYPE_GPS">
         <description>time based on GPS</description>
       </entry>
     </enum>
-    <enum name="GCS_COMPONENT_ID">
-      <description>GCS components numered list</description>
-      <entry value="0" name="GCS_RADIO">
-        <description>Ground radio</description>
-      </entry>
+    <enum name="COMP_ANY">
+      <description>Used for any data with simple definition (there is just one source or sources' definitions are similar)</description>
+      <entry value="0" name="COMP_ANY_0"></entry>
+      <entry value="1" name="COMP_ANY_1"></entry>
+      <entry value="2" name="COMP_ANY_2"></entry>
+      <entry value="3" name="COMP_ANY_3"></entry>
+      <entry value="4" name="COMP_ANY_4"></entry>
+      <entry value="5" name="COMP_ANY_5"></entry>
+      <entry value="6" name="COMP_ANT_6"></entry>
     </enum>
+    <enum name="COMP_ELEC">
+      <description>Electric data from ina219 or something similar</description>
+      <entry value="0" name="COMP_ELEC_DPC">
+        <description>Elec data from DPC</description>
+      </entry>
+      <entry value="1" name="COMP_ELEC_DPD">
+        <description>Elec based on DPD</description>
+      </entry>>
+    </enum>>
   </enums>
   <messages>
     <message id="50010" name="THERMAL_STATE">
