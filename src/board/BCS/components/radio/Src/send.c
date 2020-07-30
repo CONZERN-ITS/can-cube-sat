@@ -14,22 +14,27 @@
 
 #define RADIO_SEND_DELAY 50
 
+
 typedef struct  {
 	int id; //ID сообщения
 	float period; //Период отправки сообщений (в кол-ве сообщений)
 	int last; //Номер сообщения, когда был отправлен
 	int is_updated; //Обновлен ли после последнего отправления
 	mavlink_message_t last_msg; //Сообщение на отправку
-} send_type;
+} msg_container;
 
 /*
  * Буфер всех заданных сообщений
  */
 #define F(x,a,b) {a, b, -b, 0, {0}},
-static send_type arr_id[] = {
+static msg_container arr_id[] = {
 		RADIO_SEND_ID_ARRAY(F)
 };
 #undef F
+
+//Устанавливаем первое last в ноль, чтобы в начале отпрвлялись
+//только нормальные сообщения
+msg_container default_msg = {0, RADIO_DEFAULT_PERIOD, 0, 0, {0}};
 
 
 /*
@@ -50,10 +55,94 @@ static int get_hash(int id) {
 #undef F
 }
 
+#define RADIO_SEND_BUF_SIZE 30
+static msg_container arr_buf[RADIO_SEND_BUF_SIZE];
+static int arr_buf_size = 0;
 
-//Устанавливаем первое last в ноль, чтобы в начале отпрвлялись
-//только нормальные сообщения
-send_type default_msg = {0, RADIO_DEFAULT_PERIOD, 0, 0, {0}};
+/*
+ * Поиск контейнера для данного сообщения в буфере arr_buf
+ */
+static msg_container* find(const mavlink_message_t *msg) {
+	for (int i = 0; i < arr_buf_size; i++) {
+		if (arr_buf[i].last_msg.msgid == msg->msgid &&
+			arr_buf[i].last_msg.compid == msg->compid &&
+			arr_buf[i].last_msg.sysid == msg->sysid) {
+			return  &arr_buf[i];
+		}
+	}
+	return 0;
+}
+/*
+ * Создание контейнера в буфере arr_buf для данного сообщения
+ */
+static int add(const mavlink_message_t *msg) {
+	if (arr_buf_size >= RADIO_SEND_BUF_SIZE) {
+		ESP_LOGE("radio", "No free space for new msg");
+		return 1;
+	}
+	ESP_LOGI("radio", "Add: %d %d:%d", msg->msgid, msg->sysid, msg->compid);
+#define F(a) case a: return 2;
+	switch (msg->msgid) {
+	RADIO_SEND_BAN(F)
+	default: break;
+	}
+#undef F
+	int id = get_hash(msg->msgid);
+	if (id >= 0) {
+		arr_buf_size++;
+		arr_buf[arr_buf_size - 1] = arr_id[id];
+	} else {
+		arr_buf_size++;
+		arr_buf[arr_buf_size - 1].id = msg->msgid;
+		arr_buf[arr_buf_size - 1].period = RADIO_DEFAULT_PERIOD;
+		arr_buf[arr_buf_size - 1].last = -RADIO_DEFAULT_PERIOD;
+	}
+	return 0;
+}
+
+/*
+ * Обновление сообщения в соответствующем контейнере из буфера arr_buf.
+ * Если контейнера нет - создает новый.
+ */
+static void update_msg(const mavlink_message_t *msg) {
+	msg_container *st = find(msg);
+	if (!st) {
+		if (add(msg)) {
+			return;
+		}
+		st = &arr_buf[arr_buf_size - 1];
+	}
+	st->last_msg = *msg;
+	st->is_updated = 1;
+}
+/*
+ * Коэффициент важности/срочности/хорошести данного сообщения.
+ * Больше - важнее.
+ */
+static float get_coef(const msg_container *a, int now) {
+	//assert(a->period > 0);
+	return (now - a->last) / a->period;
+}
+/*
+ * Отбирает самое важное/срочное/лучшее сообщение для отправки.
+ * now - количество отпраленных сообщений до этого момента.
+ */
+static msg_container *get_best(int now) {
+	msg_container *st_best = 0;
+	float coef_best = 0;
+	for (int i = 0; i < arr_buf_size; i++) {
+		float coef = get_coef(&arr_buf[i], now);
+		if (coef > coef_best && arr_buf[i].is_updated) {
+			st_best = &arr_buf[i];
+			coef_best = coef;
+		}
+	}
+	if (st_best) {
+		ESP_LOGI("radio", "chosen %d with coef %f, period %f, last %d, now %d",
+				st_best->id, coef_best, st_best->period, st_best->last, now);
+	}
+	return st_best;
+}
 
 static void task_recv(void *arg) {
 	its_rt_task_identifier tid;
@@ -67,27 +156,7 @@ static void task_recv(void *arg) {
 		//Ожидаем получения сообщения
 		xQueueReceive(tid.queue, &msg, portMAX_DELAY);
 
-
-		//Ищем, есть ли он в массиве
-		int hash = get_hash(msg.msgid);
-		if (hash >= 0) {
-			arr_id[hash].last_msg = msg;
-			arr_id[hash].is_updated = 1;
-		} else {
-#define F(a) case a:
-			//Проверяем, забанено ли это сообщение
-			switch (msg.msgid) {
-			RADIO_SEND_BAN(F)	break;
-			default:
-				//Этого сообщения нет ни в массиве, ни в списке забаненных
-				// - будем отправлять его, как обычное. Все сообщения,
-				//попадающие сюда, не различаются при отборе на отправку.
-				default_msg.last_msg = msg;
-				default_msg.is_updated = 1;
-				break;
-			}
-#undef F
-		}
+		update_msg(&msg);
 	}
 }
 /*
@@ -159,39 +228,6 @@ static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
 	h->last_checked = esp_timer_get_time();
 
 }
-/*
- * Коэффициент важности/срочности/хорошести отправки данного сообщения.
- * Больше - важнее.
- */
-static float get_coef(const send_type *a, int now) {
-	//assert(a->period > 0);
-	return (now - a->last) / a->period;
-}
-/*
- * Отбирает самое важное/срочное/лучшее сообщение для отправки.
- * now - количество отпраленных сообщений до этого момента.
- */
-static send_type *get_best(int now) {
-	send_type *st_best = 0;
-	float coef_best = 0;
-	if (default_msg.is_updated) {
-		st_best = &default_msg;
-		coef_best = get_coef(&default_msg, now);
-	}
-
-	for (int i = 0; i < sizeof(arr_id) / sizeof(arr_id[0]); i++) {
-		float coef = get_coef(&arr_id[i], now);
-		if (coef > coef_best && arr_id[i].is_updated) {
-			st_best = &arr_id[i];
-			coef_best = coef;
-		}
-	}
-	if (st_best) {
-		ESP_LOGI("radio", "chosen %d with coef %f, period %f, last %d, now %d",
-				st_best->id, coef_best, st_best->period, st_best->last, now);
-	}
-	return st_best;
-}
 static void task_send(void *arg) {
 	safe_send_t sst = {0};
 	sst.cfg.low_thrld = 0;
@@ -205,7 +241,7 @@ static void task_send(void *arg) {
 	int msg_count = 0;
 	while (1) {
 
-		send_type *st = 0;
+		msg_container *st = 0;
 		while (1) {
 			st = get_best(msg_count);
 
@@ -221,6 +257,7 @@ static void task_send(void *arg) {
 		st->is_updated = 0; //Сообщение внутри контейнера уже не свежее
 		st->last = msg_count;//Запоминаем, когда сообщение было отправленно в последний раз
 		safe_uart_send(&sst, buf, count);
+
 		msg_count++;
 	}
 	vTaskDelete(NULL);

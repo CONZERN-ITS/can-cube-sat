@@ -16,6 +16,7 @@
 #include "driver/gpio.h"
 #include "driver/uart.h"
 
+
 #include "nvs_flash.h"
 #include "esp_log.h"
 
@@ -30,6 +31,7 @@
 #include "mavlink/its/mavlink.h"
 #include "mavlink_help2.h"
 #include "radio.h"
+#include "sdio.h"
 
 static i2c_config_t init_pin_i2c_tm  = {
 	.mode = I2C_MODE_MASTER,
@@ -126,6 +128,8 @@ void init_helper(void) {
 	static ts_sync ts = {0};
 	ts.pin = ITS_PIN_UART_INT;
 	time_sync_from_sins_install(&ts);
+	sd_init();
+	radio_send_init();
 #else
 	wifi_init_sta();
 	time_sync_from_bcs_install(&ITS_WIFI_SERVER_ADDRESS);
@@ -133,7 +137,6 @@ void init_helper(void) {
 
 	ESP_LOGI("SYSTEM", "Wifi inited");
 
-	radio_send_init();
 }
 
 uint8_t mv_packet[MAVLINK_MAX_PACKET_LEN];

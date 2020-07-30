@@ -22,7 +22,7 @@
 #define RADIO_SEND_BAN(F) \
 	F(MAVLINK_MSG_ID_TIMESTAMP)
 
-#define RADIO_DEFAULT_PERIOD 10
+#define RADIO_DEFAULT_PERIOD 30
 
 /*
  * Инициализирует отправку сообщений по радио с заданными через

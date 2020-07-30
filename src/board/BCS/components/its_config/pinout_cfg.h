@@ -16,11 +16,11 @@
 
 #define ITS_PIN_UART_RX		22
 #define ITS_PIN_UART_TX		23
-#define ITS_PIN_UART_INT	15
+#define ITS_PIN_UART_INT	5
 
 #define ITS_PIN_UART0_RX	26
 #define ITS_PIN_UART0_TX	27
-#define ITS_PIN_UART0_CTS	14
+#define ITS_PIN_UART0_CTS	UART_PIN_NO_CHANGE
 
 
 #endif /* MAIN_PINOUT_CFG_H_ */

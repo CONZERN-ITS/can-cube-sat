@@ -36,7 +36,7 @@
 static void task_print_telemetry(void *pvParameters);
 static void task_send_telemetry_wifi(void *pvParameters);
 static void task_recv_telemetry_wifi(void *pvParameters);
-static void task_send_telemetry_uart(void *pvParameters);
+
 
 
 void app_main(void)
