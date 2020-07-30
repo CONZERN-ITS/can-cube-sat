@@ -17,6 +17,17 @@ RSSI_STRUCT = struct.Struct("b")
 GCS_SYSTEM_ID = 0
 GCS_RADIO_COMPONENT_ID = 0
 
+class bcolors:
+    VIOLET = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 
 def msg_rssi(rssi):
     return its_mav.MAVLink_rssi_message(rssi=rssi)
@@ -70,6 +81,9 @@ def parse(input_connection, output_connections, packet_log, raw_log, print_logs,
         msgs = mav.parse_buffer(data)
         for msg in msgs or []:
             if print_logs:
+                if msg.get_type() == 'BAD_DATA':
+                    if os.name == 'posix':
+                        print(bcolors.RED + str(msg))
                 print(msg)
 
             if msg.get_type() != 'BAD_DATA':
