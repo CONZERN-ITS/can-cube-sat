@@ -24,7 +24,9 @@
 static volatile int _time_svc_started = 0;
 
 //! Метка времени последней коррекции
-static uint64_t _last_correction_ts;
+static uint64_t _last_correction_ts = 0;
+
+static time_svc_timebase_t _time_base = TIME_SVC_TIMEBASE__NONE;
 
 
 // Прерывание на RTC аларм для запуска таймеров службы времени
@@ -84,8 +86,10 @@ int time_svc_world_init(void)
 {
 	int rc;
 
+	_time_base = TIME_SVC_TIMEBASE__NONE;
 	// готовим RTC. По-хардкору или без. Нам нужно чтобы оно работало
-	rc = time_svc_rtc_init();
+	int rtc_hardcore_start;
+	rc = time_svc_rtc_init(&rtc_hardcore_start);
 	if (0 != rc)
 		return rc;
 
@@ -137,7 +141,10 @@ int time_svc_world_init(void)
 	}
 	// Ок! Мы запустились!
 	_last_correction_ts = time_svc_steady_get_time();
-
+	if (rtc_hardcore_start)
+		_time_base = TIME_SVC_TIMEBASE__NONE;
+	else
+		_time_base = TIME_SVC_TIMEBASE__RTC;
 	// глушим прерывания от RTC
 	_disable_alarm_irq();
 
@@ -163,14 +170,21 @@ uint64_t time_svc_steady_get_time(void)
 }
 
 
-void time_svc_world_set_time(time_t the_time)
+void time_svc_world_set_time(time_t the_time, time_svc_timebase_t time_base)
 {
 	time_svc_world_timers_set_time(the_time);
 	_last_correction_ts = time_svc_steady_get_time();
+	_time_base = time_base;
 }
 
 
 uint64_t time_svc_last_adjust_timestamp(void)
 {
 	return _last_correction_ts;
+}
+
+
+time_svc_timebase_t time_svc_timebase(void)
+{
+	return _time_base;
 }

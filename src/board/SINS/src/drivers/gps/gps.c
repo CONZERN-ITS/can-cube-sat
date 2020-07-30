@@ -207,7 +207,7 @@ void EXTI0_IRQHandler()
 {
 	// Правим службу времени
 	if (_next_pps_time > 0)
-		time_svc_world_set_time(_next_pps_time);
+		time_svc_world_set_time(_next_pps_time, TIME_SVC_TIMEBASE__GPS);
 
 
 	HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_9);

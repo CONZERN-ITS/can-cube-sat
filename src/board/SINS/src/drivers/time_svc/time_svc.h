@@ -13,6 +13,14 @@
 #include <time.h>
 
 
+typedef enum time_svc_timebase_t
+{
+	TIME_SVC_TIMEBASE__NONE = 0,
+	TIME_SVC_TIMEBASE__RTC = 1,
+	TIME_SVC_TIMEBASE__GPS = 2
+} time_svc_timebase_t;
+
+
 //! Запуск службы мирового времени
 /*! Эта служба времени запускается от RTC и затем корректируется по GPS */
 int time_svc_world_init(void);
@@ -29,8 +37,6 @@ int time_svc_steady_init(void);
 uint64_t time_svc_steady_get_time(void);
 
 
-
-
 // Коррекция времени по GPS
 // Таймеры, обеспечивающие внешний PPS и субсекундный счет сбрасываются по PPS
 // сигналу аппаратно через соответсвующие пины микроконтроллера
@@ -41,10 +47,13 @@ uint64_t time_svc_steady_get_time(void);
 /*! Таймеры TIM4 и TIM3 будут сброшены на 0 аппартно для обеспечения
  *  выровненого начала секунды. Этот же метод выставит правильные
  *  значения недели gps и миллиссекунд недели */
-void time_svc_world_set_time(time_t the_time);
+void time_svc_world_set_time(time_t the_time, time_svc_timebase_t time_base);
 
 //! Время последней коррекции в steady шкале
 uint64_t time_svc_last_adjust_timestamp(void);
+
+//! Источник времени, на котором мы сейчас едем
+time_svc_timebase_t time_svc_timebase(void);
 
 
 #endif /* DRIVERS_TIME_SVC_TIME_SVC_H_ */

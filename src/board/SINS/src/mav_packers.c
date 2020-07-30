@@ -13,8 +13,8 @@
 #include "drivers/uplink.h"
 #include "state.h"
 
-#define SYSTEM_ID CUBE_1
-#define COMPONENT_ID CUBE_1_SINS
+#define SYSTEM_ID CUBE_1_SINS
+#define COMPONENT_ID COMP_ANY_0
 
 int _mavlink_sins_isc(stateSINS_isc_t * state_isc)
 {
@@ -45,7 +45,7 @@ int _mavlink_timestamp()
 	time_svc_world_get_time(&tv);
 	msg_timestamp.time_s = tv.tv_sec;
 	msg_timestamp.time_us = tv.tv_usec;
-	msg_timestamp.time_base = 0;		//FIXME: исправить
+	msg_timestamp.time_base = (uint8_t)time_svc_timebase();
 
 	mavlink_message_t msg;
 	mavlink_msg_timestamp_encode(SYSTEM_ID, COMPONENT_ID, &msg, &msg_timestamp);
