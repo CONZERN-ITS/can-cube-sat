@@ -1,13 +1,11 @@
 import os
-import re
 import datetime
 
 
 # нахождение текущего времени и текущей даты
 def now_datetime_str():
-    now = str(datetime.datetime.now())
-    now = re.split(r'[\s.]', now)
-    return now[0] + "_" + now[1]
+    now = datetime.datetime.now().strftime("%Y%m%dT%H%M%S.%fZ")
+    return now
 
 
 def generate_new_logs_filename(logs_path, basename, extension):
