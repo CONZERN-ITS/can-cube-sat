@@ -71,7 +71,7 @@ class MsgProcessor:
 def main(argv):
     parser = argparse.ArgumentParser("tm parser to csvs", add_help=True)
     parser.add_argument("-i,--input", nargs="?", dest="input", required=True)
-    parser.add_argument("-o,--output_dir", nargs="?", dest="output_dir", default=".")
+    parser.add_argument("-o,--output_dir", nargs="?", dest="output_dir. If output is None, input filename is name for output directory", default=None)
     parser.add_argument("--notimestamps", nargs="?", dest="notimestamps", default=False)
     args = parser.parse_args(argv)
 
@@ -79,6 +79,9 @@ def main(argv):
     f = args.input
     notimestamps = args.notimestamps
 
+    if not base_path:
+    	fname = os.path.split(f)[1]
+    	base_path = os.path.splitext(fname)[0]
     if not os.path.isdir(base_path):
         os.makedirs(base_path, exist_ok=True)
 
