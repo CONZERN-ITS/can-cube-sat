@@ -66,24 +66,22 @@
   <messages>
     <message id="50010" name="THERMAL_STATE">
       <description></description>
-      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch.</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
-      <field type="uint16_t" name="area_id" >Observed area id</field>
       <field type="float" name="temperature" units="degC">Area temperature</field>
     </message>
 
     <message id="50011" name="ELECTRICAL_STATE">
       <description></description>
-      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch.</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
-      <field type="uint16_t" name="area_id" >Observed area id</field>
       <field type="float" name="current" units="A">Area Current</field>
       <field type="float" name="voltage" units="V">Area Voltage</field>
     </message>
 
     <message id="50012" name="GPS_UBX_NAV_SOL">
       <description></description>
-      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch.</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       <field type="uint32_t" name="iTOW" units="ms">Time of week of the navigation epoch</field>
       <field type="int32_t" name="fTOW" units="ns">Fractorial part of iTOW</field>
@@ -124,7 +122,7 @@
 
     <message id="50015" name="TIMESTAMP">
       <description></description>
-      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch).</field>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch.</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
       <field type="uint8_t" name="time_base" enum="TIME_BASE_TYPE">Time base</field>
     </message>
