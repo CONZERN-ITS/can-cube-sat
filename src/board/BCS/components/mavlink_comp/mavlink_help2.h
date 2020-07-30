@@ -13,9 +13,9 @@
 #include "assert.h"
 
 #if ITS_WIFI_SERVER
-const static mavlink_system_t mavlink_system = {CUBE_1, CUBE_1_BCU};
+const static uint8_t mavlink_system = CUBE_1_BCU;
 #else
-const static mavlink_system_t mavlink_system = {CUBE_2, CUBE_2_PFU};
+const static uint8_t mavlink_system = CUBE_2_PFU;
 #endif
 
 /*

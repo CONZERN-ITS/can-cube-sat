@@ -69,7 +69,7 @@ void adc_task_update(void *arg) {
 
         mavlink_message_t msg;
 
-        mavlink_msg_own_temp_encode(mavlink_system.sysid, mavlink_system.compid,
+        mavlink_msg_own_temp_encode(mavlink_system, COMP_ANY_0,
                 &msg, &mot);
 
 

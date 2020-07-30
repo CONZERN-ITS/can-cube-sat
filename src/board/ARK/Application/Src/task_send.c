@@ -17,8 +17,8 @@
 
 
 
-static int tsend_therm_period = 3000;
-static int tsend_elect_period = 1000;
+static int tsend_therm_period = 1000 / TDS_TEMP_MAX_COUNT;
+static int tsend_elect_period = 1000 / TINA_COUNT;
 
 static int ds_updated;
 static int ina_updated;
@@ -89,11 +89,10 @@ void eupdate() {
             mest.time_s = tim.sec;
             mest.time_us = tim.usec * 1000;
 
-            mest.area_id = ina_index;
             mest.current = current[ina_index];
             mest.voltage = voltage[ina_index];
 
-            mavlink_msg_electrical_state_encode(mavlink_system.sysid, mavlink_system.compid, &msg, &mest);
+            mavlink_msg_electrical_state_encode(mavlink_system, ina_index, &msg, &mest);
 
             size = mavlink_msg_to_send_buffer(buf, &msg);
         }
@@ -114,6 +113,9 @@ void tupdate() {
     static its_time_t tim;
     static uint32_t prev = 0;
     static int ds_count = 0;
+    if (ds_count != 0) {
+        tsend_therm_period = 1000 / ds_count;
+    }
     if (tstate == STATE_WAIT && ds_updated && HAL_GetTick() - prev >= tsend_therm_period) {
         printf("INFO: send ds\n");
 
@@ -146,11 +148,9 @@ void tupdate() {
             mavlink_thermal_state_t mtst = {0};
             mtst.time_s = tim.sec;
             mtst.time_us = tim.usec * 1000;
-
-            mtst.area_id = ds_index;
             mtst.temperature = temp[ds_index];
 
-            mavlink_msg_thermal_state_encode(mavlink_system.sysid, mavlink_system.compid, &msg, &mtst);
+            mavlink_msg_thermal_state_encode(mavlink_system, ds_index, &msg, &mtst);
 
             size = mavlink_msg_to_send_buffer(buf, &msg);
         }
