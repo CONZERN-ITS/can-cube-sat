@@ -81,9 +81,9 @@ def parse(input_connection, output_connections, packet_log, raw_log, print_logs,
         msgs = mav.parse_buffer(data)
         for msg in msgs or []:
             if print_logs:
-                if msg.get_type() == 'BAD_DATA':
-                    if os.name == 'posix':
-                        print(bcolors.RED + str(msg))
+                # if msg.get_type() == 'BAD_DATA':
+                #     if os.name == 'posix':
+                #         print(bcolors.RED + str(msg))
                 print(msg)
 
             if msg.get_type() != 'BAD_DATA':
