@@ -1,8 +1,8 @@
 
-#include "sensors/integrated.h"
+#include "integrated.h"
 
-#include "time_svc.h"
-#include "sensors/analog.h"
+#include "drivers/time_svc/time_svc.h"
+#include "analog.h"
 
 
 // Напряжение со встроенного термистра при 25 градусах (в милливольта)

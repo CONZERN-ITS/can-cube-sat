@@ -2,7 +2,7 @@
 #define SRC_INTEGERATED_TEMPERATURE_H_
 
 
-#include <mavlink_main.h>
+#include <mavlink/its/mavlink.h>
 
 
 //! Получение пакета данных с интегрированных в чип сенсоров
