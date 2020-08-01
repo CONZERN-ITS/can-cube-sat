@@ -16,7 +16,7 @@
 #include "drivers/common.h"
 
 
-extern ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc1;
 
 #define _ADC_HAL_TIMEOUT (HAL_MAX_DELAY)
 
@@ -57,7 +57,7 @@ static int _channgel_config_for_target(analog_target_t target, ADC_ChannelConfTy
 	config->Channel = ADC_CHANNEL_TEMPSENSOR;
 	config->Rank = 1;
 	config->SamplingTime = ADC_SAMPLETIME_3CYCLES;
-	int error = HAL_ADC_ConfigChannel(&hadc1, &config);
+	int error = HAL_ADC_ConfigChannel(&hadc1, config);
 
 	return error;
 }

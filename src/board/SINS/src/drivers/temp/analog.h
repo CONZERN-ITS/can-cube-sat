@@ -10,6 +10,13 @@
 
 #include <stdint.h>
 
+
+// Напряжение со встроенного термистра при 25 градусах (в милливольта)
+#define INTERNAL_TEMP_V25 (760.0f)
+// Коэффициент k внутренного термистра (мВ/C
+#define INTERNAL_TEMP_AVG_SLOPE (2.5f)
+
+
 //! Целевой аналоговый сенсор, с которым требуется работать
 typedef enum analog_target_t
 {

@@ -13,6 +13,10 @@
 #include "drivers/uplink.h"
 #include "state.h"
 
+#include "drivers/temp/analog.h"
+
+#include "diag/Trace.h"
+
 #define SYSTEM_ID CUBE_1_SINS
 #define COMPONENT_ID COMP_ANY_0
 
@@ -93,4 +97,41 @@ void _on_gps_packet(void * arg, const ubx_any_packet_t * packet)
 		break;
 
 	}
+}
+
+
+int _own_temp_packet()
+{
+	int error = 0;
+
+	struct timeval tv;
+	time_svc_world_get_time(&tv);
+
+	mavlink_own_temp_t own_temp_msg;
+
+	const int oversampling = 10;
+	uint32_t raw_sum = 0;
+	uint16_t raw;
+	for (int i = 0; i < oversampling; i++)
+	{
+		error = analog_get_raw(ANALOG_TARGET_INTEGRATED_TEMP, &raw);
+		if (0 != error)
+			return error;
+		raw_sum += raw;
+	}
+
+		raw = raw_sum / oversampling;
+
+		float mv = raw * 3300.0f / 0x0FFF;
+		float temp = (INTERNAL_TEMP_V25 - mv) / INTERNAL_TEMP_AVG_SLOPE + 25;
+
+		own_temp_msg.time_s = tv.tv_sec;
+		own_temp_msg.time_us = tv.tv_usec;
+		own_temp_msg.deg = temp;
+
+		mavlink_message_t msg;
+		mavlink_msg_own_temp_encode(SYSTEM_ID, COMPONENT_ID, &msg, &own_temp_msg);
+		uplink_write_mav(&msg);
+
+		return 0;
 }

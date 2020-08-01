@@ -39,6 +39,7 @@
 #include "drivers/gps/gps.h"
 #include "drivers/uplink.h"
 #include "drivers/time_svc/timers_world.h"
+#include "drivers/temp/analog.h"
 
 #include "mav_packet.h"
 
@@ -199,7 +200,7 @@ int main(int argc, char* argv[])
 //	trace_printf("configure rc = %d\n", rc);
 
 
-
+	analog_init();
 
 	SENSORS_Init();
 	for (int i = 0; i < 2; i++)
@@ -229,6 +230,7 @@ int main(int argc, char* argv[])
 
 
 			_mavlink_sins_isc(&stateSINS_isc);
+			_own_temp_packet();
 			gps_poll();
 		}
 		_mavlink_timestamp();
