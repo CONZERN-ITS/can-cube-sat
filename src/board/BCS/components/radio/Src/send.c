@@ -145,7 +145,9 @@ static msg_container *get_best(int now) {
 }
 
 static void task_recv(void *arg) {
-	its_rt_task_identifier tid;
+	its_rt_task_identifier tid = {
+			.name = "radio_send"
+	};
 	//Регистрируем на сообщения всех типов
 	tid.queue = xQueueCreate(10, MAVLINK_MAX_PACKET_LEN);
 	its_rt_register_for_all(tid);
@@ -256,6 +258,10 @@ static void task_send(void *arg) {
 		int count = mavlink_msg_to_send_buffer(buf, &st->last_msg);
 		st->is_updated = 0; //Сообщение внутри контейнера уже не свежее
 		st->last = msg_count;//Запоминаем, когда сообщение было отправленно в последний раз
+		/*
+		for (int i = 0; i < count; i++) {
+			buf[i] = i;
+		}*/
 		safe_uart_send(&sst, buf, count);
 
 		msg_count++;
@@ -265,6 +271,6 @@ static void task_send(void *arg) {
 
 void radio_send_init(void) {
 
-	xTaskCreatePinnedToCore(task_send, "Radio send", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
-	xTaskCreatePinnedToCore(task_recv, "Radio buf", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_send, "Radio send", configMINIMAL_STACK_SIZE + 4000, 0, 3, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_recv, "Radio buf", configMINIMAL_STACK_SIZE + 4000, 0, 4, 0, tskNO_AFFINITY);
 }

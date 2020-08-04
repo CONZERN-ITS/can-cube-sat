@@ -52,8 +52,13 @@ void app_main(void)
 	xTaskCreatePinnedToCore(task_send_telemetry_wifi, "Send tel", configMINIMAL_STACK_SIZE + 4000, 0, 2, 0, tskNO_AFFINITY);
 #endif
 
+	mavlink_message_t msg;
+	msg.msgid = MAVLINK_MSG_ID_GPS_UBX_NAV_SOL;
+	const its_rt_sender_ctx_t sender_ctx = {0};
 
-
+	its_rt_task_identifier tid = {
+			.name = "ooooo"
+	};
 
 	ESP_LOGI("SYSTEM", "Tasks created");
 
@@ -61,7 +66,9 @@ void app_main(void)
 
 static void task_send_telemetry_wifi(void *pvParameters) {
 
-	its_rt_task_identifier tid;
+	its_rt_task_identifier tid = {
+			.name = "wifi_send"
+	};
 	tid.queue = xQueueCreate(10, MAVLINK_MAX_PACKET_LEN);
 	its_rt_register_for_all(tid);
 
@@ -136,7 +143,9 @@ static void task_print_telemetry(void *pvParameters) {
 		printf("TIME: %d.%06d\n", (uint32_t)tm.tv_sec, (uint32_t)tm.tv_usec);
 		vTaskDelay(2000 / portTICK_PERIOD_MS);
 	}
-	its_rt_task_identifier tid;
+	its_rt_task_identifier tid = {
+			.name = "print_tel"
+	};
 	tid.queue = xQueueCreate(5, MAVLINK_MAX_PACKET_LEN);
 	printf("HH: %d\n", (int)tid.queue);
 	its_rt_register(MAVLINK_MSG_ID_TIMESTAMP, tid);

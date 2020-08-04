@@ -108,6 +108,7 @@ static struct list its_msg_all;
  */
 int its_rt_register(int msgid, its_rt_task_identifier task_id) {
 	int id = its_rt_get_hash(msgid);
+	//Функция возвращает RT_CFG_LIST_SZ если сообщение с таким номером нет в списке
 	assert(id != RT_CFG_LIST_SZ);
 	return list_push(&its_msg_map[id], &task_id);
 }
@@ -116,6 +117,38 @@ int its_rt_register(int msgid, its_rt_task_identifier task_id) {
  */
 int its_rt_register_for_all(its_rt_task_identifier task_id) {
 	return list_push(&its_msg_all, &task_id);
+}
+int its_rt_unregister(int msgid, its_rt_task_identifier task_id) {
+	int id = its_rt_get_hash(msgid);
+	assert(id != RT_CFG_LIST_SZ);
+	list_node *cur = its_msg_map[id].first;
+	list_node **prev = &its_msg_map[id].first;
+	while (cur) {
+		list_node *next = cur->next;
+		if (cur->value.queue == task_id.queue) {
+			*prev = next;
+			free(cur);
+			break;
+		}
+		prev = &cur->next;
+		cur = next;
+	}
+	return 0;
+}
+int its_rt_unregister_for_all(its_rt_task_identifier task_id) {
+	list_node *cur = its_msg_all.first;
+	list_node **prev = &its_msg_all.first;
+	while (cur) {
+		list_node *next = cur->next;
+		if (cur->value.queue == task_id.queue) {
+			*prev = next;
+			free(cur);
+			break;
+		}
+		prev = &cur->next;
+		cur = cur->next;
+	}
+	return 0;
 }
 
 /*
@@ -126,6 +159,7 @@ void its_rt_uninit() {
 		list_delete(&its_msg_map[i]);
 	}
 	list_delete(&its_msg_all);
+
 }
 
 static BaseType_t _route_from_isr(list_node *cur,
@@ -164,7 +198,11 @@ static void _route(list_node *cur,
 		const mavlink_message_t * msg,
 		TickType_t ticksToWaitForOne) {
 	while (cur) {
-		xQueueSend(cur->value.queue, msg, ticksToWaitForOne);
+		int rc = xQueueSend(cur->value.queue, msg, ticksToWaitForOne);
+		if (rc != pdTRUE) {
+			ESP_LOGE("ROUTER", "overfulled %s %d %d %x %d %d", cur->value.name,
+					msg->msgid, msg->sysid, (int)cur->value.queue, rc, ticksToWaitForOne);
+		}
 		cur = cur->next;
 	}
 }

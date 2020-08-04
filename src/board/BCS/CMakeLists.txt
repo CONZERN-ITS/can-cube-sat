@@ -15,4 +15,5 @@ set(EXTRA_COMPONENT_DIRS "components/imi"
                          "uart_mavlink"
                          "ntp_server"
                          "radio"
-                         "time_sync")
+                         "time_sync"
+                         "sdio")

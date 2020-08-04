@@ -128,7 +128,9 @@ void init_helper(void) {
 	static ts_sync ts = {0};
 	ts.pin = ITS_PIN_UART_INT;
 	time_sync_from_sins_install(&ts);
-	sd_init();
+	while (sd_init()) {
+		ESP_LOGD("SYSTEM","Trying launch SD");
+	}
 	radio_send_init();
 #else
 	wifi_init_sta();

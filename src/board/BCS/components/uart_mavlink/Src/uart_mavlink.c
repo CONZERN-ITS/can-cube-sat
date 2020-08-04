@@ -51,7 +51,7 @@ static void _parse_buf(mavlink_channel_t chan, uint8_t *buffer, uint16_t size) {
 		if (mavlink_parse_char(chan, buffer[i], &msg, &mst)) {
 			its_rt_sender_ctx_t ctx = {0};
 			ctx.from_isr = 0;
-			its_rt_route(&ctx, &msg, 100 / portTICK_RATE_MS);
+			its_rt_route(&ctx, &msg, 20 / portTICK_RATE_MS);
 		}
 	}
 }
