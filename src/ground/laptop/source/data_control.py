@@ -109,27 +109,26 @@ class MAVDataSource():
 
     def read_data(self):
         msg = self.connection.recv_match()
-        print(msg)
         if (msg is None):
             raise RuntimeError("No Message")
         self.log.write(msg.get_msgbuf())
         data = self.get_data(msg)
         
-        print(data)
         if data is None:
             raise TypeError("Message type not supported")
 
+        print(data)
         return data
 
     def get_data(self, msg):
         header = msg.get_header()
-        name_prefix = str(header.srcSystem) + str(header.srcComponent) + '_'
+        name_prefix = str(header.srcSystem) + '_' + str(header.srcComponent) + '_'
         if msg.get_type() == "THERMAL_STATE":
-            return [(name_prefix + 'AREA_' + str(msg.area_id) + '_TEMPERATURE',
+            return [(name_prefix + 'TEMPERATURE',
                      NumPy.array([[msg.time_s + msg.time_us/1000000,
                                    msg.temperature]]))]
         if msg.get_type() == "ELECTRICAL_STATE":
-            return [(name_prefix + 'AREA_' + str(msg.area_id) + '_CURRENT',
+            return [(name_prefix + 'CURRENT',
                      NumPy.array([[msg.time_s + msg.time_us/1000000,
                                    msg.current]])),
                     (name_prefix + 'AREA_' + str(msg.area_id) + '_VOLTAGE',
