@@ -46,18 +46,19 @@ class DataWidget(QtWidgets.QTableWidget):
         row_count = 0
         if int(self.settings.value("Time_table/is_on")):
             self.settings.beginGroup("Time_table")
-            row_count = len(self.settings.childGroups())
+            for group in self.settings.childGroups():
+                if int(self.settings.value(group + "/is_on")):
+                    row_count += 1
             self.settings.endGroup()
-        else:
-            row_count = 0
-            
-        self.settings.beginGroup("Data_table")
-        for group in self.settings.childGroups():
-            row_count = row_count + len(self.settings.value(group +"/name")) - 1
-        self.settings.endGroup()
+
+        if int(self.settings.value("Data_table/is_on")):
+            self.settings.beginGroup("Data_table")
+            for group in self.settings.childGroups():
+                if int(self.settings.value(group + "/is_on")):
+                    row_count = row_count + len(self.settings.value(group +"/name")) - 1
+            self.settings.endGroup()
 
         self.setRowCount(row_count)
-        print(row_count)
 
         self.table_dict = {}
         self.time_tuple = []
@@ -66,39 +67,42 @@ class DataWidget(QtWidgets.QTableWidget):
         if int(self.settings.value("Time_table/is_on")):
             self.settings.beginGroup("Time_table")
             for group in self.settings.childGroups():
-                self.settings.beginGroup(group)
-                self.setItem(row_count, 0, QtWidgets.QTableWidgetItem())
-                self.setItem(row_count, 1, QtWidgets.QTableWidgetItem(self.settings.value("name")))
-                self.setItem(row_count, 2, QtWidgets.QTableWidgetItem())
-                timer = DataWidget.Timer(self, row_count, 1, self.colors[2])
-                timer.setSingleShot(True)
-                timer.setInterval(int(float(self.settings.value("time_limit"))*1000))
-                self.time_tuple.append(tuple([row_count, timer] + self.settings.value("packet_name")[:-1]))
-                row_count += 1
-                self.settings.endGroup()
+                if int(self.settings.value(group + "/is_on")):
+                    self.settings.beginGroup(group)
+                    self.setItem(row_count, 0, QtWidgets.QTableWidgetItem())
+                    self.setItem(row_count, 1, QtWidgets.QTableWidgetItem(self.settings.value("name")))
+                    self.setItem(row_count, 2, QtWidgets.QTableWidgetItem())
+                    timer = DataWidget.Timer(self, row_count, 1, self.colors[2])
+                    timer.setSingleShot(True)
+                    timer.setInterval(int(float(self.settings.value("time_limit"))*1000))
+                    self.time_tuple.append(tuple([row_count, timer] + self.settings.value("packet_name")[:-1]))
+                    row_count += 1
+                    self.settings.endGroup()
             self.setItem(0, 0, QtWidgets.QTableWidgetItem('Time_table'))
             self.time_tuple = tuple(self.time_tuple)
             self.settings.endGroup()
-            
-        self.settings.beginGroup("Data_table")
-        for group in self.settings.childGroups():
-            self.settings.beginGroup(group)
-            packet_len = len(self.settings.value("name")) - 1
-            for i in range(packet_len):
-                self.setItem(row_count + i, 0, QtWidgets.QTableWidgetItem())
-                self.setItem(row_count + i, 1, QtWidgets.QTableWidgetItem(self.settings.value("name")[i]))
-                self.setItem(row_count + i, 2, QtWidgets.QTableWidgetItem())
-            self.setItem(row_count, 0, QtWidgets.QTableWidgetItem(group))
-            timer = DataWidget.Timer(self, row_count, packet_len, self.colors[2])
-            timer.setSingleShot(True)
-            timer.setInterval(int(float(self.settings.value("time_limit"))*1000))
-            self.table_dict.update([(self.settings.value("packet_name"), (row_count, 
-                                                                          packet_len,
-                                                                          tuple([float(num) for num in self.settings.value("range")]),
-                                                                          timer))])
-            row_count = row_count + packet_len
+
+        if int(self.settings.value("Data_table/is_on")):
+            self.settings.beginGroup("Data_table")
+            for group in self.settings.childGroups():
+                if int(self.settings.value(group + "/is_on")):
+                    self.settings.beginGroup(group)
+                    packet_len = len(self.settings.value("name")) - 1
+                    for i in range(packet_len):
+                        self.setItem(row_count + i, 0, QtWidgets.QTableWidgetItem())
+                        self.setItem(row_count + i, 1, QtWidgets.QTableWidgetItem(self.settings.value("name")[i]))
+                        self.setItem(row_count + i, 2, QtWidgets.QTableWidgetItem())
+                    self.setItem(row_count, 0, QtWidgets.QTableWidgetItem(group))
+                    timer = DataWidget.Timer(self, row_count, packet_len, self.colors[2])
+                    timer.setSingleShot(True)
+                    timer.setInterval(int(float(self.settings.value("time_limit"))*1000))
+                    self.table_dict.update([(self.settings.value("packet_name"), (row_count, 
+                                                                                  packet_len,
+                                                                                  tuple([float(num) for num in self.settings.value("range")]),
+                                                                                  timer))])
+                    row_count = row_count + packet_len
+                    self.settings.endGroup()
             self.settings.endGroup()
-        self.settings.endGroup()
         self.settings.endGroup()
 
     def update_current_values (self):
