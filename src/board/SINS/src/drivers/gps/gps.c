@@ -237,11 +237,13 @@ int gps_init(
 	_uart_cycle_buffer_head = 0;
 	_uart_cycle_buffer_tail = 0;
 
-	// Настраиваем уартовое железо
-	_init_uart();
-
 	// Настраиваем железо для работы с PPS
 	_init_pps();
+
+	// Настраиваем уартовое железо
+	int error =_init_uart();
+	if (error != 0)
+		return error;
 
 	// Все готово! поехали!
 	return 0;

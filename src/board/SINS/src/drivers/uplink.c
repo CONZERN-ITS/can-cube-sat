@@ -14,6 +14,7 @@
 
 
 static UART_HandleTypeDef huplink_uart;
+static int uart_error_count = 0;
 
 
 int uplink_init(void)
@@ -47,7 +48,17 @@ int uplink_write_raw(const void * data, int data_size)
 
 	hal_error = HAL_UART_Transmit(&huplink_uart, (uint8_t*)data, data_size, HAL_MAX_DELAY);
 	if (hal_error != HAL_OK)
+	{
+		uart_error_count++;
+		if (uart_error_count >= 10)
+			HAL_NVIC_SystemReset();
+		__HAL_RCC_USART1_FORCE_RESET();
+		HAL_Delay(1);
+		__HAL_RCC_USART1_RELEASE_RESET();
+		hal_error = HAL_UART_Init(&huplink_uart);
 		return sins_hal_status_to_errno(hal_error);
+	}
+
 
 	return 0;
 }

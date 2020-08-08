@@ -187,13 +187,19 @@ int main(int argc, char* argv[])
 	memset(&state_system,			0x00, sizeof(state_system));
 	memset(&state_zero,				0x00, sizeof(state_zero));
 
-	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
-	assert(0 == time_svc_steady_init());
-	assert(0 == time_svc_world_init());
+	time_svc_steady_init();
+
+	if (time_svc_world_preinit_with_rtc() != 0)
+		time_svc_world_preinit_without_rtc(); 		//не смогли запустить rtc. Запустимся без него
+	else
+		time_svc_world_init();			//Смогли запуслить rtc. Запустим все остальное
+
+	if (uplink_init() != 0)
+		HAL_NVIC_SystemReset();		//Если не запустился uart, то мы - кирпич
+
+
 	assert(0 == gps_init(_on_gps_packet, NULL));
-
-	uplink_init();
 
 //	int rc = gps_init(_on_gps_packet, NULL);
 	assert(0 == gps_configure());
