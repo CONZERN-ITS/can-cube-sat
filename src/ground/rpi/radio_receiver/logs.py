@@ -4,7 +4,7 @@ import datetime
 
 # нахождение текущего времени и текущей даты
 def now_datetime_str():
-    now = datetime.datetime.now().strftime("%Y%m%dT%H%M%S.%fZ")
+    now = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
     return now
 
 

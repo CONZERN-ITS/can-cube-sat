@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
 	uplink_init();
 
 //	int rc = gps_init(_on_gps_packet, NULL);
-//	int rc = gps_configure();
+	assert(0 == gps_configure());
 //	trace_printf("configure rc = %d\n", rc);
 
 
@@ -230,10 +230,10 @@ int main(int argc, char* argv[])
 
 
 			_mavlink_sins_isc(&stateSINS_isc);
-			_own_temp_packet();
 			gps_poll();
 		}
 		_mavlink_timestamp();
+		_own_temp_packet();
 	}
 
 	return 0;

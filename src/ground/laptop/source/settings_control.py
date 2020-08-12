@@ -10,8 +10,14 @@ MAP_ICON_PATH = os.path.join(RES_ROOT, "images/map.png")
 MODEL_ICON_PATH = os.path.join(RES_ROOT, "images/model.png")
 GRAPH_ICON_PATH = os.path.join(RES_ROOT, "images/graph.png")
 
+SETTINGS_PATH = USER_SETTINGS_PATH
+if 'STRELA_MS_SETTINGS_PATH' in os.environ:
+    if os.path.exists(os.environ['STRELA_MS_SETTINGS_PATH']):
+        SETTINGS_PATH = os.environ['STRELA_MS_SETTINGS_PATH']
+
+
 def init_settings():
-    settings = QtCore.QSettings(USER_SETTINGS_PATH, QtCore.QSettings.IniFormat)
+    settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
     return settings
 
 def set_to_default(settings):

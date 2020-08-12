@@ -123,7 +123,7 @@ int _own_temp_packet()
 		raw = raw_sum / oversampling;
 
 		float mv = raw * 3300.0f / 0x0FFF;
-		float temp = (INTERNAL_TEMP_V25 - mv) / INTERNAL_TEMP_AVG_SLOPE + 25;
+		float temp = (mv - INTERNAL_TEMP_V25) / INTERNAL_TEMP_AVG_SLOPE + 25;
 
 		own_temp_msg.time_s = tv.tv_sec;
 		own_temp_msg.time_us = tv.tv_usec;
