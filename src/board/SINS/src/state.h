@@ -25,6 +25,25 @@
 
 
 typedef struct {
+	int gps_init_error;
+	int gps_config_error;
+	int lsm6ds3_init_error;
+	int lis3mdl_init_error;
+
+	int gps_uart_init_error;
+	int gps_uart_error;
+
+	int i2c_init_error;
+	int i2c_error;
+
+	int uart_transfer_init_error;
+	int uart_transfer_error;
+
+	int timers_error;
+}error_system_t;
+
+
+typedef struct {
 	uint8_t bus_state;
 	uint8_t lis3mdl_state;
 	uint8_t lsm6ds3_state;
@@ -71,6 +90,7 @@ typedef struct {
 //}__attribute__((packed, aligned(1))) stateSINS_transfer_t;
 
 
+extern error_system_t error_system;
 extern stateSINS_rsc_t stateSINS_rsc;
 extern state_system_t state_system;
 extern state_zero_t state_zero;

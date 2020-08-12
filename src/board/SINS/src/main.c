@@ -56,6 +56,7 @@
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
 //Global structures
+error_system_t error_system;
 state_system_t state_system;
 stateSINS_rsc_t stateSINS_rsc;
 state_zero_t state_zero;
@@ -206,7 +207,11 @@ int main(int argc, char* argv[])
 //	trace_printf("configure rc = %d\n", rc);
 
 
-	analog_init();
+	if (analog_init() != 0)
+		{
+			HAL_Delay(500);
+			analog_restart();
+		}
 
 	SENSORS_Init();
 	for (int i = 0; i < 2; i++)
