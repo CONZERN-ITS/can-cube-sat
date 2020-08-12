@@ -94,18 +94,18 @@ class ModelWidget(OpenGL.GLViewWidget):
                 verts = self._get_mesh_points(SCENE_MESH_PATH)
                 model_color = self._get_face_colors(SCENE_MESH_COLOR_PATH)
 
-                faces = NumPy.array([(i, i + 1, i + 2,) for i in range(0, len(verts), 3)])
+            faces = NumPy.array([(i, i + 1, i + 2,) for i in range(0, len(verts), 3)])
 
-                self.scene.setMeshData(vertexes=verts,
-                                       faces=faces, 
-                                       faceColors=model_color,
-                                       edgeColor=(0, 0, 0, 1),
-                                       drawEdges=int(self.settings.value("draw_edges")), 
-                                       drawFaces=int(self.settings.value("draw_faces")),
-                                       smooth=int(self.settings.value("smooth")), 
-                                       shader=self.settings.value("shader"), 
-                                       computeNormals=int(self.settings.value("compute_normals")))
-                self.scene.meshDataChanged()
+            self.scene.setMeshData(vertexes=verts,
+                                   faces=faces, 
+                                   faceColors=model_color,
+                                   edgeColor=(0, 0, 0, 1),
+                                   drawEdges=int(self.settings.value("draw_edges")), 
+                                   drawFaces=int(self.settings.value("draw_faces")),
+                                   smooth=int(self.settings.value("smooth")), 
+                                   shader=self.settings.value("shader"), 
+                                   computeNormals=int(self.settings.value("compute_normals")))
+            self.scene.meshDataChanged()
         self.settings.endGroup()
 
         self.settings.beginGroup("CentralWidget/ModelWidget/Camera")
