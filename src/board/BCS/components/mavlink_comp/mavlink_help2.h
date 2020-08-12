@@ -18,11 +18,12 @@ const static uint8_t mavlink_system = CUBE_1_BCU;
 const static uint8_t mavlink_system = CUBE_2_PFU;
 #endif
 
+
+static int channel = -1;
 /*
  * Для упращения управления каналами
  */
 static mavlink_channel_t mavlink_claim_channel(void) {
-	static int channel = -1;
 	channel++;
 	assert(channel < MAVLINK_COMM_NUM_BUFFERS);
 	return (mavlink_channel_t) channel;

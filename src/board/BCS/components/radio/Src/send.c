@@ -234,9 +234,9 @@ static void task_send(void *arg) {
 	safe_send_t sst = {0};
 	sst.cfg.low_thrld = 0;
 	sst.cfg.high_thrld = 100;
-	sst.cfg.baud_send = 720;
+	sst.cfg.baud_send = 62500 / 2;
 	sst.cfg.buffer_size = 1000;
-	sst.cfg.port = ITS_UART0_PORT;
+	sst.cfg.port = ITS_UARTR_PORT;
 
 
 	//Количество отправленных сообщений

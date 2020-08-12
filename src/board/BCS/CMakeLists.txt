@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.5)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(app-template)
 
+
 set(EXTRA_COMPONENT_DIRS "components/imi"
                          "components/internet"
                          "components/my_i2c"
@@ -16,4 +17,8 @@ set(EXTRA_COMPONENT_DIRS "components/imi"
                          "ntp_server"
                          "radio"
                          "time_sync"
-                         "sdio")
+                         "sdio"
+                         "shift_reg"
+                         "control_heat"
+                         "control_magnet"
+                         "control_vcc")
