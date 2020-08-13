@@ -13,7 +13,7 @@
 //! Уменьшаем количество буферов мавлинка до одного
 #define MAVLINK_COMM_NUM_BUFFERS 1
 //! Включаем удобные мавлинковые функции
-#define MAVLINK_USE_CONVENIENCE_FUNCTIONS
+//#define MAVLINK_USE_CONVENIENCE_FUNCTIONS
 // Скидывать сообщения в текстовом виде в консольку для отладки
 #ifdef DEBUG
 //#define PROCESS_TO_PRINTF
@@ -25,7 +25,7 @@
 #include <mavlink/mavlink_types.h>
 
 //! Определяем идентификаторы системы
-extern mavlink_system_t mavlink_system;
+extern uint8_t mavlink_system;
 
 //! Отправка mavlink пакета в i2c-link
 void mav_main_send_to_its_link(mavlink_channel_t channel, const uint8_t * buffer, uint16_t buffer_size);

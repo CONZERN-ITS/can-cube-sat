@@ -190,7 +190,7 @@ int app_main()
 		{
 			if (0 == _analog_restart_if_need_so())
 			{
-				mavlink_own_temp_t own_temp_msg;
+				mavlink_own_temp_t own_temp_msg = {0};
 				if (0 == _analog_op_analysis(integrated_read(&own_temp_msg)))
 					mav_main_process_owntemp_message(&own_temp_msg);
 			}
@@ -199,7 +199,7 @@ int app_main()
 
 		if (tock % PACKET_PERIOD_OWN_STATS == PACKET_OFFSET_OWN_STATS)
 		{
-			mavlink_pld_stats_t pld_stats_msg;
+			mavlink_pld_stats_t pld_stats_msg = {0};
 			_collect_own_stats(&pld_stats_msg);
 			mav_main_process_own_stats(&pld_stats_msg);
 		}
@@ -207,7 +207,7 @@ int app_main()
 
 		if (tock % PACKET_PERIOD_ITS_LINK_STATS == PACKET_OFFSET_ITS_LINK_STATS)
 		{
-			mavlink_i2c_link_stats_t i2c_stats_msg;
+			mavlink_i2c_link_stats_t i2c_stats_msg = {0};
 			_collect_i2c_link_stats(&i2c_stats_msg);
 			mav_main_process_i2c_link_stats(&i2c_stats_msg);
 		}
@@ -240,6 +240,10 @@ static void _collect_own_stats(mavlink_pld_stats_t * msg)
 	time_svc_gettimeofday(&tmv);
 	msg->time_s = tmv.tv_sec;
 	msg->time_us = tmv.tv_usec;
+	msg->adc_error_counter = _status.adc_error_counter;
+	msg->adc_last_error = _status.adc_last_error;
+    msg->bme_error_counter = _status.adc_error_counter;
+    msg->bme_last_error = _status.bme_last_error;
 }
 
 

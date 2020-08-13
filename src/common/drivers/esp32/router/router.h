@@ -24,6 +24,7 @@ void its_rt_route_from_isr(
 
 typedef struct its_rt_task_identifier {
 	QueueHandle_t queue;
+	char name[16];
 }its_rt_task_identifier;
 
 void its_rt_route(
@@ -33,6 +34,8 @@ void its_rt_route(
 );
 int its_rt_register(int msg_id, its_rt_task_identifier task_id);
 int its_rt_register_for_all(its_rt_task_identifier task_id);
+int its_rt_unregister(int msgid, its_rt_task_identifier task_id);
+int its_rt_unregister_for_all(its_rt_task_identifier task_id);
 void its_rt_uninit();
 
 

@@ -19,6 +19,8 @@
 
 #include "nvs_flash.h"
 #include "esp_log.h"
+#include "esp_netif.h"
+#include "esp_intr_alloc.h"
 
 #include "internet.h"
 #include "pinout_cfg.h"
@@ -26,12 +28,14 @@
 #include "uart_mavlink.h"
 #include "time_sync.h"
 
-#include "esp_intr_alloc.h"
 #include "router.h"
 #include "mavlink/its/mavlink.h"
 #include "mavlink_help2.h"
 #include "radio.h"
 #include "sdio.h"
+#include "control_heat.h"
+#include "control_magnet.h"
+#include "control_vcc.h"
 
 static i2c_config_t init_pin_i2c_tm  = {
 	.mode = I2C_MODE_MASTER,
@@ -58,11 +62,11 @@ static uart_config_t init_pin_uart = {
 	.flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
 	.source_clk = UART_SCLK_APB,
 };
-QueueHandle_t quart;
-mavlink_channel_t i2c_chan;
+static QueueHandle_t quart;
+static mavlink_channel_t i2c_chan;
 
-uart_config_t init_pin_uart0 = {
-	.baud_rate = 9600,
+static uart_config_t init_pin_uart0 = {
+	.baud_rate = 115200,
 	.data_bits = UART_DATA_8_BITS,
 	.parity = UART_PARITY_DISABLE,
 	.stop_bits = UART_STOP_BITS_1,
@@ -73,7 +77,7 @@ uart_config_t init_pin_uart0 = {
 void common_packet_to_route(uint8_t *data, uint16_t size);
 uint8_t* common_imi_alloc(uint16_t size);
 
-imi_config_t imi_config = {
+static imi_config_t imi_config = {
 	.i2c_port = ITS_I2CTM_PORT,
 	.i2c_int = ITS_PIN_I2C_INT,
 	.address_count = ITS_I2CTM_DEV_COUNT,
@@ -81,8 +85,17 @@ imi_config_t imi_config = {
 	.save = common_packet_to_route,
 	.alloc = common_imi_alloc
 };
-
-
+#if !ITS_WIFI_SERVER
+static spi_bus_config_t buscfg={
+	.miso_io_num = ITS_PIN_SPISR_MISO,
+	.mosi_io_num = ITS_PIN_SPISR_MOSI,
+	.sclk_io_num = ITS_PIN_SPISR_SCK,
+	.quadwp_io_num = -1, //not used
+	.quadhd_io_num = -1, //not used
+	.max_transfer_sz = ITS_BSK_COUNT * 5
+};
+static shift_reg_handler_t hsr;
+#endif
 void init_basic(void) {
 	//Initialize NVS
 	esp_err_t ret = nvs_flash_init();
@@ -95,40 +108,75 @@ void init_basic(void) {
 	i2c_param_config(ITS_I2CTM_PORT, &init_pin_i2c_tm);
 	i2c_driver_install(ITS_I2CTM_PORT, I2C_MODE_MASTER, 0, 0, 0);
 
-	uart_param_config(ITS_UART_PORT, &init_pin_uart);
-	uart_driver_install(ITS_UART_PORT, ITS_UART_RX_BUF_SIZE, ITS_UART_TX_BUF_SIZE, ITS_UART_QUEUE_SIZE, &quart, 0);
-	uart_set_pin(ITS_UART_PORT, ITS_PIN_UART_TX, ITS_PIN_UART_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+	//esp - stm32f4
+	uart_param_config(ITS_UARTE_PORT, &init_pin_uart);
+	uart_driver_install(ITS_UARTE_PORT, ITS_UARTE_RX_BUF_SIZE, ITS_UARTE_TX_BUF_SIZE, ITS_UARTE_QUEUE_SIZE, &quart, 0);
+	uart_set_pin(ITS_UARTE_PORT, ITS_PIN_UARTE_TX, ITS_PIN_UARTE_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
-	uart_param_config(ITS_UART0_PORT, &init_pin_uart0);
-	uart_driver_install(ITS_UART0_PORT, ITS_UART0_RX_BUF_SIZE, ITS_UART0_TX_BUF_SIZE, 0, 0, 0);
-	uart_set_pin(ITS_UART0_PORT, ITS_PIN_UART0_TX, ITS_PIN_UART0_RX, UART_PIN_NO_CHANGE, ITS_PIN_UART0_CTS);
+	//esp - radio
+	uart_param_config(ITS_UARTR_PORT, &init_pin_uart0);
+	uart_driver_install(ITS_UARTR_PORT, ITS_UARTR_RX_BUF_SIZE, ITS_UARTR_TX_BUF_SIZE, 0, 0, 0);
+	uart_set_pin(ITS_UARTR_PORT, ITS_PIN_UARTR_TX, ITS_PIN_UARTR_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
+#if !ITS_WIFI_SERVER
+	//shift reg
+	ret=spi_bus_initialize(ITS_SPISR_PORT, &buscfg, 0);
+	ESP_ERROR_CHECK(ret);
+	ESP_LOGD("SYSTEM", "Bus inited");
+#endif
+
+	//time sync
 	gpio_config(&init_pin_time);
 
 	gpio_install_isr_service(0);
 }
-#include "esp_netif.h"
+#if !ITS_WIFI_SERVER
+static void test_task(void *arg) {
+	int max = ITS_BSK_COUNT * ITS_SR_PACK_SIZE;
+	int x = 0;
 
+	for (int i = 0; i < max; i++) {
+		shift_reg_set_level_pin(&hsr, i, i % 2);
+	}
+	shift_reg_load(&hsr);
+	while (1) {
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+		for (int i = 0; i < max; i++) {
+			shift_reg_toggle_pin(&hsr, i);
+		}
+		printf("TTT: %X\n", hsr.byte_arr[0]);
+		shift_reg_load(&hsr);
+	}
+}
+#endif
 void init_helper(void) {
 	init_basic();
 
 	//imi_init();
 
+	//Связь со всеми уст-ми на imi
 	i2c_chan = mavlink_claim_channel();
 	imi_install(&imi_config, ITS_IMI_PORT);
 	imi_add_address(ITS_IMI_PORT, ITS_ARK_ADDRESS);
 	imi_add_address(ITS_IMI_PORT, ITS_PLD_ADDRESS);
 	imi_start(ITS_IMI_PORT);
 
-	uart_mavlink_install(ITS_UART_PORT, quart);
-
+	//Связь с SINS
+	uart_mavlink_install(ITS_UARTE_PORT, quart);
+#if !ITS_WIFI_SERVER
+	shift_reg_init_spi(&hsr, ITS_SPISR_PORT, ITS_BSK_COUNT * ITS_SR_PACK_SIZE, 100 / portTICK_PERIOD_MS, ITS_PIN_SPISR_SS);
+	ESP_LOGD("SYSTEM", "Shift reg inited");
+	xTaskCreatePinnedToCore(test_task, "SR task", configMINIMAL_STACK_SIZE + 2000, 0, 1, 0, tskNO_AFFINITY);
+#endif
 	ESP_LOGI("SYSTEM", "Start wifi init");
 #if ITS_WIFI_SERVER
 	wifi_init_ap();
 	static ts_sync ts = {0};
-	ts.pin = ITS_PIN_UART_INT;
+	ts.pin = ITS_PIN_UARTE_INT;
 	time_sync_from_sins_install(&ts);
-	sd_init();
+	while (sd_init()) {
+		ESP_LOGD("SYSTEM","Trying launch SD");
+	}
 	radio_send_init();
 #else
 	wifi_init_sta();

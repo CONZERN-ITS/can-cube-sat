@@ -151,7 +151,10 @@ class MAVDataSource():
                                    gps[:2]])),
                     (name_prefix + 'GPS_ALTITUDE',
                      NumPy.array([[msg.time_s + msg.time_us/1000000,
-                                   gps[2]]]))]
+                                   gps[2]]])),
+                    (name_prefix + 'GPS_RAW',
+                     NumPy.array([[msg.time_s + msg.time_us/1000000] +
+                                   [msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100, msg.gpsFix]])),]
         if msg.get_type() == "OWN_TEMP":
             return [(name_prefix + 'OWN_TEMPERATURE',
                      NumPy.array([[msg.time_s + msg.time_us/1000000,

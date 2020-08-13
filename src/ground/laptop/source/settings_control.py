@@ -11,9 +11,9 @@ MODEL_ICON_PATH = os.path.join(RES_ROOT, "images/model.png")
 GRAPH_ICON_PATH = os.path.join(RES_ROOT, "images/graph.png")
 
 SETTINGS_PATH = USER_SETTINGS_PATH
-if 'STRELA_MS_SETTINGS_PATH' in os.environ:
-    if os.path.exists(os.environ['STRELA_MS_SETTINGS_PATH']):
-        SETTINGS_PATH = os.environ['STRELA_MS_SETTINGS_PATH']
+if 'STRELA_MS_CONFIG' in os.environ:
+    if os.path.exists(os.environ['STRELA_MS_CONFIG']):
+        SETTINGS_PATH = os.environ['STRELA_MS_CONFIG']
 
 
 def init_settings():
