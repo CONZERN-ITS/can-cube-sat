@@ -15,6 +15,7 @@
 #ifndef STATE_H_
 #define STATE_H_
 
+
 #define CALIBRATION 0
 #define GPS			0
 #define LSM6DS3		0
@@ -105,5 +106,6 @@ extern stateSINS_isc_t stateSINS_isc_prev;
 extern void SensorsInit(void);
 extern int UpdateDataAll(void);
 extern void SINS_updatePrevData(void);
+extern int check_SINS_state(void);
 
 #endif /* STATE_H_ */

@@ -175,13 +175,19 @@ void SINS_updatePrevData(void)
 	__enable_irq();
 }
 
-//FIXME: реализовать таймер для отправки пакетов с мк по uart
+
+int check_SINS_state(void)
+{
+	if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9)) //пин с джампером
+		return 1;
+	else
+		return 0;
+}
 
 
 int main(int argc, char* argv[])
 {
 
-//	__disable_irq();
 	//	Global structures init
 	memset(&stateSINS_isc, 			0x00, sizeof(stateSINS_isc));
 	memset(&stateSINS_isc_prev, 	0x00, sizeof(stateSINS_isc_prev));
@@ -189,65 +195,77 @@ int main(int argc, char* argv[])
 	memset(&state_system,			0x00, sizeof(state_system));
 	memset(&state_zero,				0x00, sizeof(state_zero));
 
+	if (check_SINS_state())
+	{
+		backup_sram_enable();
+		backup_sram_erase();
 
-	time_svc_steady_init();
-
-	if (time_svc_world_preinit_with_rtc() != 0)
-		time_svc_world_preinit_without_rtc(); 		//не смогли запустить rtc. Запустимся без него
-	else
-		time_svc_world_init();			//Смогли запуслить rtc. Запустим все остальное
-
-	if (uplink_init() != 0)
-		HAL_NVIC_SystemReset();		//Если не запустился uart, то мы - кирпич
-
-
-	assert(0 == gps_init(on_gps_packet, NULL));
-
-//	int rc = gps_init(_on_gps_packet, NULL);
-	assert(0 == gps_configure());
-//	trace_printf("configure rc = %d\n", rc);
-
-
-	if (analog_init() != 0)
+		SENSORS_Init();
+		for (int i = 0; i < 2; i++)
 		{
-			HAL_Delay(500);
-			analog_restart();
+			mems_get_gyro_staticShift(state_zero.gyro_staticShift);
+			mems_get_accel_staticShift(state_zero.accel_staticShift);
 		}
 
-	SENSORS_Init();
-	for (int i = 0; i < 2; i++)
-	{
-		mems_get_gyro_staticShift(state_zero.gyro_staticShift);
-		mems_get_accel_staticShift(state_zero.accel_staticShift);
-	}
+		backup_sram_write(&state_zero);
 
-	time_svc_world_get_time(&stateSINS_isc_prev.tv);
-	for (; ; )
+	}
+	else
 	{
-		for (int u = 0; u < 5; u++)
-		{
-			for (int i = 0; i < 160; i++)
+		time_svc_steady_init();
+
+		if (time_svc_world_preinit_with_rtc() != 0)
+			time_svc_world_preinit_without_rtc(); 		//не смогли запустить rtc. Запустимся без него
+		else
+			time_svc_world_init();			//Смогли запуслить rtc. Запустим все остальное
+
+		if (uplink_init() != 0)
+			HAL_NVIC_SystemReset();		//Если не запустился uart, то мы - кирпич
+
+
+		assert(0 == gps_init(on_gps_packet, NULL));
+
+	//	int rc = gps_init(_on_gps_packet, NULL);
+		assert(0 == gps_configure());
+	//	trace_printf("configure rc = %d\n", rc);
+
+
+		if (analog_init() != 0)
 			{
-				UpdateDataAll();
-				SINS_updatePrevData();
-				gps_poll();
+				HAL_Delay(500);
+				analog_restart();
 			}
 
-	//		struct timeval tmv;
-	//		time_svc_world_timers_get_time(&tmv);
-	//		struct tm * tm = gmtime(&tmv.tv_sec);
-	//		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
-	//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
-	//		trace_printf("time is %s\n", buffer);
+		backup_sram_enable_after_reset();
+		backup_sram_read(&state_zero);
+
+		time_svc_world_get_time(&stateSINS_isc_prev.tv);
+		for (; ; )
+		{
+			for (int u = 0; u < 5; u++)
+			{
+				for (int i = 0; i < 160; i++)
+				{
+					UpdateDataAll();
+					SINS_updatePrevData();
+					gps_poll();
+				}
+
+		//		struct timeval tmv;
+		//		time_svc_world_timers_get_time(&tmv);
+		//		struct tm * tm = gmtime(&tmv.tv_sec);
+		//		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
+		//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
+		//		trace_printf("time is %s\n", buffer);
 
 
-			mavlink_sins_isc(&stateSINS_isc);
-			gps_poll();
+				mavlink_sins_isc(&stateSINS_isc);
+				gps_poll();
+			}
+			mavlink_timestamp();
+			own_temp_packet();
 		}
-		mavlink_timestamp();
-		own_temp_packet();
 	}
-
 	return 0;
 }
 

@@ -13,7 +13,7 @@
 #include "backup_sram.h"
 
 
-int backup_sram_enable_after_reset()
+int backup_sram_enable_after_reset(void)
 {
 	// Enable PWR clock
 	RCC->AHB1ENR |= RCC_APB1ENR_PWREN;
@@ -28,7 +28,7 @@ int backup_sram_enable_after_reset()
 }
 
 
-int backup_sram_enable()
+int backup_sram_enable(void)
 {
 	backup_sram_enable_after_reset();
 
@@ -51,4 +51,10 @@ void backup_sram_write(state_zero_t * data)
 void backup_sram_read(state_zero_t * data)
 {
 	memcpy((void*)data, (void*)BACKUP_SRAM_MEMORY_START_ADDRESS, sizeof(state_zero_t));
+}
+
+
+void backup_sram_erase(void)
+{
+	memset((void*)BACKUP_SRAM_MEMORY_START_ADDRESS, 0, (BACKUP_SRAM_MEMORY_END_ADDRESS - BACKUP_SRAM_MEMORY_START_ADDRESS));
 }

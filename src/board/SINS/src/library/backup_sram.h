@@ -13,10 +13,11 @@
 #define BACKUP_SRAM_MEMORY_END_ADDRESS		0x40024FFFU
 
 
-int backup_sram_enable_after_reset();
-int backup_sram_enable();
-void backup_sram_write(state_zero_t * data);
-void backup_sram_read(state_zero_t * data);
+extern int backup_sram_enable_after_reset(void);
+extern int backup_sram_enable(void);
+extern void backup_sram_write(state_zero_t * data);
+extern void backup_sram_read(state_zero_t * data);
+extern void backup_sram_erase(void);
 
 
 #endif /* LIBRARY_BACKUP_SRAM_H_ */
