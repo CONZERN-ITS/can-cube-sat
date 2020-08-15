@@ -33,7 +33,12 @@
 
 #define ITS_PIN_I2CTM_SCL 	16
 #define ITS_PIN_I2CTM_SDA 	17
+#if ITS_WIFI_SERVER
+#define ITS_PIN_I2C_INT 	18
+#else
 #define ITS_PIN_I2C_INT 	5
+#endif
+
 #define ITS_PIN_TIME		19
 
 #define ITS_PIN_UARTE_RX	22
@@ -49,9 +54,13 @@
 #define ITS_PIN_SPISR_MOSI	27
 #define ITS_PIN_SPISR_MISO	-1
 
+#if ITS_WIFI_SERVER
 #define ITS_PIN_LED			5
+#else
+#define ITS_PIN_LED			18
+#endif
 
-#define ITS_PIN_1W			21
+#define ITS_PIN_OWB			21
 
 #endif
 
