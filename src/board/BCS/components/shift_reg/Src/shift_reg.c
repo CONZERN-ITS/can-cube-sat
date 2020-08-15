@@ -35,7 +35,7 @@ esp_err_t shift_reg_init_spi(shift_reg_handler_t *hsr, spi_host_device_t port,
 		.clock_speed_hz = SPI_MASTER_FREQ_10M,
 		.mode = 0,
 		.spics_io_num = pin_cs,
-		.queue_size = 7,
+		.queue_size = 30,
 		.pre_cb = 0,
 	};
 	ret = spi_bus_add_device(port, &devcfg, &hsr->hspi);
@@ -47,12 +47,13 @@ esp_err_t shift_reg_init_spi(shift_reg_handler_t *hsr, spi_host_device_t port,
 		return ESP_ERR_INVALID_ARG;
 	}
 	hsr->arr_size = byte_count;
-	return shift_reg_load(hsr);
+	return 0;
 }
 
 void shift_reg_toggle_pin(shift_reg_handler_t *hsr, int pin) {
-	hsr->byte_arr[pin / 8] ^= (1 << (pin % 8));
+	//Обратный порядок байт
+	hsr->byte_arr[hsr->arr_size - 1 - pin / 8] ^= (1 << (pin % 8));
 }
 void shift_reg_set_level_pin(shift_reg_handler_t *hsr, int pin, int level) {
-	hsr->byte_arr[pin / 8] = (hsr->byte_arr[pin / 8] & ~(1 << (pin % 8))) | (level << (pin % 8));
+	hsr->byte_arr[hsr->arr_size - 1 - pin / 8] = (hsr->byte_arr[hsr->arr_size - 1 - pin / 8] & ~(1 << (pin % 8))) | (level << (pin % 8));
 }
