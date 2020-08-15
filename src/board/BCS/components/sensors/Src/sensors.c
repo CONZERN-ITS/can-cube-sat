@@ -38,19 +38,26 @@
 #include "ds18b20.h"
 
 static void sensors_task(void *arg);
-#define SAMPLE_PERIOD 10
+#define SAMPLE_PERIOD 1000
 #define DS18B20_RESOLUTION   (DS18B20_RESOLUTION_12_BIT)
 static char *TAG = "SENSORS";
 
 esp_err_t sensors_init(void) {
-	xTaskCreatePinnedToCore(sensors_task, "Sensors task", configMINIMAL_STACK_SIZE + 1000, 0, 1, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(sensors_task, "Sensors task", configMINIMAL_STACK_SIZE + 3000, 0, 1, 0, tskNO_AFFINITY);
 	return 0;
 }
-
+//#define USE_GPIO
 static void sensors_task(void *arg) {
 	OneWireBus * owb;
+#ifdef USE_GPIO
+	owb_gpio_driver_info gpio_driver_info = {0};
+	vTaskDelay(2000/portTICK_PERIOD_MS);
+	owb = owb_gpio_initialize(&gpio_driver_info, ITS_PIN_OWB);
+	vTaskDelay(2000/portTICK_PERIOD_MS);
+#else
 	owb_rmt_driver_info rmt_driver_info = {0};
 	owb = owb_rmt_initialize(&rmt_driver_info, ITS_PIN_OWB, RMT_CHANNEL_1, RMT_CHANNEL_0);
+#endif
 	owb_use_crc(owb, true);  // enable CRC check for ROM code
 
 	// Find all connected devices
@@ -121,16 +128,16 @@ static void sensors_task(void *arg) {
 	{
 		DS18B20_Info * ds18b20_info = ds18b20_malloc();  // heap allocation
 		devices[i] = ds18b20_info;
-
+/*
 		if (num_devices == 1)
 		{
-			ESP_LOGD(TAG, "Single device optimisations enabled\n");
+			ESP_LOGD(TAG, "Single device optimisations enabled");
 			ds18b20_init_solo(ds18b20_info, owb);          // only one device on bus
 		}
 		else
-		{
+		{*/
 			ds18b20_init(ds18b20_info, owb, device_rom_codes[i]); // associate with bus and device
-		}
+		//}
 		ds18b20_use_crc(ds18b20_info, true);           // enable CRC check on all reads
 		ds18b20_set_resolution(ds18b20_info, DS18B20_RESOLUTION);
 	}
@@ -156,7 +163,7 @@ static void sensors_task(void *arg) {
 
 	// In parasitic-power mode, devices cannot indicate when conversions are complete,
 	// so waiting for a temperature conversion must be done by waiting a prescribed duration
-	owb_use_parasitic_power(owb, parasitic_power);
+	owb_use_parasitic_power(owb, 0);
 
 #ifdef CONFIG_ENABLE_STRONG_PULLUP_GPIO
 	// An external pull-up circuit is used to supply extra current to OneWireBus devices
@@ -167,6 +174,7 @@ static void sensors_task(void *arg) {
 	// Read temperatures more efficiently by starting conversions on all devices at the same time
 	int errors_count[ITS_OWB_MAX_DEVICES] = {0};
 	int sample_count = 0;
+	ESP_LOGE(TAG, "Start cycle");
 	if (num_devices > 0)
 	{
 		TickType_t last_wake_time = xTaskGetTickCount();
@@ -200,7 +208,7 @@ static void sensors_task(void *arg) {
 					++errors_count[i];
 				}
 
-				ESP_LOGD(TAG, "  %d: %.1f    %d errors\n", i, readings[i], errors_count[i]);
+				ESP_LOGD(TAG, "  %d: %.1f    %d errors", i, readings[i], errors[i] == DS18B20_OK);
 			}
 
 			vTaskDelayUntil(&last_wake_time, SAMPLE_PERIOD / portTICK_PERIOD_MS);
@@ -208,7 +216,7 @@ static void sensors_task(void *arg) {
 	}
 	else
 	{
-		ESP_LOGD(TAG, "\nNo DS18B20 devices detected!\n");
+		ESP_LOGD(TAG, "No DS18B20 devices detected!");
 	}
 
 	// clean up dynamically allocated data
@@ -218,8 +226,5 @@ static void sensors_task(void *arg) {
 	}
 	owb_uninitialize(owb);
 
-	printf("Restarting now.\n");
-	fflush(stdout);
-	vTaskDelay(1000 / portTICK_PERIOD_MS);
-	esp_restart();
+	vTaskDelete(0);
 }

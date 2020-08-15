@@ -42,6 +42,8 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 #include "esp_system.h"
+
+#define LOG_LOCAL_LEVEL ESP_LOG_ERROR
 #include "esp_log.h"
 
 #include "ds18b20.h"
@@ -423,6 +425,7 @@ bool ds18b20_set_resolution(DS18B20_Info * ds18b20_info, DS18B20_RESOLUTION reso
             }
             else
             {
+            	vTaskDelay(1);
                 // Resolution change failed - update the info resolution with the value read from configuration
                 ds18b20_info->resolution = ds18b20_read_resolution(ds18b20_info);
                 ESP_LOGW(TAG, "Resolution consistency lost - refreshed from device: %d", ds18b20_info->resolution);

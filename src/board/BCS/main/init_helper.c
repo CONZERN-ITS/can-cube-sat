@@ -36,6 +36,7 @@
 #include "control_heat.h"
 #include "control_magnet.h"
 #include "control_vcc.h"
+#include "sensors.h"
 
 static i2c_config_t init_pin_i2c_tm  = {
 	.mode = I2C_MODE_MASTER,
@@ -96,7 +97,26 @@ static spi_bus_config_t buscfg={
 };
 static shift_reg_handler_t hsr;
 #endif
+
+static void task_led(void *arg) {
+	gpio_config_t gc = {
+			.mode = GPIO_MODE_OUTPUT_OD,
+			.pull_up_en = GPIO_PULLUP_DISABLE,
+			.pull_down_en = GPIO_PULLDOWN_DISABLE,
+			.intr_type = GPIO_INTR_DISABLE,
+			.pin_bit_mask = 1ULL << ITS_PIN_LED,
+	};
+	gpio_config(&gc);
+	int x = 1;
+	while (1) {
+		int rc = gpio_set_level(ITS_PIN_LED, x);
+		x ^= 1;
+		vTaskDelay(200 / portTICK_PERIOD_MS);
+	}
+}
+
 void init_basic(void) {
+	xTaskCreatePinnedToCore(task_led, "Led", configMINIMAL_STACK_SIZE + 2000, 0, 1, 0, tskNO_AFFINITY);
 	//Initialize NVS
 	esp_err_t ret = nvs_flash_init();
 	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -130,25 +150,17 @@ void init_basic(void) {
 
 	gpio_install_isr_service(0);
 }
-#if !ITS_WIFI_SERVER
-static void test_task(void *arg) {
-	int max = ITS_BSK_COUNT * ITS_SR_PACK_SIZE;
-	int x = 0;
 
-	for (int i = 0; i < max; i++) {
-		shift_reg_set_level_pin(&hsr, i, i % 2);
-	}
-	shift_reg_load(&hsr);
+static void test_task(void *arg) {
+	int x = 1;
 	while (1) {
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
-		for (int i = 0; i < max; i++) {
-			shift_reg_toggle_pin(&hsr, i);
-		}
-		printf("TTT: %X\n", hsr.byte_arr[0]);
+		control_magnet_enable(ITS_BSK_1, x);
+		x = -x;
+
 		shift_reg_load(&hsr);
 	}
 }
-#endif
 void init_helper(void) {
 	init_basic();
 
@@ -163,12 +175,33 @@ void init_helper(void) {
 
 	//Связь с SINS
 	uart_mavlink_install(ITS_UARTE_PORT, quart);
-#if !ITS_WIFI_SERVER
+#if !ITS_WIFI_SERVER && !defined(ITS_DEBUG)
 	shift_reg_init_spi(&hsr, ITS_SPISR_PORT, ITS_BSK_COUNT * ITS_SR_PACK_SIZE, 100 / portTICK_PERIOD_MS, ITS_PIN_SPISR_SS);
 	ESP_LOGD("SYSTEM", "Shift reg inited");
-	xTaskCreatePinnedToCore(test_task, "SR task", configMINIMAL_STACK_SIZE + 2000, 0, 1, 0, tskNO_AFFINITY);
+	control_vcc_init(&hsr, 0);
+	control_vcc_bsk_enable(0, 1);
+	control_vcc_bsk_enable(1, 1);
+	control_vcc_bsk_enable(2, 1);
+	control_vcc_bsk_enable(3, 1);
+	control_vcc_bsk_enable(4, 1);
+	control_vcc_bsk_enable(5, 1);
+
+	control_magnet_init(&hsr, 2, 3);
+	control_magnet_enable(ITS_BSK_1, 1);
+	control_magnet_enable(ITS_BSK_2, -1);
+
+	control_heat_init(&hsr, 1, 0);
+	control_heat_bsk_enable(ITS_BSK_2, 1);
+//	hsr.byte_arr[0] = 0x99;
+//	hsr.byte_arr[1] = 0xBB;
+//	hsr.byte_arr[2] = 0xBB;
+	shift_reg_load(&hsr);
+
+	xTaskCreate(test_task, "test task", configMINIMAL_STACK_SIZE + 2000, 0, 3, 0);
 #endif
-	ESP_LOGI("SYSTEM", "Start wifi init");
+	sensors_init();
+
+	ESP_LOGD("SYSTEM", "Start wifi init");
 #if ITS_WIFI_SERVER
 	wifi_init_ap();
 	static ts_sync ts = {0};
@@ -183,7 +216,7 @@ void init_helper(void) {
 	time_sync_from_bcs_install(&ITS_WIFI_SERVER_ADDRESS);
 #endif
 
-	ESP_LOGI("SYSTEM", "Wifi inited");
+	ESP_LOGD("SYSTEM", "Wifi inited");
 
 }
 

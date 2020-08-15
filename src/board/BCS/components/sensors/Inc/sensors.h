@@ -8,7 +8,10 @@
 #ifndef COMPONENTS_SENSORS_INC_SENSORS_H_
 #define COMPONENTS_SENSORS_INC_SENSORS_H_
 
+#include "esp_err.h"
 
+
+esp_err_t sensors_init(void);
 
 
 

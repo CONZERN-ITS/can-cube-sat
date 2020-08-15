@@ -24,6 +24,7 @@
 
 #include "ark_time_sync.h"
 #include "init_helper.h"
+#include "pinout_cfg.h"
 #include "imi.h"
 #include "router.h"
 #include "internet.h"
@@ -36,7 +37,6 @@
 static void task_print_telemetry(void *pvParameters);
 static void task_send_telemetry_wifi(void *pvParameters);
 static void task_recv_telemetry_wifi(void *pvParameters);
-
 
 
 void app_main(void)
