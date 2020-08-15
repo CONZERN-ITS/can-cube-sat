@@ -38,6 +38,7 @@
 #include "../../owb/Inc/owb.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#define LOG_LOCAL_LEVEL ESP_LOG_ERROR
 #include "esp_log.h"
 #include "sdkconfig.h"
 #include "driver/gpio.h"
@@ -273,6 +274,7 @@ OneWireBus* owb_gpio_initialize(owb_gpio_driver_info * driver_info, int gpio)
 
     // platform specific:
     gpio_pad_select_gpio(driver_info->gpio);
+    gpio_set_pull_mode(gpio, GPIO_PULLUP_ONLY);
 
 #ifdef PHY_DEBUG
     gpio_config_t io_conf;

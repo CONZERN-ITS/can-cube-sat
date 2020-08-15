@@ -59,6 +59,7 @@ sample code bearing this copyright.
 #include "../../owb/Inc/owb.h"
 #include "driver/rmt.h"
 #include "driver/gpio.h"
+#define LOG_LOCAL_LEVEL ESP_LOG_ERROR
 #include "esp_log.h"
 
 #undef OW_DEBUG
@@ -441,6 +442,8 @@ static owb_status _init(owb_rmt_driver_info *info, gpio_num_t gpio_num,
 
     // force pin direction to input to enable path to RX channel
     PIN_INPUT_ENABLE(GPIO_PIN_MUX_REG[gpio_num]);
+
+    gpio_set_pull_mode(gpio_num, GPIO_PULLUP_ONLY);
 
     // enable open drain
     GPIO.pin[gpio_num].pad_driver = 1;

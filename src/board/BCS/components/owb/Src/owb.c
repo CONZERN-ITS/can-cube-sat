@@ -38,6 +38,7 @@
 #include "../../owb/Inc/owb_gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#define LOG_LOCAL_LEVEL ESP_LOG_ERROR
 #include "esp_log.h"
 #include "sdkconfig.h"
 #include "driver/gpio.h"
