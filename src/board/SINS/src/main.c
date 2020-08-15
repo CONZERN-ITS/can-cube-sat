@@ -69,19 +69,19 @@ void SENSORS_Init(void)
 {
 	int error = 0;
 	error = mems_init_bus();
-//	trace_printf("mems bus init error: %d\n", error);
+	trace_printf("mems bus init error: %d\n", error);
 
 	//	LSM6DS3_init
+	error = 0;
 	error = mems_lsm6ds3_init();
-//	trace_printf("lsm6ds3 init error: %d\n", error);
+	trace_printf("lsm6ds3 init error: %d\n", error);
 	state_system.lsm6ds3_state = error;
 
 	//	LIS3MDL init
+	error = 0;
 	error = mems_lis3mdl_init();
-//	trace_printf("lis3mdl init error: %d\n", error);
+	trace_printf("lis3mdl init error: %d\n", error);
 	state_system.lis3mdl_state = error;
-
-//	state_system.GPS_state = error;
 }
 
 
@@ -120,6 +120,10 @@ int UpdateDataAll(void)
 		gyro[k] -= state_zero.gyro_staticShift[k];
 		stateSINS_rsc.gyro[k] = gyro[k];
 		stateSINS_rsc.magn[k] = magn[k];
+		trace_printf("accel %d\t%f\n", k, accel[k]);
+		trace_printf("magn %d\t%f\n", k, magn[k]);
+		trace_printf("gyro %d\t%f\n", k, gyro[k]);
+
 	}
 
 	/////////////////////////////////////////////////////
@@ -190,13 +194,13 @@ int main(int argc, char* argv[])
 	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
 
 	assert(0 == time_svc_steady_init());
-	assert(0 == time_svc_world_init());
-	assert(0 == gps_init(_on_gps_packet, NULL));
+//	assert(0 == time_svc_world_init());
+//	assert(0 == gps_init(_on_gps_packet, NULL));
 
 	uplink_init();
 
 //	int rc = gps_init(_on_gps_packet, NULL);
-	assert(0 == gps_configure());
+//	assert(0 == gps_configure());
 //	trace_printf("configure rc = %d\n", rc);
 
 
