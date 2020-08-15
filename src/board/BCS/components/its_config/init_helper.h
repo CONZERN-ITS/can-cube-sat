@@ -16,7 +16,14 @@
 
 
 #define ITS_SR_PACK_SIZE 4 //Размер пачек на сдвиговых регистрах
-#define ITS_BSK_COUNT 4 //Количество пачек на сдвиговых регистрах
+
+#define ITS_BSK_COUNT 6 //Количество пачек на сдвиговых регистрах
+#define ITS_BSK_1					0
+#define ITS_BSK_2					5
+#define ITS_BSK_2A					4
+#define ITS_BSK_3					3
+#define ITS_BSK_4					1
+#define ITS_BSK_5					2
 
 #define ITS_I2CTM_DEV_COUNT			2
 #define ITS_ARK_ADDRESS 			0x68
@@ -39,6 +46,8 @@
 #define ITS_UARTR_QUEUE_SIZE		20
 
 #define ITS_SPISR_PORT				SPI2_HOST
+
+#define ITS_OWB_MAX_DEVICES			10
 
 #define ITS_WIFI_SERVER				0
 #if !defined(ITS_WIFI_SERVER) || !ITS_WIFI_SERVER

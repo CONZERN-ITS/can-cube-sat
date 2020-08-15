@@ -240,7 +240,7 @@ void wifi_init_sta(void)
             WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
             pdFALSE,
             pdFALSE,
-            portMAX_DELAY);
+            2000 / portTICK_PERIOD_MS);
 
     /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
      * happened. */

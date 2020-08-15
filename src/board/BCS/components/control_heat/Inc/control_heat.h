@@ -13,6 +13,8 @@
 #define CONTROL_HEAT_HIGHTHD 10.0
 #define CONTROL_HEAT_LOWTHD -5.0
 
-void control_heat_init(shift_reg_handler_t *hsr, int shift);
+void control_heat_init(shift_reg_handler_t *hsr, int shift, int task_on);
+
+void control_heat_bsk_enable(int bsk_number, int is_on);
 
 #endif /* COMPONENTS_CONTROL_HEAT_INC_CONTROL_HEAT_H_ */

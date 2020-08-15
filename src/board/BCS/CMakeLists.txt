@@ -21,4 +21,7 @@ set(EXTRA_COMPONENT_DIRS "components/imi"
                          "shift_reg"
                          "control_heat"
                          "control_magnet"
-                         "control_vcc")
+                         "control_vcc"
+                         "owb"
+                         "ds18b20"
+                         "sensors")

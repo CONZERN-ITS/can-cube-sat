@@ -27,5 +27,5 @@ void control_vcc_init(shift_reg_handler_t *hsr, int shift) {
 	}
 }
 void control_vcc_bsk_enable(int bsk_number, int is_on) {
-	shift_reg_set_level_pin(_hsr, _shift + bsk_number * ITS_SR_PACK_SIZE, 1);
+	shift_reg_set_level_pin(_hsr, _shift + bsk_number * ITS_SR_PACK_SIZE, is_on);
 }
