@@ -101,9 +101,7 @@ int time_svc_world_preinit_without_rtc(void)
 	if (0 != rc)
 		return rc;
 
-	rc = time_svc_world_timers_start();
-	if (0 != rc)
-		return rc;
+	time_svc_world_timers_start();
 	return 0;
 }
 

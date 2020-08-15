@@ -20,7 +20,7 @@
 #define SYSTEM_ID CUBE_1_SINS
 #define COMPONENT_ID COMP_ANY_0
 
-int _mavlink_sins_isc(stateSINS_isc_t * state_isc)
+int mavlink_sins_isc(stateSINS_isc_t * state_isc)
 {
 		mavlink_sins_isc_t msg_sins_isc;
 		msg_sins_isc.time_s = state_isc->tv.tv_sec;
@@ -41,7 +41,7 @@ int _mavlink_sins_isc(stateSINS_isc_t * state_isc)
 		return error;
 }
 
-int _mavlink_timestamp()
+int mavlink_timestamp()
 {
 	mavlink_timestamp_t msg_timestamp;
 	struct timeval tv;
@@ -58,7 +58,7 @@ int _mavlink_timestamp()
 }
 
 
-void _on_gps_packet(void * arg, const ubx_any_packet_t * packet)
+void on_gps_packet(void * arg, const ubx_any_packet_t * packet)
 {
 	volatile ubx_pid_t pid = packet->pid;
 	switch (pid)
@@ -100,7 +100,7 @@ void _on_gps_packet(void * arg, const ubx_any_packet_t * packet)
 }
 
 
-int _own_temp_packet()
+int own_temp_packet()
 {
 	int error = 0;
 

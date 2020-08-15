@@ -48,6 +48,7 @@
 #include "MadgwickAHRS.h"
 #include "vector.h"
 #include "quaternion.h"
+#include "backup_sram.h"
 
 
 #pragma GCC diagnostic push
@@ -200,7 +201,7 @@ int main(int argc, char* argv[])
 		HAL_NVIC_SystemReset();		//Если не запустился uart, то мы - кирпич
 
 
-	assert(0 == gps_init(_on_gps_packet, NULL));
+	assert(0 == gps_init(on_gps_packet, NULL));
 
 //	int rc = gps_init(_on_gps_packet, NULL);
 	assert(0 == gps_configure());
@@ -240,11 +241,11 @@ int main(int argc, char* argv[])
 	//		trace_printf("time is %s\n", buffer);
 
 
-			_mavlink_sins_isc(&stateSINS_isc);
+			mavlink_sins_isc(&stateSINS_isc);
 			gps_poll();
 		}
-		_mavlink_timestamp();
-		_own_temp_packet();
+		mavlink_timestamp();
+		own_temp_packet();
 	}
 
 	return 0;
