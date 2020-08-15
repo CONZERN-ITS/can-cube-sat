@@ -49,8 +49,11 @@ void ark_tsync_task(void *pvParametres) {
 		size_t size = sizeof(packet);
 		ark_tsync_send_signal(packet, &size);
 
-		imi_send_all(ITS_IMI_PORT, packet, size, 100 / portTICK_RATE_MS);
-		ESP_LOGI("TIME", "synced i2c devices");
+		if (imi_send_all(ITS_IMI_PORT, packet, size, 100 / portTICK_RATE_MS)) {
+			ESP_LOGI("TIME", "synced i2c devices");
+		} else {
+			ESP_LOGE("TIME", "can't sync i2c devices");
+		}
 		vTaskDelay(ARK_TIME_SYNC_PRIOD / portTICK_RATE_MS);
 	}
 }

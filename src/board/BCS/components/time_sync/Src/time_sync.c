@@ -25,7 +25,7 @@
 
 #include "esp_system.h"
 #include "esp_log.h"
-#include "esp_sntp.h"
+#include "sntp_client.h"
 
 
 
@@ -43,7 +43,9 @@ void sntp_notify(struct timeval *tv);
 static void time_sync_task(void *arg) {
 	ts_sync *ts = (ts_sync *)arg;
 
-	its_rt_task_identifier id = {0};
+	its_rt_task_identifier id = {
+			.name = "time_sync"
+	};
 	id.queue = xQueueCreate(3, MAVLINK_MAX_PACKET_LEN);
 
 	//Регистрируем очередь для приема нужных сообщений
@@ -59,7 +61,7 @@ static void time_sync_task(void *arg) {
 		}
 
 		//Пришло ли это от SINS
-		if (msg.compid != CUBE_1_SINS) {
+		if (msg.sysid != CUBE_1_SINS) {
 			ESP_LOGI("TIME SYNC","Who is sending it?");
 			continue;
 		}
@@ -79,8 +81,8 @@ static void time_sync_task(void *arg) {
 				.tv_usec = 0 - ts->here.tv_usec
 		};
 
-		printf("TTTTHERE: %d.%06d\n", (int)there.tv_sec, (int)there.tv_usec);
-		printf("HHHHHERE: %d.%06d\n", (int)ts->here.tv_sec, (int)ts->here.tv_usec);
+		ESP_LOGV("TIME", "from sinc: %d.%06d\n", (int)there.tv_sec, (int)there.tv_usec);
+		ESP_LOGV("TIME", "here:      %d.%06d\n", (int)ts->here.tv_sec, (int)ts->here.tv_usec);
 		/*
 		 * Если разница слишком большая, то ставим время мгновенно.
 		 * Если нет, то пытаемся приблизить время без больших
@@ -151,3 +153,5 @@ void time_sync_from_bcs_install(const ip_addr_t *server_ip) {
 void sntp_notify(struct timeval *tv) {
 	ESP_LOGI("SNTP", "We've just synced");
 }
+
+

@@ -13,7 +13,7 @@
 
 #define ARK_SIGNAL_LENGTH 1000 //ms
 
-#define ARK_TIME_SYNC_PRIOD 50000 //ms
+#define ARK_TIME_SYNC_PRIOD 30000 //ms
 
 int ark_tsync_send_signal(uint8_t *data, size_t *size);
 
