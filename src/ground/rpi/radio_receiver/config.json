@@ -1,0 +1,11 @@
+{
+  "serial_device": "None",
+  "serial_baudrate": 115200,
+  "output": ["udp:localhost:4444"],
+  "logs_path": "logs",
+  "packet_logfile_basename": "its_packet_log_",
+  "raw_logfile_basename": "its_raw_log_",
+  "logfile_extension": "mavlog",
+  "print": "False",
+  "RSSI": "False"
+}

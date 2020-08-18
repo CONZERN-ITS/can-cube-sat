@@ -31,6 +31,7 @@ def arguments():
     other_group = parser.add_argument_group("other arguments")
     other_group.add_argument("--print", help="print received packets in stdout", action="store_true", default=False)
     other_group.add_argument("--RSSI", help="receive packets have RSSI byte", action="store_true", default=False)
+    other_group.add_argument("-c", "--config", help="path to json config file ", default=None)
 
     args = parser.parse_args()
     return args

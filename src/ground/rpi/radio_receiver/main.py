@@ -8,6 +8,7 @@ import serial
 import time
 import struct
 
+from parse_config_file import parse_config, read_config
 from logs import *
 from parse_arguments import *
 
@@ -107,6 +108,10 @@ def parse(input_connection, output_connections, packet_log, raw_log, print_logs,
 
 def main():
     arg = arguments()
+    if arg.config != None:
+        config_data = read_config(str(arg.config))
+        arg = parse_config(arg, config_data)
+
     make_logs_directory(arg.logs_path)
 
     packet_log_file_path = generate_new_logs_filename(arg.logs_path, arg.packet_logfile_basename, arg.logfile_extension)
