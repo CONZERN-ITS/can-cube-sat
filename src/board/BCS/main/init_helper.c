@@ -86,7 +86,7 @@ static imi_config_t imi_config = {
 	.save = common_packet_to_route,
 	.alloc = common_imi_alloc
 };
-#if !ITS_WIFI_SERVER
+#ifndef ITS_ESP_DEBUG
 static spi_bus_config_t buscfg={
 	.miso_io_num = ITS_PIN_SPISR_MISO,
 	.mosi_io_num = ITS_PIN_SPISR_MOSI,
@@ -96,7 +96,6 @@ static spi_bus_config_t buscfg={
 	.max_transfer_sz = ITS_BSK_COUNT * 5
 };
 static shift_reg_handler_t hsr;
-#endif
 
 static void task_led(void *arg) {
 	gpio_config_t gc = {
@@ -114,9 +113,12 @@ static void task_led(void *arg) {
 		vTaskDelay(200 / portTICK_PERIOD_MS);
 	}
 }
+#endif
 
 void init_basic(void) {
+#ifndef ITS_ESP_DEBUG
 	xTaskCreatePinnedToCore(task_led, "Led", configMINIMAL_STACK_SIZE + 2000, 0, 1, 0, tskNO_AFFINITY);
+#endif
 	//Initialize NVS
 	esp_err_t ret = nvs_flash_init();
 	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -138,7 +140,7 @@ void init_basic(void) {
 	uart_driver_install(ITS_UARTR_PORT, ITS_UARTR_RX_BUF_SIZE, ITS_UARTR_TX_BUF_SIZE, 0, 0, 0);
 	uart_set_pin(ITS_UARTR_PORT, ITS_PIN_UARTR_TX, ITS_PIN_UARTR_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
-#if !ITS_WIFI_SERVER
+#ifndef ITS_ESP_DEBUG
 	//shift reg
 	ret=spi_bus_initialize(ITS_SPISR_PORT, &buscfg, 0);
 	ESP_ERROR_CHECK(ret);
@@ -151,6 +153,7 @@ void init_basic(void) {
 	gpio_install_isr_service(0);
 }
 
+#ifndef ITS_ESP_DEBUG
 static void test_task(void *arg) {
 	int x = 1;
 	while (1) {
@@ -161,6 +164,7 @@ static void test_task(void *arg) {
 		shift_reg_load(&hsr);
 	}
 }
+#endif
 void init_helper(void) {
 	init_basic();
 
@@ -175,7 +179,7 @@ void init_helper(void) {
 
 	//Связь с SINS
 	uart_mavlink_install(ITS_UARTE_PORT, quart);
-#if !ITS_WIFI_SERVER && !defined(ITS_DEBUG)
+#ifndef ITS_ESP_DEBUG
 	shift_reg_init_spi(&hsr, ITS_SPISR_PORT, ITS_BSK_COUNT * ITS_SR_PACK_SIZE, 100 / portTICK_PERIOD_MS, ITS_PIN_SPISR_SS);
 	ESP_LOGD("SYSTEM", "Shift reg inited");
 	control_vcc_init(&hsr, 0);
@@ -198,8 +202,8 @@ void init_helper(void) {
 	shift_reg_load(&hsr);
 
 	xTaskCreate(test_task, "test task", configMINIMAL_STACK_SIZE + 2000, 0, 3, 0);
-#endif
 	sensors_init();
+#endif
 
 	ESP_LOGD("SYSTEM", "Start wifi init");
 #if ITS_WIFI_SERVER

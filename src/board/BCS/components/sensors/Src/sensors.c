@@ -48,7 +48,7 @@ esp_err_t sensors_init(void) {
 }
 //#define USE_GPIO
 static void sensors_task(void *arg) {
-	OneWireBus * owb;
+	OneWireBus * owb = 0;
 #ifdef USE_GPIO
 	owb_gpio_driver_info gpio_driver_info = {0};
 	vTaskDelay(2000/portTICK_PERIOD_MS);
@@ -56,7 +56,9 @@ static void sensors_task(void *arg) {
 	vTaskDelay(2000/portTICK_PERIOD_MS);
 #else
 	owb_rmt_driver_info rmt_driver_info = {0};
+#ifndef ITS_ESP_DEBUG
 	owb = owb_rmt_initialize(&rmt_driver_info, ITS_PIN_OWB, RMT_CHANNEL_1, RMT_CHANNEL_0);
+#endif
 #endif
 	owb_use_crc(owb, true);  // enable CRC check for ROM code
 
@@ -82,7 +84,7 @@ static void sensors_task(void *arg) {
 	// not very interesting, so just print it out. If there are multiple devices,
 	// then it may be useful to check that a specific device is present.
 
-	if (num_devices == 1)
+	if (0)
 	{
 		// For a single device only:
 		OneWireBus_ROMCode rom_code;
@@ -174,7 +176,7 @@ static void sensors_task(void *arg) {
 	// Read temperatures more efficiently by starting conversions on all devices at the same time
 	int errors_count[ITS_OWB_MAX_DEVICES] = {0};
 	int sample_count = 0;
-	ESP_LOGE(TAG, "Start cycle");
+	ESP_LOGD(TAG, "Start cycle");
 	if (num_devices > 0)
 	{
 		TickType_t last_wake_time = xTaskGetTickCount();
