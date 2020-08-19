@@ -190,6 +190,8 @@ static void sensors_task(void *arg) {
 			// In this application all devices use the same resolution,
 			// so use the first device to determine the delay
 			ds18b20_wait_for_conversion(devices[0]);
+			struct timeval tv = {0};
+			gettimeofday(&tv, 0);
 
 			// Read the results immediately after conversion otherwise it may fail
 			// (using printf before reading may take too long)
@@ -201,16 +203,17 @@ static void sensors_task(void *arg) {
 				errors[i] = ds18b20_read_temp(devices[i], &readings[i]);
 			}
 
-			// Print results in a separate loop, after all have been read
-			ESP_LOGD(TAG, "Temperature readings (degrees C): sample %d", ++sample_count);
-			for (int i = 0; i < num_devices; ++i)
-			{
-				if (errors[i] != DS18B20_OK)
-				{
-					++errors_count[i];
-				}
+			for (int i = 0; i < num_devices; ++i) {
+				mavlink_thermal_state_t mts = {0};
+				mavlink_message_t msg = {0};
+				mts.time_s = tv.tv_sec;
+				mts.time_us = tv.tv_usec;
+				mts.temperature = errors[i] == DS18B20_OK ? readings[i] : NAN;
+				mavlink_msg_thermal_state_encode(mavlink_system, i, &msg, &mts);
+				its_rt_sender_ctx_t ctx = {0};
 
-				ESP_LOGD(TAG, "  %d: %.1f    %d errors", i, readings[i], errors[i] == DS18B20_OK);
+				ctx.from_isr = 0;
+				its_rt_route(&ctx, &msg, 0);
 			}
 
 			vTaskDelayUntil(&last_wake_time, SAMPLE_PERIOD / portTICK_PERIOD_MS);
