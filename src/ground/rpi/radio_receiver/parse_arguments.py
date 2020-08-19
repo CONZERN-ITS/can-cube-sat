@@ -6,7 +6,7 @@ def arguments():
 
     # input
     input_group = parser.add_argument_group("arguments for input connection")
-    input_group.add_argument("-s", "--serial_device", help="your input serial device", required=True)
+    input_group.add_argument("-s", "--serial_device", help="your input serial device", default=None)
     input_group.add_argument("-b", "--serial_baudrate", help="your serial baudrate", default="115200")
 
     # output
