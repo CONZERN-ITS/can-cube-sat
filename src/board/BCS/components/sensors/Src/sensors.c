@@ -30,7 +30,6 @@
 
 #include "esp_log.h"
 
-#include "init_helper.h"
 #include "pinout_cfg.h"
 #include "router.h"
 #include "mavlink_help2.h"

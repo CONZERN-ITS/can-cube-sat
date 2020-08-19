@@ -24,6 +24,7 @@
 
 #include "router.h"
 #include "mavlink_help2.h"
+#include "log_collector.h"
 
 #include "driver/sdmmc_host.h"
 #include "driver/sdmmc_defs.h"
@@ -46,19 +47,22 @@ static uint64_t last_sync;
 // initialized in SPI mode, it can not be reinitialized in SD mode without
 // toggling power to the card.
 
-static void sd_task_telemetry(void *arg);
 
-static void reboot(void);
+
+
 
 static sdmmc_card_t* card;
 static const char mount_point[] = MOUNT_POINT;
 
 
-static void sd_task_test(void *arg);
+static void sd_log_task(void *arg);
+
+static void sd_task(void *arg);
 
 int sd_init(void) {
 
-	xTaskCreatePinnedToCore(sd_task_test, "Sd task", configMINIMAL_STACK_SIZE + 4000, 0, 4, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(sd_task, "Sd task", configMINIMAL_STACK_SIZE + 2000, 0, 4, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(sd_task, "Sd log task", configMINIMAL_STACK_SIZE + 1000, 0, 1, 0, tskNO_AFFINITY);
 	return 0;/*
 	esp_err_t ret;
 	// Options for mounting the filesystem.
@@ -119,7 +123,6 @@ static void reboot(void) {
 	ESP_LOGI(TAG, "Card unmounted");
 	sd_init();
 }
-static int id = 0;
 typedef enum {
 	SD_STATE_UNMOUNTED,
 	SD_STATE_MOUNTED_UNOPEN,
@@ -140,6 +143,7 @@ typedef enum {
 static sd_error_t sd_error;
 static sd_state_t sd_state;
 static int sd_error_count;
+static int64_t last_time;
 
 static int _sd_write(int fd, const mavlink_message_t *msg) {
 	int ret = 0;
@@ -270,10 +274,10 @@ static int _sd_mount_connect() {
 		return -1;
 	}
 }
-static void sd_task_test(void *arg) {
+static void sd_task(void *arg) {
 	int sd_retry_count = 0;
 	int name_number = -1;
-	sd_state_t state = SD_STATE_UNMOUNTED;
+	sd_state = SD_STATE_UNMOUNTED;
 
 
 	its_rt_task_identifier tid = {
@@ -290,12 +294,11 @@ static void sd_task_test(void *arg) {
 		}
 	}
 
-
+	last_time = esp_timer_get_time();
 	int fout = 0;
-	int id = 0;
 	while (1) {
 cycle:
-		switch (state) {
+		switch (sd_state) {
 		case SD_STATE_UNMOUNTED: {
 			if (sd_retry_count > SD_MOUNT_MAX_RETRY_COUNT) {
 				ESP_LOGE("SD", "Have to restart esp32 %d", sd_retry_count);
@@ -311,7 +314,7 @@ cycle:
 				goto cycle;
 			} else {
 				sd_retry_count = 0;
-				state = SD_STATE_MOUNTED_UNOPEN;
+				sd_state = SD_STATE_MOUNTED_UNOPEN;
 			}
 		} break;
 		case SD_STATE_MOUNTED_UNOPEN: {
@@ -319,7 +322,7 @@ cycle:
 				ESP_LOGE("SD", "Can't open file. Have to reboot SD %d", sd_retry_count);
 				sd_retry_count = 0;
 				esp_vfs_fat_sdcard_unmount(mount_point, card);
-				state = SD_STATE_UNMOUNTED;
+				sd_state = SD_STATE_UNMOUNTED;
 				goto cycle;
 			}
 			if (name_number < 0) {
@@ -340,7 +343,7 @@ cycle:
 				vTaskDelay(SD_GLOBAL_RETRY_DELAY / portTICK_PERIOD_MS);
 				goto cycle;
 			} else {
-				state = SD_STATE_OPEN_WRITING;
+				sd_state = SD_STATE_OPEN_WRITING;
 				sd_retry_count = 0;
 			}
 		} break;
@@ -355,12 +358,13 @@ cycle:
 				_sd_try_to_save(fout);
 				close(fout);
 				name_number++;
-				state = SD_STATE_MOUNTED_UNOPEN;
+				sd_state = SD_STATE_MOUNTED_UNOPEN;
 				goto cycle;
 			}
 			mavlink_message_t msg = {0};
 			//Ожидаем получения сообщения
 			xQueueReceive(tid.queue, &msg, portMAX_DELAY);
+			last_time = esp_timer_get_time();
 
 			if (_sd_write(fout, &msg)) {
 				sd_error_count++;
@@ -380,6 +384,19 @@ cycle:
 			}
 		} break;
 		}
+	}
+}
+
+static void sd_log_task(void *arg) {
+	while (1) {
+		log_data_t ld = {
+				.last_error = sd_error,
+				.error_count = sd_error_count,
+				.last_state = sd_state,
+				.ellapsed_time = (esp_timer_get_time() - last_time) / 1000
+		};
+		log_collector_add(LOG_COMP_ID_SD, &ld);
+		vTaskDelay(LOG_COLLECTOR_ADD_PERIOD_COMMON / portTICK_PERIOD_MS);
 	}
 }
 

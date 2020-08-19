@@ -231,5 +231,58 @@
       <field type="float" name="rssi"></field>
     </message>
 
+    <message id="50023" name="BCU_STATS">
+      <description>
+        This message contains internal statistics of BCU subsystem
+      </description>
+
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="int32_t" name="sd_last_error">last error of sdio component</field>
+      <field type="uint32_t" name="sd_error_count">count of sdio errors</field>
+      <field type="uint32_t" name="sd_elapsed_time_from_msg">time elapsed since last incoming message in sdio</field>
+      <field type="uint8_t" name="sd_last_state">last state of sdio</field>
+
+      <field type="int32_t" name="imi_last_error">last error of imi component</field>
+      <field type="uint32_t" name="imi_error_count">count of imi errors</field>
+      <field type="uint32_t" name="imi_elapsed_time_from_msg">time elapsed since last incoming message in imi</field>
+      <field type="uint8_t" name="imi_last_state">last state of imi</field>
+
+      <field type="int32_t" name="sins_comm_last_error">last error of sins_comp component</field>
+      <field type="uint32_t" name="sins_comm_error_count">count of sins_comp errors</field>
+      <field type="uint32_t" name="sins_comm_elapsed_time_from_msg">time elapsed since last incoming message in sins_comp</field>
+      <field type="uint8_t" name="sins_comm_last_state">last state of sins_comp</field>
+
+      <field type="int32_t" name="wifi_last_error">last error of wifi component</field>
+      <field type="uint32_t" name="wifi_error_count">count of wifi errors</field>
+      <field type="uint32_t" name="wifi_elapsed_time_from_msg">time elapsed since last incoming message in wifi</field>
+      <field type="uint8_t" name="wifi_last_state">last state of wifi</field>
+
+      <field type="int32_t" name="network_last_error">last error of network component</field>
+      <field type="uint32_t" name="network_error_count">count of network errors</field>
+      <field type="uint32_t" name="network_elapsed_time_from_msg">time elapsed since last incoming message in network</field>
+      <field type="uint8_t" name="network_last_state">last state of network</field>
+
+      <field type="int32_t" name="sensors_last_error">last error of sensors component</field>
+      <field type="uint32_t" name="sensors_error_count">count of sensors errors</field>
+      <field type="uint32_t" name="sensors_elapsed_time_from_msg">time elapsed since last incoming message in sensors</field>
+      <field type="uint8_t" name="sensors_last_state">last state of sensors</field>
+
+      <field type="int32_t" name="time_sync_last_error">last error of time_sync component</field>
+      <field type="uint32_t" name="time_sync_error_count">count of time_sync errors</field>
+      <field type="uint32_t" name="time_sync_elapsed_time_from_msg">time elapsed since last incoming message in time_sync</field>
+      <field type="uint8_t" name="time_sync_last_state">last state of time_sync</field>
+
+      <field type="int32_t" name="radio_last_error">last error of radio component</field>
+      <field type="uint32_t" name="radio_error_count">count of radio errors</field>
+      <field type="uint32_t" name="radio_elapsed_time_from_msg">time elapsed since last incoming message in radio</field>
+      <field type="uint8_t" name="radio_last_state">last state of radio</field>
+
+      <field type="int32_t" name="shift_reg_last_error">last error of shift_reg component</field>
+      <field type="uint32_t" name="shift_reg_error_count">count of shift_reg errors</field>
+      <field type="uint32_t" name="shift_reg_elapsed_time_from_msg">time elapsed since last incoming message in shift_reg</field>
+      <field type="uint32_t" name="shift_reg_last_state">last state of shift_reg</field>
+    </message>
   </messages>
 </mavlink>

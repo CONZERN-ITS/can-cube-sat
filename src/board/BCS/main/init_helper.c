@@ -37,6 +37,7 @@
 #include "control_magnet.h"
 #include "control_vcc.h"
 #include "sensors.h"
+#include "log_collector.h"
 
 static i2c_config_t init_pin_i2c_tm  = {
 	.mode = I2C_MODE_MASTER,
@@ -221,6 +222,7 @@ void init_helper(void) {
 #endif
 
 	ESP_LOGD("SYSTEM", "Wifi inited");
+	log_collector_init(0);
 
 }
 

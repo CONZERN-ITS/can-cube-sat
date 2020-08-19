@@ -2,6 +2,8 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.5)
 
+add_definitions(-DITS_ESP_DEBUG)
+
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(app-template)
 
@@ -24,4 +26,5 @@ set(EXTRA_COMPONENT_DIRS "components/imi"
                          "control_vcc"
                          "owb"
                          "ds18b20"
-                         "sensors")
+                         "sensors"
+                         "log_collector")
