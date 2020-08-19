@@ -30,6 +30,7 @@ typedef struct {
 	int gps_config_error;
 	int lsm6ds3_init_error;
 	int lis3mdl_init_error;
+	int analog_sensor_init_error;
 
 	int gps_uart_init_error;
 	int gps_uart_error;
@@ -41,6 +42,7 @@ typedef struct {
 	int uart_transfer_error;
 
 	int timers_error;
+	int rtc_error;
 }error_system_t;
 
 

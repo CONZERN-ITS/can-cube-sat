@@ -90,9 +90,6 @@ int mems_lsm6ds3_init(void)
 
 //	trace_printf("lsm6ds3 OK\n");
 
-//	error = lsm6ds3_fifo_mode_set(&lsm6ds3_dev_ctx, PROPERTY_DISABLE);
-//	if (0 != error) return error;
-
 	error = lsm6ds3_block_data_update_set(&lsm6ds3_dev_ctx, PROPERTY_ENABLE);
 	if (0 != error) return error;
 

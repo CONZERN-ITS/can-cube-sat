@@ -67,23 +67,45 @@ stateSINS_isc_t stateSINS_isc_prev;
 //stateGPS_t stateGPS;
 
 
+void system_reset()
+{
+	led_blink(5, 400);
+	HAL_NVIC_SystemReset();
+}
+
+
 void SENSORS_Init(void)
 {
 	int error = 0;
 	error = mems_init_bus();
-//	trace_printf("mems bus init error: %d\n", error);
+	error_system.i2c_init_error = error;
+	if (error != 0)
+	{
+		HAL_Delay(1000);
+		error = mems_init_bus();
+		error_system.i2c_init_error = error;
+	}
 
 	//	LSM6DS3_init
+	error = 0;
 	error = mems_lsm6ds3_init();
-//	trace_printf("lsm6ds3 init error: %d\n", error);
-	state_system.lsm6ds3_state = error;
+	error_system.lsm6ds3_init_error =error;
+	if (error != 0)
+	{
+		HAL_Delay(1000);
+		error_system.lsm6ds3_init_error = mems_lsm6ds3_init();
+	}
+
 
 	//	LIS3MDL init
+	error = 0;
 	error = mems_lis3mdl_init();
-//	trace_printf("lis3mdl init error: %d\n", error);
-	state_system.lis3mdl_state = error;
-
-//	state_system.GPS_state = error;
+	error_system.lis3mdl_init_error = error;
+	if (error != 0)
+		{
+			HAL_Delay(1000);
+			error_system.lis3mdl_init_error = mems_lis3mdl_init();
+		}
 }
 
 
@@ -137,7 +159,10 @@ int UpdateDataAll(void)
 
 
 	float beta = 0.33;
-	MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
+	if ((error_system.lsm6ds3_init_error == 0) && (error_system.lis3mdl_init_error == 0))
+		MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
+	else if (error_system.lsm6ds3_init_error == 0)
+		MadgwickAHRSupdateIMU(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], dt, beta);
 
 	//	копируем кватернион в глобальную структуру
 	stateSINS_isc.quaternion[0] = quaternion[0];
@@ -194,6 +219,7 @@ int main(int argc, char* argv[])
 	memset(&stateSINS_rsc, 			0x00, sizeof(stateSINS_rsc));
 	memset(&state_system,			0x00, sizeof(state_system));
 	memset(&state_zero,				0x00, sizeof(state_zero));
+	memset(&error_system, 			0x00, sizeof(error_system));
 
 	if (check_SINS_state())
 	{
@@ -201,10 +227,16 @@ int main(int argc, char* argv[])
 		backup_sram_erase();
 
 		SENSORS_Init();
+		HAL_Delay(1000);
+		int error;
 		for (int i = 0; i < 2; i++)
 		{
-			mems_get_gyro_staticShift(state_zero.gyro_staticShift);
-			mems_get_accel_staticShift(state_zero.accel_staticShift);
+			error = mems_get_gyro_staticShift(state_zero.gyro_staticShift);
+			error += mems_get_accel_staticShift(state_zero.accel_staticShift);
+			if (error != 0)
+			{
+				system_reset();
+			}
 		}
 
 		backup_sram_write(&state_zero);
@@ -214,27 +246,53 @@ int main(int argc, char* argv[])
 	{
 		time_svc_steady_init();
 
-		if (time_svc_world_preinit_with_rtc() != 0)
+		int error = time_svc_world_preinit_with_rtc();
+		error_system.rtc_error = error;
+		if (error != 0)
 			time_svc_world_preinit_without_rtc(); 		//не смогли запустить rtc. Запустимся без него
 		else
 			time_svc_world_init();			//Смогли запуслить rtc. Запустим все остальное
 
-		if (uplink_init() != 0)
-			HAL_NVIC_SystemReset();		//Если не запустился uart, то мы - кирпич
+		error = 0;
+		error = uplink_init();
+		error_system.uart_transfer_init_error = error;
+		if (error != 0)
+			system_reset();				//Если не запустился uart, то мы - кирпич
 
-
-		assert(0 == gps_init(on_gps_packet, NULL));
+		error = 0;
+		error = gps_init(on_gps_packet, NULL);
+		if (error != 0)
+		{
+			error_system.gps_uart_init_error = error;
+		}
+		else
+		{
+			error = gps_configure();
+			error_system.gps_config_error = error;
+			if (error != 0)
+				for (int i = 0; i < 5; i++)
+				{
+					HAL_Delay(1000);
+					error = gps_configure();
+					if (error == 0)
+						break;
+				}
+			error_system.gps_config_error = error;
+		}
 
 	//	int rc = gps_init(_on_gps_packet, NULL);
-		assert(0 == gps_configure());
 	//	trace_printf("configure rc = %d\n", rc);
 
-
-		if (analog_init() != 0)
+		error = 0;
+		error = analog_init();
+		error_system.analog_sensor_init_error;
+		if (error != 0)
 			{
 				HAL_Delay(500);
-				analog_restart();
+				error_system.analog_sensor_init_error = analog_restart();
 			}
+
+		SENSORS_Init();
 
 		backup_sram_enable_after_reset();
 		backup_sram_read(&state_zero);
