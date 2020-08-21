@@ -74,38 +74,46 @@ void system_reset()
 }
 
 
-void SENSORS_Init(void)
+void SENSORS_Init(int bus_init, int lsm_init, int lis_init)
 {
 	int error = 0;
-	error = mems_init_bus();
-	error_system.i2c_init_error = error;
-	if (error != 0)
+	if (bus_init)
 	{
-		HAL_Delay(1000);
 		error = mems_init_bus();
 		error_system.i2c_init_error = error;
+		if (error != 0)
+		{
+			HAL_Delay(1000);
+			error = mems_init_bus();
+			error_system.i2c_init_error = error;
+		}
 	}
 
 	//	LSM6DS3_init
-	error = 0;
-	error = mems_lsm6ds3_init();
-	error_system.lsm6ds3_init_error =error;
-	if (error != 0)
+	if (lsm_init)
 	{
-		HAL_Delay(1000);
-		error_system.lsm6ds3_init_error = mems_lsm6ds3_init();
-	}
-
-
-	//	LIS3MDL init
-	error = 0;
-	error = mems_lis3mdl_init();
-	error_system.lis3mdl_init_error = error;
-	if (error != 0)
+		error = 0;
+		error = mems_lsm6ds3_init();
+		error_system.lsm6ds3_init_error =error;
+		if (error != 0)
 		{
 			HAL_Delay(1000);
-			error_system.lis3mdl_init_error = mems_lis3mdl_init();
+			error_system.lsm6ds3_init_error = mems_lsm6ds3_init();
 		}
+	}
+
+	//	LIS3MDL init
+	if (lis_init)
+	{
+		error = 0;
+		error = mems_lis3mdl_init();
+		error_system.lis3mdl_init_error = error;
+		if (error != 0)
+			{
+				HAL_Delay(1000);
+				error_system.lis3mdl_init_error = mems_lis3mdl_init();
+			}
+	}
 }
 
 
@@ -122,21 +130,30 @@ int UpdateDataAll(void)
 	float gyro[3] = {0, 0, 0};
 	float magn[3] = {0, 0, 0};
 
-	error = mems_lsm6ds3_get_xl_data_g(accel);
-	error |= mems_lsm6ds3_get_g_data_rps(gyro);
-	/*if (error)
+	if ((error_system.lsm6ds3_init_error != 0) && (error_system.lis3mdl_init_error != 0) && (error_system.i2c_init_error != 0))
 	{
-		state_system.lsm6ds3_state = error;				//FIXME: подумать, надо ли возвращать
-		goto end;
+		SENSORS_Init(1, 1, 1);
 	}
-*/
-	error = mems_lis3mdl_get_m_data_mG(magn);
-/*	if (error)
+	else if (error_system.lsm6ds3_init_error != 0)
+		SENSORS_Init(0, 1, 0);
+	else if (error_system.lis3mdl_init_error != 0)
+		SENSORS_Init(0, 0, 1);
+
+
+	if (error_system.lsm6ds3_init_error == 0)
 	{
-		state_system.lis3mdl_state = error;				//FIXME: подумать, надо ли возвращать
-		goto end;
+		error = mems_lsm6ds3_get_xl_data_g(accel);
+		error |= mems_lsm6ds3_get_g_data_rps(gyro);
 	}
-*/
+
+	if (error_system.lis3mdl_init_error == 0)
+		error = mems_lis3mdl_get_m_data_mG(magn);
+
+	if ((error_system.lsm6ds3_init_error != 0) && (error_system.lis3mdl_init_error != 0))
+	{
+		return -1;
+	}
+
 	time_svc_world_get_time(&stateSINS_isc.tv);
 	//	пересчитываем их и записываем в структуры
 	for (int k = 0; k < 3; k++) {
@@ -226,7 +243,7 @@ int main(int argc, char* argv[])
 		backup_sram_enable();
 		backup_sram_erase();
 
-		SENSORS_Init();
+		SENSORS_Init(1, 1, 1);
 		HAL_Delay(1000);
 		int error;
 		for (int i = 0; i < 2; i++)
@@ -292,7 +309,7 @@ int main(int argc, char* argv[])
 				error_system.analog_sensor_init_error = analog_restart();
 			}
 
-		SENSORS_Init();
+		SENSORS_Init(1, 1, 1);
 
 		backup_sram_enable_after_reset();
 		backup_sram_read(&state_zero);

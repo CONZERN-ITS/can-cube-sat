@@ -145,7 +145,10 @@ static int32_t lis3mdl_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t 
 	reg |= 0x80;
 	hal_error = HAL_I2C_Mem_Write(handle, LIS3MDL_I2C_ADD_H, reg, I2C_MEMADD_SIZE_8BIT, bufp, len, LSM_TIMEOUT);
 	if (hal_error != HAL_OK)
+	{
+		i2c_error_handler(&hmems_i2c);
 		return sins_hal_status_to_errno(hal_error);
+	}
 
 	return 0;
 }
@@ -158,7 +161,10 @@ static int32_t lis3mdl_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t l
 	reg |= 0x80;
 	hal_error = HAL_I2C_Mem_Read(handle, LIS3MDL_I2C_ADD_H, reg, I2C_MEMADD_SIZE_8BIT, bufp, len, LSM_TIMEOUT);
 	if (hal_error != HAL_OK)
+	{
+		i2c_error_handler(&hmems_i2c);
 		return sins_hal_status_to_errno(hal_error);
+	}
 
 	return 0;
 }
