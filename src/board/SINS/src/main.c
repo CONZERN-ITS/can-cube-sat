@@ -40,6 +40,9 @@
 #include "drivers/uplink.h"
 #include "drivers/time_svc/timers_world.h"
 #include "drivers/temp/analog.h"
+#include "backup_sram.h"
+#include "drivers/led.h"
+#include "errors.h"
 
 #include "mav_packet.h"
 
@@ -48,7 +51,6 @@
 #include "MadgwickAHRS.h"
 #include "vector.h"
 #include "quaternion.h"
-#include "backup_sram.h"
 
 
 #pragma GCC diagnostic push
@@ -57,7 +59,7 @@
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
 //Global structures
-error_system_t error_system;
+
 state_system_t state_system;
 stateSINS_rsc_t stateSINS_rsc;
 state_zero_t state_zero;
@@ -74,47 +76,6 @@ void system_reset()
 }
 
 
-void SENSORS_Init(int bus_init, int lsm_init, int lis_init)
-{
-	int error = 0;
-	if (bus_init)
-	{
-		error = mems_init_bus();
-		error_system.i2c_init_error = error;
-		if (error != 0)
-		{
-			HAL_Delay(1000);
-			error = mems_init_bus();
-			error_system.i2c_init_error = error;
-		}
-	}
-
-	//	LSM6DS3_init
-	if (lsm_init)
-	{
-		error = 0;
-		error = mems_lsm6ds3_init();
-		error_system.lsm6ds3_init_error =error;
-		if (error != 0)
-		{
-			HAL_Delay(1000);
-			error_system.lsm6ds3_init_error = mems_lsm6ds3_init();
-		}
-	}
-
-	//	LIS3MDL init
-	if (lis_init)
-	{
-		error = 0;
-		error = mems_lis3mdl_init();
-		error_system.lis3mdl_init_error = error;
-		if (error != 0)
-			{
-				HAL_Delay(1000);
-				error_system.lis3mdl_init_error = mems_lis3mdl_init();
-			}
-	}
-}
 
 
 /**
@@ -220,7 +181,17 @@ void SINS_updatePrevData(void)
 
 int check_SINS_state(void)
 {
-	if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9)) //пин с джампером
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	GPIO_InitTypeDef gpioc;
+	gpioc.Mode = GPIO_MODE_INPUT;
+	gpioc.Pin = GPIO_PIN_9;
+	gpioc.Pull = GPIO_NOPULL;
+	gpioc.Speed = GPIO_SPEED_HIGH;
+	HAL_GPIO_Init(GPIOB, &gpioc);
+
+
+	int r = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9);
+	if (r == SET) //пин с джампером
 		return 1;
 	else
 		return 0;
@@ -238,7 +209,9 @@ int main(int argc, char* argv[])
 	memset(&state_zero,				0x00, sizeof(state_zero));
 	memset(&error_system, 			0x00, sizeof(error_system));
 
-	if (check_SINS_state())
+	led_init();
+
+	if (check_SINS_state() == 1)
 	{
 		backup_sram_enable();
 		backup_sram_erase();
@@ -302,7 +275,7 @@ int main(int argc, char* argv[])
 
 		error = 0;
 		error = analog_init();
-		error_system.analog_sensor_init_error;
+		error_system.analog_sensor_init_error = error;
 		if (error != 0)
 			{
 				HAL_Delay(500);
@@ -315,6 +288,9 @@ int main(int argc, char* argv[])
 		backup_sram_read(&state_zero);
 
 		time_svc_world_get_time(&stateSINS_isc_prev.tv);
+
+		error_system_check();
+
 		for (; ; )
 		{
 			for (int u = 0; u < 5; u++)

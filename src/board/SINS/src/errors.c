@@ -10,6 +10,7 @@
 #include "state.h"
 
 
+
 void i2c_error_handler(I2C_HandleTypeDef *hi2c)
 {
   uint32_t tmp1 = 0U, tmp2 = 0U, tmp3 = 0U, tmp4 = 0U;
@@ -34,6 +35,10 @@ void i2c_error_handler(I2C_HandleTypeDef *hi2c)
   {
     hi2c->ErrorCode |= HAL_I2C_ERROR_ARLO;
 
+    SET_BIT(hi2c->Instance->CR1, I2C_CR1_SWRST);
+
+	mems_init_bus();
+
     /* Clear ARLO flag */
     __HAL_I2C_CLEAR_FLAG(hi2c, I2C_FLAG_ARLO);
   }
@@ -49,6 +54,19 @@ void i2c_error_handler(I2C_HandleTypeDef *hi2c)
       /* Clear AF flag */
       __HAL_I2C_CLEAR_FLAG(hi2c, I2C_FLAG_AF);
   }
+
+  if(((sr1itflags & I2C_FLAG_) != RESET) && ((itsources & I2C_IT_ERR) != RESET))
+    {
+      hi2c->ErrorCode |= HAL_I2C_ERROR_DMA;
+
+      SET_BIT(hi2c->Instance->CR1, I2C_CR1_SWRST);
+
+  	mems_init_bus();
+
+      /* Clear ARLO flag */
+      __HAL_I2C_CLEAR_FLAG(hi2c, I2C_FLAG_ARLO);
+    }
+  //FIXME: для всех ошибок кроме AF переинициализировать шину
 }
 
 

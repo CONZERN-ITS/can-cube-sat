@@ -189,6 +189,7 @@ int time_svc_rtc_init()
 	{
 		return -ENOSYS;
 	}
+	return 0;
 }
 
 

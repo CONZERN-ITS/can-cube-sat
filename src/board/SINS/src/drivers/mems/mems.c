@@ -35,6 +35,18 @@ int mems_init_bus()
 }
 
 
+void mems_swrst(void)
+{
+	SET_BIT(hmems_i2c->Instance->CR1, I2C_CR1_SWRST);
+}
+
+
+void mems_generate_stop_flag(void)
+{
+	SET_BIT(hmems_i2c->Instance->CR1,I2C_CR1_STOP);
+}
+
+
 int mems_get_gyro_staticShift(float* gyro_staticShift)
 {
 	int error = 0;
