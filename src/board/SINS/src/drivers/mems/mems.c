@@ -13,37 +13,45 @@
 #include "../common.h"
 
 
-I2C_HandleTypeDef hmems_i2c;
+#define HMEMS_I2C_INSTANCE	I2C2
+#define HMEMS_I2C_FORCE_RESET 	__HAL_RCC_I2C2_FORCE_RESET
+#define HMEMS_I2C_RELEASE_RESET __HAL_RCC_I2C2_RELEASE_RESET
+
+
+I2C_HandleTypeDef hmems_i2c = {
+		.Instance = HMEMS_I2C_INSTANCE,
+		.Mode = HAL_I2C_MODE_MASTER,
+		.Init = {
+				.AddressingMode = I2C_ADDRESSINGMODE_7BIT,
+				.ClockSpeed = 400000,
+				.DualAddressMode = I2C_DUALADDRESS_DISABLE,
+				.DutyCycle = I2C_DUTYCYCLE_2,
+				.GeneralCallMode = I2C_GENERALCALL_DISABLE,
+				.NoStretchMode = I2C_NOSTRETCH_DISABLE,
+				.OwnAddress1 = 0x00
+		}
+};
 
 
 int mems_init_bus()
 {
-	//	I2C init
-	hmems_i2c.Instance = I2C2;
-	hmems_i2c.Mode = HAL_I2C_MODE_MASTER;
+	//	SET_BIT(hmems_i2c.Instance->CR2, I2C_CR1_SWRST);
+	//	CLEAR_BIT(hmems_i2c.Instance->CR1, I2C_CR1_SWRST);
 
-	hmems_i2c.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-	hmems_i2c.Init.ClockSpeed = 400000;
-	hmems_i2c.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-	hmems_i2c.Init.DutyCycle = I2C_DUTYCYCLE_2;
-	hmems_i2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-	hmems_i2c.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-	hmems_i2c.Init.OwnAddress1 = 0x00;
+		HMEMS_I2C_FORCE_RESET();
+		HMEMS_I2C_RELEASE_RESET();
 
-	HAL_StatusTypeDef hal_status =  HAL_I2C_Init(&hmems_i2c);
-	return sins_hal_status_to_errno(hal_status);
-}
+		//HAL_I2C_DeInit(&hmems_i2c);
+		__HAL_I2C_RESET_HANDLE_STATE(&hmems_i2c);
 
-
-void mems_swrst(void)
-{
-	SET_BIT(hmems_i2c->Instance->CR1, I2C_CR1_SWRST);
+		HAL_StatusTypeDef hal_status =  HAL_I2C_Init(&hmems_i2c);
+		return sins_hal_status_to_errno(hal_status);
 }
 
 
 void mems_generate_stop_flag(void)
 {
-	SET_BIT(hmems_i2c->Instance->CR1,I2C_CR1_STOP);
+	SET_BIT(hmems_i2c.Instance->CR1,I2C_CR1_STOP);
 }
 
 

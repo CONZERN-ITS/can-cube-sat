@@ -20,7 +20,7 @@ typedef enum
 } i2c_error_codes;
 
 
-extern void i2c_error_handler(I2C_HandleTypeDef *hi2c);
+//extern void i2c_error_handler(I2C_HandleTypeDef *hi2c);
 extern void error_system_check();
 
 #endif /* ERRORS_H_ */

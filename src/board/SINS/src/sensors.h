@@ -10,13 +10,16 @@
 
 typedef struct mems_state_t
 {
-	int bus_init_required;
+	int bus_ready;
+	int bus_error_counter;
 	int bus_error;
 
-	int lsm6ds3_init_required;
+	int lsm6ds3_ready;
+	int lsm6ds3_error_counter;
 	int lsm6ds3_error;
 
-	int lis3mdl_init_required;
+	int lis3mdl_ready;
+	int lis3mdl_error_counter;
 	int lis3mdl_error;
 } mems_state_t;
 

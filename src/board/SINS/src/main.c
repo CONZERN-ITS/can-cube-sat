@@ -51,6 +51,7 @@
 #include "MadgwickAHRS.h"
 #include "vector.h"
 #include "quaternion.h"
+#include "sensors.h"
 
 
 #pragma GCC diagnostic push
@@ -59,7 +60,7 @@
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
 //Global structures
-
+error_system_t error_system;
 state_system_t state_system;
 stateSINS_rsc_t stateSINS_rsc;
 state_zero_t state_zero;
@@ -91,29 +92,13 @@ int UpdateDataAll(void)
 	float gyro[3] = {0, 0, 0};
 	float magn[3] = {0, 0, 0};
 
-	if ((error_system.lsm6ds3_init_error != 0) && (error_system.lis3mdl_init_error != 0) && (error_system.i2c_init_error != 0))
-	{
-		SENSORS_Init(1, 1, 1);
-	}
-	else if (error_system.lsm6ds3_init_error != 0)
-		SENSORS_Init(0, 1, 0);
-	else if (error_system.lis3mdl_init_error != 0)
-		SENSORS_Init(0, 0, 1);
+	error_system.lis3mdl_init_error = sensors_lis3mdl_read(magn);
 
-
-	if (error_system.lsm6ds3_init_error == 0)
-	{
-		error = mems_lsm6ds3_get_xl_data_g(accel);
-		error |= mems_lsm6ds3_get_g_data_rps(gyro);
-	}
-
-	if (error_system.lis3mdl_init_error == 0)
-		error = mems_lis3mdl_get_m_data_mG(magn);
+	error_system.lsm6ds3_init_error = sensors_lsm6ds3_read(accel, gyro);
 
 	if ((error_system.lsm6ds3_init_error != 0) && (error_system.lis3mdl_init_error != 0))
-	{
-		return -1;
-	}
+		return -22;
+
 
 	time_svc_world_get_time(&stateSINS_isc.tv);
 	//	пересчитываем их и записываем в структуры
@@ -190,8 +175,7 @@ int check_SINS_state(void)
 	HAL_GPIO_Init(GPIOB, &gpioc);
 
 
-	int r = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9);
-	if (r == SET) //пин с джампером
+	if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9)) //пин с джампером
 		return 1;
 	else
 		return 0;
@@ -216,7 +200,7 @@ int main(int argc, char* argv[])
 		backup_sram_enable();
 		backup_sram_erase();
 
-		SENSORS_Init(1, 1, 1);
+		error_system.i2c_init_error = sensors_init();
 		HAL_Delay(1000);
 		int error;
 		for (int i = 0; i < 2; i++)
@@ -282,7 +266,7 @@ int main(int argc, char* argv[])
 				error_system.analog_sensor_init_error = analog_restart();
 			}
 
-		SENSORS_Init(1, 1, 1);
+		error_system.i2c_init_error = sensors_init();
 
 		backup_sram_enable_after_reset();
 		backup_sram_read(&state_zero);

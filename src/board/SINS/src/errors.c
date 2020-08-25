@@ -8,8 +8,9 @@
 #include <stm32f405xx.h>
 #include "drivers/mems/mems.h"
 #include "state.h"
+#include "drivers/led.h"
 
-
+#if 0
 
 void i2c_error_handler(I2C_HandleTypeDef *hi2c)
 {
@@ -68,7 +69,7 @@ void i2c_error_handler(I2C_HandleTypeDef *hi2c)
     }
   //FIXME: для всех ошибок кроме AF переинициализировать шину
 }
-
+#endif
 
 void error_system_check()
 {

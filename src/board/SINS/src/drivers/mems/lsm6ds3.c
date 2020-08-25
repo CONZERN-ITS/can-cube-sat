@@ -77,7 +77,7 @@ int mems_lsm6ds3_init(void)
 	lsm6ds3_ctrl3_c_t reg = {0};
 	reg.sw_reset = 1;
 	lsm6ds3_write_reg(&lsm6ds3_dev_ctx, LSM6DS3_CTRL3_C, (uint8_t*)&reg, 1);
-	HAL_Delay(100);
+	HAL_Delay(3);
 	lsm6ds3_i2c_interface_set(&lsm6ds3_dev_ctx, LSM6DS3_I2C_ENABLE);
 
 	// Check who_am_i
