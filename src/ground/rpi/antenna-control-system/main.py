@@ -25,8 +25,8 @@ class AutoGuidance():
                         wwm,
                         v_stepper_motor,
                         h_stepper_motor,
-                        mag_sample_size=1, 
-                        accel_sample_size=1, 
+                        mag_sample_size=1,
+                        accel_sample_size=1,
                         gps_sample_size=1,
                         act_timeout=1):
         self.lis3mdl = lis3mdl
@@ -80,7 +80,7 @@ class AutoGuidance():
             if gpsd.tpv_get_alt(data) is None:
                 continue
             if gpsd.tpv_get_x_y_z(data) is None:
-                continue      
+                continue
             self.lan_lot += NumPy.array(gpsd.tpv_get_lat_lon(data))
             self.alt += NumPy.array(gpsd.tpv_get_alt(data))
             self.x_y_z += NumPy.array(gpsd.tpv_get_x_y_z(data))
@@ -155,7 +155,7 @@ class AutoGuidance():
 if __name__ == '__main__':
     i2c = i2cdev.I2C(PORT_I2C)
     i2c.set_timeout(I2C_TIMEOUT)
-    lis3mdl = Lis3mdl(i2c, LIS3MDL_ADRESS)  
+    lis3mdl = Lis3mdl(i2c, LIS3MDL_ADRESS)
     lsm6ds3 = Lsm6ds3(i2c, LSM6DS3_ADRESS)
     gpsd = GPS_data()
     wwm = WMM2020()
@@ -171,43 +171,33 @@ if __name__ == '__main__':
                                            deg_per_step=H_DEG_PER_STEP)
 
     data_connection = mavutil.mavlink_connection(DATA_CONNECTION_STR)
-    gcs_pc_connections = []
-    for string in GCS_PC_CONNECTION_STRS:
-        gcs_pc_connections.append(mavutil.mavlink_connection(string))
 
-    automode = AUTOMODE
-
-    if automode:
-        ACS = AutoGuidance(lis3mdl=lis3mdl,
-                           lsm6ds3=lsm6ds3,
-                           gpsd=gpsd,
-                           wwm=wwm,
-                           v_stepper_motor=v_stepper_motor,
-                           h_stepper_motor=h_stepper_motor,
-                           mag_sample_size=MAG_SAMPLE_SIZE,
-                           accel_sample_size=ACCEL_SAMPLE_SIZE,
-                           gps_sample_size=GPS_SAMPLE_SIZE,
-                           act_timeout=5)
-        ACS.setup()
-        ACS.setup_v_limit_pins_map(V_P_LIMIT_PINS_MAP.keys(), V_N_LIMIT_PINS_MAP.keys())
-        ACS.setup_h_limit_pins_map(H_P_LIMIT_PINS_MAP.keys(), H_N_LIMIT_PINS_MAP.keys())
-        ACS.setup_coord_system()
-        ACS.setup_v_limit_pos_as_beg()
-        ACS.setup_nort_as_zero()
-        start_time = time.time()
-        gps = None
+    ACS = AutoGuidance(lis3mdl=lis3mdl,
+                       lsm6ds3=lsm6ds3,
+                       gpsd=gpsd,
+                       wwm=wwm,
+                       v_stepper_motor=v_stepper_motor,
+                       h_stepper_motor=h_stepper_motor,
+                       mag_sample_size=MAG_SAMPLE_SIZE,
+                       accel_sample_size=ACCEL_SAMPLE_SIZE,
+                       gps_sample_size=GPS_SAMPLE_SIZE,
+                       act_timeout=5)
+    ACS.setup()
+    ACS.setup_v_limit_pins_map(V_P_LIMIT_PINS_MAP.keys(), V_N_LIMIT_PINS_MAP.keys())
+    ACS.setup_h_limit_pins_map(H_P_LIMIT_PINS_MAP.keys(), H_N_LIMIT_PINS_MAP.keys())
+    ACS.setup_coord_system()
+    ACS.setup_v_limit_pos_as_beg()
+    ACS.setup_nort_as_zero()
+    start_time = time.time()
+    gps = None
 
     while True:
         msg = data_connection.recv_match(blocking=True)
-        for connection in gcs_pc_connections:
-            connection.mav.send(msg)
+        if msg.get_type() == "GPS_UBX_NAV_SOL":
+            gps = NumPy.array(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100)
 
-        if automode:
-            if msg.get_type() == "GPS_UBX_NAV_SOL":
-                gps = NumPy.array(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100)
-            
-            if (time.time() - start_time) < ANTENNA_AIMING_PERIOD:
-                if gps is not None:
-                   ACS.aiming(gps) 
+        if (time.time() - start_time) < ANTENNA_AIMING_PERIOD:
+            if gps is not None:
+               ACS.aiming(gps) 
 
     i2c.close()
