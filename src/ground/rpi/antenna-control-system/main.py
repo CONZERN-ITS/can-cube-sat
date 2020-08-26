@@ -28,7 +28,9 @@ class AutoGuidance():
                         mag_sample_size=1,
                         accel_sample_size=1,
                         gps_sample_size=1,
-                        act_timeout=1):
+                        act_timeout=1,
+                        mag_recount_matrix=None,
+                        accel_recount_matrix=None,):
         self.lis3mdl = lis3mdl
         self.lsm6ds3 = lsm6ds3
         self.gpsd = gpsd
@@ -62,11 +64,13 @@ class AutoGuidance():
         for i in range(self.mag_sample_size):
             self.mag += NumPy.array(lis3mdl.get_mag_data_G())
         self.mag /= self.mag_sample_size
+        self.mag = NumPy.dot(mag_recount_matrix, self.mag)
 
         self.accel = NumPy.array([0, 0, 0])
         for i in range(self.accel_sample_size):
             self.accel += NumPy.array(lsm6ds3.get_accel_data_mg())
         self.accel /= self.accel_sample_size
+        self.accel = NumPy.dot(accel_recount_matrix, self.accel)
 
         self.lan_lot = NumPy.array([0, 0])
         self.alt = NumPy.array([0, 0, 0])
@@ -181,7 +185,9 @@ if __name__ == '__main__':
                        mag_sample_size=MAG_SAMPLE_SIZE,
                        accel_sample_size=ACCEL_SAMPLE_SIZE,
                        gps_sample_size=GPS_SAMPLE_SIZE,
-                       act_timeout=5)
+                       act_timeout=5,
+                       mag_recount_matrix=MGA_RECOUNT_MATRIX,
+                       accel_recount_matrix=ACCEL_RECOUNT_MATRIX)
     ACS.setup()
     ACS.setup_v_limit_pins_map(V_P_LIMIT_PINS_MAP.keys(), V_N_LIMIT_PINS_MAP.keys())
     ACS.setup_h_limit_pins_map(H_P_LIMIT_PINS_MAP.keys(), H_N_LIMIT_PINS_MAP.keys())

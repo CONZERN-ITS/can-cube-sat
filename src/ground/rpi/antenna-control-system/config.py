@@ -1,3 +1,5 @@
+import numpy as NumPy
+
 DATA_CONNECTION_STR = 'udpin:0.0.0.0:41313'
 
 PORT_I2C = 1
@@ -9,6 +11,11 @@ LSM6DS3_ADRESS = 0x6B
 ACCEL_SAMPLE_SIZE = 100
 MAG_SAMPLE_SIZE = 100
 GPS_SAMPLE_SIZE = 20
+
+MGA_RECOUNT_MATRIX = NumPy.array([[ 0, 0, 0],
+                                [-1, 1, 0],
+                                [-1, 0, 1]]),
+ACCEL_RECOUNT_MATRIX = None
 
 V_PUL_PIN = 18
 V_DIR_PIN = 16
