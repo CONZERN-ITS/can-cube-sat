@@ -43,14 +43,18 @@ class AutoGuidance():
         self.h_stepper_motor = h_stepper_motor
         self.v_limit_pins_map = {}
         self.h_limit_pins_map = {}
+        self.mag_recount_matrix = mag_recount_matrix
+        self.accel_recount_matrix = accel_recount_matrix
 
-    def setup_v_limit_pins_map(self, limit_pins_map):
-        self.v_limit_pins_map = limit_pins_map
-        self.v_stepper_motor.setup_stop_triggers(limit_pins_map.keys())
+    def setup_v_limit_pins_map(self, p_limit_pins_map, n_limit_pins_map):
+        self.v_limit_pins_map = p_limit_pins_map
+        self.v_limit_pins_map.update(n_limit_pins_map)
+        self.v_stepper_motor.setup_stop_triggers(p_limit_pins_map.keys(), n_limit_pins_map.keys())
 
-    def setup_h_limit_pins_map(self, limit_pins_map):
-        self.h_limit_pins_map = limit_pins_map
-        self.h_stepper_motor.setup_stop_triggers(limit_pins_map.keys())
+    def setup_h_limit_pins_map(self, p_limit_pins_map, n_limit_pins_map):
+        self.h_limit_pins_map = p_limit_pins_map
+        self.h_limit_pins_map.update(n_limit_pins_map)
+        self.h_stepper_motor.setup_stop_triggers(p_limit_pins_map.keys(), n_limit_pins_map.keys())
 
     def setup(self):
         self.lis3mdl.setup()
@@ -60,24 +64,26 @@ class AutoGuidance():
             motor.setup()
 
     def setup_coord_system(self):
-        self.mag = NumPy.array([0, 0, 0])
+        self.mag = NumPy.array([0.0, 0.0, 0.0])
         for i in range(self.mag_sample_size):
             self.mag += NumPy.array(lis3mdl.get_mag_data_G())
         self.mag /= self.mag_sample_size
-        self.mag = NumPy.dot(mag_recount_matrix, self.mag)
+        if self.mag_recount_matrix is not None:
+            self.mag = NumPy.dot(self.mag_recount_matrix, self.mag)
 
-        self.accel = NumPy.array([0, 0, 0])
+        self.accel = NumPy.array([0.0, 0.0, 0.0])
         for i in range(self.accel_sample_size):
             self.accel += NumPy.array(lsm6ds3.get_accel_data_mg())
         self.accel /= self.accel_sample_size
-        self.accel = NumPy.dot(accel_recount_matrix, self.accel)
+        if self.accel_recount_matrix is not None:
+            self.accel = NumPy.dot(self.accel_recount_matrix, self.accel)
 
-        self.lan_lot = NumPy.array([0, 0])
-        self.alt = NumPy.array([0, 0, 0])
-        self.x_y_z = NumPy.array([0, 0, 0])
-        start_time = timt.time()
+        self.lan_lot = NumPy.array([0.0, 0.0])
+        self.alt = 0.0
+        self.x_y_z = NumPy.array([0.0, 0.0, 0.0])
+        start_time = time.time()
         sample_size = 0
-        while ((sample_size < self.gps_sample_size) and ((start_time - timt.time()) < self.act_timeout)):
+        while ((sample_size < self.gps_sample_size) and ((start_time - time.time()) < self.act_timeout)):
             data = gpsd.find_tpv_data()
             if gpsd.tpv_get_lat_lon(data) is None:
                 continue
@@ -86,14 +92,14 @@ class AutoGuidance():
             if gpsd.tpv_get_x_y_z(data) is None:
                 continue
             self.lan_lot += NumPy.array(gpsd.tpv_get_lat_lon(data))
-            self.alt += NumPy.array(gpsd.tpv_get_alt(data))
+            self.alt += gpsd.tpv_get_alt(data)
             self.x_y_z += NumPy.array(gpsd.tpv_get_x_y_z(data))
         self.lan_lot /= GPS_SAMPLE_SIZE
         self.alt /= GPS_SAMPLE_SIZE
         self.x_y_z /= GPS_SAMPLE_SIZE
 
         date = datetime.date.today()
-        wwm.setup_location(lan_lot_alt[0], lan_lot_alt[1], lan_lot_alt[2], date.day, date.month, date.year)
+        wwm.setup_location(self.lan_lot[0], self.lan_lot[1], self.alt, date.day, date.month, date.year)
         self.decl = wwm.get_declination()
 
         self.dec_to_top = dec_to_top_matix(*lan_lot)
@@ -129,7 +135,7 @@ class AutoGuidance():
     def rotate_v_stepper_motor(self, ang):
         trigger = self.v_stepper_motor.rotate_using_angle(ang)
         if trigger is not None:
-            self.phi = self.limit_pins_map.get(trigger)
+            self.phi = self.v_limit_pins_map.get(trigger)
         else:
             self.phi += self.v_stepper_motor.steps_to_angle(self.v_stepper_motor.get_last_steps_num(),
                                                             self.v_stepper_motor.get_last_steps_direction())
@@ -138,7 +144,7 @@ class AutoGuidance():
     def rotate_h_stepper_motor(self, ang):
         trigger = self.h_stepper_motor.rotate_using_angle(ang)
         if trigger is not None:
-            self.alpha = self.limit_pins_map.get(trigger)
+            self.alpha = self.h_limit_pins_map.get(trigger)
         else:
             self.alpha += self.h_stepper_motor.steps_to_angle(self.h_stepper_motor.get_last_steps_num(),
                                                               self.h_stepper_motor.get_last_steps_direction())
@@ -189,8 +195,8 @@ if __name__ == '__main__':
                        mag_recount_matrix=MGA_RECOUNT_MATRIX,
                        accel_recount_matrix=ACCEL_RECOUNT_MATRIX)
     ACS.setup()
-    ACS.setup_v_limit_pins_map(V_P_LIMIT_PINS_MAP.keys(), V_N_LIMIT_PINS_MAP.keys())
-    ACS.setup_h_limit_pins_map(H_P_LIMIT_PINS_MAP.keys(), H_N_LIMIT_PINS_MAP.keys())
+    ACS.setup_v_limit_pins_map(V_P_LIMIT_PINS_MAP, V_N_LIMIT_PINS_MAP)
+    ACS.setup_h_limit_pins_map(H_P_LIMIT_PINS_MAP, H_N_LIMIT_PINS_MAP)
     ACS.setup_coord_system()
     ACS.setup_v_limit_pos_as_beg()
     ACS.setup_nort_as_zero()
