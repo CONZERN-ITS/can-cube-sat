@@ -69,6 +69,18 @@ stateSINS_isc_t stateSINS_isc_prev;
 //stateSINS_transfer_t stateSINS_transfer;
 //stateGPS_t stateGPS;
 
+#define    DWT_CYCCNT    *(volatile uint32_t*)0xE0001004
+#define    DWT_CONTROL   *(volatile uint32_t*)0xE0001000
+#define    SCB_DEMCR     *(volatile uint32_t*)0xE000EDFC
+
+
+static void dwt_init()
+{
+	SCB_DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;// разрешаем использовать DWT
+	DWT_CONTROL|= DWT_CTRL_CYCCNTENA_Msk; // включаем счётчик
+	DWT_CYCCNT = 0;// обнуляем счётчик
+}
+
 
 void system_reset()
 {
@@ -198,6 +210,8 @@ int main(int argc, char* argv[])
 
 	led_init();
 
+	dwt_init();
+
 	if (check_SINS_state() == 1)
 	{
 		backup_sram_enable();
@@ -291,7 +305,7 @@ int main(int argc, char* argv[])
 		{
 			for (int u = 0; u < 5; u++)
 			{
-				for (int i = 0; i < 100; i++)
+				for (int i = 0; i < 30; i++)
 				{
 					UpdateDataAll();
 					SINS_updatePrevData();

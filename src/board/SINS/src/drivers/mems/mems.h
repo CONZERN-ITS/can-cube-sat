@@ -26,6 +26,8 @@ int mems_init_bus(void);
 // делает software reset
 void mems_swrst(void);
 
+void scl_clocking(int count_clocking);
+
 
 //генерирует стоп флаг
 void mems_generate_stop_flag(void);
