@@ -93,14 +93,17 @@ int UpdateDataAll(void)
 	float magn[3] = {0, 0, 0};
 
 	error_system.lis3mdl_init_error = sensors_lis3mdl_read(magn);
+//	trace_printf("lis error %d\n", error_system.lis3mdl_init_error);
 
 	error_system.lsm6ds3_init_error = sensors_lsm6ds3_read(accel, gyro);
+//	trace_printf("lsm error %d\n", error_system.lsm6ds3_init_error);
+
+	time_svc_world_get_time(&stateSINS_isc.tv);
+
 
 	if ((error_system.lsm6ds3_init_error != 0) && (error_system.lis3mdl_init_error != 0))
 		return -22;
 
-
-	time_svc_world_get_time(&stateSINS_isc.tv);
 	//	пересчитываем их и записываем в структуры
 	for (int k = 0; k < 3; k++) {
 		stateSINS_rsc.accel[k] = accel[k];
@@ -183,7 +186,7 @@ int check_SINS_state(void)
 
 
 int main(int argc, char* argv[])
-{
+	{
 
 	//	Global structures init
 	memset(&stateSINS_isc, 			0x00, sizeof(stateSINS_isc));
@@ -200,7 +203,12 @@ int main(int argc, char* argv[])
 		backup_sram_enable();
 		backup_sram_erase();
 
-		error_system.i2c_init_error = sensors_init();
+		sensors_init();
+		error_system.i2c_init_error = state.bus_error;
+		error_system.lsm6ds3_init_error = state.lsm6ds3_error;
+		error_system.lis3mdl_init_error = state.lis3mdl_error;
+
+
 		HAL_Delay(1000);
 		int error;
 		for (int i = 0; i < 2; i++)
@@ -266,7 +274,11 @@ int main(int argc, char* argv[])
 				error_system.analog_sensor_init_error = analog_restart();
 			}
 
-		error_system.i2c_init_error = sensors_init();
+		sensors_init();
+		error_system.i2c_init_error = state.bus_error;
+		error_system.lsm6ds3_init_error = state.lsm6ds3_error;
+		error_system.lis3mdl_init_error = state.lis3mdl_error;
+
 
 		backup_sram_enable_after_reset();
 		backup_sram_read(&state_zero);
@@ -279,7 +291,7 @@ int main(int argc, char* argv[])
 		{
 			for (int u = 0; u < 5; u++)
 			{
-				for (int i = 0; i < 160; i++)
+				for (int i = 0; i < 100; i++)
 				{
 					UpdateDataAll();
 					SINS_updatePrevData();

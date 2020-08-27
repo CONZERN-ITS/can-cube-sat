@@ -78,9 +78,9 @@ int mems_lis3mdl_init(void)
 	// Reset to defaults
 	lis3mdl_reg_t reg;
 	reg.ctrl_reg2.soft_rst = 1;
-	lis3mdl_write_reg(&lis3mdl_dev_ctx, LIS3MDL_CTRL_REG2, &reg.byte, 1);
-	HAL_Delay(3);		//FIXME: изменить
-
+	error = lis3mdl_write_reg(&lis3mdl_dev_ctx, LIS3MDL_CTRL_REG2, &reg.byte, 1);
+	if (error != 0)
+		return error;
 	// Check who_am_i
 	error = lis3mdl_device_id_get(&lis3mdl_dev_ctx, &whoamI);
 	if (whoamI != LIS3MDL_ID)

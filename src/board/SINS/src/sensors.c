@@ -4,10 +4,12 @@
  *  Created on: 22 авг. 2020 г.
  *      Author: developer
  */
+#include <errno.h>
 
 #include "sensors.h"
 #include "drivers/mems/mems.h"
 #include "errors.h"
+
 
 i2c_error_codes i2c_errors;
 
@@ -32,13 +34,19 @@ static void lsm6ds3_failure(int error)
 	state.lsm6ds3_error_counter++;
 	switch (error)
 	{
-		case af:
+		case af :
+			state.lsm6ds3_error = error;
+			state.lsm6ds3_ready = 0;
+			break;
+
+		case (-ENODEV):
 			state.lsm6ds3_error = error;
 			state.lsm6ds3_ready = 0;
 			break;
 
 		default:
 			bus_failure(error);
+			state.lsm6ds3_error = error;
 			break;
 	};
 }
@@ -55,8 +63,14 @@ static void lis3mdl_failure(int error)
 			state.lis3mdl_ready = 0;
 			break;
 
+		case (-ENODEV):
+			state.lis3mdl_error = error;
+			state.lis3mdl_ready = 0;
+			break;
+
 		default:
 			bus_failure(error);
+			state.lis3mdl_error = error;
 			break;
 	};
 }
