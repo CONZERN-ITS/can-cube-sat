@@ -135,7 +135,9 @@ int mems_get_gyro_staticShift(float* gyro_staticShift)
 	for (int i = 0; i < zero_orientCnt; i++)
 	{
 		//	Collect data
-		error = mems_lsm6ds3_get_g_data_rps(gyro);
+		int16_t raw_data[3] = {0};
+		error = mems_lsm6ds3_get_g_data_raw(raw_data);
+		mems_lsm6ds3_get_g_data_rps(raw_data, gyro);
 		if (0 != error)
 			return error;
 
@@ -163,7 +165,9 @@ int mems_get_accel_staticShift(float* accel_staticShift)
 	for (int i = 0; i < zero_orientCnt; i++)
 	{
 		//	Collect data
-		error = mems_lsm6ds3_get_xl_data_g(accel);
+		int16_t raw_data[3] = {0};
+		error = mems_lsm6ds3_get_xl_data_raw(raw_data);
+		mems_lsm6ds3_get_xl_data_g(raw_data, accel);
 		if (0 != error)
 			return error;
 

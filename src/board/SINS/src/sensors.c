@@ -5,6 +5,7 @@
  *      Author: developer
  */
 #include <errno.h>
+#include <string.h>
 
 #include "sensors.h"
 #include "drivers/mems/mems.h"
@@ -32,6 +33,7 @@ static void bus_failure(int error)
 static void lsm6ds3_failure(int error)
 {
 	state.lsm6ds3_error_counter++;
+
 	switch (error)
 	{
 		case af :
@@ -56,6 +58,7 @@ static void lsm6ds3_failure(int error)
 static void lis3mdl_failure(int error)
 {
 	state.lis3mdl_error_counter++;
+
 	switch (error)
 	{
 		case af:
@@ -89,6 +92,8 @@ static int reinit_bus(void)
 		return error;
 	}
 
+	state.lsm6ds3_accel_data_counter = 0;
+	state.lsm6ds3_gyro_data_counter = 0;
 	state.bus_ready = 1;
 	return 0;
 }
@@ -124,7 +129,7 @@ static int reinit_lis3mdl(void)
 		lis3mdl_failure(error);
 		return error;
 	}
-
+	state.lis3mdl_magn_data_counter = 0;
 	state.lis3mdl_ready = 1;
 	return 0;
 }
@@ -148,6 +153,44 @@ int sensors_init(void)
 }
 
 
+static void lsm6ds3_check_repeat_data(int16_t * data, int16_t * prew_data, int * counter)
+{
+	if (memcmp(data, prew_data, 3 * sizeof(int16_t)) == 0)
+		(*counter)++;
+	else
+	{
+		for(int i = 0; i < 3; i++)
+			prew_data[i] = data[i];
+		(*counter) = 0;
+	}
+
+	if ((*counter) == 5)
+	{
+		lsm6ds3_failure(44);
+		(*counter) = 0;
+	}
+}
+
+
+static void lis3mdl_check_repeat_data(int16_t * data, int16_t * prew_data, int * counter)
+{
+	if (memcmp(data, prew_data, 3 * sizeof(int16_t)) == 0)
+		(*counter)++;
+	else
+	{
+		for(int i = 0; i < 3; i++)
+			prew_data[i] = data[i];
+		(*counter) = 0;
+	}
+
+	if ((*counter) == 5)
+	{
+		lis3mdl_failure(44);
+		(*counter) = 0;
+	}
+}
+
+
 int sensors_lsm6ds3_read(float * accel, float * gyro)
 {
 	reinit_bus();
@@ -158,14 +201,26 @@ int sensors_lsm6ds3_read(float * accel, float * gyro)
 	if (!state.lsm6ds3_ready)
 		return state.lsm6ds3_error;
 
-	int error = mems_lsm6ds3_get_g_data_rps(gyro);
+	int16_t data_gyro[3] = {0};
+
+	int error = mems_lsm6ds3_get_g_data_raw(data_gyro);
+	mems_lsm6ds3_get_g_data_rps(data_gyro, gyro);
+
+	lsm6ds3_check_repeat_data(data_gyro, state.gyro_prew, &state.lsm6ds3_gyro_data_counter);
+
 	if (error)
 	{
 		lsm6ds3_failure(error);
 		return error;
 	}
 
-	error = mems_lsm6ds3_get_xl_data_g(accel);
+	int16_t data_accel[3] = {0};
+
+	error = mems_lsm6ds3_get_xl_data_raw(data_accel);
+	mems_lsm6ds3_get_xl_data_g(data_accel, accel);
+
+	lsm6ds3_check_repeat_data(data_accel, state.accel_prew, &state.lsm6ds3_accel_data_counter);
+
 	if (error)
 	{
 		lsm6ds3_failure(error);
@@ -186,7 +241,13 @@ int sensors_lis3mdl_read(float * magn)
 	if (!state.lis3mdl_ready)
 		return state.lis3mdl_error;
 
-	int error = mems_lis3mdl_get_m_data_mG(magn);
+	int16_t data_magn[3] = {0};
+
+	int error = mems_lis3mdl_get_m_data_raw(data_magn);
+	mems_lis3mdl_get_m_data_mG(data_magn, magn);
+
+	lis3mdl_check_repeat_data(data_magn, state.magn_prew, &state.lis3mdl_magn_data_counter);
+
 	if (error)
 	{
 		lis3mdl_failure(error);

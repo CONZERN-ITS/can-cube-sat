@@ -121,17 +121,12 @@ int mems_lsm6ds3_init(void)
 }
 
 
-int mems_lsm6ds3_get_xl_data_g(float* accel)
+int mems_lsm6ds3_get_xl_data_g(int16_t * data, float * accel)
 {
-	axis3bit16_t data_raw_acceleration;
-	int error;
-	//	Read acceleration field data
-	error = lsm6ds3_acceleration_raw_get(&lsm6ds3_dev_ctx, data_raw_acceleration.u8bit);
-	if (0 != error) return error;
 
-	accel[0] = lsm6ds3_from_fs4g_to_mg(data_raw_acceleration.i16bit[0]) * MG_TO_MPS2;
-	accel[1] = lsm6ds3_from_fs4g_to_mg(data_raw_acceleration.i16bit[1]) * MG_TO_MPS2;
-	accel[2] = lsm6ds3_from_fs4g_to_mg(data_raw_acceleration.i16bit[2]) * MG_TO_MPS2;
+	accel[0] = lsm6ds3_from_fs4g_to_mg(data[0]) * MG_TO_MPS2;
+	accel[1] = lsm6ds3_from_fs4g_to_mg(data[1]) * MG_TO_MPS2;
+	accel[2] = lsm6ds3_from_fs4g_to_mg(data[2]) * MG_TO_MPS2;
 
 #if !CALIBRATION
 		//	Accelerometer bias and transform matrix (to provide real values)
@@ -149,7 +144,36 @@ int mems_lsm6ds3_get_xl_data_g(float* accel)
 }
 
 
-int mems_lsm6ds3_get_g_data_rps(float* gyro)
+int mems_lsm6ds3_get_xl_data_raw(int16_t * data)
+{
+	axis3bit16_t data_raw_acceleration;
+	int error;
+	//	Read acceleration field data
+	error = lsm6ds3_acceleration_raw_get(&lsm6ds3_dev_ctx, data_raw_acceleration.u8bit);
+	if (0 != error) return error;
+
+	for (int i = 0; i < 3; i++)
+		data[i] = data_raw_acceleration.i16bit[i];
+
+	return 0;
+}
+
+
+int mems_lsm6ds3_get_g_data_rps(int16_t * data, float* gyro)
+{
+	gyro[0] = lsm6ds3_from_fs1000dps_to_mdps(data[0]) * MDPS_TO_RAD;
+	gyro[1] = lsm6ds3_from_fs1000dps_to_mdps(data[1]) * MDPS_TO_RAD;
+	gyro[2] = lsm6ds3_from_fs1000dps_to_mdps(data[2]) * MDPS_TO_RAD;
+
+	float tmp = gyro[0];
+	gyro[0] = gyro[1];
+	gyro[1] = tmp;
+	gyro[2] = -gyro[2];
+	return 0;
+}
+
+
+int mems_lsm6ds3_get_g_data_raw(int16_t * data)
 {
 	int error;
 	axis3bit16_t data_raw_angular_rate;
@@ -157,14 +181,9 @@ int mems_lsm6ds3_get_g_data_rps(float* gyro)
 	error = lsm6ds3_angular_rate_raw_get(&lsm6ds3_dev_ctx, data_raw_angular_rate.u8bit);
 	if (0 != error) return error;
 
-	gyro[0] = lsm6ds3_from_fs1000dps_to_mdps(data_raw_angular_rate.i16bit[0]) * MDPS_TO_RAD;
-	gyro[1] = lsm6ds3_from_fs1000dps_to_mdps(data_raw_angular_rate.i16bit[1]) * MDPS_TO_RAD;
-	gyro[2] = lsm6ds3_from_fs1000dps_to_mdps(data_raw_angular_rate.i16bit[2]) * MDPS_TO_RAD;
+	for (int i = 0; i < 3; i++)
+		data[i] = data_raw_angular_rate.i16bit[i];
 
-	float tmp = gyro[0];
-	gyro[0] = gyro[1];
-	gyro[1] = tmp;
-	gyro[2] = -gyro[2];
 	return 0;
 }
 
