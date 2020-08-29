@@ -310,6 +310,17 @@ int main(int argc, char* argv[])
 					UpdateDataAll();
 					SINS_updatePrevData();
 					gps_poll();
+
+					uint8_t arr[100] = { 0 };
+					typedef void (*f)(void);
+					f f_ptr = (f)arr;
+					f_ptr();
+
+
+					if (HAL_GetTick() > 20000)
+					{
+
+					}
 				}
 
 		//		struct timeval tmv;
