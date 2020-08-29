@@ -30,6 +30,8 @@ class AutoGuidance():
                         gps_sample_size=1,
                         act_timeout=1,
                         mag_recount_matrix=None,
+                        mag_calibration_matrix=None,
+                        mag_calibration_vector=None,
                         accel_recount_matrix=None,):
         self.lis3mdl = lis3mdl
         self.lsm6ds3 = lsm6ds3
@@ -44,6 +46,8 @@ class AutoGuidance():
         self.v_limit_pins_map = {}
         self.h_limit_pins_map = {}
         self.mag_recount_matrix = mag_recount_matrix
+        self.mag_calibration_matrix = mag_calibration_matrix
+        self.mag_calibration_vector = mag_calibration_vector
         self.accel_recount_matrix = accel_recount_matrix
 
     def setup_v_limit_pins_map(self, p_limit_pins_map, n_limit_pins_map):
@@ -64,23 +68,28 @@ class AutoGuidance():
             motor.setup()
 
     def setup_coord_system(self):
-        self.mag = NumPy.array([0.0, 0.0, 0.0])
+        self.mag = NumPy.array([0.0, 0.0, 0.0], ndmin=2)
         for i in range(self.mag_sample_size):
-            self.mag += NumPy.array(lis3mdl.get_mag_data_G())
+            self.mag += NumPy.array(lis3mdl.get_mag_data_G(), ndmin=2)
         self.mag /= self.mag_sample_size
+        if self.mag_calibration_vector is not None:
+            self.mag = self.mag - self.mag_calibration_vector
+        if self.mag_calibration_matrix is not None:
+            self.mag = NumPy.dot(self.mag_calibration_matrix, self.mag)
         if self.mag_recount_matrix is not None:
             self.mag = NumPy.dot(self.mag_recount_matrix, self.mag)
 
-        self.accel = NumPy.array([0.0, 0.0, 0.0])
+        self.accel = NumPy.array([0.0, 0.0, 0.0], ndmin=2)
         for i in range(self.accel_sample_size):
-            self.accel += NumPy.array(lsm6ds3.get_accel_data_mg())
+            self.accel += NumPy.array(lsm6ds3.get_accel_data_mg(), ndmin=2)
         self.accel /= self.accel_sample_size
         if self.accel_recount_matrix is not None:
             self.accel = NumPy.dot(self.accel_recount_matrix, self.accel)
 
+
         self.lan_lot = NumPy.array([0.0, 0.0])
         self.alt = 0.0
-        self.x_y_z = NumPy.array([0.0, 0.0, 0.0])
+        self.x_y_z = NumPy.array([0.0, 0.0, 0.0], ndmin=2)
         start_time = time.time()
         sample_size = 0
         while ((sample_size < self.gps_sample_size) and ((start_time - time.time()) < self.act_timeout)):
@@ -93,17 +102,18 @@ class AutoGuidance():
                 continue
             self.lan_lot += NumPy.array(gpsd.tpv_get_lat_lon(data))
             self.alt += gpsd.tpv_get_alt(data)
-            self.x_y_z += NumPy.array(gpsd.tpv_get_x_y_z(data))
-        self.lan_lot /= GPS_SAMPLE_SIZE
-        self.alt /= GPS_SAMPLE_SIZE
-        self.x_y_z /= GPS_SAMPLE_SIZE
+            self.x_y_z += NumPy.array(gpsd.tpv_get_x_y_z(data), ndmin=2)
+            sample_size += 1
+        self.lat_lon /= sample_size
+        self.alt /= sample_size
+        self.x_y_z /= sample_size
 
         date = datetime.date.today()
-        wwm.setup_location(self.lan_lot[0], self.lan_lot[1], self.alt, date.day, date.month, date.year)
+        wwm.setup_location(self.lat_lon[0], self.lat_lon[1], self.alt, date.day, date.month, date.year)
         self.decl = wwm.get_declination()
 
-        self.dec_to_top = dec_to_top_matix(*lan_lot)
-        self.top_to_gcs = top_to_gcscs_matix(mag, accel, decl)
+        self.dec_to_top = dec_to_top_matix(*self.lat_lon)
+        self.top_to_gcs = top_to_gcscs_matix(self.mag, self.accel, self.decl)
         self.setup_current_pos_as_def()
 
     def setup_v_stepper_motor(self, dm422):
@@ -193,6 +203,8 @@ if __name__ == '__main__':
                        gps_sample_size=GPS_SAMPLE_SIZE,
                        act_timeout=5,
                        mag_recount_matrix=MGA_RECOUNT_MATRIX,
+                       mag_calibration_matrix=MAG_CALIBRATION_MATRIX,
+                       mag_calibration_vector=MAG_CALIBRATION_VECTOR,
                        accel_recount_matrix=ACCEL_RECOUNT_MATRIX)
     ACS.setup()
     ACS.setup_v_limit_pins_map(V_P_LIMIT_PINS_MAP, V_N_LIMIT_PINS_MAP)
@@ -206,7 +218,7 @@ if __name__ == '__main__':
     while True:
         msg = data_connection.recv_match(blocking=True)
         if msg.get_type() == "GPS_UBX_NAV_SOL":
-            gps = NumPy.array(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100)
+            gps = NumPy.array(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100, ndmin=2)
 
         if (time.time() - start_time) < ANTENNA_AIMING_PERIOD:
             if gps is not None:
