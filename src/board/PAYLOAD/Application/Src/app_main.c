@@ -127,8 +127,11 @@ int app_main()
 	while(1)
 	{
 		// Сбрасываем вотчдог
+		// UPD делаем это не тут, а в mavlink_main при успешной отправке сообщения
+		// Сдесь сбрасываем только если мавлинк отключен для отладки
+#ifndef PROCESS_TO_ITSLINK
 		HAL_IWDG_Refresh(&hiwdg);
-
+#endif
 		// Запоминаем когда этот такт начался
 		uint32_t tock_start_tick = HAL_GetTick();
 		// Планируем начало следующего
