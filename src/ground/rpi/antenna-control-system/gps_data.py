@@ -6,7 +6,7 @@ class GPS_data():
         self.timeout = timeout
 
     def setup(self, mode=gps.WATCH_ENABLE|gps.WATCH_JSON):
-        self.gpsd = gps.gps(mode)
+        self.gpsd = gps.gps(**{"mode":mode})
 
     def find_tpv_data(self):
         start = time.time()

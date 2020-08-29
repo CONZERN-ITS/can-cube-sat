@@ -68,9 +68,9 @@ class AutoGuidance():
             motor.setup()
 
     def setup_coord_system(self):
-        self.mag = NumPy.array([0.0, 0.0, 0.0], ndmin=2)
+        self.mag = NumPy.zeros((3, 1))
         for i in range(self.mag_sample_size):
-            self.mag += NumPy.array(lis3mdl.get_mag_data_G(), ndmin=2)
+            self.mag += NumPy.array(lis3mdl.get_mag_data_G()).reshape((3, 1))
         self.mag /= self.mag_sample_size
         if self.mag_calibration_vector is not None:
             self.mag = self.mag - self.mag_calibration_vector
@@ -79,9 +79,9 @@ class AutoGuidance():
         if self.mag_recount_matrix is not None:
             self.mag = NumPy.dot(self.mag_recount_matrix, self.mag)
 
-        self.accel = NumPy.array([0.0, 0.0, 0.0], ndmin=2)
+        self.accel = NumPy.zeros((3, 1))
         for i in range(self.accel_sample_size):
-            self.accel += NumPy.array(lsm6ds3.get_accel_data_mg(), ndmin=2)
+            self.accel += NumPy.array(lsm6ds3.get_accel_data_mg()).reshape((3, 1))
         self.accel /= self.accel_sample_size
         if self.accel_recount_matrix is not None:
             self.accel = NumPy.dot(self.accel_recount_matrix, self.accel)
@@ -89,7 +89,7 @@ class AutoGuidance():
 
         self.lan_lot = NumPy.array([0.0, 0.0])
         self.alt = 0.0
-        self.x_y_z = NumPy.array([0.0, 0.0, 0.0], ndmin=2)
+        self.x_y_z = NumPy.zeros((3, 1))
         start_time = time.time()
         sample_size = 0
         while ((sample_size < self.gps_sample_size) and ((start_time - time.time()) < self.act_timeout)):
@@ -102,7 +102,7 @@ class AutoGuidance():
                 continue
             self.lan_lot += NumPy.array(gpsd.tpv_get_lat_lon(data))
             self.alt += gpsd.tpv_get_alt(data)
-            self.x_y_z += NumPy.array(gpsd.tpv_get_x_y_z(data), ndmin=2)
+            self.x_y_z += NumPy.array(gpsd.tpv_get_x_y_z(data)).reshape((3, 1))
             sample_size += 1
         self.lat_lon /= sample_size
         self.alt /= sample_size
@@ -202,7 +202,7 @@ if __name__ == '__main__':
                        accel_sample_size=ACCEL_SAMPLE_SIZE,
                        gps_sample_size=GPS_SAMPLE_SIZE,
                        act_timeout=5,
-                       mag_recount_matrix=MGA_RECOUNT_MATRIX,
+                       mag_recount_matrix=MAG_RECOUNT_MATRIX,
                        mag_calibration_matrix=MAG_CALIBRATION_MATRIX,
                        mag_calibration_vector=MAG_CALIBRATION_VECTOR,
                        accel_recount_matrix=ACCEL_RECOUNT_MATRIX)

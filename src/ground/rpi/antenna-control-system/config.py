@@ -15,10 +15,13 @@ GPS_SAMPLE_SIZE = 20
 MAG_RECOUNT_MATRIX = NumPy.array([[ 0, 0, 0],
                                   [-1, 1, 0],
                                   [-1, 0, 1]])
+
 MAG_CALIBRATION_MATRIX = NumPy.array([[1.099603,  0.134130,  0.050557],
                                       [0.134130,  1.336886, -0.169642],
                                       [0.050557, -0.169642,  1.344281]])
-MAG_CALIBRATION_VECTOR = NumPy.array([-2.380220, -2.558693, -1.497440], ndmin=2)
+
+MAG_CALIBRATION_VECTOR = NumPy.array([[-2.380220], [-2.558693], [-1.497440]])
+
 ACCEL_RECOUNT_MATRIX = None
 
 V_PUL_PIN = 18
