@@ -45,6 +45,7 @@
 #include "errors.h"
 
 #include "mav_packet.h"
+#include "watchdog.h"
 
 #include "state.h"
 
@@ -87,8 +88,6 @@ void system_reset()
 	led_blink(5, 400);
 	HAL_NVIC_SystemReset();
 }
-
-
 
 
 /**
@@ -242,6 +241,8 @@ int main(int argc, char* argv[])
 	{
 		time_svc_steady_init();
 
+		iwdg_init(&transfer_uart_iwdg_handle);
+
 		int error = time_svc_world_preinit_with_rtc();
 		error_system.rtc_error = error;
 		if (error != 0)
@@ -300,6 +301,8 @@ int main(int argc, char* argv[])
 		time_svc_world_get_time(&stateSINS_isc_prev.tv);
 
 		error_system_check();
+
+
 
 		for (; ; )
 		{

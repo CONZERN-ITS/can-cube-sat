@@ -32,9 +32,9 @@
 
 //! Количество попыток на отправку одного и тот же конфигурационного сообщения
 //! В UBX приёмник
-#define ITS_SINS_GPS_CONFIGURE_ATTEMPTS (5)
+#define ITS_SINS_GPS_CONFIGURE_ATTEMPTS (3)
 //! Таймаут на ожидание ACK/NACK пакета при конфигурации GPS (в мс)
-#define ITS_SINS_GPS_CONFIGURE_TIMEOUT (3000)
+#define ITS_SINS_GPS_CONFIGURE_TIMEOUT (1500)
 
 //! Размер для циклобуфера уарта, по которому приходят входящие GPS сообщения
 #define ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE (1500)

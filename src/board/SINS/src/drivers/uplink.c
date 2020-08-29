@@ -12,6 +12,8 @@
 
 #include "common.h"
 
+#include "watchdog.h"
+
 
 static UART_HandleTypeDef huplink_uart;
 static int uart_error_count = 0;
@@ -70,5 +72,10 @@ int uplink_write_mav(const mavlink_message_t * msg)
 	static uint8_t msg_buffer[280]; // 280 максимальный размер MAV пакета версии 2
 
 	uint16_t len = mavlink_msg_to_send_buffer(msg_buffer, msg);
-	return uplink_write_raw(msg_buffer, len);
+	int error = uplink_write_raw(msg_buffer, len);
+	if (error)
+		return error;
+
+	iwdg_reload(&transfer_uart_iwdg_handle);
+	return 0;
 }
