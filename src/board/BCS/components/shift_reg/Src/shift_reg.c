@@ -19,7 +19,16 @@ esp_err_t shift_reg_load(shift_reg_handler_t *hsr) {
 	spi_transaction_t trans = {0};
 	trans.tx_buffer = hsr->byte_arr;
 	trans.length = hsr->arr_size * 8; //В битах
-	return spi_device_queue_trans(hsr->hspi, &trans, hsr->ticksToWait);
+
+	if (xSemaphoreTake(hsr->mutex, hsr->ticksToWait) == pdFALSE) {
+		return -1;
+	}
+	esp_err_t ret = spi_device_polling_transmit(hsr->hspi, &trans);
+
+	if (xSemaphoreGive(hsr->mutex) == pdFALSE) {
+		return -1;
+	}
+	return ret;
 }
 
 esp_err_t shift_reg_init_spi(shift_reg_handler_t *hsr, spi_host_device_t port,
@@ -32,7 +41,7 @@ esp_err_t shift_reg_init_spi(shift_reg_handler_t *hsr, spi_host_device_t port,
 		.address_bits = 0,
 		.dummy_bits = 0,
 
-		.clock_speed_hz = SPI_MASTER_FREQ_10M,
+		.clock_speed_hz = 500000,
 		.mode = 0,
 		.spics_io_num = pin_cs,
 		.queue_size = 30,
@@ -47,13 +56,17 @@ esp_err_t shift_reg_init_spi(shift_reg_handler_t *hsr, spi_host_device_t port,
 		return ESP_ERR_INVALID_ARG;
 	}
 	hsr->arr_size = byte_count;
+
+	hsr->mutex = xSemaphoreCreateMutex();
 	return 0;
 }
 
 void shift_reg_toggle_pin(shift_reg_handler_t *hsr, int pin) {
+	assert(pin < hsr->arr_size * 8);
 	//Обратный порядок байт
 	hsr->byte_arr[hsr->arr_size - 1 - pin / 8] ^= (1 << (pin % 8));
 }
 void shift_reg_set_level_pin(shift_reg_handler_t *hsr, int pin, int level) {
+	assert(pin < hsr->arr_size * 8);
 	hsr->byte_arr[hsr->arr_size - 1 - pin / 8] = (hsr->byte_arr[hsr->arr_size - 1 - pin / 8] & ~(1 << (pin % 8))) | (level << (pin % 8));
 }

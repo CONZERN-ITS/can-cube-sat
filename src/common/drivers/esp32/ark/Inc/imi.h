@@ -45,6 +45,15 @@ typedef enum imi_cmd_t
 	IMI_CMD_SET_PACKET = 0x04,
 } imi_cmd_t;
 
+typedef enum {
+	IMI_ERROR_OK = 0,
+	IMI_ERROR_MEMORY,
+	IMI_ERROR_I2C,
+	IMI_ERROR_TIMEOUT,
+	IMI_ERROR_SIZE,
+
+
+} imi_error_t;
 
 typedef struct {
 	i2c_port_t i2c_port;

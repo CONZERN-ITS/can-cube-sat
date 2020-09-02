@@ -36,7 +36,7 @@ void control_heat_init(shift_reg_handler_t *hsr, int shift, int task_on) {
 }
 
 void control_heat_bsk_enable(int bsk_number, int is_on) {
-	shift_reg_set_level_pin(_hsr, _shift + bsk_number * ITS_SR_PACK_SIZE, is_on);
+	shift_reg_set_level_pin(_hsr, _shift + bsk_number * ITS_SR_PACK_SIZE, is_on > 0);
 }
 
 

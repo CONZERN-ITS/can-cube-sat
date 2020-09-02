@@ -45,7 +45,7 @@ void log_collector_init(log_collector_t * coll) {
 		coll = &_coll;
 	}
 	memset(coll, 0, sizeof(*coll));
-	xTaskCreate(log_collector_task, "Log collector", configMINIMAL_STACK_SIZE + 1000, coll, 2, 0);
+	xTaskCreate(log_collector_task, "Log collector", configMINIMAL_STACK_SIZE + 2500, coll, 2, 0);
 }
 
 void log_collector_add_to(log_collector_t *hlc, log_comp_id_t id, const log_data_t *data) {

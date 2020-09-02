@@ -248,12 +248,15 @@ static void _imi_task_recv(void *arg) {
 /*
  * Установка imi линии
  */
-void imi_install(imi_config_t *cfg, int port) {
+void imi_install(imi_config_t *cfg, imi_port_t port) {
 	assert(port < IMI_COUNT);
 	imi_handler_t *h = &imi_device[port];
 	assert(h->state == IMI_STATE_STOPED);
 	h->cfg = *cfg;
 	h->adds = malloc(h->cfg.address_count * sizeof(*h->adds));
+	if (!h->adds) {
+		ESP_LOGE(TAG, "can't allocate memory");
+	}
 	h->mutex = xSemaphoreCreateMutex();
 
 	h->state = IMI_STATE_INSTALLED;
