@@ -10,15 +10,17 @@
 
 
 IWDG_HandleTypeDef transfer_uart_iwdg_handle = {
-		.Init = {
-			.Prescaler = IWDG_PRESCALER_128,
-			.Reload = 0,
-		},
+	.Instance = IWDG,
+	.Init = {
+		.Prescaler = IWDG_PRESCALER_128,
+		.Reload = 0xfff,
+	},
 };
 
 
 int iwdg_init(IWDG_HandleTypeDef * handle)
 {
+
 	int error = HAL_IWDG_Init(handle);
 	return error;
 }

@@ -9,6 +9,7 @@
 #define WATCHDOG_H_
 
 extern IWDG_HandleTypeDef transfer_uart_iwdg_handle;
+extern IWDG_HandleTypeDef gps_iwdg_handle;
 
 int iwdg_init();
 

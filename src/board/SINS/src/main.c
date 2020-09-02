@@ -111,10 +111,6 @@ int UpdateDataAll(void)
 
 	time_svc_world_get_time(&stateSINS_isc.tv);
 
-
-	if ((error_system.lsm6ds3_init_error != 0) && (error_system.lis3mdl_init_error != 0))
-		return -22;
-
 	//	пересчитываем их и записываем в структуры
 	for (int k = 0; k < 3; k++) {
 		stateSINS_rsc.accel[k] = accel[k];
@@ -122,6 +118,9 @@ int UpdateDataAll(void)
 		stateSINS_rsc.gyro[k] = gyro[k];
 		stateSINS_rsc.magn[k] = magn[k];
 	}
+
+	if ((error_system.lsm6ds3_init_error != 0) && (error_system.lis3mdl_init_error != 0))
+		return -22;
 
 	/////////////////////////////////////////////////////
 	/////////////	UPDATE QUATERNION  //////////////////
@@ -241,14 +240,12 @@ int main(int argc, char* argv[])
 	{
 		time_svc_steady_init();
 
-		iwdg_init(&transfer_uart_iwdg_handle);
-
 		int error = time_svc_world_preinit_with_rtc();
 		error_system.rtc_error = error;
 		if (error != 0)
 			time_svc_world_preinit_without_rtc(); 		//не смогли запустить rtc. Запустимся без него
 		else
-			time_svc_world_init();			//Смогли запуслить rtc. Запустим все остальное
+			time_svc_world_init();			//Смогли запустить rtc. Запустим все остальное
 
 		error = 0;
 		error = uplink_init();
@@ -302,11 +299,13 @@ int main(int argc, char* argv[])
 
 		error_system_check();
 
+//		iwdg_init(&transfer_uart_iwdg_handle);
 
+		uint8_t data = 0;
 
 		for (; ; )
 		{
-			for (int u = 0; u < 5; u++)
+		/*	for (int u = 0; u < 5; u++)
 			{
 				for (int i = 0; i < 30; i++)
 				{
@@ -327,7 +326,9 @@ int main(int argc, char* argv[])
 				gps_poll();
 			}
 			mavlink_timestamp();
-			own_temp_packet();
+			own_temp_packet(); */
+
+			uplink_write_raw(&data, sizeof(uint8_t));
 		}
 	}
 	return 0;
