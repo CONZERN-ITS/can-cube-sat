@@ -15,12 +15,9 @@
 #include <assert.h>
 #include <errno.h>
 
-#define IP_CONFIG_PORT_OUT 54003
-#define IP_CONFIG_PORT_IN 54002
-#define IP_CONFIG_BC "Hi, it's me - Linux"
+#define IP_CONFIG_PORT_OUT 53597
 
 int process_broadcast() {
-	uint8_t a;
 	int fd_bc = socket(AF_INET, SOCK_DGRAM, 0);
 	if (fd_bc < 0) {
 		fprintf(stderr, "ERROR: can't create socket\n");
@@ -35,18 +32,13 @@ int process_broadcast() {
 	addr_bc.sin_family = AF_INET;
 	addr_bc.sin_port = htons(IP_CONFIG_PORT_OUT);
 
-	struct sockaddr_in addr_bc0;
-	addr_bc0.sin_addr.s_addr = inet_addr("0.0.0.0");
-	addr_bc0.sin_family = AF_INET;
-	addr_bc0.sin_port = htons(IP_CONFIG_PORT_OUT);
-	if (bind(fd_bc, (struct sockaddr*) &addr_bc0, sizeof(addr_bc0)) < 0) {
-		fprintf(stderr, "ERROR bind bc\n");
-		fflush(stderr);
-	}
-
 	while (1) {
-		char str[] = IP_CONFIG_BC;
-		if (sendto(fd_bc, str, sizeof(str), 0, (struct sockaddr*) &addr_bc, sizeof(addr_bc)) < 0) {
+		int size = 100;
+		char *str = malloc(size);
+
+		size = getline(&str, &size, stdin);
+		str[size] = 0;
+		if (sendto(fd_bc, str, size, 0, (struct sockaddr*) &addr_bc, sizeof(addr_bc)) < 0) {
 			int err = errno;
 			fprintf(stderr, "ERROR: send %d\n", err);
 			fflush(stderr);
@@ -77,7 +69,7 @@ int process_server_listen() {
 	struct sockaddr_in addr_in;
 	addr_in.sin_addr.s_addr = INADDR_ANY;
 	addr_in.sin_family = AF_INET;
-	addr_in.sin_port = htons(IP_CONFIG_PORT_IN);
+	//addr_in.sin_port = htons(IP_CONFIG_PORT_IN);
 	if (bind(fd_str, (struct sockaddr*) &addr_in, sizeof(addr_in)) < 0) {
 		fprintf(stderr, "ERROR: can't bind\n");
 		fflush(stderr);
@@ -114,8 +106,8 @@ int process_server_listen() {
 
 int main(void) {
 	int sout;
-
-
+	return process_broadcast();
+/*
 	sout = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sout < 0) {
 		fprintf(stderr, "Can't create socket\n");
@@ -139,6 +131,6 @@ int main(void) {
 		return process_broadcast();
 	}
 
-	return process_server_listen();
+	return process_server_listen();*/
 }
 

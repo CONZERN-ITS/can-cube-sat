@@ -38,6 +38,8 @@
 #include "control_vcc.h"
 #include "sensors.h"
 #include "log_collector.h"
+#include "input_op.h"
+#include "operator_ip.h"
 
 static i2c_config_t init_pin_i2c_tm  = {
 	.mode = I2C_MODE_MASTER,
@@ -96,7 +98,11 @@ static spi_bus_config_t buscfg={
 	.quadhd_io_num = -1, //not used
 	.max_transfer_sz = ITS_BSK_COUNT * 5
 };
-static shift_reg_handler_t hsr;
+shift_reg_handler_t hsr;
+
+static op_ip_t hop;
+
+
 
 static void task_led(void *arg) {
 	gpio_config_t gc = {
@@ -157,12 +163,14 @@ void init_basic(void) {
 #ifndef ITS_ESP_DEBUG
 static void test_task(void *arg) {
 	int x = 1;
+	shift_reg_load(&hsr);
 	while (1) {
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
-		control_magnet_enable(ITS_BSK_1, x);
-		x = -x;
+		vTaskDelay(5000 / portTICK_PERIOD_MS);/*
+		for (int i = 0; i < hsr.arr_size; i++) {
+			hsr.byte_arr[i] ^= 0xFF;
+		}
 
-		shift_reg_load(&hsr);
+		shift_reg_load(&hsr);*/
 	}
 }
 #endif
@@ -183,6 +191,7 @@ void init_helper(void) {
 #ifndef ITS_ESP_DEBUG
 	shift_reg_init_spi(&hsr, ITS_SPISR_PORT, ITS_BSK_COUNT * ITS_SR_PACK_SIZE, 100 / portTICK_PERIOD_MS, ITS_PIN_SPISR_SS);
 	ESP_LOGD("SYSTEM", "Shift reg inited");
+
 	control_vcc_init(&hsr, 0);
 	control_vcc_bsk_enable(0, 1);
 	control_vcc_bsk_enable(1, 1);
@@ -190,19 +199,31 @@ void init_helper(void) {
 	control_vcc_bsk_enable(3, 1);
 	control_vcc_bsk_enable(4, 1);
 	control_vcc_bsk_enable(5, 1);
-
 	control_magnet_init(&hsr, 2, 3);
+	control_heat_init(&hsr, 1, 0);
+
+	shift_reg_load(&hsr);
+/*
 	control_magnet_enable(ITS_BSK_1, 1);
+	control_magnet_enable(ITS_BSK_2A, -1);
+	control_magnet_enable(ITS_BSK_3, 1);
+	control_magnet_enable(ITS_BSK_4, -1);
+	control_magnet_enable(ITS_BSK_5, 1);
 	control_magnet_enable(ITS_BSK_2, -1);
 
-	control_heat_init(&hsr, 1, 0);
+
+	control_heat_bsk_enable(ITS_BSK_1, 1);
 	control_heat_bsk_enable(ITS_BSK_2, 1);
+	control_heat_bsk_enable(ITS_BSK_2A, 1);
+	control_heat_bsk_enable(ITS_BSK_3, 1);
+	control_heat_bsk_enable(ITS_BSK_4, 1);
+	control_heat_bsk_enable(ITS_BSK_5, 1);
 //	hsr.byte_arr[0] = 0x99;
 //	hsr.byte_arr[1] = 0xBB;
 //	hsr.byte_arr[2] = 0xBB;
-	shift_reg_load(&hsr);
+	shift_reg_load(&hsr);*/
 
-	xTaskCreate(test_task, "test task", configMINIMAL_STACK_SIZE + 2000, 0, 3, 0);
+	//xTaskCreate(test_task, "test task", configMINIMAL_STACK_SIZE + 2000, 0, 3, 0);
 	sensors_init();
 #endif
 
@@ -223,6 +244,9 @@ void init_helper(void) {
 
 	ESP_LOGD("SYSTEM", "Wifi inited");
 	log_collector_init(0);
+	op_config_ip(&hop, 53597);
+	op_init((op_handler_t *)&hop);
+	input_init((op_handler_t *)&hop);
 
 }
 

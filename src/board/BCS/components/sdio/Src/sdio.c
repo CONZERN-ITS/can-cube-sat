@@ -58,87 +58,21 @@ static const char mount_point[] = MOUNT_POINT;
 static void sd_log_task(void *arg);
 
 static void sd_task(void *arg);
-
-int sd_init(void) {
-
-	xTaskCreatePinnedToCore(sd_task, "Sd task", configMINIMAL_STACK_SIZE + 2000, 0, 4, 0, tskNO_AFFINITY);
-	xTaskCreatePinnedToCore(sd_task, "Sd log task", configMINIMAL_STACK_SIZE + 1000, 0, 1, 0, tskNO_AFFINITY);
-	return 0;/*
-	esp_err_t ret;
-	// Options for mounting the filesystem.
-	// If format_if_mount_failed is set to true, SD card will be partitioned and
-	// formatted in case when mounting fails.
-	esp_vfs_fat_sdmmc_mount_config_t mount_config = {
-#ifdef CONFIG_EXAMPLE_FORMAT_IF_MOUNT_FAILED
-		.format_if_mount_failed = true,
-#else
-		.format_if_mount_failed = false,
-#endif // EXAMPLE_FORMAT_IF_MOUNT_FAILED
-		.max_files = 10,
-		.allocation_unit_size = 16 * 1024
-	};
-	ESP_LOGI(TAG, "Initializing SD card");
-
-	ESP_LOGI(TAG, "Using SDMMC peripheral");
-
-	// This initializes the slot without card detect (CD) and write protect (WP) signals.
-	// Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
-	sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
-	slot_config.width = 4;
-	gpio_config_t init_pin_cmd = {
-		.mode = GPIO_MODE_OUTPUT_OD,
-		.pull_up_en = GPIO_PULLUP_ENABLE,
-		.pull_down_en = GPIO_PULLDOWN_DISABLE,
-		.intr_type = GPIO_INTR_DISABLE,
-		.pin_bit_mask = 1ULL << 15
-	};
-
-	gpio_config(&init_pin_cmd);
-	gpio_set_pull_mode(15, GPIO_PULLUP_ONLY);   // CMD, needed in 4- and 1- line modes
-	gpio_set_pull_mode(2, GPIO_PULLUP_ONLY);    // D0, needed in 4- and 1-line modes
-	gpio_set_pull_mode(4, GPIO_PULLUP_ONLY);    // D1, needed in 4-line mode only
-	gpio_set_pull_mode(12, GPIO_PULLUP_ONLY);   // D2, needed in 4-line mode only
-	gpio_set_pull_mode(13, GPIO_PULLUP_ONLY);   // D3, needed in 4- and 1-line modes
-
-	ret = esp_vfs_fat_sdmmc_mount(mount_point, &host, &slot_config, &mount_config, &card);
-
-	if (ret != ESP_OK) {
-		if (ret == ESP_FAIL) {
-			ESP_LOGE(TAG, "Failed to mount filesystem. "
-				"If you want the card to be formatted, set the EXAMPLE_FORMAT_IF_MOUNT_FAILED menuconfig option.");
-		} else {
-			ESP_LOGE(TAG, "Failed to initialize the card (%s). "
-				"Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
-		}
-		return ret;
+sd_error_t sd_init(void) {
+	BaseType_t ret;
+	ret = xTaskCreatePinnedToCore(sd_task, "Sd task", configMINIMAL_STACK_SIZE + 3000, 0, 4, 0, tskNO_AFFINITY);
+	if (ret != pdTRUE) {
+		ESP_LOGE("SD", "can't create task sd_task");
+		return SD_ERR0R_LOW_MEMORY;
 	}
-	xTaskCreatePinnedToCore(sd_task_telemetry, "Sd task", configMINIMAL_STACK_SIZE + 4000, 0, 4, 0, tskNO_AFFINITY);
-	last_sync = esp_timer_get_time();
-	return 0;*/
-}
-static void reboot(void) {
-	ESP_LOGD("SD", "rebooting...");
-	// All done, unmount partition and disable SDMMC or SPI peripheral
-	esp_vfs_fat_sdcard_unmount(mount_point, card);
-	ESP_LOGI(TAG, "Card unmounted");
-	sd_init();
-}
-typedef enum {
-	SD_STATE_UNMOUNTED,
-	SD_STATE_MOUNTED_UNOPEN,
-	SD_STATE_OPEN_WRITING,
-} sd_state_t;
 
-typedef enum {
-	SD_OK = 0,
-	SD_ERROR_MOUNT,
-	SD_ERROR_DIR,
-	SD_ERROR_OPEN,
-	SD_ERROR_WRITE,
-	SD_ERR0R_LOW_MEMORY,
-	SD_ERROR_SAVE,
-	SD_UNKNOWN
-} sd_error_t;
+	ret = xTaskCreatePinnedToCore(sd_log_task, "Sd log task", configMINIMAL_STACK_SIZE + 2000, 0, 1, 0, tskNO_AFFINITY);
+	if (ret != pdTRUE) {
+		ESP_LOGE("SD", "can't create task sd_log_task");
+		return SD_ERR0R_LOW_MEMORY;
+	}
+	return 0;
+}
 
 static sd_error_t sd_error;
 static sd_state_t sd_state;
@@ -238,11 +172,11 @@ static int _sd_mount_connect() {
 		.pin_bit_mask = 1ULL << 15
 	};
 	gpio_config(&init_pin_cmd);
-	gpio_set_pull_mode(15, GPIO_PULLUP_ONLY);   // CMD, needed in 4- and 1- line modes
-	gpio_set_pull_mode(2, GPIO_PULLUP_ONLY);    // D0, needed in 4- and 1-line modes
-	gpio_set_pull_mode(4, GPIO_PULLUP_ONLY);    // D1, needed in 4-line mode only
-	gpio_set_pull_mode(12, GPIO_PULLUP_ONLY);   // D2, needed in 4-line mode only
-	gpio_set_pull_mode(13, GPIO_PULLUP_ONLY);   // D3, needed in 4- and 1-line modes
+	//gpio_set_pull_mode(15, GPIO_PULLUP_ONLY);   // CMD, needed in 4- and 1- line modes
+	//gpio_set_pull_mode(2, GPIO_PULLUP_ONLY);    // D0, needed in 4- and 1-line modes
+	//gpio_set_pull_mode(4, GPIO_PULLUP_ONLY);    // D1, needed in 4-line mode only
+	//gpio_set_pull_mode(12, GPIO_PULLUP_ONLY);   // D2, needed in 4-line mode only
+	//gpio_set_pull_mode(13, GPIO_PULLUP_ONLY);   // D3, needed in 4- and 1-line modes
 
 	sdmmc_host_t host = SDMMC_HOST_DEFAULT();
 	host.max_freq_khz = SDMMC_FREQ_DEFAULT;
@@ -279,6 +213,8 @@ static void sd_task(void *arg) {
 	int name_number = -1;
 	sd_state = SD_STATE_UNMOUNTED;
 
+	mavlink_message_t msg = {0};
+	int is_msg_valid = 0;
 
 	its_rt_task_identifier tid = {
 			.name = "sd_send"
@@ -361,9 +297,11 @@ cycle:
 				sd_state = SD_STATE_MOUNTED_UNOPEN;
 				goto cycle;
 			}
-			mavlink_message_t msg = {0};
-			//Ожидаем получения сообщения
-			xQueueReceive(tid.queue, &msg, portMAX_DELAY);
+			if (!is_msg_valid) {
+				//Ожидаем получения сообщения
+				xQueueReceive(tid.queue, &msg, portMAX_DELAY);
+				is_msg_valid = 1;
+			}
 			last_time = esp_timer_get_time();
 
 			if (_sd_write(fout, &msg)) {
@@ -373,6 +311,7 @@ cycle:
 				goto cycle;
 			} else {
 				retry_write = 0;
+				is_msg_valid = 0;
 			}
 			if (_sd_try_to_save(fout)) {
 				sd_error_count++;

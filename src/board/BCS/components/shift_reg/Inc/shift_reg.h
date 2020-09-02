@@ -11,6 +11,9 @@
 #include <stdint.h>
 #include "driver/spi_master.h"
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+
 #define SHIFT_REG_MAX_BYTES 3
 
 typedef struct {
@@ -18,6 +21,7 @@ typedef struct {
 	uint8_t byte_arr[SHIFT_REG_MAX_BYTES];
 	int arr_size;
 	TickType_t ticksToWait;
+	SemaphoreHandle_t mutex;
 } shift_reg_handler_t;
 
 
