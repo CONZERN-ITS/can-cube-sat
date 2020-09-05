@@ -216,6 +216,9 @@ static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
 			}
 			int64_t start = esp_timer_get_time();
 			uart_write_bytes(h->cfg.port, (char *) buf, s);
+
+			int t = uart_wait_tx_done(h->cfg.port, RADIO_SEND_DELAY / portTICK_PERIOD_MS);
+			printf("HM: %d\n", t);
 			int64_t now = esp_timer_get_time();
 
 			h->filled -= (Bs * (now - start)) / 1000000;
@@ -268,9 +271,18 @@ static void task_send(void *arg) {
 	}
 	vTaskDelete(NULL);
 }
+static TaskHandle_t task_s;
+static TaskHandle_t task_r;
+void radio_send_suspend(void) {
+	vTaskSuspend(task_s);
+}
+
+void radio_send_resume(void) {
+	vTaskResume(task_s);
+}
 
 void radio_send_init(void) {
 
-	xTaskCreatePinnedToCore(task_send, "Radio send", configMINIMAL_STACK_SIZE + 4000, 0, 3, 0, tskNO_AFFINITY);
-	xTaskCreatePinnedToCore(task_recv, "Radio buf", configMINIMAL_STACK_SIZE + 4000, 0, 4, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_send, "Radio send", configMINIMAL_STACK_SIZE + 4000, 0, 3, &task_s, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_recv, "Radio buf", configMINIMAL_STACK_SIZE + 4000, 0, 4, &task_r, tskNO_AFFINITY);
 }

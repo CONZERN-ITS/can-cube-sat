@@ -36,8 +36,8 @@ static const char *TAG = "example";
 
 #define SD_GLOBAL_MAX_RETRY_COUNT 4
 #define SD_GLOBAL_RETRY_DELAY 50
-#define SD_MOUNT_MAX_RETRY_COUNT 10
-#define SD_MOUNT_DELAY 1000
+#define SD_MOUNT_MAX_RETRY_COUNT 150
+#define SD_MOUNT_DELAY 2000
 
 #define SD_SAVE_RETRY_DELAY 1000 //ms
 #define SD_SAVE_PERIOD 10000 //ms
@@ -57,16 +57,19 @@ static const char mount_point[] = MOUNT_POINT;
 
 static void sd_log_task(void *arg);
 
+static TaskHandle_t sd_t;
+static TaskHandle_t sd_l;
+
 static void sd_task(void *arg);
 sd_error_t sd_init(void) {
 	BaseType_t ret;
-	ret = xTaskCreatePinnedToCore(sd_task, "Sd task", configMINIMAL_STACK_SIZE + 3000, 0, 4, 0, tskNO_AFFINITY);
+	ret = xTaskCreatePinnedToCore(sd_task, "Sd task", configMINIMAL_STACK_SIZE + 3000, 0, 4, &sd_t, tskNO_AFFINITY);
 	if (ret != pdTRUE) {
 		ESP_LOGE("SD", "can't create task sd_task");
 		return SD_ERR0R_LOW_MEMORY;
 	}
 
-	ret = xTaskCreatePinnedToCore(sd_log_task, "Sd log task", configMINIMAL_STACK_SIZE + 2000, 0, 1, 0, tskNO_AFFINITY);
+	ret = xTaskCreatePinnedToCore(sd_log_task, "Sd log task", configMINIMAL_STACK_SIZE + 2000, 0, 1, &sd_l, tskNO_AFFINITY);
 	if (ret != pdTRUE) {
 		ESP_LOGE("SD", "can't create task sd_log_task");
 		return SD_ERR0R_LOW_MEMORY;
@@ -78,6 +81,18 @@ static sd_error_t sd_error;
 static sd_state_t sd_state;
 static int sd_error_count;
 static int64_t last_time;
+
+
+static sd_state_t sd_before_sleep_state;
+void sd_suspend(void) {
+	vTaskSuspend(sd_t);
+	sd_before_sleep_state = sd_state;
+}
+
+void sd_resume(void) {
+	sd_state = sd_before_sleep_state;
+	vTaskResume(sd_t);
+}
 
 static int _sd_write(int fd, const mavlink_message_t *msg) {
 	int ret = 0;
@@ -322,6 +337,9 @@ cycle:
 				retry_save = 0;
 			}
 		} break;
+		default: {
+			assert(0); // Мы здесь быть не должны
+		}
 		}
 	}
 }

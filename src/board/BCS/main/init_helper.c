@@ -233,14 +233,16 @@ void init_helper(void) {
 	static ts_sync ts = {0};
 	ts.pin = ITS_PIN_UARTE_INT;
 	time_sync_from_sins_install(&ts);
+	radio_send_init();
+	vTaskDelay(1000 / portTICK_PERIOD_MS);
 	while (sd_init()) {
 		ESP_LOGD("SYSTEM","Trying launch SD");
 	}
-	radio_send_init();
 #else
 	wifi_init_sta();
 	time_sync_from_bcs_install(&ITS_WIFI_SERVER_ADDRESS);
 #endif
+
 
 	ESP_LOGD("SYSTEM", "Wifi inited");
 	log_collector_init(0);

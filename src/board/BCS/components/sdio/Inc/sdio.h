@@ -16,6 +16,7 @@ typedef enum {
 	SD_STATE_UNMOUNTED,
 	SD_STATE_MOUNTED_UNOPEN,
 	SD_STATE_OPEN_WRITING,
+	SD_STATE_SLEEP,
 } sd_state_t;
 
 typedef enum {
@@ -30,6 +31,10 @@ typedef enum {
 } sd_error_t;
 
 sd_error_t sd_init(void);
+
+void sd_suspend(void);
+
+void sd_resume(void);
 
 
 

@@ -15,15 +15,23 @@
 #include "control_heat.h"
 #include "control_magnet.h"
 #include "control_vcc.h"
+#include "radio.h"
+#include "sdio.h"
 
 
 static int _sr_control(char *arg);
 
 static int _sr_set(char *arg);
 
+static int _radio_send(char *arg);
+
+static int _sdio(char *arg);
+
 void input_init(op_handler_t *hop) {
 	op_add_op(hop, "sr_control",_sr_control);
 	op_add_op(hop, "sr_set",_sr_set);
+	op_add_op(hop, "radio",_radio_send);
+	op_add_op(hop, "sd",_sdio);
 }
 
 extern shift_reg_handler_t hsr;
@@ -91,4 +99,32 @@ static int _sr_set(char *arg) {
 	return 0;
 }
 
+static int _radio_send(char *arg) {
+	char buf[100];
+	char *ptr = arg;
+	while (!isspace(*ptr)) {
+		ptr++;
+	}
+	*ptr = 0;
+	if (strcmp(arg, "pause") == 0) {
+		radio_send_suspend();
+	} else if (strcmp(arg, "resume") == 0) {
+		radio_send_resume();
+	}
+	return 0;
+}
 
+static int _sdio(char *arg) {
+	char buf[100];
+	char *ptr = arg;
+	while (!isspace(*ptr)) {
+		ptr++;
+	}
+	*ptr = 0;
+	if (strcmp(arg, "pause") == 0) {
+		sd_suspend();
+	} else if (strcmp(arg, "resume") == 0) {
+		sd_resume();
+	}
+	return 0;
+}

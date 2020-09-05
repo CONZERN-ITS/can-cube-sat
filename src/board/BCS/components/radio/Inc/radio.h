@@ -29,4 +29,9 @@
  * RADIO_SEND_ID_ARRAY, RADIO_SEND_BAN, RADIO_DEFAULT_PERIOD их частотами.
  */
 void radio_send_init(void);
+
+void radio_send_suspend(void);
+
+void radio_send_resume(void);
+
 #endif /* COMPONENTS_RADIO_INC_RADIO_H_ */
