@@ -52,22 +52,57 @@ static time_t _next_pps_time = 0;
 // Это для конфигурации
 // ==========================================
 
-//! Статус ожидания ответа на конфигурационный пакет
-static enum {
-	GPS_CFG_STATUS_WAIT_ACK,
-	GPS_CFG_STATUS_GOT_ACK,
-	GPS_CFG_STATUS_GOT_NACK
-} _cfg_status;
+typedef struct gps_cfg_state_t
+{
+	//! Включен ли вообще режим конфигурации
+	int enabled;
+
+	//! Указатель на текущий конфигурационный пакет
+	const uint8_t ** packet_ptr;
+
+	//! Время отправки очередного пакета конфигурации
+	uint32_t sent_packet_timestamp;
+	//! Счетчик попыток отправки очередного пакета
+	int sent_packet_attempt;
+
+	//! Идентификатор отправленного пакета конфигурацииs
+	ubx_pid_t sent_packet_pid;
+	//! Статус ожидания ответа на конфигурационный пакет
+	enum {
+		GPS_CFG_ACK_STATUS_IDLE = 0,
+		GPS_CFG_ACK_STATUS_WAIT_ACK,
+		GPS_CFG_ACK_STATUS_GOT_ACK,
+		GPS_CFG_ACK_STATUS_GOT_NACK
+	} sent_packet_ack_status;
+
+	//! Результат конфигурации
+	int last_error;
+
+} gps_cfg_state_t;
+
+//! Глобальное состояние модуля конфигурации
+static gps_cfg_state_t _cfg_state = {0};
+
+//! Набор сообщений конфигурации приёмника
+extern const uint8_t * ublox_neo7_cfg_msgs[];
+
+static void _internal_packet_callback(void * user_arg, const ubx_any_packet_t * packet_);
+static int _init_uart(void);
+static void _init_pps(void);
+static void _gps_configure_step(void);
+static int _gps_configure_step_packet(void);
 
 
-//! Идентификатор отправленного пакета конфигурацииs
-static ubx_pid_t _cfg_sent_pid;
+void NONHAL_PPS_MspInit(void);
 
 
 //! Колбек для входящих GPS пакетов.
-/*! Некоторые мы будем перехватывать для уточнения службы времени */
-void _internal_packet_callback(void * user_arg, const ubx_any_packet_t * packet_)
+/*! Некоторые мы будем перехватывать для уточнения службы времени
+    И для конфигурации */
+static void _internal_packet_callback(void * user_arg, const ubx_any_packet_t * packet_)
 {
+	gps_cfg_state_t * const cfg_state = &_cfg_state;
+
 	// FIXME: Возможно стоит что-то сделать, чтобы не использовать оба пакета на одном такте?
 	// Если они оба придут (а они оба придут)
 	// Возможно стоит выключить TIMTP в целом?
@@ -107,21 +142,23 @@ void _internal_packet_callback(void * user_arg, const ubx_any_packet_t * packet_
 
 	// Это сообщение используется для конфигурации
 	case UBX_PID_CFG_ACK:
+		if (cfg_state->enabled)
 		{
 			// дождалис
 			const ubx_ack_packet_t * packet = &packet_->packet.ack;
-			if (_cfg_sent_pid == packet->packet_pid)
-				_cfg_status = GPS_CFG_STATUS_GOT_ACK;
+			if (cfg_state->sent_packet_pid == packet->packet_pid)
+				cfg_state->sent_packet_ack_status = GPS_CFG_ACK_STATUS_GOT_ACK;
 		}
 		break;
 
 	// Это сообщение используется для конфигурации
 	case UBX_PID_CFG_NACK:
+		if (cfg_state->enabled)
 		{
 			// не дождались
 			const ubx_nack_packet_t * packet = &packet_->packet.nack;
-			if (_cfg_sent_pid == packet->packet_pid)
-				_cfg_status = GPS_CFG_STATUS_GOT_NACK;
+			if (cfg_state->sent_packet_pid == packet->packet_pid)
+				cfg_state->sent_packet_ack_status = GPS_CFG_ACK_STATUS_GOT_NACK;
 		}
 		break; // на NACK забиваем
 
@@ -158,9 +195,6 @@ static int _init_uart()
 	// nvic в hal_msp
 	return 0;
 }
-
-
-void NONHAL_PPS_MspInit(void);
 
 
 //! настройка перфирии для PPS сигнала
@@ -220,74 +254,6 @@ void EXTI0_IRQHandler()
 }
 
 
-int gps_init(
-		gps_packet_callback_t packet_callback, void * packet_callback_arg
-)
-{
-	// У нас пока ничего не приходило и времени на следующую метку у нас нет
-	_next_pps_time = 0;
-
-	// Настриваем потоковый парсер UBX пакетов
-	_user_packet_callback = packet_callback;
-	ubx_sparser_reset(&_sparser_ctx);
-	ubx_sparser_set_pbuffer(&_sparser_ctx, _ubx_sparser_buffer, sizeof(_ubx_sparser_buffer));
-	ubx_sparser_set_packet_callback(&_sparser_ctx, _internal_packet_callback, packet_callback_arg);
-
-	// Настраиваем циклобуфер для уарта
-	_uart_cycle_buffer_head = 0;
-	_uart_cycle_buffer_tail = 0;
-
-	// Настраиваем железо для работы с PPS
-	_init_pps();
-
-	// Настраиваем уартовое железо
-	int error =_init_uart();
-	if (error != 0)
-		return error;
-
-	// Все готово! поехали!
-	return 0;
-}
-
-
-
-int gps_poll(void)
-{
-	size_t i = 0;
-	// Выгребаем байты из цилобуфера и корими ими стрим парсер
-	for ( ; i < ITS_SINS_GPS_MAX_POLL_SIZE; i++)
-	{
-		if (_uart_cycle_buffer_tail == _uart_cycle_buffer_head)
-		{
-			// Буфер опустел, мы тут закончили
-			break;
-		}
-
-		// Достаем байт
-		uint8_t byte = _uart_cycle_buffer[_uart_cycle_buffer_tail];
-		int next_tail = _uart_cycle_buffer_tail + 1;
-		if (next_tail >= ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE)
-			next_tail = 0;
-
-		// Показываем что мы его достали
-		__disable_irq();
-		_uart_cycle_buffer_tail = next_tail;
-		__enable_irq();
-
-		// кормим стримпарсер этим байтом
-		// если какой-то пакет успешно распарсился, то парсер вызовет колбеки
-		ubx_sparser_consume_byte(&_sparser_ctx, byte);
-	}
-
-	return i;
-}
-
-
-
-// Конфигурация приёмника
-extern const uint8_t * ublox_neo7_cfg_msgs[];
-
-
 //! Отправка одного конфигурационного пакета
 static int _send_conf_packet(const uint8_t * packet)
 {
@@ -327,84 +293,178 @@ static int _send_conf_packet(const uint8_t * packet)
 }
 
 
-
-int gps_configure()
+//! Проход конечного автомата при оотправке очередного пакета
+/*! Выполняется в нескольких состояниях, поэтому вынесен в отдельную функцию */
+static int _gps_configure_step_packet()
 {
-	// Перебираем все сообщения по одному
-	const uint8_t ** packet_ptr = ublox_neo7_cfg_msgs;
-	for ( ; *packet_ptr != 0; packet_ptr++)
+	gps_cfg_state_t * state = &_cfg_state;
+	const uint8_t * packet = *state->packet_ptr;
+
+	// Если количество попыток исчерпано - завершаемся
+	if (state->sent_packet_attempt >= ITS_SINS_GPS_CONFIGURE_ATTEMPTS)
 	{
-		const uint8_t * packet = *packet_ptr;
-		int last_error = 0;
-
-		// Будем пытаться несколько раз
-		for (size_t i = 0; i < ITS_SINS_GPS_CONFIGURE_ATTEMPTS; i++)
-		{
-			// Встаем в ожидание ACK пакета
-			_cfg_status = GPS_CFG_STATUS_WAIT_ACK;
-			_cfg_sent_pid = ubx_packet_pid(packet);
-
-			// Засылаем пакет
-			_send_conf_packet(packet);
-
-			// так, пакет отправили. Теперь
-			// ждем ответа на него
-
-			uint32_t start = HAL_GetTick();
-			while(1)
-			{
-				// Будем полить раз в 100 мс
-				HAL_Delay(100);
-
-				// Поллим входщие сообщения
-				gps_poll();
-
-				// ничего не получили интересного?
-				if (GPS_CFG_STATUS_GOT_ACK == _cfg_status)
-				{
-					// О, отлично
-					last_error = 0;
-					break;
-				}
-				else if (GPS_CFG_STATUS_GOT_NACK == _cfg_status)
-				{
-					// Не совсем отлично, но тоже неплохо
-					// Идем на на следующую попытку
-					//int pid = (int)ubx_packet_pid(packet);
-					//trace_printf("message 0x%04X rejected\n", pid);
-					last_error = -EBADMSG;
-					break;
-				}
-				else
-				{
-					// Мы все еще ждем. Ну, ждем
-					// Если таймаут уже прошел, то штош
-					uint64_t time_passed = sins_hal_tick_diff(start, HAL_GetTick());
-					if (time_passed > ITS_SINS_GPS_CONFIGURE_TIMEOUT)
-					{
-						last_error = -ETIMEDOUT;
-						break;
-					} // if
-				} // if as switch
-			} // while
-
-			// Если на этой итерации все настроилось, то отлично
-			// идем дальше
-			if (0 == last_error)
-			{
-				// int pid = (int)ubx_packet_pid(packet);
-				// trace_printf("message 0x%04X accepted\n", pid);
-				break;
-			}
-		}
-
-		if (0 != last_error)
-		{
-			// Если в процессе что-то пошло не так
-			// то завершаемся на этом
-			return last_error;
-		}
+		state->enabled = 0;
+		// state->result выставили при прошлой ошибке
+		return state->last_error;
 	}
 
+	int rc = _send_conf_packet(*state->packet_ptr);
+	if (0 != rc)
+	{
+		// Если уже даже отправить не можем - тут же сворачиваемся
+		state->enabled = 0;
+		state->last_error = -ENOENT;
+		return rc;
+	}
+
+	state->sent_packet_ack_status = GPS_CFG_ACK_STATUS_WAIT_ACK;
+	state->sent_packet_pid = ubx_packet_pid(packet);
+	state->sent_packet_timestamp = HAL_GetTick();
+	state->sent_packet_attempt++;
 	return 0;
 }
+
+
+//! Выполнить очередной шаго конфигурации GPS
+static void _gps_configure_step()
+{
+	gps_cfg_state_t * state = &_cfg_state;
+
+	if (!state->enabled)
+		return;
+
+	switch (state->sent_packet_ack_status)
+	{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+	case GPS_CFG_ACK_STATUS_GOT_ACK:
+		// Отлично, переходим к следующему пакету
+		state->packet_ptr++;
+#pragma GCC diagnostic pop
+		/* no break */
+
+	case GPS_CFG_ACK_STATUS_IDLE:
+		state->sent_packet_attempt = 0;
+		if (0 == state->packet_ptr)
+		{
+			// Если это был последний пакет - мы успешно завершились
+			state->last_error = 0;
+			state->enabled = 0;
+			return;
+		}
+		// Если нет - отправляем следующий
+		_gps_configure_step_packet();
+		break;
+
+	case GPS_CFG_ACK_STATUS_GOT_NACK:
+		// Ставим ошибку
+		state->last_error = -EBADMSG;
+		// Пробуем отправить пакет еще раз, если попытки не кончилисьs
+		_gps_configure_step_packet();
+		break;
+
+	case GPS_CFG_ACK_STATUS_WAIT_ACK:
+		// Ответ еще не пришел, проверяем таймаут
+		{
+			uint32_t now = HAL_GetTick();
+			if (now - state->sent_packet_timestamp > ITS_SINS_GPS_CONFIGURE_TIMEOUT)
+			{
+				// Ставим ошибку
+				state->last_error = -ETIMEDOUT;
+				// Таймаут наступил, пробуем отправить пакет еще раз, если попытки не кончились
+				_gps_configure_step_packet();
+			}
+			// Продолжаем ждать
+		}
+		break;
+	}
+
+}
+
+
+
+int gps_init(
+		gps_packet_callback_t packet_callback, void * packet_callback_arg
+)
+{
+	// У нас пока ничего не приходило и времени на следующую метку у нас нет
+	_next_pps_time = 0;
+
+	// Настриваем потоковый парсер UBX пакетов
+	_user_packet_callback = packet_callback;
+	ubx_sparser_reset(&_sparser_ctx);
+	ubx_sparser_set_pbuffer(&_sparser_ctx, _ubx_sparser_buffer, sizeof(_ubx_sparser_buffer));
+	ubx_sparser_set_packet_callback(&_sparser_ctx, _internal_packet_callback, packet_callback_arg);
+
+	// Настраиваем циклобуфер для уарта
+	_uart_cycle_buffer_head = 0;
+	_uart_cycle_buffer_tail = 0;
+
+	// Настраиваем железо для работы с PPS
+	_init_pps();
+
+	// Настраиваем уартовое железо
+	int error =_init_uart();
+	if (error != 0)
+		return error;
+
+	// Все готово! поехали!
+	return 0;
+}
+
+
+int gps_poll(void)
+{
+	size_t i = 0;
+	// Выгребаем байты из цилобуфера и корими ими стрим парсер
+	for ( ; i < ITS_SINS_GPS_MAX_POLL_SIZE; i++)
+	{
+		if (_uart_cycle_buffer_tail == _uart_cycle_buffer_head)
+		{
+			// Буфер опустел, мы тут закончили
+			break;
+		}
+
+		// Достаем байт
+		uint8_t byte = _uart_cycle_buffer[_uart_cycle_buffer_tail];
+		int next_tail = _uart_cycle_buffer_tail + 1;
+		if (next_tail >= ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE)
+			next_tail = 0;
+
+		// Показываем что мы его достали
+		__disable_irq();
+		_uart_cycle_buffer_tail = next_tail;
+		__enable_irq();
+
+		// кормим стримпарсер этим байтом
+		// если какой-то пакет успешно распарсился, то парсер вызовет колбеки
+		ubx_sparser_consume_byte(&_sparser_ctx, byte);
+	}
+
+	_gps_configure_step();
+	return i;
+}
+
+
+void gps_configure_begin()
+{
+	gps_cfg_state_t * state = &_cfg_state;
+
+	state->packet_ptr = ublox_neo7_cfg_msgs;
+	state->sent_packet_ack_status = GPS_CFG_ACK_STATUS_IDLE;
+
+	state->enabled = 1;
+}
+
+
+int gps_configure_status()
+{
+	gps_cfg_state_t * state = &_cfg_state;
+
+	if (state->enabled)
+		return -EWOULDBLOCK;
+
+	return state->last_error;
+}
+
+

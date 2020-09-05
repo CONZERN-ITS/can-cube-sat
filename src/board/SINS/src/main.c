@@ -27,6 +27,7 @@
 
 // ----------------------------------------------------------------------------
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -206,6 +207,8 @@ int main(int argc, char* argv[])
 	memset(&state_zero,				0x00, sizeof(state_zero));
 	memset(&error_system, 			0x00, sizeof(error_system));
 
+	iwdg_init(&transfer_uart_iwdg_handle);
+
 	led_init();
 
 	dwt_init();
@@ -255,13 +258,13 @@ int main(int argc, char* argv[])
 
 		error = 0;
 		error = gps_init(on_gps_packet, NULL);
+		gps_configure_begin();
 		if (error != 0)
 		{
 			error_system.gps_uart_init_error = error;
 		}
 		else
 		{
-			error = gps_configure();
 			error_system.gps_config_error = error;
 		}
 
@@ -288,9 +291,22 @@ int main(int argc, char* argv[])
 
 		time_svc_world_get_time(&stateSINS_isc_prev.tv);
 
-		error_system_check();
+		// Ожидаем завершения конфигурации gps
+		while(1)
+		{
+			int gps_cfg_status = gps_configure_status();
+			if (-EWOULDBLOCK != gps_cfg_status)
+			{
+				// О, закончилось
+				error_system.gps_config_error = gps_cfg_status;
+				break;
+			}
 
-		iwdg_init(&transfer_uart_iwdg_handle);
+			// Крутим механизмы gps
+			gps_poll();
+		}
+
+		error_system_check();
 
 		uint8_t data = 0;
 
