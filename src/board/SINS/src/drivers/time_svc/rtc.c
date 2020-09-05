@@ -167,7 +167,7 @@ int time_svc_rtc_simple_init()
 }
 
 
-int time_svc_rtc_init(int * hardcore_start)
+int time_svc_rtc_init()
 {
 
 #if ITS_SINS_RTC_FORCERESET
@@ -183,17 +183,13 @@ int time_svc_rtc_init(int * hardcore_start)
 		// Значит оно уже работает. Настраиваемся по-простому
 		int rc = time_svc_rtc_simple_init();
 		if (0 == rc)
-			if (hardcore_start) *hardcore_start = 0;
-		return rc;
+			return rc;
 	}
 	else
 	{
-		// Значит оно не работает. Запускаем по жести
-		int rc = time_svc_rtc_hardcore_init();
-		if (0 == rc)
-			if (hardcore_start) *hardcore_start = 1;
-		return rc;
+		return -ENOSYS;
 	}
+	return 0;
 }
 
 

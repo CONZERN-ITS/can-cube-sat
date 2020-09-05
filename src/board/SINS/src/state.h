@@ -15,6 +15,7 @@
 #ifndef STATE_H_
 #define STATE_H_
 
+
 #define CALIBRATION 0
 #define GPS			0
 #define LSM6DS3		0
@@ -22,6 +23,27 @@
 
 // if error set value and go to end
 #define PROCESS_ERROR(x) if (0 != (error = (x))) { goto end; }
+
+
+typedef struct {
+	int gps_init_error;
+	int gps_config_error;
+	int lsm6ds3_init_error;
+	int lis3mdl_init_error;
+	int analog_sensor_init_error;
+
+	int gps_uart_init_error;
+	int gps_uart_error;
+
+	int i2c_init_error;
+	int i2c_error;
+
+	int uart_transfer_init_error;
+	int uart_transfer_error;
+
+	int timers_error;
+	int rtc_error;
+}error_system_t;
 
 
 typedef struct {
@@ -71,6 +93,7 @@ typedef struct {
 //}__attribute__((packed, aligned(1))) stateSINS_transfer_t;
 
 
+extern error_system_t error_system;
 extern stateSINS_rsc_t stateSINS_rsc;
 extern state_system_t state_system;
 extern state_zero_t state_zero;
@@ -85,5 +108,6 @@ extern stateSINS_isc_t stateSINS_isc_prev;
 extern void SensorsInit(void);
 extern int UpdateDataAll(void);
 extern void SINS_updatePrevData(void);
+extern int check_SINS_state(void);
 
 #endif /* STATE_H_ */

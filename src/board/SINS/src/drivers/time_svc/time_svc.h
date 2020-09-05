@@ -20,6 +20,11 @@ typedef enum time_svc_timebase_t
 	TIME_SVC_TIMEBASE__GPS = 2
 } time_svc_timebase_t;
 
+//! Запуск мирового времени с rtc
+int time_svc_world_preinit_with_rtc(void);
+//! Запуск мирового времени без rtc (по простому)
+int time_svc_world_preinit_without_rtc(void);
+
 
 //! Запуск службы мирового времени
 /*! Эта служба времени запускается от RTC и затем корректируется по GPS */

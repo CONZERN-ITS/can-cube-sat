@@ -40,14 +40,19 @@
 #include "drivers/uplink.h"
 #include "drivers/time_svc/timers_world.h"
 #include "drivers/temp/analog.h"
+#include "backup_sram.h"
+#include "drivers/led.h"
+#include "errors.h"
 
 #include "mav_packet.h"
+#include "watchdog.h"
 
 #include "state.h"
 
 #include "MadgwickAHRS.h"
 #include "vector.h"
 #include "quaternion.h"
+#include "sensors.h"
 
 
 #pragma GCC diagnostic push
@@ -56,6 +61,7 @@
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
 //Global structures
+error_system_t error_system;
 state_system_t state_system;
 stateSINS_rsc_t stateSINS_rsc;
 state_zero_t state_zero;
@@ -64,24 +70,23 @@ stateSINS_isc_t stateSINS_isc_prev;
 //stateSINS_transfer_t stateSINS_transfer;
 //stateGPS_t stateGPS;
 
+#define    DWT_CYCCNT    *(volatile uint32_t*)0xE0001004
+#define    DWT_CONTROL   *(volatile uint32_t*)0xE0001000
+#define    SCB_DEMCR     *(volatile uint32_t*)0xE000EDFC
 
-void SENSORS_Init(void)
+
+static void dwt_init()
 {
-	int error = 0;
-	error = mems_init_bus();
-//	trace_printf("mems bus init error: %d\n", error);
+	SCB_DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;// разрешаем использовать DWT
+	DWT_CONTROL|= DWT_CTRL_CYCCNTENA_Msk; // включаем счётчик
+	DWT_CYCCNT = 0;// обнуляем счётчик
+}
 
-	//	LSM6DS3_init
-	error = mems_lsm6ds3_init();
-//	trace_printf("lsm6ds3 init error: %d\n", error);
-	state_system.lsm6ds3_state = error;
 
-	//	LIS3MDL init
-	error = mems_lis3mdl_init();
-//	trace_printf("lis3mdl init error: %d\n", error);
-	state_system.lis3mdl_state = error;
-
-//	state_system.GPS_state = error;
+void system_reset()
+{
+	led_blink(5, 400);
+	HAL_NVIC_SystemReset();
 }
 
 
@@ -98,22 +103,14 @@ int UpdateDataAll(void)
 	float gyro[3] = {0, 0, 0};
 	float magn[3] = {0, 0, 0};
 
-	error = mems_lsm6ds3_get_xl_data_g(accel);
-	error |= mems_lsm6ds3_get_g_data_rps(gyro);
-	/*if (error)
-	{
-		state_system.lsm6ds3_state = error;				//FIXME: подумать, надо ли возвращать
-		goto end;
-	}
-*/
-	error = mems_lis3mdl_get_m_data_mG(magn);
-/*	if (error)
-	{
-		state_system.lis3mdl_state = error;				//FIXME: подумать, надо ли возвращать
-		goto end;
-	}
-*/
+	error_system.lis3mdl_init_error = sensors_lis3mdl_read(magn);
+//	trace_printf("lis error %d\n", error_system.lis3mdl_init_error);
+
+	error_system.lsm6ds3_init_error = sensors_lsm6ds3_read(accel, gyro);
+//	trace_printf("lsm error %d\n", error_system.lsm6ds3_init_error);
+
 	time_svc_world_get_time(&stateSINS_isc.tv);
+
 	//	пересчитываем их и записываем в структуры
 	for (int k = 0; k < 3; k++) {
 		stateSINS_rsc.accel[k] = accel[k];
@@ -121,6 +118,9 @@ int UpdateDataAll(void)
 		stateSINS_rsc.gyro[k] = gyro[k];
 		stateSINS_rsc.magn[k] = magn[k];
 	}
+
+	if ((error_system.lsm6ds3_init_error != 0) && (error_system.lis3mdl_init_error != 0))
+		return -22;
 
 	/////////////////////////////////////////////////////
 	/////////////	UPDATE QUATERNION  //////////////////
@@ -135,7 +135,10 @@ int UpdateDataAll(void)
 
 
 	float beta = 0.33;
-	MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
+	if ((error_system.lsm6ds3_init_error == 0) && (error_system.lis3mdl_init_error == 0))
+		MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
+	else if (error_system.lsm6ds3_init_error == 0)
+		MadgwickAHRSupdateIMU(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], dt, beta);
 
 	//	копируем кватернион в глобальную структуру
 	stateSINS_isc.quaternion[0] = quaternion[0];
@@ -173,69 +176,152 @@ void SINS_updatePrevData(void)
 	__enable_irq();
 }
 
-//FIXME: реализовать таймер для отправки пакетов с мк по uart
+
+int check_SINS_state(void)
+{
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	GPIO_InitTypeDef gpioc;
+	gpioc.Mode = GPIO_MODE_INPUT;
+	gpioc.Pin = GPIO_PIN_9;
+	gpioc.Pull = GPIO_NOPULL;
+	gpioc.Speed = GPIO_SPEED_HIGH;
+	HAL_GPIO_Init(GPIOB, &gpioc);
+
+
+	if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9)) //пин с джампером
+		return 1;
+	else
+		return 0;
+}
 
 
 int main(int argc, char* argv[])
-{
+	{
 
-//	__disable_irq();
 	//	Global structures init
 	memset(&stateSINS_isc, 			0x00, sizeof(stateSINS_isc));
 	memset(&stateSINS_isc_prev, 	0x00, sizeof(stateSINS_isc_prev));
 	memset(&stateSINS_rsc, 			0x00, sizeof(stateSINS_rsc));
 	memset(&state_system,			0x00, sizeof(state_system));
 	memset(&state_zero,				0x00, sizeof(state_zero));
+	memset(&error_system, 			0x00, sizeof(error_system));
 
-	// FIXME: сделать таймер для маджвика на микросекунды, возможно привязанный к HAL_GetTick()
+	led_init();
 
-	assert(0 == time_svc_steady_init());
-	assert(0 == time_svc_world_init());
-	assert(0 == gps_init(_on_gps_packet, NULL));
+	dwt_init();
 
-	uplink_init();
-
-//	int rc = gps_init(_on_gps_packet, NULL);
-	assert(0 == gps_configure());
-//	trace_printf("configure rc = %d\n", rc);
-
-
-	analog_init();
-
-	SENSORS_Init();
-	for (int i = 0; i < 2; i++)
+	if (check_SINS_state() == 1)
 	{
-		mems_get_gyro_staticShift(state_zero.gyro_staticShift);
-		mems_get_accel_staticShift(state_zero.accel_staticShift);
-	}
+		backup_sram_enable();
+		backup_sram_erase();
 
-	time_svc_world_get_time(&stateSINS_isc_prev.tv);
-	for (; ; )
-	{
-		for (int u = 0; u < 5; u++)
+		sensors_init();
+		error_system.i2c_init_error = state.bus_error;
+		error_system.lsm6ds3_init_error = state.lsm6ds3_error;
+		error_system.lis3mdl_init_error = state.lis3mdl_error;
+
+
+		HAL_Delay(1000);
+		int error;
+		for (int i = 0; i < 2; i++)
 		{
-			for (int i = 0; i < 160; i++)
+			error = mems_get_gyro_staticShift(state_zero.gyro_staticShift);
+			error += mems_get_accel_staticShift(state_zero.accel_staticShift);
+			if (error != 0)
 			{
-				UpdateDataAll();
-				SINS_updatePrevData();
-				gps_poll();
+				system_reset();
+			}
+		}
+
+		backup_sram_write(&state_zero);
+
+	}
+	else
+	{
+		time_svc_steady_init();
+
+		int error = time_svc_world_preinit_with_rtc();
+		error_system.rtc_error = error;
+		if (error != 0)
+			time_svc_world_preinit_without_rtc(); 		//не смогли запустить rtc. Запустимся без него
+		else
+			time_svc_world_init();			//Смогли запустить rtc. Запустим все остальное
+
+		error = 0;
+		error = uplink_init();
+		error_system.uart_transfer_init_error = error;
+		if (error != 0)
+			system_reset();				//Если не запустился uart, то мы - кирпич
+
+		error = 0;
+		error = gps_init(on_gps_packet, NULL);
+		if (error != 0)
+		{
+			error_system.gps_uart_init_error = error;
+		}
+		else
+		{
+			error = gps_configure();
+			error_system.gps_config_error = error;
+		}
+
+	//	int rc = gps_init(_on_gps_packet, NULL);
+	//	trace_printf("configure rc = %d\n", rc);
+
+		error = 0;
+		error = analog_init();
+		error_system.analog_sensor_init_error = error;
+		if (error != 0)
+			{
+				HAL_Delay(500);
+				error_system.analog_sensor_init_error = analog_restart();
 			}
 
-	//		struct timeval tmv;
-	//		time_svc_world_timers_get_time(&tmv);
-	//		struct tm * tm = gmtime(&tmv.tv_sec);
-	//		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
-	//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
-	//		trace_printf("time is %s\n", buffer);
+		sensors_init();
+		error_system.i2c_init_error = state.bus_error;
+		error_system.lsm6ds3_init_error = state.lsm6ds3_error;
+		error_system.lis3mdl_init_error = state.lis3mdl_error;
 
 
-			_mavlink_sins_isc(&stateSINS_isc);
-			gps_poll();
+		backup_sram_enable_after_reset();
+		backup_sram_read(&state_zero);
+
+		time_svc_world_get_time(&stateSINS_isc_prev.tv);
+
+		error_system_check();
+
+		iwdg_init(&transfer_uart_iwdg_handle);
+
+		uint8_t data = 0;
+
+		for (; ; )
+		{
+			for (int u = 0; u < 5; u++)
+			{
+				for (int i = 0; i < 30; i++)
+				{
+					UpdateDataAll();
+					SINS_updatePrevData();
+					gps_poll();
+				}
+
+		//		struct timeval tmv;
+		//		time_svc_world_timers_get_time(&tmv);
+		//		struct tm * tm = gmtime(&tmv.tv_sec);
+		//		char buffer[sizeof "2011-10-08T07:07:09Z"] = {0};
+		//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
+		//		trace_printf("time is %s\n", buffer);
+
+
+				mavlink_sins_isc(&stateSINS_isc);
+				gps_poll();
+			}
+			mavlink_timestamp();
+			own_temp_packet();
+
+//			uplink_write_raw(&data, sizeof(uint8_t));
 		}
-		_mavlink_timestamp();
-		_own_temp_packet();
 	}
-
 	return 0;
 }
 

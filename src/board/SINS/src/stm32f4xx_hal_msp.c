@@ -401,6 +401,19 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 
+void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
+{
+
+	if(hi2c->Instance == I2C2)
+	{
+		__I2C2_CLK_DISABLE();
+
+		HAL_GPIO_DeInit(GPIOB, GPIO_PIN_10);
+		HAL_GPIO_DeInit(GPIOB, GPIO_PIN_11);
+	}
+}
+
+
 /**
   * @brief  Initializes the PPP MSP.
   * @note   This functiona is called from HAL_PPP_Init() function to perform 

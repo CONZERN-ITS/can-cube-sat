@@ -31,6 +31,8 @@
 
 #include "diag/Trace.h"
 
+#include "stm32f4xx_hal.h"
+
 // ----------------------------------------------------------------------------
 
 void
@@ -67,8 +69,12 @@ void
 __attribute__((noreturn, weak))
 assert_failed (uint8_t* file, uint32_t line)
 {
+#if defined(DEBUG)
   trace_printf ("assert_param() failed: file \"%s\", line %d\n", file, line);
   abort ();
+#endif
+
+  HAL_NVIC_SystemReset();
   /* NOTREACHED */
 }
 

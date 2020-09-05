@@ -26,7 +26,7 @@ int time_svc_rtc_simple_init(void);
 
 //! Настройка RTC в общем
 /*! Настраивать понрмальному или по-хардкору решает само. Просто глядя работает ли уже RTC или еще нет */
-int time_svc_rtc_init(int * hardcore_start);
+int time_svc_rtc_init();
 
 
 //! Загрузка времени из RTC в struct_tm

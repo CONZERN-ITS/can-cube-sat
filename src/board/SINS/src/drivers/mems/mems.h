@@ -23,6 +23,15 @@ extern I2C_HandleTypeDef hmems_i2c;
 int mems_init_bus(void);
 
 
+// делает software reset
+void mems_swrst(void);
+
+void scl_clocking(int count_clocking);
+
+
+//генерирует стоп флаг
+void mems_generate_stop_flag(void);
+
 /**
   * @brief	Static function used to get accel static shift
   * @param	gyro_staticShift	Array used to get gyro shift from

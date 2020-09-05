@@ -78,9 +78,13 @@ NMI_Handler (void)
 #if defined(DEBUG)
   __DEBUG_BKPT();
 #endif
+
+#ifdef DEBUG
   while (1)
     {
     }
+#endif
+  HAL_NVIC_SystemReset();
 }
 
 // ----------------------------------------------------------------------------
@@ -402,9 +406,13 @@ HardFault_Handler_C (ExceptionStackFrame* frame __attribute__((unused)),
 #if defined(DEBUG)
   __DEBUG_BKPT();
 #endif
+
+#if defined(DEBUG)
   while (1)
     {
     }
+#endif
+  HAL_NVIC_SystemReset();
 }
 
 #endif // defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
@@ -473,9 +481,13 @@ MemManage_Handler (void)
 #if defined(DEBUG)
   __DEBUG_BKPT();
 #endif
+
+#if defined(DEBUG)
   while (1)
     {
     }
+#endif
+  HAL_NVIC_SystemReset();
 }
 
 void __attribute__ ((section(".after_vectors"),weak,naked))
@@ -512,9 +524,13 @@ BusFault_Handler_C (ExceptionStackFrame* frame __attribute__((unused)),
 #if defined(DEBUG)
   __DEBUG_BKPT();
 #endif
+
+#if defined(DEBUG)
   while (1)
     {
     }
+#endif
+  HAL_NVIC_SystemReset();
 }
 
 void __attribute__ ((section(".after_vectors"),weak,naked))
@@ -566,9 +582,13 @@ UsageFault_Handler_C (ExceptionStackFrame* frame __attribute__((unused)),
 #if defined(DEBUG)
   __DEBUG_BKPT();
 #endif
+
+#if defined(DEBUG)
   while (1)
     {
     }
+#endif
+  HAL_NVIC_SystemReset();
 }
 
 #endif
@@ -579,9 +599,13 @@ SVC_Handler (void)
 #if defined(DEBUG)
   __DEBUG_BKPT();
 #endif
+
+#if defined(DEBUG)
   while (1)
     {
     }
+#endif
+  HAL_NVIC_SystemReset();
 }
 
 #if defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
@@ -592,9 +616,13 @@ DebugMon_Handler (void)
 #if defined(DEBUG)
   __DEBUG_BKPT();
 #endif
+
+#if defined(DEBUG)
   while (1)
     {
     }
+#endif
+  HAL_NVIC_SystemReset();
 }
 
 #endif
@@ -605,9 +633,13 @@ PendSV_Handler (void)
 #if defined(DEBUG)
   __DEBUG_BKPT();
 #endif
+
+#if defined(DEBUG)
   while (1)
     {
     }
+#endif
+  HAL_NVIC_SystemReset();
 }
 
 void __attribute__ ((section(".after_vectors"),weak))

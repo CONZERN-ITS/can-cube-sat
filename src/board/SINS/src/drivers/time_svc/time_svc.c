@@ -81,17 +81,45 @@ static void _disable_alarm_irq()
 }
 
 
+int time_svc_world_preinit_with_rtc(void)
+{
+	int rc = 0;
+
+	_time_base = TIME_SVC_TIMEBASE__NONE;
+	// готовим RTC. По-хардкору или без. Нам нужно чтобы оно работало
+	rc = time_svc_rtc_init();
+	return rc;
+}
+
+
+int time_svc_world_preinit_without_rtc(void)
+{
+	_time_base = TIME_SVC_TIMEBASE__NONE;
+
+	int rc = 0;
+	rc = time_svc_world_timers_prepare();
+	if (0 != rc)
+		return rc;
+
+	time_svc_world_timers_start();
+	return 0;
+}
+
 
 int time_svc_world_init(void)
 {
 	int rc;
-
+//
 	_time_base = TIME_SVC_TIMEBASE__NONE;
-	// готовим RTC. По-хардкору или без. Нам нужно чтобы оно работало
-	int rtc_hardcore_start;
-	rc = time_svc_rtc_init(&rtc_hardcore_start);
-	if (0 != rc)
-		return rc;
+//	// готовим RTC. По-хардкору или без. Нам нужно чтобы оно работало
+//	int rtc_hardcore_start;
+//	rc = time_svc_rtc_init(&rtc_hardcore_start);
+//	if (0 != rc)
+//	{
+//		rc = time_svc_world_timers_prepare();
+//		if (0 != rc)
+//			return rc;
+//	}
 
 	// взводим таймеры
 	rc = time_svc_world_timers_prepare();
@@ -141,10 +169,8 @@ int time_svc_world_init(void)
 	}
 	// Ок! Мы запустились!
 	_last_correction_ts = time_svc_steady_get_time();
-	if (rtc_hardcore_start)
-		_time_base = TIME_SVC_TIMEBASE__NONE;
-	else
-		_time_base = TIME_SVC_TIMEBASE__RTC;
+
+	_time_base = TIME_SVC_TIMEBASE__RTC;
 	// глушим прерывания от RTC
 	_disable_alarm_irq();
 

@@ -83,7 +83,7 @@ void ubx_sparser_set_packet_callback(ubx_sparser_ctx_t * ctx, ubx_sparser_packet
 
 void ubx_sparser_set_pbuffer(ubx_sparser_ctx_t * ctx, uint8_t * pbuffer, uint16_t pbuffer_capacity)
 {
-	assert(ctx->state == UBX_SPARSER_STATE_SYNC_SEARCH);
+//	assert(ctx->state == UBX_SPARSER_STATE_SYNC_SEARCH);
 
 	ctx->pbuffer = pbuffer;
 	ctx->pbuffer_capacity = pbuffer_capacity;

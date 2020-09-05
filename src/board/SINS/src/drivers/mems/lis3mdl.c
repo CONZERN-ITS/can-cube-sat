@@ -78,9 +78,9 @@ int mems_lis3mdl_init(void)
 	// Reset to defaults
 	lis3mdl_reg_t reg;
 	reg.ctrl_reg2.soft_rst = 1;
-	lis3mdl_write_reg(&lis3mdl_dev_ctx, LIS3MDL_CTRL_REG2, &reg.byte, 1);
-	HAL_Delay(100);
-
+	error = lis3mdl_write_reg(&lis3mdl_dev_ctx, LIS3MDL_CTRL_REG2, &reg.byte, 1);
+	if (error != 0)
+		return error;
 	// Check who_am_i
 	error = lis3mdl_device_id_get(&lis3mdl_dev_ctx, &whoamI);
 	if (whoamI != LIS3MDL_ID)
@@ -108,19 +108,12 @@ int mems_lis3mdl_init(void)
 }
 
 
-int mems_lis3mdl_get_m_data_mG(float* magn)
+int mems_lis3mdl_get_m_data_mG(int16_t * data, float * magn)
 {
-	int error;
-	axis3bit16_t data_raw_magnetic;
 
-	//	Read data
-	error = lis3mdl_magnetic_raw_get(&lis3mdl_dev_ctx, data_raw_magnetic.u8bit);
-	if (0 != error)
-		return error;
-
-	magn[0] = 1000 * LIS3MDL_FROM_FS_16G_TO_G(data_raw_magnetic.i16bit[0]);
-	magn[1] = 1000 * LIS3MDL_FROM_FS_16G_TO_G(data_raw_magnetic.i16bit[1]);
-	magn[2] = 1000 * LIS3MDL_FROM_FS_16G_TO_G(data_raw_magnetic.i16bit[2]);
+	magn[0] = 1000 * LIS3MDL_FROM_FS_16G_TO_G(data[0]);
+	magn[1] = 1000 * LIS3MDL_FROM_FS_16G_TO_G(data[1]);
+	magn[2] = 1000 * LIS3MDL_FROM_FS_16G_TO_G(data[2]);
 
 
 #if !CALIBRATION
@@ -137,6 +130,22 @@ int mems_lis3mdl_get_m_data_mG(float* magn)
 	return 0;
 }
 
+
+int mems_lis3mdl_get_m_data_raw(int16_t * data)
+{
+	int error;
+	axis3bit16_t data_raw_magnetic;
+
+	//	Read data
+	error = lis3mdl_magnetic_raw_get(&lis3mdl_dev_ctx, data_raw_magnetic.u8bit);
+	if (0 != error)
+		return error;
+
+	for(int i = 0; i < 3; i++)
+		data[i] = data_raw_magnetic.i16bit[i];
+
+	return 0;
+}
 
 static int32_t lis3mdl_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len)
 {
