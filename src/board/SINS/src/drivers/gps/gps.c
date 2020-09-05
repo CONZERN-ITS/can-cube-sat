@@ -450,6 +450,9 @@ void gps_configure_begin()
 {
 	gps_cfg_state_t * state = &_cfg_state;
 
+	if (state->enabled)
+		return; // Мы уже конфигурируемся
+
 	state->packet_ptr = ublox_neo7_cfg_msgs;
 	state->sent_packet_ack_status = GPS_CFG_ACK_STATUS_IDLE;
 

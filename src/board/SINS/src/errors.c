@@ -74,7 +74,7 @@ void i2c_error_handler(I2C_HandleTypeDef *hi2c)
 void error_system_check()
 {
 	if ((error_system.analog_sensor_init_error == 0) 	&&
-		(error_system.gps_config_error == 0)			&&
+		/* (error_system.gps_config_error == 0)			&& */ // Не проверяем, оно настроится потом
 		(error_system.gps_init_error == 0)				&&
 		(error_system.gps_uart_init_error == 0)			&&
 		(error_system.i2c_init_error == 0)				&&

@@ -35,6 +35,8 @@
 #include <stm32f4xx_hal.h>
 #include <diag/Trace.h>
 
+#include "sins_config.h"
+
 #include "drivers/time_svc/time_svc.h"
 #include "drivers/mems/mems.h"
 #include "drivers/gps/gps.h"
@@ -88,6 +90,34 @@ void system_reset()
 {
 	led_blink(5, 400);
 	HAL_NVIC_SystemReset();
+}
+
+static uint32_t last_gps_packet_ts = 0;
+static uint32_t last_gps_fix_packet_ts = 0;
+
+// Функция для слежения за здоровьем GPS и передачи его пакетов в мавлинк
+static void on_gps_packet_main(void * arg, const ubx_any_packet_t * packet)
+{
+	switch (packet->pid)
+	{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+	case UBX_PID_NAV_SOL:
+		// Отмечаем время получения пакета с фиксом
+		if (packet->packet.navsol.gps_fix == UBX_FIX_TYPE__3D)
+			last_gps_fix_packet_ts = HAL_GetTick();
+#pragma GCC diagnostic pop
+		/* no break */
+
+	case UBX_PID_NAV_TIMEGPS:
+	case UBX_PID_TIM_TP:
+		// Отмечаем время получения вообще какого-либо пакета
+		last_gps_packet_ts = HAL_GetTick();
+		break;
+	}
+
+	// Передаем дальше для обработки
+	on_gps_packet(arg, packet);
 }
 
 
@@ -257,7 +287,7 @@ int main(int argc, char* argv[])
 			system_reset();				//Если не запустился uart, то мы - кирпич
 
 		error = 0;
-		error = gps_init(on_gps_packet, NULL);
+		error = gps_init(on_gps_packet_main, NULL);
 		gps_configure_begin();
 		if (error != 0)
 		{
@@ -291,21 +321,6 @@ int main(int argc, char* argv[])
 
 		time_svc_world_get_time(&stateSINS_isc_prev.tv);
 
-		// Ожидаем завершения конфигурации gps
-		while(1)
-		{
-			int gps_cfg_status = gps_configure_status();
-			if (-EWOULDBLOCK != gps_cfg_status)
-			{
-				// О, закончилось
-				error_system.gps_config_error = gps_cfg_status;
-				break;
-			}
-
-			// Крутим механизмы gps
-			gps_poll();
-		}
-
 		error_system_check();
 
 		uint8_t data = 0;
@@ -319,6 +334,30 @@ int main(int argc, char* argv[])
 					UpdateDataAll();
 					SINS_updatePrevData();
 					gps_poll();
+
+					const int gps_cfg_status = gps_configure_status();
+					if (gps_cfg_status != -EWOULDBLOCK) // конфигурация уже закончилась
+					{
+						uint32_t now = HAL_GetTick();
+
+						if (gps_cfg_status != 0)
+						{
+							// закончилась но плохо. Начинаем опять
+							gps_configure_begin();
+						}
+						else if (now - last_gps_packet_ts > ITS_SINS_GPS_MAX_NOPACKET_TIME)
+						{
+							// Если слишком давно не приходило интересных нам пакетов
+							// Отправляем gps в реконфигурацию
+							gps_configure_begin();
+						}
+						else if (now - last_gps_fix_packet_ts > ITS_SINS_GPS_MAX_NOFIX_TIME)
+						{
+							// Если GPS слишком долго не фиксится
+							// Тоже отправляем его в реконфигурациюs
+							gps_configure_begin();
+						}
+					}
 				}
 
 		//		struct timeval tmv;
