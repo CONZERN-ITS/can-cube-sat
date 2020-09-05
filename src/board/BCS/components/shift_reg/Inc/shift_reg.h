@@ -29,7 +29,7 @@ esp_err_t shift_reg_init_spi(shift_reg_handler_t *hsr, spi_host_device_t port,
 		int bit_count, TickType_t ticksToWait, int pin_cs);
 esp_err_t shift_reg_load(shift_reg_handler_t *hsr);
 
-void shift_reg_toggle_pin(shift_reg_handler_t *hsr, int pin);
-void shift_reg_set_level_pin(shift_reg_handler_t *hsr, int pin, int level);
+void shift_reg_toggle_pin(shift_reg_handler_t *hsr, uint32_t pin);
+void shift_reg_set_level_pin(shift_reg_handler_t *hsr, uint32_t pin, int level);
 
 #endif /* COMPONENTS_SHIFT_REG_INC_SHIFT_REG_H_ */

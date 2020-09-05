@@ -62,6 +62,8 @@
 
 #define ITS_PIN_OWB			21
 
+#define ITS_PIN_PL_VCC		33
+
 #endif
 
 #endif /* MAIN_PINOUT_CFG_H_ */

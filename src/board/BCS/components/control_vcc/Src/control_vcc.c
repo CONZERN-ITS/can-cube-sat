@@ -19,7 +19,9 @@ static int _shift;
 
 static shift_reg_handler_t *_hsr;
 
-void control_vcc_init(shift_reg_handler_t *hsr, int shift) {
+static int _pl_pin;
+
+void control_vcc_init(shift_reg_handler_t *hsr, int shift, uint32_t pl_pin) {
 	_shift = shift;
 	_hsr = hsr;
 	for (int i = 0; i < ITS_BSK_COUNT; i++) {
@@ -28,4 +30,8 @@ void control_vcc_init(shift_reg_handler_t *hsr, int shift) {
 }
 void control_vcc_bsk_enable(int bsk_number, int is_on) {
 	shift_reg_set_level_pin(_hsr, _shift + bsk_number * ITS_SR_PACK_SIZE, is_on > 0);
+}
+
+void control_vcc_pl_enable(int is_on) {
+	gpio_set_level(_pl_pin, is_on != 0);
 }

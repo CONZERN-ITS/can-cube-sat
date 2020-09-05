@@ -192,7 +192,7 @@ void init_helper(void) {
 	shift_reg_init_spi(&hsr, ITS_SPISR_PORT, ITS_BSK_COUNT * ITS_SR_PACK_SIZE, 100 / portTICK_PERIOD_MS, ITS_PIN_SPISR_SS);
 	ESP_LOGD("SYSTEM", "Shift reg inited");
 
-	control_vcc_init(&hsr, 0);
+	control_vcc_init(&hsr, 0, ITS_PIN_PL_VCC);
 	control_vcc_bsk_enable(0, 1);
 	control_vcc_bsk_enable(1, 1);
 	control_vcc_bsk_enable(2, 1);

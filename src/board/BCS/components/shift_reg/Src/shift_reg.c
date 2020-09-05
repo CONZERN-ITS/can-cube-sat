@@ -61,12 +61,12 @@ esp_err_t shift_reg_init_spi(shift_reg_handler_t *hsr, spi_host_device_t port,
 	return 0;
 }
 
-void shift_reg_toggle_pin(shift_reg_handler_t *hsr, int pin) {
+void shift_reg_toggle_pin(shift_reg_handler_t *hsr, uint32_t pin) {
 	assert(pin < hsr->arr_size * 8);
 	//Обратный порядок байт
 	hsr->byte_arr[hsr->arr_size - 1 - pin / 8] ^= (1 << (pin % 8));
 }
-void shift_reg_set_level_pin(shift_reg_handler_t *hsr, int pin, int level) {
+void shift_reg_set_level_pin(shift_reg_handler_t *hsr, uint32_t pin, int level) {
 	assert(pin < hsr->arr_size * 8);
 	hsr->byte_arr[hsr->arr_size - 1 - pin / 8] = (hsr->byte_arr[hsr->arr_size - 1 - pin / 8] & ~(1 << (pin % 8))) | (level << (pin % 8));
 }
