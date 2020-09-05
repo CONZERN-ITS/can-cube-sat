@@ -263,15 +263,6 @@ int main(int argc, char* argv[])
 		{
 			error = gps_configure();
 			error_system.gps_config_error = error;
-			if (error != 0)
-				for (int i = 0; i < 5; i++)
-				{
-					HAL_Delay(1000);
-					error = gps_configure();
-					if (error == 0)
-						break;
-				}
-			error_system.gps_config_error = error;
 		}
 
 	//	int rc = gps_init(_on_gps_packet, NULL);
@@ -299,13 +290,13 @@ int main(int argc, char* argv[])
 
 		error_system_check();
 
-//		iwdg_init(&transfer_uart_iwdg_handle);
+		iwdg_init(&transfer_uart_iwdg_handle);
 
 		uint8_t data = 0;
 
 		for (; ; )
 		{
-		/*	for (int u = 0; u < 5; u++)
+			for (int u = 0; u < 5; u++)
 			{
 				for (int i = 0; i < 30; i++)
 				{
@@ -326,9 +317,9 @@ int main(int argc, char* argv[])
 				gps_poll();
 			}
 			mavlink_timestamp();
-			own_temp_packet(); */
+			own_temp_packet();
 
-			uplink_write_raw(&data, sizeof(uint8_t));
+//			uplink_write_raw(&data, sizeof(uint8_t));
 		}
 	}
 	return 0;
