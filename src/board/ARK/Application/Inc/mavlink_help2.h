@@ -15,13 +15,6 @@
 
 const static uint8_t mavlink_system = CUBE_1_PCU;
 
-static mavlink_channel_t mavlink_claim_channel(void) {
-    static int channel = -1;
-    channel++;
-    assert(channel < MAVLINK_COMM_NUM_BUFFERS);
-    return (mavlink_channel_t) channel;
-}
-
-
+mavlink_channel_t mavlink_claim_channel(void);
 
 #endif /* INC_MAVLINK_HELP2_H_ */

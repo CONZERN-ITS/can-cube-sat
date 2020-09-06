@@ -9,7 +9,7 @@
 #include "adc.h"
 #include <stdio.h>
 #include "mavlink_help2.h"
-#include "its-i2c-link.h"
+#include "uplink.h"
 #include "its-time.h"
 
 #define ADC_PERIOD 1000 //ms
@@ -50,9 +50,7 @@ void adc_task_update(void *arg) {
         HAL_ADC_Start_IT(&hadc1);
     }
     static uint32_t time = 0;
-
-    static uint8_t data[MAVLINK_MAX_PACKET_LEN] = {0};
-    static uint16_t size = 0;
+    static mavlink_message_t msg;
     static int is_sending = 0;
     if (convert_count >= ADC_COUNT_IN_ROW && HAL_GetTick() - time > ADC_PERIOD && !is_sending) {
         time = HAL_GetTick();
@@ -67,20 +65,14 @@ void adc_task_update(void *arg) {
         mot.time_s = here.sec;
         mot.time_us = here.usec;
 
-        mavlink_message_t msg;
-
         mavlink_msg_own_temp_encode(mavlink_system, COMP_ANY_0,
                 &msg, &mot);
 
-
-        size = mavlink_msg_to_send_buffer(data, &msg);
         is_sending = 1;
         t_avg = 0;
-
     }
     if (is_sending) {
-
-        if (its_i2c_link_write(data, size) >= 0) {
+        if (uplink_packet(&msg) >= 0) {
             is_sending = 0;
         }
     }

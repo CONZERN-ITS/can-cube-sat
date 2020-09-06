@@ -49,6 +49,8 @@ I2C_HandleTypeDef hi2c2;
 DMA_HandleTypeDef hdma_i2c1_rx;
 DMA_HandleTypeDef hdma_i2c1_tx;
 
+IWDG_HandleTypeDef hiwdg;
+
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_tx;
 DMA_HandleTypeDef hdma_usart1_rx;
@@ -66,6 +68,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_RTC_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_IWDG_Init(void);
 /* USER CODE BEGIN PFP */
 extern void initialise_monitor_handles(void);
 /* USER CODE END PFP */
@@ -110,6 +113,7 @@ int main(void)
   MX_RTC_Init();
   MX_I2C2_Init();
   MX_ADC1_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
   tmain();
   /* USER CODE END 2 */
@@ -280,6 +284,43 @@ static void MX_I2C2_Init(void)
   /* USER CODE BEGIN I2C2_Init 2 */
 
   /* USER CODE END I2C2_Init 2 */
+
+}
+
+/**
+  * @brief IWDG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_IWDG_Init(void)
+{
+
+  /* USER CODE BEGIN IWDG_Init 0 */
+
+  /* USER CODE END IWDG_Init 0 */
+
+  /* USER CODE BEGIN IWDG_Init 1 */
+  /* По поводу предделителя и релоада.
+   * LSI в самом быстром случае бегает на 60 кГц.
+   * В самом медленном - 30 кГц.
+   * Если поставить предделитель в 128, а релоад в 0xFFF
+   * Постчитаем
+   * T_limit = 1/f * psc * reload;
+   * для f = 60*10**3, T_limit = 8.736 секунды
+   * для f = 30*10**3, T_limit = 17.472 секунды
+   *
+   * Вполне приемлемые цифры */
+  /* USER CODE END IWDG_Init 1 */
+  hiwdg.Instance = IWDG;
+  hiwdg.Init.Prescaler = IWDG_PRESCALER_128;
+  hiwdg.Init.Reload = 0xfff;
+  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN IWDG_Init 2 */
+
+  /* USER CODE END IWDG_Init 2 */
 
 }
 

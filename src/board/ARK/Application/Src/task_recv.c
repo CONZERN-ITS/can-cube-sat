@@ -25,7 +25,7 @@ static int chan = 0;
 void trecv_add_callbac(void (*f)(const mavlink_message_t *msg)) {
     assert(count < TRECV_MAX_CALLBACK_COUNT);
 
-    int chan = mavlink_claim_channel();
+    chan = mavlink_claim_channel();
     trecv_callback_arr[count++] = f;
 }
 

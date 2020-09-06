@@ -9,7 +9,7 @@
 
 #include "mavlink_help2.h"
 #include "its-time.h"
-#include "its-i2c-link.h"
+#include "uplink.h"
 #include "task_ds.h"
 #include "task_ina.h"
 #include "stdlib.h"
@@ -80,11 +80,9 @@ void eupdate() {
     }
     if (estate == STATE_SENDING) {
         static int is_gened = 0;
-        static uint8_t buf[MAVLINK_MAX_PACKET_LEN] = {0};
-        static uint16_t size = 0;
         static int ina_index = 0;
+        static mavlink_message_t msg;
         if (!is_gened) {
-            mavlink_message_t msg;
             mavlink_electrical_state_t mest = {0};
             mest.time_s = tim.sec;
             mest.time_us = tim.usec * 1000;
@@ -93,10 +91,8 @@ void eupdate() {
             mest.voltage = voltage[ina_index];
 
             mavlink_msg_electrical_state_encode(mavlink_system, ina_index, &msg, &mest);
-
-            size = mavlink_msg_to_send_buffer(buf, &msg);
         }
-        if (its_i2c_link_write(buf, size) > 0) {
+        if (uplink_packet(&msg) > 0) {
             ina_index++;
             is_gened = 0;
             if (ina_index >= TINA_COUNT) {
@@ -140,21 +136,17 @@ void tupdate() {
     }
     if (tstate == STATE_SENDING) {
         static int is_gened = 0;
-        static uint8_t buf[MAVLINK_MAX_PACKET_LEN] = {0};
-        static uint16_t size = 0;
+        static mavlink_message_t msg;
         static int ds_index = 0;
         if (!is_gened) {
-            mavlink_message_t msg;
             mavlink_thermal_state_t mtst = {0};
             mtst.time_s = tim.sec;
             mtst.time_us = tim.usec * 1000;
             mtst.temperature = temp[ds_index];
 
             mavlink_msg_thermal_state_encode(mavlink_system, ds_index, &msg, &mtst);
-
-            size = mavlink_msg_to_send_buffer(buf, &msg);
         }
-        if (its_i2c_link_write(buf, size) > 0) {
+        if (uplink_packet(&msg) > 0) {
             ds_index++;
             is_gened = 0;
             if (ds_index >= ds_count) {
