@@ -284,5 +284,32 @@
       <field type="uint32_t" name="shift_reg_elapsed_time_from_msg">time elapsed since last incoming message in shift_reg</field>
       <field type="uint32_t" name="shift_reg_last_state">last state of shift_reg</field>
     </message>
+
+    <message id="50024" name="SINS_errors">
+      <description>
+        This message contains SINS errors
+      </description>
+
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="int32_t" name="gps_init_error"> last gps init error </field>
+      <field type="int32_t" name="gps_config_error"> last gps config error </field>
+      <field type="int32_t" name="lsm6ds3_error"> last lsm error</field>
+      <field type="int32_t" name="lis3mdl_error"> last lis error</field>
+      <field type="int32_t" name="analog_sensor_init_error"> last analog sensor init error</field>
+      
+      <field type="int32_t" name="gps_uart_init_error"> last gps_uart init error</field>
+      <field type="int32_t" name="mems_i2c_error"> last mems_i2s error</field>
+      <field type="int32_t" name="uart_transfer_init_error"> last uart_transfer init error</field>
+      <field type="int32_t" name="uart_transfer_error"> last uart_transfer error</field>
+      <field type="int32_t" name="timers_error"> last timers error</field>
+      <field type="int32_t" name="rtc_error"> last rtc error</field>
+
+      <field type="int32_t" name="mems_i2c_error_counter"> counter mems_i2c errors</field>
+      <field type="int32_t" name="lsm6ds3_error_counter"> counter lsm errors</field>
+      <field type="int32_t" name="lis3mdl_error_counter"> counter lis errors</field>
+    </message>
+
   </messages>
 </mavlink>

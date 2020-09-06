@@ -134,10 +134,10 @@ int UpdateDataAll(void)
 	float gyro[3] = {0, 0, 0};
 	float magn[3] = {0, 0, 0};
 
-	error_system.lis3mdl_init_error = sensors_lis3mdl_read(magn);
+	error_system.lis3mdl_error = sensors_lis3mdl_read(magn);
 //	trace_printf("lis error %d\n", error_system.lis3mdl_init_error);
 
-	error_system.lsm6ds3_init_error = sensors_lsm6ds3_read(accel, gyro);
+	error_system.lsm6ds3_error = sensors_lsm6ds3_read(accel, gyro);
 //	trace_printf("lsm error %d\n", error_system.lsm6ds3_init_error);
 
 	time_svc_world_get_time(&stateSINS_isc.tv);
@@ -150,7 +150,7 @@ int UpdateDataAll(void)
 		stateSINS_rsc.magn[k] = magn[k];
 	}
 
-	if ((error_system.lsm6ds3_init_error != 0) && (error_system.lis3mdl_init_error != 0))
+	if ((error_system.lsm6ds3_error != 0) && (error_system.lis3mdl_error != 0))
 		return -22;
 
 	/////////////////////////////////////////////////////
@@ -166,9 +166,9 @@ int UpdateDataAll(void)
 
 
 	float beta = 0.33;
-	if ((error_system.lsm6ds3_init_error == 0) && (error_system.lis3mdl_init_error == 0))
+	if ((error_system.lsm6ds3_error == 0) && (error_system.lis3mdl_error == 0))
 		MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
-	else if (error_system.lsm6ds3_init_error == 0)
+	else if (error_system.lsm6ds3_error == 0)
 		MadgwickAHRSupdateIMU(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], dt, beta);
 
 	//	копируем кватернион в глобальную структуру
@@ -253,10 +253,7 @@ int main(int argc, char* argv[])
 		backup_sram_erase();
 
 		sensors_init();
-		error_system.i2c_init_error = state.bus_error;
-		error_system.lsm6ds3_init_error = state.lsm6ds3_error;
-		error_system.lis3mdl_init_error = state.lis3mdl_error;
-
+		error_mems_read();
 
 		HAL_Delay(1000);
 		int error;
@@ -315,9 +312,7 @@ int main(int argc, char* argv[])
 			}
 
 		sensors_init();
-		error_system.i2c_init_error = state.bus_error;
-		error_system.lsm6ds3_init_error = state.lsm6ds3_error;
-		error_system.lis3mdl_init_error = state.lis3mdl_error;
+		error_mems_read();
 
 
 		backup_sram_enable_after_reset();
@@ -374,9 +369,10 @@ int main(int argc, char* argv[])
 			}
 			mavlink_timestamp();
 			own_temp_packet();
-
-//			uplink_write_raw(&data, sizeof(uint8_t));
 		}
+
+		error_mems_read();
+		mavlink_errors_packet();
 	}
 	return 0;
 }

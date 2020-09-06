@@ -21,6 +21,8 @@ typedef enum
 
 
 //extern void i2c_error_handler(I2C_HandleTypeDef *hi2c);
-extern void error_system_check();
+void error_system_check(void);
+void error_mems_read(void);
+
 
 #endif /* ERRORS_H_ */

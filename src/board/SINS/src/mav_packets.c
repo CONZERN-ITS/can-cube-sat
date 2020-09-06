@@ -41,7 +41,8 @@ int mavlink_sins_isc(stateSINS_isc_t * state_isc)
 		return error;
 }
 
-int mavlink_timestamp()
+
+int mavlink_timestamp(void)
 {
 	mavlink_timestamp_t msg_timestamp;
 	struct timeval tv;
@@ -100,7 +101,7 @@ void on_gps_packet(void * arg, const ubx_any_packet_t * packet)
 }
 
 
-int own_temp_packet()
+int own_temp_packet(void)
 {
 	int error = 0;
 
@@ -134,4 +135,46 @@ int own_temp_packet()
 		uplink_write_mav(&msg);
 
 		return 0;
+}
+
+
+int mavlink_errors_packet(void)
+{
+	int error = 0;
+
+	struct timeval tv;
+	time_svc_world_get_time(&tv);
+
+	mavlink_sins_errors_t errors_msg;
+
+	errors_msg.time_s = tv.tv_sec;
+	errors_msg.time_us = tv.tv_usec;
+
+	errors_msg.analog_sensor_init_error = error_system.analog_sensor_init_error;
+
+	errors_msg.gps_init_error = error_system.gps_init_error;
+	errors_msg.gps_config_error = error_system.gps_config_error;
+	errors_msg.gps_uart_init_error = error_system.gps_uart_error;
+
+	errors_msg.mems_i2c_error = error_system.mems_i2c_error;
+	errors_msg.mems_i2c_error_counter = error_system.mems_i2c_error_counter;
+
+	errors_msg.lsm6ds3_error = error_system.lsm6ds3_error;
+	errors_msg.lsm6ds3_error_counter = error_system.lsm6ds3_error_counter;
+
+	errors_msg.lis3mdl_error = error_system.lis3mdl_error;
+	errors_msg.lis3mdl_error_counter = error_system.lis3mdl_error_counter;
+
+	errors_msg.rtc_error = error_system.rtc_error;
+
+	errors_msg.timers_error = error_system.timers_error;
+
+	errors_msg.uart_transfer_init_error = error_system.uart_transfer_init_error;
+	errors_msg.uart_transfer_error = error_system.uart_transfer_error;
+
+	mavlink_message_t msg;
+	mavlink_msg_sins_errors_encode(SYSTEM_ID, COMPONENT_ID, &msg, &errors_msg);
+	uplink_write_mav(&msg);
+
+	return 0;
 }

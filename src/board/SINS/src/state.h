@@ -28,21 +28,25 @@
 typedef struct {
 	int gps_init_error;
 	int gps_config_error;
-	int lsm6ds3_init_error;
-	int lis3mdl_init_error;
+	int lsm6ds3_error;
+	int lis3mdl_error;
 	int analog_sensor_init_error;
 
 	int gps_uart_init_error;
 	int gps_uart_error;
 
-	int i2c_init_error;
-	int i2c_error;
+	int mems_i2c_error;
 
 	int uart_transfer_init_error;
 	int uart_transfer_error;
 
 	int timers_error;
 	int rtc_error;
+
+	int mems_i2c_error_counter;
+	int lsm6ds3_error_counter;
+	int lis3mdl_error_counter;
+
 }error_system_t;
 
 

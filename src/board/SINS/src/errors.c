@@ -10,6 +10,8 @@
 #include "state.h"
 #include "drivers/led.h"
 
+#include "sensors.h"
+
 #if 0
 
 void i2c_error_handler(I2C_HandleTypeDef *hi2c)
@@ -71,15 +73,15 @@ void i2c_error_handler(I2C_HandleTypeDef *hi2c)
 }
 #endif
 
-void error_system_check()
+void error_system_check(void)
 {
 	if ((error_system.analog_sensor_init_error == 0) 	&&
 		/* (error_system.gps_config_error == 0)			&& */ // Не проверяем, оно настроится потом
 		(error_system.gps_init_error == 0)				&&
 		(error_system.gps_uart_init_error == 0)			&&
-		(error_system.i2c_init_error == 0)				&&
-		(error_system.lis3mdl_init_error == 0)			&&
-		(error_system.lsm6ds3_init_error == 0)			&&
+		(error_system.mems_i2c_error == 0)				&&
+		(error_system.lis3mdl_error == 0)				&&
+		(error_system.lsm6ds3_error == 0)				&&
 		(error_system.rtc_error == 0)					&&
 		(error_system.timers_error == 0)				&&
 		(error_system.uart_transfer_init_error == 0))
@@ -88,4 +90,16 @@ void error_system_check()
 	}
 	else
 		led_blink(4, 400);
+}
+
+void error_mems_read(void)
+{
+	error_system.mems_i2c_error = state.bus_error;
+	error_system.mems_i2c_error_counter = state.bus_error_counter;
+
+	error_system.lsm6ds3_error = state.lsm6ds3_error;
+	error_system.lsm6ds3_error_counter = state.lsm6ds3_error_counter;
+
+	error_system.lis3mdl_error = state.lis3mdl_error;
+	error_system.lis3mdl_error_counter = state.lis3mdl_error_counter;
 }
