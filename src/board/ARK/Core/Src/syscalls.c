@@ -56,6 +56,8 @@
 #include <sys/time.h>
 #include <sys/times.h>
 
+#include <stm32f1xx_hal.h>
+
 
 /* Variables */
 //#undef errno
@@ -88,7 +90,11 @@ int _kill(int pid, int sig)
 void _exit (int status)
 {
 	_kill(status, -1);
+#ifdef DEBUG
 	while (1) {}		/* Make sure we hang here */
+#else
+	NVIC_SystemReset();
+#endif
 }
 
 __attribute__((weak)) int _read(int file, char *ptr, int len)

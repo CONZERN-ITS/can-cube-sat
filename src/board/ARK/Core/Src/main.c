@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <assert.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -489,7 +489,11 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-
+#ifdef DEBUG
+	while(1) {} // allow debugger to attach and examine situation
+#else
+  assert(1 == 0); // Закорачиваем на ассерт
+#endif
   /* USER CODE END Error_Handler_Debug */
 }
 
