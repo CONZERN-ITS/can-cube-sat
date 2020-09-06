@@ -333,31 +333,6 @@ int main(int argc, char* argv[])
 				{
 					UpdateDataAll();
 					SINS_updatePrevData();
-					gps_poll();
-
-					const int gps_cfg_status = gps_configure_status();
-					if (gps_cfg_status != -EWOULDBLOCK) // конфигурация уже закончилась
-					{
-						uint32_t now = HAL_GetTick();
-
-						if (gps_cfg_status != 0)
-						{
-							// закончилась но плохо. Начинаем опять
-							gps_configure_begin();
-						}
-						else if (now - last_gps_packet_ts > ITS_SINS_GPS_MAX_NOPACKET_TIME)
-						{
-							// Если слишком давно не приходило интересных нам пакетов
-							// Отправляем gps в реконфигурацию
-							gps_configure_begin();
-						}
-						else if (now - last_gps_fix_packet_ts > ITS_SINS_GPS_MAX_NOFIX_TIME)
-						{
-							// Если GPS слишком долго не фиксится
-							// Тоже отправляем его в реконфигурациюs
-							gps_configure_begin();
-						}
-					}
 				}
 
 		//		struct timeval tmv;
@@ -370,6 +345,30 @@ int main(int argc, char* argv[])
 
 				mavlink_sins_isc(&stateSINS_isc);
 				gps_poll();
+
+				const int gps_cfg_status = gps_configure_status();
+				if (gps_cfg_status != -EWOULDBLOCK) // конфигурация уже закончилась
+				{
+					uint32_t now = HAL_GetTick();
+
+					if (gps_cfg_status != 0)
+					{
+						// закончилась но плохо. Начинаем опять
+						gps_configure_begin();
+					}
+					else if (now - last_gps_packet_ts > ITS_SINS_GPS_MAX_NOPACKET_TIME)
+					{
+						// Если слишком давно не приходило интересных нам пакетов
+						// Отправляем gps в реконфигурацию
+						gps_configure_begin();
+					}
+					else if (now - last_gps_fix_packet_ts > ITS_SINS_GPS_MAX_NOFIX_TIME)
+					{
+						// Если GPS слишком долго не фиксится
+						// Тоже отправляем его в реконфигурациюs
+						gps_configure_begin();
+					}
+				}
 			}
 			mavlink_timestamp();
 			own_temp_packet();

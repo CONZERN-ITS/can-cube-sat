@@ -110,6 +110,8 @@ SysTick_Handler(void)
  * @param  None
  * @retval None
  */
+#undef HSE_VALUE
+
 void
 __attribute__((weak))
 SystemClock_Config(void)
