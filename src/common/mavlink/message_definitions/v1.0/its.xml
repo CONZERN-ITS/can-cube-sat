@@ -60,8 +60,29 @@
       </entry>
       <entry value="1" name="COMP_ELEC_DPD">
         <description>Elec based on DPD</description>
-      </entry>>
-    </enum>>
+      </entry>
+    </enum>
+    <enum name="MCU_RESET_CAUSE">
+      <description>MCU reset cause</description>
+      <entry value="0" name="MCU_RESET_POR">
+        <description>Power On Reset</description>
+      </entry>
+      <entry value="1" name="MCU_RESET_SW">
+        <description>Software Reset</description>
+      </entry>
+      <entry value="2" name="MCU_RESET_PIN">
+        <description>Reset on RST pin</description>
+      </entry>
+      <entry value="3" name="MCU_RESET_WATCHDOG">
+        <description>Watchdog caused reset (IWDG)</description>
+      </entry>
+      <entry value="4" name="MCU_RESET_WATCHDOG2">
+        <description>Watchdog caused reset (WWDG)</description>
+      </entry>
+      <entry value="5" name="MCU_RESET_LOWPOWER">
+        <description>Low power caused reset</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="50010" name="THERMAL_STATE">
@@ -201,26 +222,14 @@
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
 
-
-      <field type="int32_t" name="bme_init_error">initialization error of bme280</field>
       <field type="int32_t" name="bme_last_error">last error of bme280</field>
       <field type="uint16_t" name="bme_error_counter">bme280 errors counter</field>
 
-      <field type="int32_t" name="adc_init_error">adc initialization error</field>
       <field type="int32_t" name="adc_last_error">adc last error code</field>
       <field type="uint16_t" name="adc_error_counter">adc errors counter</field>
 
-      <field type="int32_t" name="me2o2_init_error">me2o2 intialization error</field>
-      <field type="int32_t" name="me2o2_last_error">me2o2 last error code</field>
-      <field type="uint16_t" name="me2o2_error_counter">me2o2 errors counter</field>
-
-      <field type="int32_t" name="mics6814_init_error">mics6815 initialization errors</field>
-      <field type="int32_t" name="mics6814_last_error">mics6815 last error code</field>
-      <field type="uint16_t" name="mics6814_error_counter">mics6815 errors counter</field>
-
-      <field type="int32_t" name="integrated_init_error">integrated (temperature) sensors initialization error</field>
-      <field type="int32_t" name="integrated_last_error">code of last error of integrated sensors</field>
-      <field type="uint16_t" name="integrated_error_counter">integrated sensors errors counter</field>
+      <field type="uint16_t" name="resets_count">mcu reset counter</field>
+      <field type="uint16_t" name="reset_cause">RESET_CAUSE enum values bitwise combination. Shows cause of last reset</field>
     </message>
 
     <message id="50022" name="RSSI">
