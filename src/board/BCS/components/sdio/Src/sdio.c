@@ -29,8 +29,6 @@
 #include "driver/sdmmc_host.h"
 #include "driver/sdmmc_defs.h"
 
-static const char *TAG = "example";
-
 #define MOUNT_POINT "/sdcard"
 #define NAME_BASE "T"
 

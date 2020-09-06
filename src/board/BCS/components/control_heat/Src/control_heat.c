@@ -16,9 +16,8 @@
 #include "router.h"
 #include "mavlink_help2.h"
 #include "init_helper.h"
+#include "log_collector.h"
 
-
-static void control_heat_task(void *arg);
 
 static void _task_recv(void *arg);
 
@@ -36,14 +35,36 @@ static int consumption[ITS_BSK_COUNT] = {0}; //mA
 static int max_consumption = 1;
 static float temperature[ITS_BSK_COUNT] = {30.0};
 
+static TaskHandle_t t_recv;
+static TaskHandle_t t_upda;
+static log_data_t log_data;
 
-void control_heat_init(shift_reg_handler_t *hsr, int shift, int task_on) {
+
+
+int control_heat_init(shift_reg_handler_t *hsr, int shift, int task_on) {
+	memset(&log_data, 0, sizeof(log_data));
+	log_data.last_state = LOG_STATE_ON;
+
+
 	if (task_on) {
-		xTaskCreatePinnedToCore(_task_recv, "Control heat task recv", configMINIMAL_STACK_SIZE + 1000, 0, 3, 0, tskNO_AFFINITY);
-		xTaskCreatePinnedToCore(_task_update, "Control heat task update", configMINIMAL_STACK_SIZE + 1000, 0, 4, 0, tskNO_AFFINITY);
+		if (xTaskCreatePinnedToCore(log_collector_log_task, "Control heat log", configMINIMAL_STACK_SIZE + 1500, 0, 1, 0, tskNO_AFFINITY) != pdTRUE ||
+				xTaskCreatePinnedToCore(_task_update, "Control heat update", configMINIMAL_STACK_SIZE + 1500, 0, 4, &t_upda, tskNO_AFFINITY) != pdTRUE ||
+				xTaskCreatePinnedToCore(_task_recv, "Control heat recv", configMINIMAL_STACK_SIZE + 1500, 0, 3, &t_recv, tskNO_AFFINITY) != pdTRUE) {
+
+			log_data.last_state = LOG_STATE_OFF;
+		}
+
+
 	}
-	_shift = shift;
-	_hsr = hsr;
+
+	if (log_data.last_state == LOG_STATE_OFF) {
+		ESP_LOGE("CONTROL_HEAT", "Can't create tasks");
+		log_data.error_count++;
+		log_data.last_error = LOG_ERROR_LOW_MEMORY;
+		log_data.last_state = LOG_STATE_OFF;
+		log_collector_add(LOG_COMP_ID_SHIFT_REG, &log_data);
+	}
+	return -1;
 }
 
 void control_heat_bsk_enable(int bsk_number, int is_on) {
@@ -73,17 +94,32 @@ static void _sort(float *arr_sort, int *arr_look, int n) {
 	}
 }
 
+
 static void _task_recv(void *arg) {
 	its_rt_task_identifier tid = {
 			.name = "sd_send"
 	};
 	tid.queue = xQueueCreate(6, MAVLINK_MAX_PACKET_LEN);
-	if (!tid.queue || its_rt_register(MAVLINK_MSG_ID_THERMAL_STATE, tid)) {
-		ESP_LOGE("CONTROL_HEAT", "not enough memory");
+	if (!tid.queue) {
+		log_data.error_count++;
+		log_data.last_error = LOG_ERROR_LOW_MEMORY;
+		log_data.last_state = LOG_STATE_OFF;
 		vTaskDelete(0);
 	}
-
+	if (its_rt_register(MAVLINK_MSG_ID_THERMAL_STATE, tid)) {
+		ESP_LOGE("CONTROL_HEAT", "not enough memory");
+		vQueueDelete(tid.queue);
+		log_data.error_count++;
+		log_data.last_error = LOG_ERROR_LOW_MEMORY;
+		log_data.last_state = LOG_STATE_OFF;
+		vTaskDelete(0);
+	}
 	while (1) {
+		if (log_data.last_state == LOG_STATE_OFF) {
+			its_rt_unregister(MAVLINK_MSG_ID_THERMAL_STATE, tid);
+			vQueueDelete(tid.queue);
+			vTaskDelete(0);
+		}
 		mavlink_message_t msg = {0};
 		xQueueReceive(tid.queue, &msg, portMAX_DELAY);
 		if (msg.sysid != mavlink_system) {
@@ -99,6 +135,9 @@ static void _task_update(void *arg) {
 	int arr[ITS_BSK_COUNT] = {0};
 
 	while (1) {
+		if (log_data.last_state == LOG_STATE_OFF) {
+			vTaskDelete(0);
+		}
 		_sort(temperature, arr, ITS_BSK_COUNT);
 		state_t new[ITS_BSK_COUNT] = {0};
 		int total_consumption = 0;
@@ -125,12 +164,15 @@ static void _task_update(void *arg) {
 			}
 		} else {
 			ESP_LOGE("CONTROL_HEAT", "bad spi %d", rc);
+			log_data.last_error = LOG_ERROR_LL_API;
+			log_data.error_count++;
 		}
 		vTaskDelay(CONTROL_HEAT_UPDATE_PERIOD / portTICK_PERIOD_MS);
 	}
 
 }
 
+/*
 static void control_heat_task(void *arg) {
 
 	its_rt_task_identifier tid = {
@@ -171,4 +213,4 @@ static void control_heat_task(void *arg) {
 			}
 		}
 	}
-}
+}*/

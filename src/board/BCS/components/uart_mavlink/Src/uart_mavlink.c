@@ -16,27 +16,16 @@
 #include "mavlink/its/mavlink.h"
 #include "mavlink_help2.h"
 #include "router.h"
+#include "log_collector.h"
 
-static const char *TAG = "uart_mavlink_events";
-
-/**
- * This example shows how to use the UART driver to handle special UART events.
- *
- * It also reads data from UART0 directly, and echoes it to console.
- *
- * - Port: UART0
- * - Receive (Rx) buffer: on
- * - Transmit (Tx) buffer: off
- * - Flow control: off
- * - Event queue: on
- * - Pin assignment: TxD (default), RxD (default)
- */
-
+static const char *TAG = "UART_MAVLINK";
 
 #define TASK_BUF_SIZE 10
 #define UART_MAV_CHAN MAVLINK_COMM_1
 #define UART_EV_BUF_SIZE 20
 
+static log_data_t log_data;
+static int64_t last_time;
 
 struct _install_set {
 	QueueHandle_t queue;
@@ -67,11 +56,19 @@ void uart_event_task(void *pvParameters)
 	uart_event_t event;
 	uint8_t buffer[TASK_BUF_SIZE];
 	while (1) {
+		if (log_data.last_state == LOG_STATE_OFF) {
+			vTaskDelete(0);
+		}
 		//Waiting for UART event.
 		if(xQueueReceive(uart_queue, (void * )&event, (portTickType)portMAX_DELAY)) {
+			log_data.ellapsed_time = (esp_timer_get_time() - last_time) / 1000;
 			fflush(stdout);
 			bzero(buffer, TASK_BUF_SIZE);
 			//ESP_LOGI(TAG, "uart[%d] event:", uart);
+			log_data.last_error = event.type;
+			if (event.type != UART_DATA) {
+				log_data.error_count++;
+			}
 			switch(event.type) {
 			//Event of UART receving data
 			/*We'd better handler data event fast, there would be much more data events than
@@ -97,6 +94,7 @@ void uart_event_task(void *pvParameters)
 			}
 			//Event of HW FIFO overflow detected
 			case UART_FIFO_OVF:
+
 				ESP_LOGI(TAG, "hw fifo overflow");
 				break;
 			//Event of UART ring buffer full
@@ -125,15 +123,26 @@ void uart_event_task(void *pvParameters)
 	vTaskDelete(NULL);
 }
 
-void uart_mavlink_install(uart_port_t uart_num, QueueHandle_t uart_queue) {
-
-	esp_log_level_set(TAG, ESP_LOG_INFO);
+int uart_mavlink_install(uart_port_t uart_num, QueueHandle_t uart_queue) {
 	mavlink_channel_t chan = mavlink_claim_channel();
 
 	struct _install_set *t = malloc(sizeof(*t));
 	t->queue = uart_queue;
 	t->channel = chan;
 	t->uart = uart_num;
+	log_data.last_state = LOG_STATE_ON;
+	last_time = esp_timer_get_time() / 1000;
 	//Create a task to handler UART event from ISR
-	xTaskCreate(uart_event_task, "uart_event_task", 4096, t, 1, NULL);
+	if (xTaskCreate(uart_event_task, "uart_mavlink", 4096, t, 1, NULL) != pdTRUE ||
+			xTaskCreate(log_collector_log_task, "uart_mavlink_log", 1500, t, 2, NULL) != pdTRUE) {
+		log_data.last_state = LOG_STATE_OFF;
+		free(t);
+		ESP_LOGE(TAG, "Can't create task");
+		return -1;
+	}
+	return 0;
+}
+int uart_mavlink_uninstall(uart_port_t uart_num, QueueHandle_t uart_queue) {
+	log_data.last_state = LOG_STATE_OFF;
+	return 0;
 }

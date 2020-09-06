@@ -11,7 +11,7 @@
 #include "driver/uart.h"
 #include "freertos/queue.h"
 
-void uart_mavlink_install(uart_port_t uart_num, QueueHandle_t uart_queue);
+int uart_mavlink_install(uart_port_t uart_num, QueueHandle_t uart_queue);
 
 
 #endif /* COMPONENTS_UART_MAVLINK_INC_UART_MAVLINK_H_ */

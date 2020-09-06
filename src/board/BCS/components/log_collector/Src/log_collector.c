@@ -55,3 +55,13 @@ void log_collector_add_to(log_collector_t *hlc, log_comp_id_t id, const log_data
 void log_collector_add(log_comp_id_t id, const log_data_t *data) {
 	_coll.log_data[id] = *data;
 }
+void log_collector_log_task(log_data_t *data) {
+	while (1) {
+		if (data && data->last_state == LOG_STATE_OFF) {
+			vTaskDelete(0);
+		}
+		log_collector_add(LOG_COMP_ID_SHIFT_REG, &data);
+		vTaskDelay(LOG_COLLECTOR_ADD_PERIOD_COMMON / portTICK_PERIOD_MS);
+	}
+
+}
