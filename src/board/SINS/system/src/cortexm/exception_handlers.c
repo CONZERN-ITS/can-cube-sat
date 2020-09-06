@@ -75,6 +75,8 @@ Reset_Handler(void)
 void __attribute__ ((section(".after_vectors"),weak))
 NMI_Handler (void)
 {
+	HAL_RCC_NMI_IRQHandler();
+
 #if defined(DEBUG)
   __DEBUG_BKPT();
 #endif

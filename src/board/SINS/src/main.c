@@ -201,6 +201,10 @@ int UpdateDataAll(void)
   */
 void SINS_updatePrevData(void)
 {
+	for(int i = 0; i < 3; i++)
+		if (stateSINS_isc.quaternion[i] != stateSINS_isc.quaternion[i])		//проверка на нан
+			return;
+
 	__disable_irq();
 	memcpy(&stateSINS_isc_prev,			&stateSINS_isc,			sizeof(stateSINS_isc));
 //	memcpy(&state_system_prev, 			&state_system,		 	sizeof(state_system));		//FIXME: зачем это делать?
@@ -237,7 +241,7 @@ int main(int argc, char* argv[])
 	memset(&state_zero,				0x00, sizeof(state_zero));
 	memset(&error_system, 			0x00, sizeof(error_system));
 
-	iwdg_init(&transfer_uart_iwdg_handle);
+//	iwdg_init(&transfer_uart_iwdg_handle);
 
 	led_init();
 
@@ -322,8 +326,6 @@ int main(int argc, char* argv[])
 		time_svc_world_get_time(&stateSINS_isc_prev.tv);
 
 		error_system_check();
-
-		uint8_t data = 0;
 
 		for (; ; )
 		{
