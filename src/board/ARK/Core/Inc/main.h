@@ -72,12 +72,33 @@ int tmain(void);
 /* Private defines -----------------------------------------------------------*/
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
-#define OW_Pin GPIO_PIN_0
-#define OW_GPIO_Port GPIOB
-#define TIME_Pin GPIO_PIN_15
-#define TIME_GPIO_Port GPIOA
-#define TIME_EXTI_IRQn EXTI15_10_IRQn
-#define I2C_INT_Pin GPIO_PIN_5
+#define BMS5_Pin GPIO_PIN_1
+#define BMS5_GPIO_Port GPIOA
+#define BMS6_Pin GPIO_PIN_2
+#define BMS6_GPIO_Port GPIOA
+#define BMS3_Pin GPIO_PIN_3
+#define BMS3_GPIO_Port GPIOA
+#define BMS4_Pin GPIO_PIN_4
+#define BMS4_GPIO_Port GPIOA
+#define BMS1_Pin GPIO_PIN_5
+#define BMS1_GPIO_Port GPIOA
+#define BMS2_Pin GPIO_PIN_6
+#define BMS2_GPIO_Port GPIOA
+#define OW_Pin GPIO_PIN_7
+#define OW_GPIO_Port GPIOA
+#define PGOOD1_Pin GPIO_PIN_0
+#define PGOOD1_GPIO_Port GPIOB
+#define PGOOD2_Pin GPIO_PIN_1
+#define PGOOD2_GPIO_Port GPIOB
+#define DPC_RST_Pin GPIO_PIN_14
+#define DPC_RST_GPIO_Port GPIOB
+#define DPD_RST_Pin GPIO_PIN_15
+#define DPD_RST_GPIO_Port GPIOB
+#define LEDB5_Pin GPIO_PIN_5
+#define LEDB5_GPIO_Port GPIOB
+#define TIME_Pin GPIO_PIN_6
+#define TIME_GPIO_Port GPIOB
+#define I2C_INT_Pin GPIO_PIN_7
 #define I2C_INT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 

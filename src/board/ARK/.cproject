@@ -89,6 +89,7 @@
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1446128131.982505523" name="battery.h" rcbsApplicability="disable" resourcePath="Application/Inc/battery.h" toolsToInvoke=""/>
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1446128131.1748897831" name="mavlink_system_id.h" rcbsApplicability="disable" resourcePath="Application/Inc/mavlink_system_id.h" toolsToInvoke=""/>
 					<sourceEntries>
+						<entry excluding="Src/syscalls.c|syscalls.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="Inc/mavlink_system_id.h|Src/battery.c|Inc/battery.h|Startup|Src/data_ds18b20.c|Inc/process_ad527x.h|Inc/data_ds18b20.h|Src/process_ad527x.c|Src/data_ina219.c|Inc/data_ina219.h|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Application"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Application/Startup"/>
 						<entry excluding="syscalls.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
