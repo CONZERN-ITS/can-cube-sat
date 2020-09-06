@@ -43,15 +43,15 @@
 									<listOptionValue builtIn="false" value="DEBUG"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.494000579" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../Drivers/its-i2c-link/Inc"/>
-									<listOptionValue builtIn="false" value="../Drivers/its-time/Inc"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F1xx/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
-									<listOptionValue builtIn="false" value="../Drivers"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32F1xx_HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="../Drivers"/>
 									<listOptionValue builtIn="false" value="../Drivers/mavlink"/>
+									<listOptionValue builtIn="false" value="../Drivers/its-time/Inc"/>
+									<listOptionValue builtIn="false" value="../Drivers/its-i2c-link/Inc"/>
 									<listOptionValue builtIn="false" value="../Application/Inc"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.328588044" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
@@ -89,9 +89,9 @@
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1446128131.982505523" name="battery.h" rcbsApplicability="disable" resourcePath="Application/Inc/battery.h" toolsToInvoke=""/>
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1446128131.1748897831" name="mavlink_system_id.h" rcbsApplicability="disable" resourcePath="Application/Inc/mavlink_system_id.h" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="Src/syscalls.c|syscalls.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="Inc/mavlink_system_id.h|Src/battery.c|Inc/battery.h|Startup|Src/data_ds18b20.c|Inc/process_ad527x.h|Inc/data_ds18b20.h|Src/process_ad527x.c|Src/data_ina219.c|Inc/data_ina219.h|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Application"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Application/Startup"/>
+						<entry excluding="Src/syscalls.c|syscalls.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 					</sourceEntries>
 				</configuration>
@@ -140,6 +140,11 @@
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32F1xx_HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="../Drivers"/>
+									<listOptionValue builtIn="false" value="../Drivers/mavlink"/>
+									<listOptionValue builtIn="false" value="../Drivers/its-time/Inc"/>
+									<listOptionValue builtIn="false" value="../Drivers/its-i2c-link/Inc"/>
+									<listOptionValue builtIn="false" value="../Application/Inc"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1937747127" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -168,6 +173,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry excluding="Src/process_ad527x.c|Src/main.c|Src/data_ina219.c|Src/data_ds18b20.c|Src/battery.c|Startup" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Application"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Application/Startup"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
