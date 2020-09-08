@@ -300,8 +300,16 @@ static int _gps_configure_step_packet()
 	gps_cfg_state_t * state = &_cfg_state;
 	const uint8_t * packet = *state->packet_ptr;
 
+	if (NULL == packet)
+	{
+		// Мы дошли до последнего пакета и успешно завершились
+		state->last_error = 0;
+		state->enabled = 0;
+		return 0;
+	}
+
 	// Если количество попыток исчерпано - завершаемся
-	if (state->sent_packet_attempt >= ITS_SINS_GPS_CONFIGURE_ATTEMPTS)
+	if (state->sent_packet_attempt > ITS_SINS_GPS_CONFIGURE_ATTEMPTS)
 	{
 		state->enabled = 0;
 		// state->result выставили при прошлой ошибке
@@ -345,13 +353,6 @@ static void _gps_configure_step()
 
 	case GPS_CFG_ACK_STATUS_IDLE:
 		state->sent_packet_attempt = 0;
-		if (0 == state->packet_ptr)
-		{
-			// Если это был последний пакет - мы успешно завершились
-			state->last_error = 0;
-			state->enabled = 0;
-			return;
-		}
 		// Если нет - отправляем следующий
 		_gps_configure_step_packet();
 		break;
