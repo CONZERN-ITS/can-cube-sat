@@ -448,12 +448,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : BMS5_Pin BMS6_Pin BMS3_Pin BMS4_Pin 
+  /*Configure GPIO pins : BMS5_Pin BMS6_Pin BMS3_Pin BMS4_Pin
                            BMS1_Pin BMS2_Pin */
-  GPIO_InitStruct.Pin = BMS5_Pin|BMS6_Pin|BMS3_Pin|BMS4_Pin 
+  GPIO_InitStruct.Pin = BMS5_Pin|BMS6_Pin|BMS3_Pin|BMS4_Pin
                           |BMS1_Pin|BMS2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
