@@ -66,7 +66,9 @@ typedef struct its_pld_status_t
 	uint16_t adc_error_counter;
 
 	//! Количество перезагрузок модуля
-	uint16_t restarts_count;
+	uint16_t resets_count;
+	//! Причина последней перезагрузки
+	uint16_t reset_cause;
 } its_pld_status_t;
 
 
@@ -96,6 +98,10 @@ static int _analog_restart_if_need_so(void);
 //! Обработка вхоядщие пакетов
 static void _process_input_packets(void);
 
+//! Извлекает причину резета из системных регистров
+/*! Возвращает значение - битовую комбинацию флагов  */
+static uint16_t _fetch_reset_cause(void);
+
 // TODO:
 /* калибрануть все и вся
    проверить как работает рестарт АЦП
@@ -104,9 +110,12 @@ static void _process_input_packets(void);
 int app_main()
 {
 	// Грузим из бэкап регистров количество рестартов, которое с нами случилось
-	_status.restarts_count = LL_RTC_BKP_GetRegister(BKP, LL_RTC_BKP_DR1);
-	_status.restarts_count += 1;
-	LL_RTC_BKP_SetRegister(BKP, LL_RTC_BKP_DR1, _status.restarts_count);
+	_status.resets_count = LL_RTC_BKP_GetRegister(BKP, LL_RTC_BKP_DR1);
+	_status.resets_count += 1;
+	LL_RTC_BKP_SetRegister(BKP, LL_RTC_BKP_DR1, _status.resets_count);
+
+	// Смотрим причину последнего резета
+	_status.reset_cause = _fetch_reset_cause();
 
 	// Включаем все
 	led_init();
@@ -245,8 +254,10 @@ static void _collect_own_stats(mavlink_pld_stats_t * msg)
 	msg->time_us = tmv.tv_usec;
 	msg->adc_error_counter = _status.adc_error_counter;
 	msg->adc_last_error = _status.adc_last_error;
-    msg->bme_error_counter = _status.adc_error_counter;
-    msg->bme_last_error = _status.bme_last_error;
+	msg->bme_error_counter = _status.adc_error_counter;
+	msg->bme_last_error = _status.bme_last_error;
+	msg->resets_count = _status.resets_count;
+	msg->reset_cause = _status.reset_cause;
 }
 
 
@@ -282,6 +293,33 @@ static void _process_input_packets()
 		// Обрабытываем. Пока только для службы времени
 		time_svc_on_mav_message(&input_msg);
 	}
+}
+
+
+static uint16_t _fetch_reset_cause(void)
+{
+	int rc = 0;
+
+	if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST))
+		rc |= MCU_RESET_PIN;
+
+	if (__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST))
+		rc |= MCU_RESET_POR;
+
+	if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST))
+		rc |= MCU_RESET_SW;
+
+	if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST))
+		rc |= MCU_RESET_WATCHDOG;
+
+	if (__HAL_RCC_GET_FLAG(RCC_FLAG_WWDGRST))
+		rc |= MCU_RESET_WATCHDOG2;
+
+	if (__HAL_RCC_GET_FLAG(RCC_FLAG_LPWRRST))
+		rc |= MCU_RESET_LOWPOWER;
+
+	__HAL_RCC_CLEAR_RESET_FLAGS();
+	return rc;
 }
 
 
