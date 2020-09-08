@@ -87,13 +87,6 @@ void task_main_update(void *arg) {
 }
 
 int tmain(void) {
-	volatile int x = 0;
-	for (; x < 20; x++)
-	{
-		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		HAL_Delay(100);
-	}
-
     task_t m = {
 
             .arg = 0,
