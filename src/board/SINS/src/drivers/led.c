@@ -8,8 +8,11 @@
 
 #include <stm32f4xx_hal.h>
 
-#define LED_PIN GPIO_PIN_12
-#define LED_PORT GPIOC
+
+
+#define LED_PIN GPIO_PIN_10
+#define LED_PORT GPIOF
+#define LED_CLOCK __HAL_RCC_GPIOF_CLK_ENABLE()
 
 
 void led_up()
@@ -26,7 +29,7 @@ void led_down()
 
 void led_init()
 {
-	__HAL_RCC_GPIOC_CLK_ENABLE();
+	LED_CLOCK;
 
 //	led_down();
 

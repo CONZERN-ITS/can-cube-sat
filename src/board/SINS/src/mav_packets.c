@@ -155,6 +155,7 @@ int mavlink_errors_packet(void)
 	errors_msg.gps_init_error = error_system.gps_init_error;
 	errors_msg.gps_config_error = error_system.gps_config_error;
 	errors_msg.gps_uart_init_error = error_system.gps_uart_error;
+	errors_msg.gps_reconfig_counter = error_system.gps_reconfig_counter;
 
 	errors_msg.mems_i2c_error = error_system.mems_i2c_error;
 	errors_msg.mems_i2c_error_counter = error_system.mems_i2c_error_counter;
@@ -171,6 +172,8 @@ int mavlink_errors_packet(void)
 
 	errors_msg.uart_transfer_init_error = error_system.uart_transfer_init_error;
 	errors_msg.uart_transfer_error = error_system.uart_transfer_error;
+
+	errors_msg.reset_counter = error_system.reset_counter;
 
 	mavlink_message_t msg;
 	mavlink_msg_sins_errors_encode(SYSTEM_ID, COMPONENT_ID, &msg, &errors_msg);

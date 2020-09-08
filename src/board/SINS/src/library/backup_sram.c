@@ -42,15 +42,27 @@ int backup_sram_enable(void)
 }
 
 
-void backup_sram_write(state_zero_t * data)
+void backup_sram_write_zero_state(state_zero_t * data)
 {
 	memcpy((void*)BACKUP_SRAM_MEMORY_START_ADDRESS, (void*)data, sizeof(state_zero_t));
 }
 
 
-void backup_sram_read(state_zero_t * data)
+void backup_sram_read_zero_state(state_zero_t * data)
 {
 	memcpy((void*)data, (void*)BACKUP_SRAM_MEMORY_START_ADDRESS, sizeof(state_zero_t));
+}
+
+
+void backup_sram_write_reset_counter(uint8_t * counter)
+{
+	memcpy((void*)(BACKUP_SRAM_MEMORY_START_ADDRESS + sizeof(state_zero_t)), (void*)counter, sizeof(counter));
+}
+
+
+void backup_sram_read_reset_counter(uint8_t * counter)
+{
+	memcpy((void*)counter, (void*)(BACKUP_SRAM_MEMORY_START_ADDRESS + sizeof(state_zero_t)), sizeof(counter));
 }
 
 

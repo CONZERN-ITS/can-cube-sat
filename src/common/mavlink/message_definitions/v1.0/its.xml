@@ -318,6 +318,9 @@
       <field type="int32_t" name="mems_i2c_error_counter"> counter mems_i2c errors</field>
       <field type="int32_t" name="lsm6ds3_error_counter"> counter lsm errors</field>
       <field type="int32_t" name="lis3mdl_error_counter"> counter lis errors</field>
+      <field type="int32_t" name="gps_reconfig_counter"> gps reconfiguration counter</field>
+
+      <field type="uint8_t" name="reset_counter"> reset counter</field>
     </message>
 
   </messages>

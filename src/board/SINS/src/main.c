@@ -231,7 +231,7 @@ int check_SINS_state(void)
 
 
 int main(int argc, char* argv[])
-	{
+{
 
 	//	Global structures init
 	memset(&stateSINS_isc, 			0x00, sizeof(stateSINS_isc));
@@ -267,12 +267,21 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		backup_sram_write(&state_zero);
+		error_system.reset_counter = 0;
+		backup_sram_write_reset_counter(&error_system.reset_counter);
+		backup_sram_write_zero_state(&state_zero);
 
 	}
 	else
 	{
 		time_svc_steady_init();
+
+		backup_sram_enable_after_reset();
+		backup_sram_read_zero_state(&state_zero);
+
+		backup_sram_read_reset_counter(&error_system.reset_counter);
+		error_system.reset_counter++;
+		backup_sram_write_reset_counter(&error_system.reset_counter);
 
 		int error = time_svc_world_preinit_with_rtc();
 		error_system.rtc_error = error;
@@ -314,10 +323,6 @@ int main(int argc, char* argv[])
 		sensors_init();
 		error_mems_read();
 
-
-		backup_sram_enable_after_reset();
-		backup_sram_read(&state_zero);
-
 		time_svc_world_get_time(&stateSINS_isc_prev.tv);
 
 		error_system_check();
@@ -346,6 +351,8 @@ int main(int argc, char* argv[])
 				const int gps_cfg_status = gps_configure_status();
 				if (gps_cfg_status != -EWOULDBLOCK) // конфигурация уже закончилась
 				{
+					error_system.gps_config_error = gps_cfg_status;
+					error_system.gps_reconfig_counter++;
 					uint32_t now = HAL_GetTick();
 
 					if (gps_cfg_status != 0)
@@ -353,16 +360,22 @@ int main(int argc, char* argv[])
 						// закончилась но плохо. Начинаем опять
 						gps_configure_begin();
 					}
-					else if (now - last_gps_packet_ts > ITS_SINS_GPS_MAX_NOPACKET_TIME)
-					{
-						// Если слишком давно не приходило интересных нам пакетов
-						// Отправляем gps в реконфигурацию
-						gps_configure_begin();
-					}
 					else if (now - last_gps_fix_packet_ts > ITS_SINS_GPS_MAX_NOFIX_TIME)
 					{
 						// Если GPS слишком долго не фиксится
 						// Тоже отправляем его в реконфигурациюs
+						// Перед этим сделаем вид, что фикс у нас был
+						// Так как он редко появляется сразу, а если это время не обновить -
+						// то эта ветка будет срабатывать постоянно
+						last_gps_fix_packet_ts = HAL_GetTick();
+						gps_configure_begin();
+					}
+					else if (now - last_gps_packet_ts > ITS_SINS_GPS_MAX_NOPACKET_TIME)
+					{
+						// Если слишком давно не приходило интересных нам пакетов
+						// Отправляем gps в реконфигурацию
+						// Сбросим время,чтобы не крутитсяв этом цикле вечно, если что-то пошло не так
+						last_gps_packet_ts = HAL_GetTick();
 						gps_configure_begin();
 					}
 				}
