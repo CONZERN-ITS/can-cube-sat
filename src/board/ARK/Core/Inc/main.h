@@ -98,6 +98,7 @@ int tmain(void);
 #define LEDB5_GPIO_Port GPIOB
 #define TIME_Pin GPIO_PIN_6
 #define TIME_GPIO_Port GPIOB
+#define TIME_EXTI_IRQn EXTI9_5_IRQn
 #define I2C_INT_Pin GPIO_PIN_7
 #define I2C_INT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
