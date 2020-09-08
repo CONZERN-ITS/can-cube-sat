@@ -47,6 +47,9 @@ typedef struct {
 	int lsm6ds3_error_counter;
 	int lis3mdl_error_counter;
 
+	int gps_reconfig_counter;
+
+	uint8_t reset_counter;
 }error_system_t;
 
 

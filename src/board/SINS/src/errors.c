@@ -94,12 +94,12 @@ void error_system_check(void)
 
 void error_mems_read(void)
 {
-	error_system.mems_i2c_error = state.bus_error;
-	error_system.mems_i2c_error_counter = state.bus_error_counter;
+	error_system.mems_i2c_error = mems_state.bus_error;
+	error_system.mems_i2c_error_counter = mems_state.bus_error_counter;
 
-	error_system.lsm6ds3_error = state.lsm6ds3_error;
-	error_system.lsm6ds3_error_counter = state.lsm6ds3_error_counter;
+	error_system.lsm6ds3_error = mems_state.lsm6ds3_error;
+	error_system.lsm6ds3_error_counter = mems_state.lsm6ds3_error_counter;
 
-	error_system.lis3mdl_error = state.lis3mdl_error;
-	error_system.lis3mdl_error_counter = state.lis3mdl_error_counter;
+	error_system.lis3mdl_error = mems_state.lis3mdl_error;
+	error_system.lis3mdl_error_counter = mems_state.lis3mdl_error_counter;
 }

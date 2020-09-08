@@ -46,6 +46,6 @@ int sensors_lsm6ds3_read(float * accel, float * gyro);
 int sensors_lis3mdl_read(float * magn);
 
 
-extern mems_state_t state;
+extern mems_state_t mems_state;
 
 #endif /* SENSORS_H_ */
