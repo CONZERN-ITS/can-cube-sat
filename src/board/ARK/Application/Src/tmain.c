@@ -80,7 +80,11 @@ void task_main_init(void *arg) {
 void task_main_update(void *arg) {
     static uint32_t t = 0;
     uint32_t now = HAL_GetTick();
-    if (now - t > 1000) {
+
+    // Если нас только что запустили, мигаем почаще, чтобы это показать
+    uint32_t delta = (now < 1000) ? 100 : 1000;
+
+    if (now - t > delta) {
         t = now;
         HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
     }
