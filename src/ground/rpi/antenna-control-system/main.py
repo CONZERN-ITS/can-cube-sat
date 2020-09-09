@@ -8,7 +8,7 @@ import time
 import datetime
 
 import numpy as NumPy
-from math import sin, cos, radians, acos, asin
+from math import sin, cos, radians, acos, asin, degrees
 
 import i2cdev
 from strela_ms_rpi import Lis3mdl, Lsm6ds3, WMM2020
@@ -51,14 +51,14 @@ class AutoGuidance():
         self.accel_recount_matrix = accel_recount_matrix
 
     def setup_v_limit_pins_map(self, p_limit_pins_map, n_limit_pins_map):
+        self.v_stepper_motor.setup_stop_triggers(list(p_limit_pins_map.keys()), list(n_limit_pins_map.keys()))
         self.v_limit_pins_map = p_limit_pins_map
         self.v_limit_pins_map.update(n_limit_pins_map)
-        self.v_stepper_motor.setup_stop_triggers(p_limit_pins_map.keys(), n_limit_pins_map.keys())
 
     def setup_h_limit_pins_map(self, p_limit_pins_map, n_limit_pins_map):
+        self.h_stepper_motor.setup_stop_triggers(list(p_limit_pins_map.keys()), list(n_limit_pins_map.keys()))
         self.h_limit_pins_map = p_limit_pins_map
         self.h_limit_pins_map.update(n_limit_pins_map)
-        self.h_stepper_motor.setup_stop_triggers(p_limit_pins_map.keys(), n_limit_pins_map.keys())
 
     def setup(self):
         self.lis3mdl.setup()
@@ -85,7 +85,6 @@ class AutoGuidance():
         self.accel /= self.accel_sample_size
         if self.accel_recount_matrix is not None:
             self.accel = NumPy.dot(self.accel_recount_matrix, self.accel)
-
 
         self.lan_lot = NumPy.array([0.0, 0.0])
         self.alt = 0.0
@@ -134,13 +133,22 @@ class AutoGuidance():
 
     def rotate_antenna (self, vector):
         vector = vector / NumPy.linalg.norm(vector)
-        vector_phi = asin(vector[2])
-        vector_alpha = acos(vector[0])
+        vector_phi = degrees(asin(vector[2]))
+        vector_alpha = degrees(acos(vector[0]))
         if vector[1] < 0:
             vector_alpha = 360 - vector_alpha
 
         self.rotate_v_stepper_motor(vector_phi - self.phi)
-        self.rotate_h_stepper_motor(vector_alpha - self.alpha)
+        if vector[2] < 0.995:
+            if abs(vector_alpha - self.alpha) > 180:
+                if self.alpha < vector_alpha:
+                    self.rotate_h_stepper_motor(vector_alpha - self.alpha - 360)
+                    self.alpha += 360
+                else:
+                    self.rotate_h_stepper_motor(vector_alpha - self.alpha + 360)
+                    self.alpha -= 360
+            else:
+                self.rotate_h_stepper_motor(vector_alpha - self.alpha) 
 
     def rotate_v_stepper_motor(self, ang):
         trigger = self.v_stepper_motor.rotate_using_angle(ang)
@@ -149,6 +157,8 @@ class AutoGuidance():
         else:
             self.phi += self.v_stepper_motor.steps_to_angle(self.v_stepper_motor.get_last_steps_num(),
                                                             self.v_stepper_motor.get_last_steps_direction())
+        time.sleep(0.005)
+        self.v_stepper_motor.set_enable(False)
         return trigger
 
     def rotate_h_stepper_motor(self, ang):
@@ -158,19 +168,22 @@ class AutoGuidance():
         else:
             self.alpha += self.h_stepper_motor.steps_to_angle(self.h_stepper_motor.get_last_steps_num(),
                                                               self.h_stepper_motor.get_last_steps_direction())
+        time.sleep(0.005)            
+        self.h_stepper_motor.set_enable(False)
         return trigger
 
-    def setup_nort_as_zero(self):
+    def setup_north_as_zero(self):
         vector = self.mag
         vector[2] = 0
         self.rotate_antenna(vector)
         time.sleep(1)
-        self.setup_coord_system()
+        #self.setup_coord_system()
 
     def setup_v_limit_pos_as_beg(self):
         trigger = None
         while trigger is None:
-            self.rotate_v_stepper_motor(90)
+            trigger = self.rotate_v_stepper_motor(-180)
+        self.rotate_v_stepper_motor(-self.phi)
 
 if __name__ == '__main__':
     i2c = i2cdev.I2C(PORT_I2C)
@@ -183,12 +196,16 @@ if __name__ == '__main__':
                                            dir_pin=V_DIR_PIN,
                                            enable_pin=V_ENABLE_PIN,
                                            gearbox_num=V_GEARBOX_NUM,
-                                           deg_per_step=V_DEG_PER_STEP)
+                                           deg_per_step=V_DEG_PER_STEP,
+                                           pos_dir_state=V_POS_DIR_STATE,
+                                           stop_state=V_STOP_STATE)
     h_stepper_motor = DM422_control_client(pul_pin=H_PUL_PIN,
                                            dir_pin=H_DIR_PIN,
                                            enable_pin=H_ENABLE_PIN,
                                            gearbox_num=H_GEARBOX_NUM,
-                                           deg_per_step=H_DEG_PER_STEP)
+                                           deg_per_step=H_DEG_PER_STEP,
+                                           pos_dir_state=H_POS_DIR_STATE,
+                                           stop_state=H_STOP_STATE)
 
     data_connection = mavutil.mavlink_connection(DATA_CONNECTION_STR)
 
@@ -222,6 +239,6 @@ if __name__ == '__main__':
 
         if (time.time() - start_time) < ANTENNA_AIMING_PERIOD:
             if gps is not None:
-               ACS.aiming(gps) 
+               ACS.aiming(gps)
 
     i2c.close()

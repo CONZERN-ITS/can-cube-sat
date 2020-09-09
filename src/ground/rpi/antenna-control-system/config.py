@@ -9,28 +9,31 @@ LIS3MDL_ADRESS = 0x1e
 LSM6DS3_ADRESS = 0x6B
 
 ACCEL_SAMPLE_SIZE = 100
-MAG_SAMPLE_SIZE = 100
+MAG_SAMPLE_SIZE = 50
 GPS_SAMPLE_SIZE = 20
 
-MAG_RECOUNT_MATRIX = NumPy.array([[ 0, 0, 0],
-                                  [-1, 1, 0],
-                                  [-1, 0, 1]])
+MAG_RECOUNT_MATRIX = NumPy.array([[-1, 0, 0],
+                                  [ 0, 0, 1],
+                                  [ 0, 1, 0]])
 
-MAG_CALIBRATION_MATRIX = NumPy.array([[1.099603,  0.134130,  0.050557],
-                                      [0.134130,  1.336886, -0.169642],
-                                      [0.050557, -0.169642,  1.344281]])
+MAG_CALIBRATION_MATRIX = NumPy.array([[ 0.948874, -0.010167, 0.266488],
+                                      [-0.010167,  1.230079, 0.015828],
+                                      [ 0.266488,  0.015828, 1.178367]])
 
-MAG_CALIBRATION_VECTOR = NumPy.array([[-2.380220], [-2.558693], [-1.497440]])
+MAG_CALIBRATION_VECTOR = NumPy.array([[-0.784921], [-0.038389], [-0.837087]])
 
-ACCEL_RECOUNT_MATRIX = None
+ACCEL_RECOUNT_MATRIX = NumPy.array([[ 1,  0, 0],
+                                    [ 0, -1, 0],
+                                    [ 0,  0, -1]])
 
 V_PUL_PIN = 18
 V_DIR_PIN = 16
 V_ENABLE_PIN = 32
 V_GEARBOX_NUM = 102
 V_DEG_PER_STEP = 1.8 / 8
-V_P_LIMIT_PINS_MAP = {11:-9}
-V_N_LIMIT_PINS_MAP = {7:-9}
+V_POS_DIR_STATE = False
+V_P_LIMIT_PINS_MAP = {7:80}
+V_N_LIMIT_PINS_MAP = {11:-20}
 V_STOP_STATE = 0
 
 H_PUL_PIN = 13
@@ -38,6 +41,7 @@ H_DIR_PIN = 15
 H_ENABLE_PIN = 31
 H_GEARBOX_NUM = 102
 H_DEG_PER_STEP = 1.8 / 8
+H_POS_DIR_STATE = False
 H_P_LIMIT_PINS_MAP = {}
 H_N_LIMIT_PINS_MAP = {}
 H_STOP_STATE = 0
