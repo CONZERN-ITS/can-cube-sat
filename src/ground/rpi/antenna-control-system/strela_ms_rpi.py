@@ -1,5 +1,6 @@
 import i2cdev
 import ctypes
+import time
 
 srtela_ms_rpi_c = ctypes.CDLL("./native/build/libstrela-ms-rpi.so")
 
@@ -78,6 +79,7 @@ class Lis3mdl(Stmdev_i2c_context):
         error = srtela_ms_rpi_c.lis3mdl_init(ctypes.byref(self.context))
         if error:
             raise RuntimeError("lis3mdl_init returned nonzero error: %d" % error) from self.last_error
+        time.sleep(0.1)
 
     def get_mag_data_G(self):
         mag_buf = (ctypes.c_float * 3)()
