@@ -11,12 +11,14 @@ class DM422_control_client ():
                         enable_pin=ENABLE_PIN,
                         gearbox_num=1,
                         deg_per_step=1,
+                        pos_dir_state=True,
                         stop_state=0):
         self.pul_pin = pul_pin
         self.dir_pin = dir_pin
         self.enable_pin = enable_pin
         self.gearbox_num = gearbox_num
         self.deg_per_step = deg_per_step
+        self.pos_dir_state = pos_dir_state
         self.pos_dir_stop_triggers = []
         self.neg_dir_stop_triggers = []
         self.stop_state = stop_state
@@ -43,7 +45,7 @@ class DM422_control_client ():
         GPIO.output(self.dir_pin, True)
 
         GPIO.setup(self.enable_pin, GPIO.OUT)
-        GPIO.output(self.enable_pin, True)
+        GPIO.output(self.enable_pin, False)
 
     def set_enable(self, mode=True):
         GPIO.output(self.enable_pin, mode)
@@ -53,21 +55,21 @@ class DM422_control_client ():
 
     def steps_to_angle (self, steps, direction=True):
         ang = steps * self.deg_per_step / self.gearbox_num
-        if not direction:
+        if direction != self.pos_dir_state:
             ang = ang * -1
         return ang
 
     def rotate_using_angle (self, ang):
         steps = self.angle_to_steps(ang)
         if ang > 0:
-            return self.rotate_using_steps(steps, True)
+            return self.rotate_using_steps(steps, self.pos_dir_state)
         else:
-            return self.rotate_using_steps(steps, False)
+            return self.rotate_using_steps(steps, not self.pos_dir_state)
 
     def rotate_using_steps (self, steps, direction=True):
         self.last_steps_num = steps
         self.last_steps_direction = direction
-        if direction:
+        if direction == self.pos_dir_state:
             triggers = self.pos_dir_stop_triggers
         else:
             triggers = self.neg_dir_stop_triggers
@@ -94,20 +96,3 @@ class DM422_control_client ():
 
     def get_last_steps_direction(self):
         return self.last_steps_direction
-
-if __name__ == '__main__':
-    dm422 = DM422_control_client(gearbox_num=102, deg_per_step=(1.8/8))
-    dm422.setup()
-    dm422.setup_stop_triggers([11], [7])
-    while True:
-        value1 = dm422.rotate_using_angle(360)
-        print(dm422.get_last_steps_num())
-        if value1 is not None:
-            print('stop --------')
-            break
-    while True:
-        value = dm422.rotate_using_angle(-360)
-        print(dm422.get_last_steps_num())
-        if (value is not None) and (value != value1):
-            print('end --------')
-            break
