@@ -119,6 +119,7 @@ void scl_clocking(int count_clocking)
 		DWT->CYCCNT = 0;
 		scl_down();
 		wait_need_ticks_delay(need_count_tick_delay);
+		DWT->CYCCNT = 0;
 		scl_up();
 		wait_need_ticks_delay(need_count_tick_delay);
 	}
