@@ -49,7 +49,7 @@
 
 #define ITS_OWB_MAX_DEVICES			10
 
-#define ITS_WIFI_SERVER				0
+#define ITS_WIFI_SERVER				1
 #if !defined(ITS_WIFI_SERVER) || !ITS_WIFI_SERVER
 #define ITS_WIFI_CLIENT				1
 #else

@@ -89,6 +89,11 @@ static imi_config_t imi_config = {
 	.save = common_packet_to_route,
 	.alloc = common_imi_alloc
 };
+
+static op_ip_t hop;
+shift_reg_handler_t hsr;
+
+
 #ifndef ITS_ESP_DEBUG
 static spi_bus_config_t buscfg={
 	.miso_io_num = ITS_PIN_SPISR_MISO,
@@ -98,11 +103,6 @@ static spi_bus_config_t buscfg={
 	.quadhd_io_num = -1, //not used
 	.max_transfer_sz = ITS_BSK_COUNT * 5
 };
-shift_reg_handler_t hsr;
-
-static op_ip_t hop;
-
-
 
 static void task_led(void *arg) {
 	gpio_config_t gc = {
