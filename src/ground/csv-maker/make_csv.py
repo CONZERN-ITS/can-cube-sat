@@ -72,7 +72,7 @@ def main(argv):
     parser = argparse.ArgumentParser("tm parser to csvs", add_help=True)
     parser.add_argument("-i,--input", nargs="?", dest="input", required=True)
     parser.add_argument("-o,--output_dir", nargs="?", dest="output_dir", help="If output is None, input filename is name for output directory", default=None)
-    parser.add_argument("--notimestamps", nargs="?", dest="notimestamps", default=False)
+    parser.add_argument("--notimestamps", dest="notimestamps", default=False, action='store_true')
     args = parser.parse_args(argv)
 
     base_path = args.output_dir
@@ -87,6 +87,7 @@ def main(argv):
 
     con = mavutil.mavlogfile(f, notimestamps=notimestamps)
     processors = {}
+    bad_data_bytes = 0
 
     while True:
         msg = con.recv_msg()
@@ -94,6 +95,10 @@ def main(argv):
             break
 
         msg_id = msg.get_msgId()
+        if msg_id < 0:
+            bad_data_bytes += 1
+            continue
+
         msg_dict = msg.to_dict()
         if msg_id not in processors:
             processor = MsgProcessor(base_path, msg_id)
@@ -106,6 +111,7 @@ def main(argv):
     print("Stats in total:")
     for processor in processors.values():
         print("%s: %d messages" % (processor.msg_class.name, processor.message_count))
+    print("bad data %s bytes in total" % bad_data_bytes)
 
 
 if __name__ == "__main__":
