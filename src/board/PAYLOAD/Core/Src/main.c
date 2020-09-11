@@ -259,7 +259,7 @@ static void MX_I2C2_Init(void)
 
   /* USER CODE END I2C2_Init 1 */
   hi2c2.Instance = I2C2;
-  hi2c2.Init.ClockSpeed = 400000;
+  hi2c2.Init.ClockSpeed = 100000;
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c2.Init.OwnAddress1 = 0;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -421,7 +421,7 @@ static void MX_USART1_UART_Init(void)
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.Mode = UART_MODE_TX;
   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
   if (HAL_HalfDuplex_Init(&huart1) != HAL_OK)
@@ -471,10 +471,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_BLUEPILL_GPIO_Port, LED_BLUEPILL_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_REL_BOARD_GPIO_Port, LED_REL_BOARD_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(I2C_INT_GPIO_Port, I2C_INT_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, LED_REL_BOARD_Pin|I2C_INT_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : LED_BLUEPILL_Pin */
   GPIO_InitStruct.Pin = LED_BLUEPILL_Pin;
@@ -485,7 +482,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : LED_REL_BOARD_Pin */
   GPIO_InitStruct.Pin = LED_REL_BOARD_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_REL_BOARD_GPIO_Port, &GPIO_InitStruct);
@@ -493,7 +490,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : TIME_Pin */
   GPIO_InitStruct.Pin = TIME_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(TIME_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : I2C_INT_Pin */
@@ -504,8 +501,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(I2C_INT_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 
