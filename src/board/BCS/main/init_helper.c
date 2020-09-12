@@ -124,7 +124,7 @@ static void task_led(void *arg) {
 
 void init_basic(void) {
 #ifndef ITS_ESP_DEBUG
-	xTaskCreatePinnedToCore(task_led, "Led", configMINIMAL_STACK_SIZE + 2000, 0, 1, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_led, "Led", configMINIMAL_STACK_SIZE + 1500, 0, 1, 0, tskNO_AFFINITY);
 #endif
 	//Initialize NVS
 	esp_err_t ret = nvs_flash_init();
@@ -158,6 +158,13 @@ void init_basic(void) {
 	gpio_config(&init_pin_time);
 
 	gpio_install_isr_service(0);
+
+
+#if ITS_WIFI_SERVER
+	wifi_init_ap();
+#else
+	wifi_init_sta();
+#endif
 }
 
 #ifndef ITS_ESP_DEBUG
@@ -229,20 +236,19 @@ void init_helper(void) {
 
 	ESP_LOGD("SYSTEM", "Start wifi init");
 #if ITS_WIFI_SERVER
-	wifi_init_ap();
 	static ts_sync ts = {0};
 	ts.pin = ITS_PIN_UARTE_INT;
 	time_sync_from_sins_install(&ts);
 	radio_send_init();
 	vTaskDelay(1000 / portTICK_PERIOD_MS);
+#if ITS_SD_ON
 	while (sd_init()) {
 		ESP_LOGD("SYSTEM","Trying launch SD");
 	}
+#endif
 #else
-	wifi_init_sta();
 	time_sync_from_bcs_install(&ITS_WIFI_SERVER_ADDRESS);
 #endif
-
 
 	ESP_LOGD("SYSTEM", "Wifi inited");
 	log_collector_init(0);

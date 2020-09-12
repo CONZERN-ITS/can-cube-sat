@@ -125,6 +125,8 @@ static int _sdio(char *arg) {
 		sd_suspend();
 	} else if (strcmp(arg, "resume") == 0) {
 		sd_resume();
+	} else {
+		return -1;
 	}
 	return 0;
 }

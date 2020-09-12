@@ -49,10 +49,17 @@
 #define ITS_PIN_UARTR_TX	32
 #define ITS_PIN_M1			34
 
+#ifdef ITS_WIFI_SERVER
+#define ITS_PIN_SPISR_SCK	27
+#define ITS_PIN_SPISR_SS	26
+#define ITS_PIN_SPISR_MOSI	25
+#define ITS_PIN_SPISR_MISO	-1
+#else
 #define ITS_PIN_SPISR_SCK	25
 #define ITS_PIN_SPISR_SS	26
 #define ITS_PIN_SPISR_MOSI	27
 #define ITS_PIN_SPISR_MISO	-1
+#endif
 
 #if ITS_WIFI_SERVER
 #define ITS_PIN_LED			5
