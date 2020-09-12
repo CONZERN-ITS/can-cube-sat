@@ -44,7 +44,8 @@ static log_data_t log_data;
 int control_heat_init(shift_reg_handler_t *hsr, int shift, int task_on) {
 	memset(&log_data, 0, sizeof(log_data));
 	log_data.last_state = LOG_STATE_ON;
-
+	_hsr = hsr;
+	_shift = shift;
 
 	if (task_on) {
 		if (xTaskCreatePinnedToCore(log_collector_log_task, "Control heat log", configMINIMAL_STACK_SIZE + 1500, 0, 1, 0, tskNO_AFFINITY) != pdTRUE ||
