@@ -218,7 +218,6 @@ static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
 			uart_write_bytes(h->cfg.port, (char *) buf, s);
 
 			int t = uart_wait_tx_done(h->cfg.port, RADIO_SEND_DELAY / portTICK_PERIOD_MS);
-			printf("HM: %d\n", t);
 			int64_t now = esp_timer_get_time();
 
 			h->filled -= (Bs * (now - start)) / 1000000;

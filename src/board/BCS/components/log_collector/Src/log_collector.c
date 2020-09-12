@@ -60,7 +60,7 @@ void log_collector_log_task(log_data_t *data) {
 		if (data && data->last_state == LOG_STATE_OFF) {
 			vTaskDelete(0);
 		}
-		log_collector_add(LOG_COMP_ID_SHIFT_REG, &data);
+		log_collector_add(LOG_COMP_ID_SHIFT_REG, data);
 		vTaskDelay(LOG_COLLECTOR_ADD_PERIOD_COMMON / portTICK_PERIOD_MS);
 	}
 
