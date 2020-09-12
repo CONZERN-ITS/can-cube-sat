@@ -469,12 +469,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : DPC_RST_Pin DPD_RST_Pin */
-  GPIO_InitStruct.Pin = DPC_RST_Pin|DPD_RST_Pin;
+  /*Configure GPIO pin : DPC_RST_Pin */
+  GPIO_InitStruct.Pin = DPC_RST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(DPC_RST_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : DPD_RST_Pin */
+  GPIO_InitStruct.Pin = DPD_RST_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(DPD_RST_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LEDB5_Pin */
   GPIO_InitStruct.Pin = LEDB5_Pin;

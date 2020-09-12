@@ -41,9 +41,20 @@ typedef struct {
 } battery_row_t;
 battery_row_t bat_row[BATTERY_MAX_ROW_COUNT];
 
+int _battery_set_dp_voltage(struct ad527x_t *hdp, float voltage, float v_bot, float v_top) {
+    uint16_t t = (voltage - v_bot) * hdp->cfg.max_pos / (v_top - v_bot);
+    return ad527x_setResistaneRaw(hdp, t);
+}
 void task_battery_control_init(void *arg) {
     ad527x_init(&had_in, AD527x_050, &hi2c2, AD527X_I2CADDR_ADDR_VDD << 1);
     ad527x_init(&had_out, AD527x_050, &hi2c2, AD527X_I2CADDR_ADDR_GND << 1);
+    int rc = ad527x_setResistaneRaw(&had_out, 100);
+    printf("rc = %d\n", rc);
+    for (int i = 0; i < BATTERY_MAX_ROW_COUNT; i++) {
+        for (int j = 0; j < BATTERY_IN_ROW; j++) {
+            bat_row[i].last_working[j] = 0;
+        }
+    }
 }
 
 static void update_temp(battery_row_t *bat, int size) {
@@ -103,10 +114,6 @@ static void update_state(battery_row_t *bat) {
     }
     }
 }
-int _battery_set_dp_voltage(struct ad527x_t *hdp, float voltage, float v_bot, float v_top) {
-    uint16_t t = (voltage - v_bot) * hdp->cfg.max_pos / (v_top - v_bot);
-    return ad527x_setResistaneRaw(hdp, t);
-}
 
 
 int battery_update_dpd_voltage(float bus_voltage) {
@@ -132,6 +139,7 @@ void update_dcdc(void) {
 }
 
 void task_battery_control_update(void *arg) {
+    return;
     update_temp(bat_row, BATTERY_MAX_ROW_COUNT);
     for (int i = 0; i < BATTERY_MAX_ROW_COUNT; i++) {
         update_state(&bat_row[i]);
