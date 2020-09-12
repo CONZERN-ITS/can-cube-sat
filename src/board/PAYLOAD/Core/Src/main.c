@@ -490,7 +490,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : TIME_Pin */
   GPIO_InitStruct.Pin = TIME_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(TIME_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : I2C_INT_Pin */
