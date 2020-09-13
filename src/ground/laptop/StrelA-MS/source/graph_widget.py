@@ -31,7 +31,7 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
             if (self.max_arr_len is not None) and (len(self.arr) > self.max_arr_len):
                 self.arr = self.arr[len(self.arr) - self.max_arr_len:-1]
 
-            self.curve.setData(self.arr)
+            self.curve.setData(self.arr[NumPy.argsort(self.arr[:,0])])
 
         def clear(self):
             self.arr = None
@@ -101,6 +101,7 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
                         for j in range(data_len):
                             curve = pack[:,[0, j + 1]]
                             curve = curve[~NumPy.isnan(curve).any(axis=1)]
+                            curve = curve[~NumPy.isinf(curve).any(axis=1)]
                             curve[:, 0] -= self.time_shift
                             plot[1][int(plot[2][i - 1]) + j].show_data(curve)
 
