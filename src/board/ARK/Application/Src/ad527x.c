@@ -8,10 +8,12 @@
 #include "ad527x.h"
 
 #define  AD527X_CMD_RDAC_WR  1
+#define  AD527X_CMD_TP50_STORE  3
 #define  AD527X_CMD_RESET    4
 #define  AD527X_CMD_CTL_WR   7
 
 #define  AD527X_CTL_RDAC_WR_EN   0b0010
+#define  AD527X_CTL_TP50_WR_EN   0b0001
 
 #define AD527X_TIMEOUT 500
 
@@ -47,6 +49,21 @@ void ad527x_init(struct ad527x_t *had, enum ad527x_type type, I2C_HandleTypeDef 
 int ad527x_setResistaneRaw(struct ad527x_t *had, uint16_t val) {
     return ad527x_sendCmd(had, AD527X_CMD_RDAC_WR, val, AD527X_TIMEOUT);
 }
+
+int ad527x_store_to_TP50(struct ad527x_t *had) {
+    int rc = ad527x_sendCmd(had, AD527X_CMD_CTL_WR, AD527X_CTL_TP50_WR_EN, AD527X_TIMEOUT);
+    if (!rc) {
+        return rc;
+    }
+    rc = ad527x_sendCmd(had, AD527X_CMD_TP50_STORE, 0, AD527X_TIMEOUT);
+    if (!rc) {
+        return rc;
+    }
+    while (ad527x_sendCmd(had, AD527X_CMD_CTL_WR, AD527X_CTL_RDAC_WR_EN, AD527X_TIMEOUT));
+    return rc;
+
+}
+
 int ad527x_setResistane(struct ad527x_t *had, float val) {
     if (val > had->cfg.kohms * 1000) {
         val = had->cfg.kohms * 1000;

@@ -31,4 +31,6 @@ void ad527x_init(struct ad527x_t *had, enum ad527x_type type, I2C_HandleTypeDef 
 
 int ad527x_setResistaneRaw(struct ad527x_t *had, uint16_t val);
 
+int ad527x_store_to_TP50(struct ad527x_t *had);
+
 int ad527x_setResistane(struct ad527x_t *had, float val);
