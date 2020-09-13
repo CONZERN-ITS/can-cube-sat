@@ -48,7 +48,11 @@ int _battery_set_dp_voltage(struct ad527x_t *hdp, float voltage, float v_bot, fl
 void task_battery_control_init(void *arg) {
     ad527x_init(&had_in, AD527x_050, &hi2c2, AD527X_I2CADDR_ADDR_VDD << 1);
     ad527x_init(&had_out, AD527x_050, &hi2c2, AD527X_I2CADDR_ADDR_GND << 1);
-    int rc = ad527x_setResistaneRaw(&had_out, 100);
+    int rc = ad527x_setResistaneRaw(&had_out, 0);
+    volatile int t = 0;
+    if (t) {
+        t = ad527x_store_to_TP50(&had_out);
+    }
     printf("rc = %d\n", rc);
     for (int i = 0; i < BATTERY_MAX_ROW_COUNT; i++) {
         for (int j = 0; j < BATTERY_IN_ROW; j++) {
@@ -139,6 +143,7 @@ void update_dcdc(void) {
 }
 
 void task_battery_control_update(void *arg) {
+    volatile int rc = ad527x_setResistaneRaw(&had_out, 0);
     return;
     update_temp(bat_row, BATTERY_MAX_ROW_COUNT);
     for (int i = 0; i < BATTERY_MAX_ROW_COUNT; i++) {
