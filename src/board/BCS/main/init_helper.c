@@ -58,8 +58,16 @@ static gpio_config_t init_pin_time = {
 	.pin_bit_mask = 1ULL << ITS_PIN_TIME
 };
 
+static gpio_config_t init_pin_pl_kvcc = {
+	.mode = GPIO_MODE_OUTPUT_OD,
+	.pull_up_en = GPIO_PULLUP_ENABLE,
+	.pull_down_en = GPIO_PULLDOWN_DISABLE,
+	.intr_type = GPIO_INTR_DISABLE,
+	.pin_bit_mask = 1ULL << ITS_PIN_PL_VCC
+};
+
 static uart_config_t init_pin_uart = {
-	.baud_rate = 115200,
+	.baud_rate = 57600,
 	.data_bits = UART_DATA_8_BITS,
 	.parity = UART_PARITY_DISABLE,
 	.stop_bits = UART_STOP_BITS_1,
@@ -156,7 +164,7 @@ void init_basic(void) {
 
 	//time sync
 	gpio_config(&init_pin_time);
-
+	gpio_config(&init_pin_pl_kvcc);
 	gpio_install_isr_service(0);
 
 
@@ -206,6 +214,11 @@ void init_helper(void) {
 	control_vcc_bsk_enable(3, 1);
 	control_vcc_bsk_enable(4, 1);
 	control_vcc_bsk_enable(5, 1);
+	vTaskDelay(1000/portTICK_PERIOD_MS);
+	//control_vcc_pl_enable(1);
+
+	int t = gpio_set_level(ITS_PIN_PL_VCC, 1);
+	ESP_LOGD("SYSTEM", "---------------------HEH: 0x%d", t);
 	control_magnet_init(&hsr, 2, 3);
 	control_heat_init(&hsr, 1, 0);
 

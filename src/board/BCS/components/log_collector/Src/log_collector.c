@@ -23,19 +23,25 @@ static void log_collector_task(void *arg) {
 		mavlink_bcu_stats_t mbs = {0};
 		mavlink_message_t msg = {0};
 		struct timeval tv = {0};
-		gettimeofday(0, &tv);
+		gettimeofday(&tv, 0);
 		mbs.time_s = tv.tv_sec;
 		mbs.time_us = tv.tv_usec;
 
-		mbs.sd_elapsed_time_from_msg 	= coll->log_data[LOG_COMP_ID_SD].ellapsed_time;
-		mbs.sd_error_count 				= coll->log_data[LOG_COMP_ID_SD].error_count;
-		mbs.sd_last_error 				= coll->log_data[LOG_COMP_ID_SD].last_error;
-		mbs.sd_last_state 				= coll->log_data[LOG_COMP_ID_SD].last_state;
+		mbs.sd_elapsed_time_from_msg 			= coll->log_data[LOG_COMP_ID_SD].ellapsed_time;
+		mbs.sd_error_count 						= coll->log_data[LOG_COMP_ID_SD].error_count;
+		mbs.sd_last_error 						= coll->log_data[LOG_COMP_ID_SD].last_error;
+		mbs.sd_last_state 						= coll->log_data[LOG_COMP_ID_SD].last_state;
+
+		mbs.sins_comm_elapsed_time_from_msg 	= coll->log_data[LOG_COMP_ID_SINC_COMM].ellapsed_time;
+		mbs.sins_comm_error_count 				= coll->log_data[LOG_COMP_ID_SINC_COMM].error_count;
+		mbs.sins_comm_last_error 				= coll->log_data[LOG_COMP_ID_SINC_COMM].last_error;
+		mbs.sins_comm_last_state 				= coll->log_data[LOG_COMP_ID_SINC_COMM].last_state;
+
 
 		mavlink_msg_bcu_stats_encode(mavlink_system, COMP_ANY_0, &msg, &mbs);
 		its_rt_sender_ctx_t ctx = {0};
 		ctx.from_isr = 0;
-		its_rt_route(&ctx, &msg, 100 / portTICK_PERIOD_MS);
+		its_rt_route(&ctx, &msg, 0);
 		vTaskDelayUntil(&xLastWakeTime, LOG_COLLECTOR_SEND_PERIOD / portTICK_PERIOD_MS);
 	}
 }
@@ -63,5 +69,4 @@ void log_collector_log_task(log_data_t *data) {
 		log_collector_add(LOG_COMP_ID_SHIFT_REG, data);
 		vTaskDelay(LOG_COLLECTOR_ADD_PERIOD_COMMON / portTICK_PERIOD_MS);
 	}
-
 }

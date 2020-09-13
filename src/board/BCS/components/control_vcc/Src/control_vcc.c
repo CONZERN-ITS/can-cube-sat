@@ -24,6 +24,7 @@ static int _pl_pin;
 void control_vcc_init(shift_reg_handler_t *hsr, int shift, uint32_t pl_pin) {
 	_shift = shift;
 	_hsr = hsr;
+	_pl_pin = pl_pin;
 	for (int i = 0; i < ITS_BSK_COUNT; i++) {
 		shift_reg_set_level_pin(_hsr, _shift + i * ITS_SR_PACK_SIZE, 1);
 	}
