@@ -32,6 +32,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include <math.h>
+
 #include <stm32f4xx_hal.h>
 #include <diag/Trace.h>
 
@@ -165,7 +167,7 @@ int UpdateDataAll(void)
 	stateSINS_isc_prev.tv.tv_usec = stateSINS_isc.tv.tv_usec;
 
 
-	float beta = 0.33;
+	float beta = 6.0;
 	if ((error_system.lsm6ds3_error == 0) && (error_system.lis3mdl_error == 0))
 		MadgwickAHRSupdate(quaternion, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], magn[0], magn[1], magn[2], dt, beta);
 	else if (error_system.lsm6ds3_error == 0)
@@ -202,7 +204,7 @@ int UpdateDataAll(void)
 void SINS_updatePrevData(void)
 {
 	for(int i = 0; i < 3; i++)
-		if (stateSINS_isc.quaternion[i] != stateSINS_isc.quaternion[i])		//проверка на нан
+		if (isnanf(stateSINS_isc.quaternion[i]))		//проверка на нан
 			return;
 
 	__disable_irq();
@@ -327,15 +329,22 @@ int main(int argc, char* argv[])
 
 		error_system_check();
 
+		uint32_t prew_time = HAL_GetTick();
+		uint32_t time = 0;
+
 		for (; ; )
 		{
 			for (int u = 0; u < 5; u++)
 			{
+//				uint32_t x = HAL_GetTick();
 				for (int i = 0; i < 30; i++)
 				{
+
 					UpdateDataAll();
 					SINS_updatePrevData();
 				}
+
+//				volatile uint32_t z = HAL_GetTick() - x;
 
 		//		struct timeval tmv;
 		//		time_svc_world_timers_get_time(&tmv);
@@ -344,20 +353,18 @@ int main(int argc, char* argv[])
 		//		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", tm);
 		//		trace_printf("time is %s\n", buffer);
 
-
-				mavlink_sins_isc(&stateSINS_isc);
 				gps_poll();
 
 				const int gps_cfg_status = gps_configure_status();
 				if (gps_cfg_status != -EWOULDBLOCK) // конфигурация уже закончилась
 				{
 					error_system.gps_config_error = gps_cfg_status;
-					error_system.gps_reconfig_counter++;
 					uint32_t now = HAL_GetTick();
 
 					if (gps_cfg_status != 0)
 					{
 						// закончилась но плохо. Начинаем опять
+						error_system.gps_reconfig_counter++;
 						gps_configure_begin();
 					}
 					else if (now - last_gps_fix_packet_ts > ITS_SINS_GPS_MAX_NOFIX_TIME)
@@ -367,6 +374,7 @@ int main(int argc, char* argv[])
 						// Перед этим сделаем вид, что фикс у нас был
 						// Так как он редко появляется сразу, а если это время не обновить -
 						// то эта ветка будет срабатывать постоянно
+						error_system.gps_reconfig_counter++;
 						last_gps_fix_packet_ts = HAL_GetTick();
 						gps_configure_begin();
 					}
@@ -375,17 +383,27 @@ int main(int argc, char* argv[])
 						// Если слишком давно не приходило интересных нам пакетов
 						// Отправляем gps в реконфигурацию
 						// Сбросим время,чтобы не крутитсяв этом цикле вечно, если что-то пошло не так
+						error_system.gps_reconfig_counter++;
 						last_gps_packet_ts = HAL_GetTick();
 						gps_configure_begin();
 					}
 				}
+
+				if ((error_system.lsm6ds3_error != 0) && (error_system.lis3mdl_error != 0))
+					continue;
+				mavlink_sins_isc(&stateSINS_isc);
+
 			}
+			time = HAL_GetTick();
+			if (time - prew_time < 1000)
+				continue;
+			prew_time = time;
 			mavlink_timestamp();
 			own_temp_packet();
-		}
 
-		error_mems_read();
-		mavlink_errors_packet();
+			error_mems_read();
+			mavlink_errors_packet();
+		}
 	}
 	return 0;
 }

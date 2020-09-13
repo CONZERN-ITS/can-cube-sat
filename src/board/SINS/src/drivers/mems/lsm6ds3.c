@@ -134,10 +134,10 @@ int mems_lsm6ds3_get_xl_data_g(int16_t * data, float * accel)
 		vmv(accel, (float*)offset_vector, accel);
 		mxv((float(*)[3])transform_matrix, accel, accel);
 
-		float tmp = accel[0];
-		accel[0] = accel[1];
-		accel[1] = tmp;
-		accel[2] = -accel[2];
+//		float tmp = accel[0];
+//		accel[0] = accel[1];
+//		accel[1] = tmp;
+//		accel[2] = -accel[2];
 #endif
 
 	return 0;
