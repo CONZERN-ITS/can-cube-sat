@@ -84,8 +84,8 @@ typedef struct gps_cfg_state_t
 static gps_cfg_state_t _cfg_state = {0};
 
 //! Набор сообщений конфигурации приёмника
-extern const uint8_t * ublox_neo7_cfg_msgs[];
-extern const uint8_t * ublox_cfg_msgs[];
+//extern const uint8_t * ublox_neo7_cfg_msgs[];
+extern const uint8_t * ublox_neo6_cfg_msgs[];
 
 static void _internal_packet_callback(void * user_arg, const ubx_any_packet_t * packet_);
 static int _init_uart(void);
@@ -455,7 +455,7 @@ void gps_configure_begin()
 	if (state->enabled)
 		return; // Мы уже конфигурируемся
 
-	state->packet_ptr = ublox_cfg_msgs;
+	state->packet_ptr = ublox_neo6_cfg_msgs;
 	state->sent_packet_ack_status = GPS_CFG_ACK_STATUS_IDLE;
 
 	state->enabled = 1;
