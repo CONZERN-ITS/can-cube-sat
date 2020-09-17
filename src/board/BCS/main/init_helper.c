@@ -57,7 +57,7 @@ static gpio_config_t init_pin_time = {
 	.intr_type = GPIO_INTR_DISABLE,
 	.pin_bit_mask = 1ULL << ITS_PIN_TIME
 };
-
+/*
 static gpio_config_t init_pin_pl_kvcc = {
 	.mode = GPIO_MODE_OUTPUT_OD,
 	.pull_up_en = GPIO_PULLUP_ENABLE,
@@ -65,7 +65,7 @@ static gpio_config_t init_pin_pl_kvcc = {
 	.intr_type = GPIO_INTR_DISABLE,
 	.pin_bit_mask = 1ULL << ITS_PIN_PL_VCC
 };
-
+*/
 static uart_config_t init_pin_uart = {
 	.baud_rate = 57600,
 	.data_bits = UART_DATA_8_BITS,
@@ -123,7 +123,7 @@ static void task_led(void *arg) {
 	gpio_config(&gc);
 	int x = 1;
 	while (1) {
-		int rc = gpio_set_level(ITS_PIN_LED, x);
+		gpio_set_level(ITS_PIN_LED, x);
 		x ^= 1;
 		vTaskDelay(200 / portTICK_PERIOD_MS);
 	}
@@ -164,7 +164,7 @@ void init_basic(void) {
 
 	//time sync
 	gpio_config(&init_pin_time);
-	gpio_config(&init_pin_pl_kvcc);
+	//gpio_config(&init_pin_pl_kvcc);
 	gpio_install_isr_service(0);
 
 
@@ -175,20 +175,6 @@ void init_basic(void) {
 #endif
 }
 
-#ifndef ITS_ESP_DEBUG
-static void test_task(void *arg) {
-	int x = 1;
-	shift_reg_load(&hsr);
-	while (1) {
-		vTaskDelay(5000 / portTICK_PERIOD_MS);/*
-		for (int i = 0; i < hsr.arr_size; i++) {
-			hsr.byte_arr[i] ^= 0xFF;
-		}
-
-		shift_reg_load(&hsr);*/
-	}
-}
-#endif
 void init_helper(void) {
 	init_basic();
 

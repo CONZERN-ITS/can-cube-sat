@@ -80,13 +80,13 @@ static int add(const mavlink_message_t *msg) {
 		ESP_LOGE("radio", "No free space for new msg");
 		return 1;
 	}
-	ESP_LOGI("radio", "Add: %d %d:%d", msg->msgid, msg->sysid, msg->compid);
 #define F(a) case a: return 2;
 	switch (msg->msgid) {
 	RADIO_SEND_BAN(F)
 	default: break;
 	}
 #undef F
+	ESP_LOGI("radio", "Add: %d %d:%d", msg->msgid, msg->sysid, msg->compid);
 	int id = get_hash(msg->msgid);
 	if (id >= 0) {
 		arr_buf_size++;
@@ -201,6 +201,7 @@ static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
 
 
 	while (size > 0) {
+		ESP_LOGD("radio", "Cycle 1 %d", h->filled);
 		if (h->filled >= h->cfg.high_thrld) {
 			//Если буфер достаточно заполнен, то можно пока не отправлять.
 			uint32_t ttt = Bs * portTICK_PERIOD_MS;
@@ -245,6 +246,7 @@ static void task_send(void *arg) {
 	int msg_count = 0;
 	while (1) {
 
+		ESP_LOGD("radio", "Cycle 0 %d", msg_count);
 		msg_container *st = 0;
 		while (1) {
 			st = get_best(msg_count);
