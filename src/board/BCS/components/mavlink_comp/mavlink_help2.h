@@ -19,15 +19,9 @@ const static uint8_t mavlink_system = CUBE_2_PFU;
 #endif
 
 
-static int channel = -1;
 /*
  * Для упращения управления каналами
  */
-static mavlink_channel_t mavlink_claim_channel(void) {
-	channel++;
-	assert(channel < MAVLINK_COMM_NUM_BUFFERS);
-	return (mavlink_channel_t) channel;
-}
-
+mavlink_channel_t mavlink_claim_channel(void);
 
 #endif /* COMPONENTS_MAVLINK_COMP_MAVLINK_HELP2_H_ */
