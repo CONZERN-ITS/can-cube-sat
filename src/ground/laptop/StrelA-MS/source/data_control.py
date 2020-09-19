@@ -116,8 +116,9 @@ class MAVDataSource():
         
         if data is None:
             raise TypeError("Message type not supported")
+            
 
-        print(data)
+        #print(data)
         return data
 
     def get_data(self, msg):
@@ -131,7 +132,7 @@ class MAVDataSource():
             return [(name_prefix + 'CURRENT',
                      NumPy.array([[msg.time_s + msg.time_us/1000000,
                                    msg.current]])),
-                    (name_prefix + 'AREA_' + str(msg.area_id) + '_VOLTAGE',
+                    (name_prefix + 'VOLTAGE',
                      NumPy.array([[msg.time_s + msg.time_us/1000000,
                                    msg.voltage]]))]
         if msg.get_type() == "SINS_ISC":
@@ -188,21 +189,12 @@ class MAVDataSource():
         if msg.get_type() == "PLD_STATS":
             return [(name_prefix + 'PLD_STATS',
                      NumPy.array([[msg.time_s + msg.time_us/1000000,
-                                   msg.bme_init_error,
                                    msg.bme_last_error,
                                    msg.bme_error_counter,
-                                   msg.adc_init_error,
                                    msg.adc_last_error,
                                    msg.adc_error_counter,
-                                   msg.me2o2_init_error,
-                                   msg.me2o2_last_error,
-                                   msg.me2o2_error_counter,
-                                   msg.mics6814_init_error,
-                                   msg.mics6814_last_error,
-                                   msg.mics6814_error_counter,
-                                   msg.integrated_init_error,
-                                   msg.integrated_last_error,
-                                   msg.integrated_error_counter]]))]
+                                   msg.resets_count,
+                                   msg.reset_cause]]))]
         if msg.get_type() == "I2C_LINK_STATS":
             return [(name_prefix + 'I2C_LINK_STATS',
                      NumPy.array([[msg.time_s + msg.time_us/1000000,
@@ -216,6 +208,79 @@ class MAVDataSource():
                                    msg.restarts_cnt,
                                    msg.listen_done_cnt,
                                    msg.last_error]]))]
+        if msg.get_type() == "RSSI":
+            return [(name_prefix + 'RSSI',
+                     NumPy.array([[0,
+                                   msg.rssi]]))]
+        if msg.get_type() == "BCU_STATS":
+            return [(name_prefix + 'BCU_STATS',
+                     NumPy.array([[msg.time_s + msg.time_us/1000000,
+                                   msg.sd_last_error,
+                                   msg.sd_error_count,
+                                   msg.sd_elapsed_time_from_msg,
+                                   msg.sd_last_state,
+
+                                   msg.imi_last_error,
+                                   msg.imi_error_count,
+                                   msg.imi_elapsed_time_from_msg,
+                                   msg.imi_last_state,
+
+                                   msg.sins_comm_last_error,
+                                   msg.sins_comm_error_count,
+                                   msg.sins_comm_elapsed_time_from_msg,
+                                   msg.sins_comm_last_state,
+
+                                   msg.wifi_last_error,
+                                   msg.wifi_error_count,
+                                   msg.wifi_elapsed_time_from_msg,
+                                   msg.wifi_last_state,
+
+                                   msg.network_last_error,
+                                   msg.network_error_count,
+                                   msg.network_elapsed_time_from_msg,
+                                   msg.network_last_state,
+
+                                   msg.sensors_last_error,
+                                   msg.sensors_error_count,
+                                   msg.sensors_elapsed_time_from_msg,
+                                   msg.sensors_last_state,
+
+                                   msg.time_sync_last_error,
+                                   msg.time_sync_error_count,
+                                   msg.time_sync_elapsed_time_from_msg,
+                                   msg.time_sync_last_state,
+
+                                   msg.radio_last_error,
+                                   msg.radio_error_count,
+                                   msg.radio_elapsed_time_from_msg,
+                                   msg.radio_last_state,
+
+                                   msg.shift_reg_last_error,
+                                   msg.shift_reg_error_count,
+                                   msg.shift_reg_elapsed_time_from_msg,
+                                   msg.shift_reg_last_state]]))]
+        if msg.get_type() == "SINS_ERRORS":
+            return [(name_prefix + 'SINS_ERRORS',
+                     NumPy.array([[msg.time_s + msg.time_us/1000000,
+                                   msg.gps_init_error,
+                                   msg.gps_config_error,
+                                   msg.lsm6ds3_error,
+                                   msg.lis3mdl_error,
+
+                                   msg.analog_sensor_init_error,
+                                   msg.gps_uart_init_error,
+                                   msg.mems_i2c_error,
+                                   msg.uart_transfer_init_error,
+
+                                   msg.uart_transfer_error,
+                                   msg.timers_error,
+                                   msg.rtc_error,
+                                   msg.mems_i2c_error_counter,
+
+                                   msg.lsm6ds3_error_counter,
+                                   msg.lis3mdl_error_counter,
+                                   msg.gps_reconfig_counter,
+                                   msg.reset_counter]]))]
         return None
 
     def stop(self):
