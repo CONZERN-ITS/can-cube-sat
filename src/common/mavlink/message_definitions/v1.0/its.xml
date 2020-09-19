@@ -12,6 +12,12 @@
       <entry value="1" name="GCS_RADIO">
         <description>Ground radio</description>
       </entry>
+      <entry value="2" name="GCS_AS">
+        <description>Ground radio</description>
+      </entry>
+      <entry value="3" name="GCS_AMCS">
+        <description>Ground radio</description>
+      </entry>
       <entry value="10" name="CUBE_1_BCU">
         <description>Board control unit</description>
       </entry>
@@ -81,6 +87,21 @@
       </entry>
       <entry value="5" name="MCU_RESET_LOWPOWER">
         <description>Low power caused reset</description>
+      </entry>
+    </enum>
+    <enum name="AS_COMMANDS">
+      <description>Antenna system commands list</description>
+      <entry value="0" name="AS_SETUP_ELEVATION_ZERO">
+        <description>Find elevation zero using vertical stop triggers</description>
+      </entry>
+      <entry value="1" name="AS_TARGET_TO_NORTH">
+        <description>Target antenna to north</description>
+      </entry>
+      <entry value="2" name="SETUP_COORD_SYSTEM">
+        <description>Setup antenna system coord system using internal sensors</description>
+      </entry>
+      <entry value="3" name="STATE_REQUEST">
+        <description>In response to this command antenna system have to send state message</description>
       </entry>
     </enum>
   </enums>
@@ -193,7 +214,6 @@
       <field type="float" name="o2_conc" units="percent">O2 concetration</field>
     </message>
 
-
     <message id="50020" name="I2C_LINK_STATS">
       <description>
         This message contains a statistics for its-i2c-link module which is present in BCU, ARK and PAYLOAD subsystems 
@@ -212,7 +232,6 @@
       <field type="uint16_t" name="listen_done_cnt">listen done HAL events count</field>
       <field type="uint32_t" name="last_error">last error code</field>
     </message>
-
 
     <message id="50021" name="PLD_STATS">
       <description>
@@ -321,6 +340,63 @@
       <field type="int32_t" name="gps_reconfig_counter"> gps reconfiguration counter</field>
 
       <field type="uint8_t" name="reset_counter"> reset counter</field>
+    </message>
+
+    <!-- Сообщения антенной системы -->
+    <message id="50025" name="AS_HARD_MANUAL_CONTROL">
+      <description>Antenna system manual control without angle recording</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="float" name="azimuth" units="grad">Azimuth angle delta</field>
+      <field type="float" name="elevation" units="grad">Elevation angle delta</field>
+    </message>
+
+    <message id="50026" name="AS_SOFT_MANUAL_CONTROL">
+      <description>Antenna system manual control with angle recording</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="float" name="azimuth" units="grad">Azimuth angle delta</field>
+      <field type="float" name="elevation" units="grad">Elevation angle delta</field>
+    </message>
+
+    <message id="50027" name="AS_SEND_COMMAND">
+      <description>Send command to antenna system </description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="uint8_t" name="command_id" enum="AS_COMMANDS">Time since the Unix epoch</field>
+    </message>
+
+    <message id="50028" name="AS_AUTOMATIC_CONTROL">
+      <description>Set antenna system automatic control mode</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="uint8_t" name="mode">Boolean turning on (1) or off (0) auto control</field>
+    </message>
+
+    <message id="50029" name="AS_STATE">
+      <description>Antenna system state</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="float" name="azimuth" units="grad">Absulute azimuth</field>
+      <field type="float" name="elevation" units="grad">Absulute elevation</field>
+
+      <field type="float[3]" name="ecef" units="m">ECEF X Y Z antenna system coordinates</field>
+      <field type="float[2]" name="lat_lon" units="grad">Antenna system wgs84 coordinates</field>
+      <field type="float" name="alt" units="m">Antenna system wgs84 altitude</field>
+
+      <field type="float[9]" name="top_to_ascs">Transition matrix from topocentric to antenna system coordinate system</field>
+
+      <field type="uint64_t" name="target_time_s" units="s">Last coordinates received time</field>
+      <field type="uint32_t" name="target_time_us" units="us">Last coordinates received time</field>
+      <field type="float" name="target_azimuth" units="grad">Last target azimuth</field>
+      <field type="float" name="target_elevation" units="grad">Last target elevation</field>
+
+      <field type="uint8_t" name="mode">Boolean indicating auto (1) or manual (0) control mod is on</field>
     </message>
 
   </messages>
