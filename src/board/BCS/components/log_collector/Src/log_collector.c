@@ -61,7 +61,9 @@ void log_collector_add_to(log_collector_t *hlc, log_comp_id_t id, const log_data
 void log_collector_add(log_comp_id_t id, const log_data_t *data) {
 	_coll.log_data[id] = *data;
 }
-void log_collector_log_task(log_data_t *data) {
+void log_collector_log_task(void *data_) {
+	log_data_t * data = (log_data_t*)data_;
+
 	while (1) {
 		if (data && data->last_state == LOG_STATE_OFF) {
 			vTaskDelete(0);

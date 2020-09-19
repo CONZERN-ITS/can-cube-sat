@@ -100,7 +100,6 @@ static int _sr_set(char *arg) {
 }
 
 static int _radio_send(char *arg) {
-	char buf[100];
 	char *ptr = arg;
 	while (!isspace(*ptr)) {
 		ptr++;
@@ -115,7 +114,6 @@ static int _radio_send(char *arg) {
 }
 
 static int _sdio(char *arg) {
-	char buf[100];
 	char *ptr = arg;
 	while (!isspace(*ptr)) {
 		ptr++;
