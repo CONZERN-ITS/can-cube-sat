@@ -58,6 +58,7 @@ static int get_hash(int id) {
 #define RADIO_SEND_BUF_SIZE 30
 static msg_container arr_buf[RADIO_SEND_BUF_SIZE];
 static int arr_buf_size = 0;
+static SemaphoreHandle_t buf_mutex;
 
 /*
  * Поиск контейнера для данного сообщения в буфере arr_buf
@@ -158,7 +159,9 @@ static void task_recv(void *arg) {
 		//Ожидаем получения сообщения
 		xQueueReceive(tid.queue, &msg, portMAX_DELAY);
 
+		xSemaphoreTake(buf_mutex, portMAX_DELAY);
 		update_msg(&msg);
+		xSemaphoreGive(buf_mutex);
 	}
 }
 /*
@@ -181,6 +184,10 @@ typedef struct  {
 	int64_t last_checked; //Время в мс последнего изменения filled
 } safe_send_t;
 
+static uint32_t divide_round_up(uint32_t a, uint32_t b) {
+	return (a + b - 1) / b;
+}
+
 /*
  * Безопасная отправка данных через уарт. Необходимо инициализировать
  * h->cfg.
@@ -199,15 +206,17 @@ static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
 	h->filled -= ((now - h->last_checked) * Bs) / 1000000;
 	h->filled = h->filled > 0 ? h->filled : 0;
 
-
 	while (size > 0) {
-		ESP_LOGD("radio", "Cycle 1 %d", h->filled);
-		if (h->filled >= h->cfg.high_thrld) {
+		//ESP_LOGD("radio", "Cycle 1 %d", h->filled);
+		if (h->filled >= (int)h->cfg.high_thrld) {
 			//Если буфер достаточно заполнен, то можно пока не отправлять.
-			uint32_t ttt = Bs * portTICK_PERIOD_MS;
-			uint32_t ticks = ((h->filled - h->cfg.low_thrld) * 1000 + ttt - 1) / ttt;
+			uint32_t ticks = divide_round_up((h->filled - h->cfg.low_thrld) * 1000, Bs * portTICK_PERIOD_MS);
+			if (ticks >= 3000 / portTICK_PERIOD_MS) {
+				ticks = 3000 / portTICK_PERIOD_MS;
+			}
 			vTaskDelay(ticks);
 			h->filled -= ticks * portTICK_PERIOD_MS * Bs / 1000;
+			h->filled = h->filled > 0 ? h->filled : 0;
 		} else {
 			uint32_t maxSend = (h->cfg.buffer_size - h->filled);
 
@@ -246,10 +255,12 @@ static void task_send(void *arg) {
 	int msg_count = 0;
 	while (1) {
 
-		ESP_LOGD("radio", "Cycle 0 %d", msg_count);
+		//ESP_LOGD("radio", "Cycle 0 %d", msg_count);
 		msg_container *st = 0;
 		while (1) {
+			xSemaphoreTake(buf_mutex, portMAX_DELAY);
 			st = get_best(msg_count);
+			xSemaphoreGive(buf_mutex);
 
 			if (st == 0) {
 				//Нет сообщений, которые можно было бы отправить! Подождем...
@@ -259,9 +270,11 @@ static void task_send(void *arg) {
 			}
 		}
 		uint8_t buf[MAVLINK_MAX_PACKET_LEN] = {0};
+		xSemaphoreTake(buf_mutex, portMAX_DELAY);
 		int count = mavlink_msg_to_send_buffer(buf, &st->last_msg);
 		st->is_updated = 0; //Сообщение внутри контейнера уже не свежее
 		st->last = msg_count;//Запоминаем, когда сообщение было отправленно в последний раз
+		xSemaphoreGive(buf_mutex);
 		/*
 		for (int i = 0; i < count; i++) {
 			buf[i] = i;
@@ -283,7 +296,7 @@ void radio_send_resume(void) {
 }
 
 void radio_send_init(void) {
-
+	buf_mutex = xSemaphoreCreateMutex();
 	xTaskCreatePinnedToCore(task_send, "Radio send", configMINIMAL_STACK_SIZE + 4000, 0, 3, &task_s, tskNO_AFFINITY);
 	xTaskCreatePinnedToCore(task_recv, "Radio buf", configMINIMAL_STACK_SIZE + 4000, 0, 4, &task_r, tskNO_AFFINITY);
 }
