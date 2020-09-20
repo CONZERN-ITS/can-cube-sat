@@ -153,7 +153,7 @@ int sensors_init(void)
 }
 
 
-static void lsm6ds3_check_repeat_data(int16_t * data, int16_t * prew_data, int * counter)
+static int lsm6ds3_check_repeat_data(int16_t * data, int16_t * prew_data, int * counter)
 {
 	if (memcmp(data, prew_data, 3 * sizeof(int16_t)) == 0)
 		(*counter)++;
@@ -166,13 +166,15 @@ static void lsm6ds3_check_repeat_data(int16_t * data, int16_t * prew_data, int *
 
 	if ((*counter) == 5)
 	{
-		lsm6ds3_failure(44);
 		(*counter) = 0;
+		return 44;
 	}
+
+	return 0;
 }
 
 
-static void lis3mdl_check_repeat_data(int16_t * data, int16_t * prew_data, int * counter)
+static int lis3mdl_check_repeat_data(int16_t * data, int16_t * prew_data, int * counter)
 {
 	if (memcmp(data, prew_data, 3 * sizeof(int16_t)) == 0)
 		(*counter)++;
@@ -185,9 +187,11 @@ static void lis3mdl_check_repeat_data(int16_t * data, int16_t * prew_data, int *
 
 	if ((*counter) == 5)
 	{
-		lis3mdl_failure(44);
 		(*counter) = 0;
+		return 44;
 	}
+
+	return 0;
 }
 
 
@@ -206,7 +210,13 @@ int sensors_lsm6ds3_read(float * accel, float * gyro)
 	int error = mems_lsm6ds3_get_g_data_raw(data_gyro);
 	mems_lsm6ds3_get_g_data_rps(data_gyro, gyro);
 
-	lsm6ds3_check_repeat_data(data_gyro, mems_state.gyro_prew, &mems_state.lsm6ds3_gyro_data_counter);
+	if (error)
+	{
+		lsm6ds3_failure(error);
+		return error;
+	}
+
+	error = lsm6ds3_check_repeat_data(data_gyro, mems_state.gyro_prew, &mems_state.lsm6ds3_gyro_data_counter);
 
 	if (error)
 	{
@@ -214,12 +224,19 @@ int sensors_lsm6ds3_read(float * accel, float * gyro)
 		return error;
 	}
 
+
 	int16_t data_accel[3] = {0};
 
 	error = mems_lsm6ds3_get_xl_data_raw(data_accel);
 	mems_lsm6ds3_get_xl_data_g(data_accel, accel);
 
-	lsm6ds3_check_repeat_data(data_accel, mems_state.accel_prew, &mems_state.lsm6ds3_accel_data_counter);
+	if (error)
+	{
+		lsm6ds3_failure(error);
+		return error;
+	}
+
+	error = lsm6ds3_check_repeat_data(data_accel, mems_state.accel_prew, &mems_state.lsm6ds3_accel_data_counter);
 
 	if (error)
 	{
@@ -246,7 +263,13 @@ int sensors_lis3mdl_read(float * magn)
 	int error = mems_lis3mdl_get_m_data_raw(data_magn);
 	mems_lis3mdl_get_m_data_mG(data_magn, magn);
 
-	lis3mdl_check_repeat_data(data_magn, mems_state.magn_prew, &mems_state.lis3mdl_magn_data_counter);
+	if (error)
+	{
+		lis3mdl_failure(error);
+		return error;
+	}
+
+	error = lis3mdl_check_repeat_data(data_magn, mems_state.magn_prew, &mems_state.lis3mdl_magn_data_counter);
 
 	if (error)
 	{

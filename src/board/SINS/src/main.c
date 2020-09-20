@@ -158,7 +158,7 @@ int UpdateDataAll(void)
 	/////////////////////////////////////////////////////
 	/////////////	UPDATE QUATERNION  //////////////////
 	/////////////////////////////////////////////////////
-	float quaternion[4] = {0, 0, 0, 0};
+	float quaternion[4] = {1, 0, 0, 0};
 
 
 	float dt = ((float)((stateSINS_isc.tv.tv_sec * 1000 + stateSINS_isc.tv.tv_usec / 1000)  - (stateSINS_isc_prev.tv.tv_sec * 1000 + stateSINS_isc_prev.tv.tv_usec / 1000))) / 1000;
@@ -186,11 +186,23 @@ int UpdateDataAll(void)
 	float accel_ISC[3] = {0, 0, 0};
 	vect_rotate(accel, quaternion, accel_ISC);
 
+	if (0 == error_system.lsm6ds3_error)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			accel_ISC[i] -= state_zero.accel_staticShift[i];
+			stateSINS_isc.accel[i] = accel_ISC[i];
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 3; i++)
+			stateSINS_isc.accel[i] = 0;
+	}
+
 	//	Copy vectors to global structure
 	for (int i = 0; i < 3; i++)
 	{
-		accel_ISC[i] -= state_zero.accel_staticShift[i];
-		stateSINS_isc.accel[i] = accel_ISC[i];
 		stateSINS_isc.magn[i] = magn[i];
 	}
 

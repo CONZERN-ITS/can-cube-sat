@@ -89,7 +89,6 @@ def parse(input_connection, output_connections, packet_log, raw_log, print_logs,
         r1 = input_connection.read(1)
 
         if r1 == b'':
-            print("aa")
             continue
 
         input_connection.timeout = 1.0
