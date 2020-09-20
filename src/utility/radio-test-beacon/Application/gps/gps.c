@@ -16,7 +16,7 @@
 extern const uint8_t * ublox_neo7_cfg_msgs[];
 extern const uint8_t * ublox_neo6_cfg_msgs[];
 
-#define ACTIVE_GPS_CONFIG ublox_neo7_cfg_msgs
+#define ACTIVE_GPS_CONFIG ublox_neo6_cfg_msgs
 
 #define GPS_CYCLOBUFFER_SIZE 1024
 #define GPS_LINBUFFER_SIZE 256
@@ -196,6 +196,7 @@ int gps_init(
 int gps_flush(void)
 {
 	_uart_cycle_buffer_tail = _uart_cycle_buffer_head;
+	return 0;
 }
 
 
