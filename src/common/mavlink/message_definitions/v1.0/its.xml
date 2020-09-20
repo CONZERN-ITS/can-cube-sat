@@ -377,7 +377,15 @@
       <field type="uint8_t" name="mode">Boolean turning on (1) or off (0) auto control</field>
     </message>
 
-    <message id="50029" name="AS_STATE">
+    <message id="50029" name="AS_MOTORS_ENABLE_MODE">
+      <description>Set motors enable pin state</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="uint8_t" name="mode">Boolean seting hight (1) or low (0) motors enable pin state</field>
+    </message>
+
+    <message id="50030" name="AS_STATE">
       <description>Antenna system state</description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
@@ -390,6 +398,7 @@
       <field type="float" name="alt" units="m">Antenna system wgs84 altitude</field>
 
       <field type="float[9]" name="top_to_ascs">Transition matrix from topocentric to antenna system coordinate system</field>
+      <field type="float[9]" name="dec_to_top">Transition matrix from decart WGS84 to topocentric coordinate system</field>
 
       <field type="uint64_t" name="target_time_s" units="s">Last coordinates received time</field>
       <field type="uint32_t" name="target_time_us" units="us">Last coordinates received time</field>
@@ -397,6 +406,8 @@
       <field type="float" name="target_elevation" units="grad">Last target elevation</field>
 
       <field type="uint8_t" name="mode">Boolean indicating auto (1) or manual (0) control mod is on</field>
+
+      <field type="uint8_t[2]" name="enable">Boolean indicating hight (1) or low (0) motors enable pin state</field>
     </message>
 
   </messages>
