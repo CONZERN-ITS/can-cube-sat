@@ -104,12 +104,17 @@ static const uint8_t cfg_pm2_56[] = {
 		0x2C, 0x00, // длина
 		0x01, // version
 		0x06, 0x00, 0x00, // reserved1, reserved2, reserved3
-		0x00, 0x98, 0x03, 0x00, // flags
-		0xE8, 0x03, 0x00, 0x00, // update period
-		0xE8, 0x03, 0x00, 0x00, // search period
-		0x00, 0x00, 0x00, 0x00, // grid offset
-		0x02, 0x00, // on time
-		0x00, 0x00, // min acq time
+		0x0E, 0x98, 0x03, 0x00, // flags: из важных:
+								// cyclic tracking, update eph, update rtc, doNotEnterOff
+		0xE8, 0x03, 0x00, 0x00, // update period (1000 ms)
+		0x10, 0x27, 0x00, 0x00, // search period (10 000 ms) u-center говорит что это не меняется
+		0x00, 0x00, 0x00, 0x00, // grid offset - используется только в on/off режиме
+		0xFF, 0xFF, // on time - время в состоянии TRACKING в которое входим сразу после фикса
+					// по завершению TRACKING переход в Power Optimized Tracking
+					// Дефолтное значение 0x02, 0x00. Попробуем замаксить активный трекинг
+		0xFF, 0xFF, // min acq time - минимальное время в режиме поиска спутников
+					// (ACQUSITION) (которое перед TRACKING).
+					// Дефолтное значение 0x00 0x00. Попробуем замаксить.
 		0x2C, 0x01, // reserved 4
 		0x00, 0x00, // reserved 5
 		0x4F, 0xC1, 0x03, 0x00, // reserved 6
@@ -125,9 +130,9 @@ static const uint8_t cfg_pm2_56[] = {
 static const uint8_t cfg_rate_62[] = {
 		0x06, 0x08, // msgid clsid
 		0x06, 0x00, // len
-		0xE8, 0x03, // meas rate
-		0x01, 0x00, // nav rate
-		0x01, 0x00  // time ref
+		0xE8, 0x03, // meas rate (ms)
+		0x01, 0x00, // nav rate (Hz)
+		0x01, 0x00  // time ref (0 - UTC, 1 - GPS, 2 - GLO, и там много еще)
 };
 
 // Поставим power mode на "ничего не экономить"
