@@ -27,7 +27,7 @@
 #define ITS_ESP_RELEASE
 #endif
 
-#define ITS_SD_ON					0
+#define ITS_SD_ON					1
 
 #define ITS_SR_PACK_SIZE 4 //Размер пачек на сдвиговых регистрах
 
