@@ -24,7 +24,7 @@ int uplink_init(void)
 	HAL_StatusTypeDef hal_error;
 
 	huplink_uart.Instance = USART1;					//uart для отправки данных на ESP
-	huplink_uart.Init.BaudRate = 115200;
+	huplink_uart.Init.BaudRate = 57600;
 	huplink_uart.Init.WordLength = UART_WORDLENGTH_8B;
 	huplink_uart.Init.StopBits = UART_STOPBITS_1;
 	huplink_uart.Init.Parity = UART_PARITY_NONE;

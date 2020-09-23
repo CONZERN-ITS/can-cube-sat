@@ -37,6 +37,8 @@ static void gps_packet_callback(void * user_arg, const ubx_any_packet_t * packet
 			const ubx_navsol_packet_t * navsol_packet = (ubx_navsol_packet_t *)packet;
 			switch (navsol_packet->gps_fix)
 			{
+			default:
+				// Тут бывает time_fix_only например
 			case UBX_FIX_TYPE__NO_FIX:
 				do_blinks(1, 30);
 				break;
@@ -47,10 +49,6 @@ static void gps_packet_callback(void * user_arg, const ubx_any_packet_t * packet
 
 			case UBX_FIX_TYPE__3D:
 				do_blinks(3, 30);
-				break;
-
-			default:
-				do_blinks(4, 30);
 				break;
 			}
 		}

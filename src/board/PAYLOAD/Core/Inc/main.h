@@ -71,12 +71,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define LED_BLUEPILL_Pin GPIO_PIN_13
 #define LED_BLUEPILL_GPIO_Port GPIOC
-#define LED_REL_BOARD_Pin GPIO_PIN_10
-#define LED_REL_BOARD_GPIO_Port GPIOA
-#define TIME_Pin GPIO_PIN_15
-#define TIME_GPIO_Port GPIOA
-#define TIME_EXTI_IRQn EXTI15_10_IRQn
-#define I2C_INT_Pin GPIO_PIN_5
+#define LED_REL_BOARD_Pin GPIO_PIN_5
+#define LED_REL_BOARD_GPIO_Port GPIOB
+#define TIME_Pin GPIO_PIN_6
+#define TIME_GPIO_Port GPIOB
+#define TIME_EXTI_IRQn EXTI9_5_IRQn
+#define I2C_INT_Pin GPIO_PIN_7
 #define I2C_INT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 

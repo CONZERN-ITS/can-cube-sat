@@ -61,7 +61,8 @@ void uart_event_task(void *pvParameters)
 		}
 		//Waiting for UART event.
 		if(xQueueReceive(uart_queue, (void * )&event, (portTickType)portMAX_DELAY)) {
-			log_data.ellapsed_time = (esp_timer_get_time() - last_time) / 1000;
+			last_time = esp_timer_get_time();
+
 			fflush(stdout);
 			bzero(buffer, TASK_BUF_SIZE);
 			//ESP_LOGI(TAG, "uart[%d] event:", uart);
@@ -74,6 +75,14 @@ void uart_event_task(void *pvParameters)
 			/*We'd better handler data event fast, there would be much more data events than
 			other types of events. If we take too much time on data event, the queue might
 			be full.*/
+			case UART_FIFO_OVF: {
+				ESP_LOGE(TAG, "hw fifo overflow");
+			}
+				/* no break */
+			case UART_BUFFER_FULL: {
+				ESP_LOGI(TAG, "ring buffer full");
+			}
+				/* no break */
 			case UART_DATA:{
 				//ESP_LOGI(TAG, "[UART DATA]: %d", event.size);
 				uint16_t remain = event.size;
@@ -92,16 +101,6 @@ void uart_event_task(void *pvParameters)
 
 				break;
 			}
-			//Event of HW FIFO overflow detected
-			case UART_FIFO_OVF:
-
-				ESP_LOGI(TAG, "hw fifo overflow");
-				break;
-			//Event of UART ring buffer full
-			case UART_BUFFER_FULL:
-				ESP_LOGI(TAG, "ring buffer full");
-				break;
-			//Event of UART RX break detected
 			case UART_BREAK:
 				ESP_LOGI(TAG, "uart rx break");
 				break;
@@ -122,7 +121,16 @@ void uart_event_task(void *pvParameters)
 	}
 	vTaskDelete(NULL);
 }
-
+static void _log(log_data_t *data) {
+	while (1) {
+		if (data && data->last_state == LOG_STATE_OFF) {
+			vTaskDelete(0);
+		}
+		log_data.ellapsed_time = (esp_timer_get_time() - last_time) / 1000;
+		log_collector_add(LOG_COMP_ID_SINC_COMM, data);
+		vTaskDelay(LOG_COLLECTOR_ADD_PERIOD_COMMON / portTICK_PERIOD_MS);
+	}
+}
 int uart_mavlink_install(uart_port_t uart_num, QueueHandle_t uart_queue) {
 	mavlink_channel_t chan = mavlink_claim_channel();
 
@@ -134,7 +142,7 @@ int uart_mavlink_install(uart_port_t uart_num, QueueHandle_t uart_queue) {
 	last_time = esp_timer_get_time() / 1000;
 	//Create a task to handler UART event from ISR
 	if (xTaskCreate(uart_event_task, "uart_mavlink", 4096, t, 1, NULL) != pdTRUE ||
-			xTaskCreate(log_collector_log_task, "uart_mavlink_log", 1500, t, 2, NULL) != pdTRUE) {
+			xTaskCreate(_log, "uart_mavlink_log", 1500, &log_data, 2, NULL) != pdTRUE) {
 		log_data.last_state = LOG_STATE_OFF;
 		free(t);
 		ESP_LOGE(TAG, "Can't create task");

@@ -5,6 +5,7 @@ from pymavlink.dialects.v20 import its as mavlink2
 from pymavlink import mavutil
 
 import time
+import math
 import datetime
 
 import numpy as NumPy
@@ -49,6 +50,16 @@ class AutoGuidance():
         self.mag_calibration_matrix = mag_calibration_matrix
         self.mag_calibration_vector = mag_calibration_vector
         self.accel_recount_matrix = accel_recount_matrix
+        self.mag = NumPy.zeros((3, 1))
+        self.accel = NumPy.zeros((3, 1))
+        self.lat_lon = NumPy.array([0.0, 0.0])
+        self.alt = 0.0
+        self.x_y_z = NumPy.zeros((3, 1))
+        self.dec_to_top = NumPy.zeros((3, 3))
+        self.top_to_gcs = NumPy.zeros((3, 3))
+        self.decl = 0
+        self.target_alpha = 0
+        self.target_phi = 0
 
     def setup_v_limit_pins_map(self, p_limit_pins_map, n_limit_pins_map):
         self.v_stepper_motor.setup_stop_triggers(list(p_limit_pins_map.keys()), list(n_limit_pins_map.keys()))
@@ -68,7 +79,6 @@ class AutoGuidance():
             motor.setup()
 
     def setup_coord_system(self):
-        self.mag = NumPy.zeros((3, 1))
         for i in range(self.mag_sample_size):
             self.mag += NumPy.array(lis3mdl.get_mag_data_G()).reshape((3, 1))
         self.mag /= self.mag_sample_size
@@ -78,17 +88,13 @@ class AutoGuidance():
             self.mag = NumPy.dot(self.mag_calibration_matrix, self.mag)
         if self.mag_recount_matrix is not None:
             self.mag = NumPy.dot(self.mag_recount_matrix, self.mag)
-
-        self.accel = NumPy.zeros((3, 1))
+        
         for i in range(self.accel_sample_size):
             self.accel += NumPy.array(lsm6ds3.get_accel_data_mg()).reshape((3, 1))
         self.accel /= self.accel_sample_size
         if self.accel_recount_matrix is not None:
             self.accel = NumPy.dot(self.accel_recount_matrix, self.accel)
 
-        self.lan_lot = NumPy.array([0.0, 0.0])
-        self.alt = 0.0
-        self.x_y_z = NumPy.zeros((3, 1))
         start_time = time.time()
         sample_size = 0
         while ((sample_size < self.gps_sample_size) and ((start_time - time.time()) < self.act_timeout)):
@@ -115,15 +121,33 @@ class AutoGuidance():
         self.top_to_gcs = top_to_gcscs_matix(self.mag, self.accel, self.decl)
         self.setup_current_pos_as_def()
 
-    def setup_v_stepper_motor(self, dm422):
-        self.v_stepper_motor = dm422
-
-    def setup_h_stepper_motor(self, dm422):
-        self.h_stepper_motor = dm422
-
     def setup_current_pos_as_def(self):
         self.phi = 0
         self.alpha = 0
+
+    def get_alpha(self):
+        return self.alpha
+
+    def get_phi(self):
+        return self.phi
+
+    def get_target_alpha(self):
+        return self.target_alpha
+
+    def get_target_phi(self):
+        return self.target_phi
+
+    def get_x_y_z(self):
+        return self.x_y_z
+
+    def get_lat_lon(self):
+        return self.lat_lon
+
+    def get_alt(self):
+        return self.alt
+
+    def get_top_to_gcs(self):
+        return self.top_to_gcs
 
     def aiming (self, object_coords):
         vector = object_coords - self.x_y_z
@@ -137,6 +161,9 @@ class AutoGuidance():
         vector_alpha = degrees(acos(vector[0]))
         if vector[1] < 0:
             vector_alpha = 360 - vector_alpha
+
+        self.target_alpha = vector_alpha
+        self.target_phi = vector_phi
 
         self.rotate_v_stepper_motor(vector_phi - self.phi)
         if vector[2] < 0.995:
@@ -172,18 +199,24 @@ class AutoGuidance():
         self.h_stepper_motor.set_enable(False)
         return trigger
 
-    def setup_north_as_zero(self):
-        vector = self.mag
-        vector[2] = 0
+    def target_to_north(self):
+        vector = self.top_to_gcs[:,0]
         self.rotate_antenna(vector)
-        time.sleep(1)
-        #self.setup_coord_system()
 
     def setup_v_limit_pos_as_beg(self):
         trigger = None
         while trigger is None:
             trigger = self.rotate_v_stepper_motor(-180)
         self.rotate_v_stepper_motor(-self.phi)
+
+def send_message(self, connection, msg):
+    msg.get_header().srcSystem = 0
+    msg.get_header().srcComponent = 1
+    connection.mav.send(msg, False)
+
+def convert_time_from_s_to_s_us(self, current_time):
+    current_time = math.modf(current_time)
+    return (int(current_time[1]), int(current_time[0] * 1000000))
 
 if __name__ == '__main__':
     i2c = i2cdev.I2C(PORT_I2C)
@@ -208,6 +241,7 @@ if __name__ == '__main__':
                                            stop_state=H_STOP_STATE)
 
     data_connection = mavutil.mavlink_connection(DATA_CONNECTION_STR)
+    command_connection = mavutil.mavlink_connection(COMMAND_CONNECTION_STR)
 
     ACS = AutoGuidance(lis3mdl=lis3mdl,
                        lsm6ds3=lsm6ds3,
@@ -228,17 +262,58 @@ if __name__ == '__main__':
     ACS.setup_h_limit_pins_map(H_P_LIMIT_PINS_MAP, H_N_LIMIT_PINS_MAP)
     ACS.setup_coord_system()
     ACS.setup_v_limit_pos_as_beg()
-    ACS.setup_nort_as_zero()
+    ACS.target_to_north()
     start_time = time.time()
     gps = None
+    auto_control_mod = False
+    target_last_time = (0, 0)
 
     while True:
-        msg = data_connection.recv_match(blocking=True)
-        if msg.get_type() == "GPS_UBX_NAV_SOL":
-            gps = NumPy.array(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100, ndmin=2)
+        msg = command_connection.recv_match()
+        if msg is not None:
+            if msg.get_type() == "AS_AUTOMATIC_CONTROL":
+                auto_control_mod = bool(msg.mode)
+            elif msg.get_type() == "AS_HARD_MANUAL_CONTROL":
+                ACS.v_stepper_motor.rotate_using_angle(msg.elevation)
+                ACS.h_stepper_motor.rotate_using_angle(msg.azimuth)
+            elif msg.get_type() == "AS_SOFT_MANUAL_CONTROL":
+                ACS.rotate_v_stepper_motor(msg.elevation)
+                ACS.rotate_h_stepper_motor(msg.azimuth)
+            elif msg.get_type() == "AS_SEND_COMMAND":
+                enum = mavutil.mavlink.enums['AS_COMMANDS']
+                if enum[msg.command_id].description == 'AS_SETUP_ELEVATION_ZERO':
+                    ACS.setup_v_limit_pos_as_beg()
+                elif enum[msg.command_id].description == 'AS_TARGET_TO_NORTH':
+                    ACS.target_to_north()
+                elif enum[msg.command_id].description == 'SETUP_COORD_SYSTEM':
+                    ACS.setup_coord_system()
 
-        if (time.time() - start_time) < ANTENNA_AIMING_PERIOD:
-            if gps is not None:
-               ACS.aiming(gps)
+            if msg.get_type() != 'BAD_DATA':
+                current_time = convert_time_from_s_to_s_us(time.time())
+                send_message(command_connection, mavlink2.MAVLink_as_state_message(current_time[0],
+                                                                                   current_time[1],
+                                                                                   ACS.get_alpha(),
+                                                                                   ACS.get_phi(),
+                                                                                   list(ACS.get_x_y_z()),
+                                                                                   list(ACS.get_lat_lon()),
+                                                                                   ACS.get_alt,
+                                                                                   list(ACS.get_top_to_gcs()),
+                                                                                   target_last_time[0],
+                                                                                   target_last_time[1],
+                                                                                   ACS.get_target_alpha(),
+                                                                                   ACS.get_target_phi(),
+                                                                                   int(auto_control_mod)))
+
+        if auto_control_mod:
+            msg = data_connection.recv_match()
+            if msg.get_type() == "GPS_UBX_NAV_SOL":
+                target_last_time = (msg.time_s, msg.time_us)
+                gps = NumPy.array(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100, ndmin=2)
+
+            if (time.time() - start_time) < ANTENNA_AIMING_PERIOD:
+                if gps is not None:
+                   ACS.aiming(gps)
+
+
 
     i2c.close()

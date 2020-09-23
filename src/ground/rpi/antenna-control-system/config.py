@@ -1,6 +1,7 @@
 import numpy as NumPy
 
 DATA_CONNECTION_STR = 'udpin:0.0.0.0:41313'
+COMMAND_CONNECTION_STR = 'udpin:0.0.0.0:13404'
 
 PORT_I2C = 1
 I2C_TIMEOUT = 1

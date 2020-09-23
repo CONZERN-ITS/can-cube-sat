@@ -57,9 +57,17 @@ static gpio_config_t init_pin_time = {
 	.intr_type = GPIO_INTR_DISABLE,
 	.pin_bit_mask = 1ULL << ITS_PIN_TIME
 };
-
+/*
+static gpio_config_t init_pin_pl_kvcc = {
+	.mode = GPIO_MODE_OUTPUT_OD,
+	.pull_up_en = GPIO_PULLUP_ENABLE,
+	.pull_down_en = GPIO_PULLDOWN_DISABLE,
+	.intr_type = GPIO_INTR_DISABLE,
+	.pin_bit_mask = 1ULL << ITS_PIN_PL_VCC
+};
+*/
 static uart_config_t init_pin_uart = {
-	.baud_rate = 115200,
+	.baud_rate = 57600,
 	.data_bits = UART_DATA_8_BITS,
 	.parity = UART_PARITY_DISABLE,
 	.stop_bits = UART_STOP_BITS_1,
@@ -89,6 +97,11 @@ static imi_config_t imi_config = {
 	.save = common_packet_to_route,
 	.alloc = common_imi_alloc
 };
+
+static op_ip_t hop;
+shift_reg_handler_t hsr;
+
+
 #ifndef ITS_ESP_DEBUG
 static spi_bus_config_t buscfg={
 	.miso_io_num = ITS_PIN_SPISR_MISO,
@@ -98,11 +111,6 @@ static spi_bus_config_t buscfg={
 	.quadhd_io_num = -1, //not used
 	.max_transfer_sz = ITS_BSK_COUNT * 5
 };
-shift_reg_handler_t hsr;
-
-static op_ip_t hop;
-
-
 
 static void task_led(void *arg) {
 	gpio_config_t gc = {
@@ -115,7 +123,7 @@ static void task_led(void *arg) {
 	gpio_config(&gc);
 	int x = 1;
 	while (1) {
-		int rc = gpio_set_level(ITS_PIN_LED, x);
+		gpio_set_level(ITS_PIN_LED, x);
 		x ^= 1;
 		vTaskDelay(200 / portTICK_PERIOD_MS);
 	}
@@ -124,7 +132,7 @@ static void task_led(void *arg) {
 
 void init_basic(void) {
 #ifndef ITS_ESP_DEBUG
-	xTaskCreatePinnedToCore(task_led, "Led", configMINIMAL_STACK_SIZE + 2000, 0, 1, 0, tskNO_AFFINITY);
+	xTaskCreatePinnedToCore(task_led, "Led", configMINIMAL_STACK_SIZE + 1500, 0, 1, 0, tskNO_AFFINITY);
 #endif
 	//Initialize NVS
 	esp_err_t ret = nvs_flash_init();
@@ -156,24 +164,17 @@ void init_basic(void) {
 
 	//time sync
 	gpio_config(&init_pin_time);
-
+	//gpio_config(&init_pin_pl_kvcc);
 	gpio_install_isr_service(0);
-}
 
-#ifndef ITS_ESP_DEBUG
-static void test_task(void *arg) {
-	int x = 1;
-	shift_reg_load(&hsr);
-	while (1) {
-		vTaskDelay(5000 / portTICK_PERIOD_MS);/*
-		for (int i = 0; i < hsr.arr_size; i++) {
-			hsr.byte_arr[i] ^= 0xFF;
-		}
 
-		shift_reg_load(&hsr);*/
-	}
-}
+#if ITS_WIFI_SERVER
+	wifi_init_ap();
+#else
+	wifi_init_sta();
 #endif
+}
+
 void init_helper(void) {
 	init_basic();
 
@@ -199,6 +200,11 @@ void init_helper(void) {
 	control_vcc_bsk_enable(3, 1);
 	control_vcc_bsk_enable(4, 1);
 	control_vcc_bsk_enable(5, 1);
+	vTaskDelay(1000/portTICK_PERIOD_MS);
+	//control_vcc_pl_enable(1);
+
+	int t = gpio_set_level(ITS_PIN_PL_VCC, 1);
+	ESP_LOGD("SYSTEM", "---------------------HEH: 0x%d", t);
 	control_magnet_init(&hsr, 2, 3);
 	control_heat_init(&hsr, 1, 0);
 
@@ -229,20 +235,19 @@ void init_helper(void) {
 
 	ESP_LOGD("SYSTEM", "Start wifi init");
 #if ITS_WIFI_SERVER
-	wifi_init_ap();
 	static ts_sync ts = {0};
 	ts.pin = ITS_PIN_UARTE_INT;
 	time_sync_from_sins_install(&ts);
 	radio_send_init();
 	vTaskDelay(1000 / portTICK_PERIOD_MS);
+#if ITS_SD_ON
 	while (sd_init()) {
 		ESP_LOGD("SYSTEM","Trying launch SD");
 	}
+#endif
 #else
-	wifi_init_sta();
 	time_sync_from_bcs_install(&ITS_WIFI_SERVER_ADDRESS);
 #endif
-
 
 	ESP_LOGD("SYSTEM", "Wifi inited");
 	log_collector_init(0);
