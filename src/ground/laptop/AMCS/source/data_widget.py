@@ -175,6 +175,13 @@ class PositionWidget(QtWidgets.QWidget):
         visualization_layout.addWidget(self.pos_panel)
         visualization_layout.setStretch(0, 3)
 
+        frame = self.setup_frame(visualization_layout)
+        frame_layout = QtWidgets.QVBoxLayout(frame)
+        self.mode_lbl = self.setup_label(frame_layout, 'None', QtCore.Qt.AlignHCenter)
+        font = QtGui.QFont()
+        font.setPointSize(15)
+        self.mode_lbl.setFont(font)
+
         pos_layout = QtWidgets.QHBoxLayout()
         visualization_layout.addLayout(pos_layout)
 
@@ -184,8 +191,10 @@ class PositionWidget(QtWidgets.QWidget):
         self.setup_h_line(frame_layout)
         text_list = ['Azimuth:', 'Elevation:', 'Time:']
         self.target_param_lbl = []
-        for i in range(3):
+        for i in range(len(text_list)):
             layout = QtWidgets.QHBoxLayout()
+            if i == 2:
+                self.setup_h_line(frame_layout)
             frame_layout.addLayout(layout)
             self.setup_label(layout, text_list[i])
             self.target_param_lbl.append(self.setup_label(layout, 'None'))
@@ -196,8 +205,10 @@ class PositionWidget(QtWidgets.QWidget):
         self.setup_h_line(frame_layout)
         text_list = ['Azimuth:', 'Elevation:', 'Time:']
         self.antenna_param_lbl = []
-        for i in range(3):
+        for i in range(len(text_list)):
             layout = QtWidgets.QHBoxLayout()
+            if i == 2:
+                self.setup_h_line(frame_layout)
             frame_layout.addLayout(layout)
             self.setup_label(layout, text_list[i])
             self.antenna_param_lbl.append(self.setup_label(layout, 'None'))
@@ -205,6 +216,18 @@ class PositionWidget(QtWidgets.QWidget):
 
         data_layout = QtWidgets.QVBoxLayout()
         self.layout.addLayout(data_layout)
+
+        frame = self.setup_frame(data_layout)
+        frame_layout = QtWidgets.QVBoxLayout(frame)
+        self.setup_label(frame_layout, 'Decart WGS84 to topocentric\ncoordinate system transition matrix', QtCore.Qt.AlignHCenter)
+        self.dec_to_top_lbl = []
+        for i in range(3):
+            layout = QtWidgets.QHBoxLayout()
+            frame_layout.addLayout(layout)
+            lbl_list = []
+            for j in range(3):
+                lbl_list.append(self.setup_label(layout,'None'))
+            self.dec_to_top_lbl.append(lbl_list)
 
         frame = self.setup_frame(data_layout)
         frame_layout = QtWidgets.QVBoxLayout(frame)
@@ -222,39 +245,82 @@ class PositionWidget(QtWidgets.QWidget):
         frame_layout = QtWidgets.QVBoxLayout(frame)
         text_list = ['Latitude:', 'Longitude:', 'Altitude:']
         self.lat_lon_alt_lbl = []
-        for i in range(3):
+        for i in range(len(text_list)):
             layout = QtWidgets.QHBoxLayout()
             frame_layout.addLayout(layout)
             self.setup_label(layout, text_list[i])
             self.lat_lon_alt_lbl.append(self.setup_label(layout, 'None'))
 
         frame = self.setup_frame(data_layout)
-        frame_layout = QtWidgets.QHBoxLayout(frame)
-        self.setup_label(frame_layout, 'Ecef:')
+        frame_layout = QtWidgets.QVBoxLayout(frame)
+        text_list = ['EcefX:', 'EcefY:', 'EcefZ:']
         self.ecef_lbl = []
-        for j in range(3):
-            self.ecef_lbl.append(self.setup_label(frame_layout,'None'))
+        for i in range(len(text_list)):
+            layout = QtWidgets.QHBoxLayout()
+            frame_layout.addLayout(layout)
+            self.setup_label(layout, text_list[i])
+            self.ecef_lbl.append(self.setup_label(layout, 'None'))
+
+        frame = self.setup_frame(data_layout)
+        frame_layout = QtWidgets.QVBoxLayout(frame)
+        text_list = ['Vertical motor:', 'Horizontal motor:']
+        self.enable_lbl = []
+        for i in range(len(text_list)):
+            layout = QtWidgets.QHBoxLayout()
+            frame_layout.addLayout(layout)
+            self.setup_label(layout, text_list[i])
+            self.enable_lbl.append(self.setup_label(layout, 'None'))
 
     def setup_ui_design(self):
         pass
 
     def change_antenna_pos(self, data):
         for i in range(3):
-            self.antenna_param_lbl[i].setText(str(data[i]))
+            self.antenna_param_lbl[i].setText('{:.2f}'.format(data[i]))
+        self.pos_panel.set_antenna_pos(data[0], -data[1])
 
     def change_target_pos(self, data):
         for i in range(3):
-            self.target_param_lbl[i].setText(str(data[i]))
+            self.target_param_lbl[i].setText('{:.2f}'.format(data[i]))
+        self.pos_panel.set_target_pos(data[0], -data[1])
 
     def change_lat_lon_alt(self, data):
         for i in range(3):
-            self.lat_lon_alt_lbl[i].setText(str(data[i]))
+            self.lat_lon_alt_lbl[i].setText('{:.3f}'.format(data[i]))
 
     def change_ecef(self, data):
         for i in range(3):
-            self.ecef_lbl[i].setText(str(data[i]))
+            self.ecef_lbl[i].setText('{:.3f}'.format(data[i]))
 
     def change_top_to_ascs_matrix(self, data):
         for i in range(3):
             for j in range (3):
-                self.top_to_ascs_lbl[i][j].setText(str(data[i * 3 + j]))
+                self.top_to_ascs_lbl[i][j].setText('{:.3f}'.format(data[i * 3 + j]))
+
+    def change_dec_to_top_matrix(self, data):
+        for i in range(3):
+            for j in range (3):
+                self.dec_to_top_lbl[i][j].setText('{:.3f}'.format(data[i * 3 + j]))
+
+    def change_control_mode(self, mode):
+        font = self.mode_lbl.font()
+        if mode:
+            font.setWeight(QtGui.QFont.Black)
+            self.mode_lbl.setFont(font)
+            self.mode_lbl.setText('Automatic control')
+        else:
+            font.setWeight(QtGui.QFont.Medium)
+            self.mode_lbl.setFont(font)
+            self.mode_lbl.setText('Manual control')
+
+    def change_motors_enable(self, data):
+        font = QtGui.QFont()
+        for i in range(2):
+            if data[i]:
+                font.setWeight(QtGui.QFont.Black)
+                self.enable_lbl[i].setFont(font)
+                self.enable_lbl[i].setText('ON')
+            else:
+                font.setWeight(QtGui.QFont.Medium)
+                self.enable_lbl[i].setFont(font)
+                self.enable_lbl[i].setText('OFF')

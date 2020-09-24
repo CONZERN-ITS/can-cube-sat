@@ -1,12 +1,19 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
-import os.path
+import os
 from source import RES_ROOT
 APP_ICON_PATH = os.path.join(RES_ROOT, "images/StrelA_MS.png")
+
+os.environ['MAVLINK_DIALECT'] = "its"
+os.environ['MAVLINK20'] = "its"
+from pymavlink.dialects.v20 import its as mavlink2
+from pymavlink import mavutil
 
 from source import antenna
 from source import data_widget
 from source import pos_control_widget
 from source import log_widget
+
+import time
 
 
 class CentralWidget(QtWidgets.QWidget):
@@ -37,6 +44,9 @@ class CentralWidget(QtWidgets.QWidget):
         self.antenna.lat_lon_alt_changed.connect(self.position_widget.change_lat_lon_alt)
         self.antenna.ecef_changed.connect(self.position_widget.change_ecef)
         self.antenna.top_to_ascs_matrix_changed.connect(self.position_widget.change_top_to_ascs_matrix)
+        self.antenna.dec_to_top_matrix_changed.connect(self.position_widget.change_dec_to_top_matrix)
+        self.antenna.control_mode_changed.connect(self.position_widget.change_control_mode)
+        self.antenna.motors_enable_changed.connect(self.position_widget.change_motors_enable)
 
         self.position_control_widget.pos_control_panel.top_btn_clicked.connect(self.antenna.put_up)
         self.position_control_widget.pos_control_panel.bottom_btn_clicked.connect(self.antenna.put_down)
@@ -83,12 +93,12 @@ class MainWindow(QtWidgets.QMainWindow):
         def start(self):
             self._set_close_flag(False)
             close = False
-            self.connection = mavutil.mavlink_connection('udpin:' + ip + ':' + port)
+            self.connection = mavutil.mavlink_connection('udpin:' + self.ip + ':' + self.port)
             while not close:
                 try:
                     msg = self.connection.recv_match(blocking=True)
                 except Exception as e:
-                    pass
+                    print(e)
                 if msg is not None:
                     self.new_msg.emit(msg)
                 
@@ -127,6 +137,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.target_to_north_btn = self.toolbar.addAction('Turn target\nto north')
         self.target_to_north_btn.triggered.connect(self.antenna.target_to_north)
 
+        self.motors_enable_pin_high = self.toolbar.addAction('Pull high\nmotors enable pin')
+        self.motors_enable_pin_high.triggered.connect(self.antenna.pull_motors_enable_pin_high)
+
+        self.motors_enable_pin_low = self.toolbar.addAction('Pull low\nmotors enable pin')
+        self.motors_enable_pin_low.triggered.connect(self.antenna.pull_motors_enable_pin_low)
+
         self.setup_coord_system_btn = self.toolbar.addAction('Setup coord\nsystem')
         self.setup_coord_system_btn.triggered.connect(self.antenna.setup_coord_system)
 
@@ -147,6 +163,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data_manager.moveToThread(self.data_thread)
         self.data_thread.started.connect(self.data_manager.start)
         self.data_manager.new_msg.connect(self.antenna.new_msg_reaction)
+        self.data_thread.start()
 
     def setup_ui_design(self):
         self.resize(600, 800)
