@@ -97,7 +97,7 @@ class AutoGuidance():
 
         start_time = time.time()
         sample_size = 0
-        while ((sample_size < self.gps_sample_size) and ((start_time - time.time()) < self.act_timeout)):
+        while ((sample_size < self.gps_sample_size) and ((time.time() - start_time) < self.act_timeout)):
             data = gpsd.find_tpv_data()
             if gpsd.tpv_get_lat_lon(data) is None:
                 continue
@@ -105,7 +105,7 @@ class AutoGuidance():
                 continue
             if gpsd.tpv_get_x_y_z(data) is None:
                 continue
-            self.lan_lot += NumPy.array(gpsd.tpv_get_lat_lon(data))
+            self.lat_lon += NumPy.array(gpsd.tpv_get_lat_lon(data))
             self.alt += gpsd.tpv_get_alt(data)
             self.x_y_z += NumPy.array(gpsd.tpv_get_x_y_z(data)).reshape((3, 1))
             sample_size += 1
@@ -261,7 +261,7 @@ if __name__ == '__main__':
                        mag_sample_size=MAG_SAMPLE_SIZE,
                        accel_sample_size=ACCEL_SAMPLE_SIZE,
                        gps_sample_size=GPS_SAMPLE_SIZE,
-                       act_timeout=5,
+                       act_timeout=GPS_DATA_TIMEOUT,
                        mag_recount_matrix=MAG_RECOUNT_MATRIX,
                        mag_calibration_matrix=MAG_CALIBRATION_MATRIX,
                        mag_calibration_vector=MAG_CALIBRATION_VECTOR,

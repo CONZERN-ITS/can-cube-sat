@@ -13,6 +13,8 @@ ACCEL_SAMPLE_SIZE = 100
 MAG_SAMPLE_SIZE = 50
 GPS_SAMPLE_SIZE = 20
 
+GPS_DATA_TIMEOUT = 30
+
 MAG_RECOUNT_MATRIX = NumPy.array([[-1, 0, 0],
                                   [ 0, 0, 1],
                                   [ 0, 1, 0]])
