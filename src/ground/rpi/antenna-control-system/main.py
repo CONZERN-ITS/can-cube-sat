@@ -88,7 +88,7 @@ class AutoGuidance():
             self.mag = NumPy.dot(self.mag_calibration_matrix, self.mag)
         if self.mag_recount_matrix is not None:
             self.mag = NumPy.dot(self.mag_recount_matrix, self.mag)
-        
+
         for i in range(self.accel_sample_size):
             self.accel += NumPy.array(lsm6ds3.get_accel_data_mg()).reshape((3, 1))
         self.accel /= self.accel_sample_size
@@ -149,13 +149,23 @@ class AutoGuidance():
     def get_top_to_gcs(self):
         return self.top_to_gcs
 
-    def aiming (self, object_coords):
-        vector = object_coords - self.x_y_z
+    def get_dec_to_top(self):
+        return self.dec_to_top
+
+    def get_enable_state(self):
+        return (self.v_stepper_motor.get_enable_state(), self.h_stepper_motor.get_enable_state())
+
+    def recount_vector(self, vector):
         vector = NumPy.dot(self.dec_to_top, vector)
         vector = NumPy.dot(self.top_to_gcs, vector)
+        return vector
+
+    def aiming (self, object_coords):
+        vector = object_coords - self.x_y_z
+        vector = self.recount_vector(vector)
         self.rotate_antenna(vector)
 
-    def rotate_antenna (self, vector):
+    def count_target_angles(self, vector):
         vector = vector / NumPy.linalg.norm(vector)
         vector_phi = degrees(asin(vector[2]))
         vector_alpha = degrees(acos(vector[0]))
@@ -165,17 +175,21 @@ class AutoGuidance():
         self.target_alpha = vector_alpha
         self.target_phi = vector_phi
 
-        self.rotate_v_stepper_motor(vector_phi - self.phi)
-        if vector[2] < 0.995:
-            if abs(vector_alpha - self.alpha) > 180:
-                if self.alpha < vector_alpha:
-                    self.rotate_h_stepper_motor(vector_alpha - self.alpha - 360)
+    def rotate_antenna (self, vector):
+        self.count_target_angles(vector)
+        if (abs(self.target_phi - self.phi) > 0.2):
+            self.rotate_v_stepper_motor(self.target_phi - self.phi)
+        vector = vector / NumPy.linalg.norm(vector)
+        if (vector[2] < 0.995) and (abs(self.target_alpha - self.alpha) > 0.2):
+            if abs(self.target_alpha - self.alpha) > 180:
+                if self.alpha < self.target_alpha:
+                    self.rotate_h_stepper_motor(self.target_alpha - self.alpha - 360)
                     self.alpha += 360
                 else:
-                    self.rotate_h_stepper_motor(vector_alpha - self.alpha + 360)
+                    self.rotate_h_stepper_motor(self.target_alpha - self.alpha + 360)
                     self.alpha -= 360
             else:
-                self.rotate_h_stepper_motor(vector_alpha - self.alpha) 
+                self.rotate_h_stepper_motor(self.target_alpha - self.alpha) 
 
     def rotate_v_stepper_motor(self, ang):
         trigger = self.v_stepper_motor.rotate_using_angle(ang)
@@ -184,8 +198,6 @@ class AutoGuidance():
         else:
             self.phi += self.v_stepper_motor.steps_to_angle(self.v_stepper_motor.get_last_steps_num(),
                                                             self.v_stepper_motor.get_last_steps_direction())
-        time.sleep(0.005)
-        self.v_stepper_motor.set_enable(False)
         return trigger
 
     def rotate_h_stepper_motor(self, ang):
@@ -195,8 +207,6 @@ class AutoGuidance():
         else:
             self.alpha += self.h_stepper_motor.steps_to_angle(self.h_stepper_motor.get_last_steps_num(),
                                                               self.h_stepper_motor.get_last_steps_direction())
-        time.sleep(0.005)            
-        self.h_stepper_motor.set_enable(False)
         return trigger
 
     def target_to_north(self):
@@ -209,12 +219,12 @@ class AutoGuidance():
             trigger = self.rotate_v_stepper_motor(-180)
         self.rotate_v_stepper_motor(-self.phi)
 
-def send_message(self, connection, msg):
+def send_message(connection, msg):
     msg.get_header().srcSystem = 0
     msg.get_header().srcComponent = 1
     connection.mav.send(msg, False)
 
-def convert_time_from_s_to_s_us(self, current_time):
+def convert_time_from_s_to_s_us(current_time):
     current_time = math.modf(current_time)
     return (int(current_time[1]), int(current_time[0] * 1000000))
 
@@ -242,7 +252,6 @@ if __name__ == '__main__':
 
     data_connection = mavutil.mavlink_connection(DATA_CONNECTION_STR)
     command_connection = mavutil.mavlink_connection(COMMAND_CONNECTION_STR)
-
     ACS = AutoGuidance(lis3mdl=lis3mdl,
                        lsm6ds3=lsm6ds3,
                        gpsd=gpsd,
@@ -261,8 +270,6 @@ if __name__ == '__main__':
     ACS.setup_v_limit_pins_map(V_P_LIMIT_PINS_MAP, V_N_LIMIT_PINS_MAP)
     ACS.setup_h_limit_pins_map(H_P_LIMIT_PINS_MAP, H_N_LIMIT_PINS_MAP)
     ACS.setup_coord_system()
-    ACS.setup_v_limit_pos_as_beg()
-    ACS.target_to_north()
     start_time = time.time()
     gps = None
     auto_control_mod = False
@@ -271,6 +278,7 @@ if __name__ == '__main__':
     while True:
         msg = command_connection.recv_match()
         if msg is not None:
+            print(msg)
             if msg.get_type() == "AS_AUTOMATIC_CONTROL":
                 auto_control_mod = bool(msg.mode)
             elif msg.get_type() == "AS_HARD_MANUAL_CONTROL":
@@ -279,40 +287,54 @@ if __name__ == '__main__':
             elif msg.get_type() == "AS_SOFT_MANUAL_CONTROL":
                 ACS.rotate_v_stepper_motor(msg.elevation)
                 ACS.rotate_h_stepper_motor(msg.azimuth)
+            elif msg.get_type() == "AS_MOTORS_ENABLE_MODE":
+                ACS.v_stepper_motor.set_enable(bool(msg.mode))
+                ACS.h_stepper_motor.set_enable(bool(msg.mode))
             elif msg.get_type() == "AS_SEND_COMMAND":
                 enum = mavutil.mavlink.enums['AS_COMMANDS']
-                if enum[msg.command_id].description == 'AS_SETUP_ELEVATION_ZERO':
+                if enum[msg.command_id].name == 'AS_SETUP_ELEVATION_ZERO':
                     ACS.setup_v_limit_pos_as_beg()
-                elif enum[msg.command_id].description == 'AS_TARGET_TO_NORTH':
+                elif enum[msg.command_id].name == 'AS_TARGET_TO_NORTH':
                     ACS.target_to_north()
-                elif enum[msg.command_id].description == 'SETUP_COORD_SYSTEM':
+                elif enum[msg.command_id].name == 'SETUP_COORD_SYSTEM':
                     ACS.setup_coord_system()
+            command_connection.last_address = (command_connection.last_address[0], 13404)
 
             if msg.get_type() != 'BAD_DATA':
                 current_time = convert_time_from_s_to_s_us(time.time())
-                send_message(command_connection, mavlink2.MAVLink_as_state_message(current_time[0],
-                                                                                   current_time[1],
-                                                                                   ACS.get_alpha(),
-                                                                                   ACS.get_phi(),
-                                                                                   list(ACS.get_x_y_z()),
-                                                                                   list(ACS.get_lat_lon()),
-                                                                                   ACS.get_alt,
-                                                                                   list(ACS.get_top_to_gcs()),
-                                                                                   target_last_time[0],
-                                                                                   target_last_time[1],
-                                                                                   ACS.get_target_alpha(),
-                                                                                   ACS.get_target_phi(),
-                                                                                   int(auto_control_mod)))
+                send_message(command_connection, mavlink2.MAVLink_as_state_message(time_s=current_time[0],
+                                                                                   time_us=current_time[1],
+                                                                                   azimuth=ACS.get_alpha(),
+                                                                                   elevation=ACS.get_phi(),
+                                                                                   ecef=list(ACS.get_x_y_z()),
+                                                                                   lat_lon=list(ACS.get_lat_lon()),
+                                                                                   alt=ACS.get_alt(),
+                                                                                   top_to_ascs=list(ACS.get_top_to_gcs().reshape(9)),
+                                                                                   dec_to_top=list(ACS.get_dec_to_top().reshape(9)),
+                                                                                   target_time_s=target_last_time[0],
+                                                                                   target_time_us=target_last_time[1],
+                                                                                   target_azimuth=ACS.get_target_alpha(),
+                                                                                   target_elevation=ACS.get_target_phi(),
+                                                                                   mode=int(auto_control_mod),
+                                                                                   enable=[int(mode) for mode in ACS.get_enable_state()]))
+
+        msg = data_connection.recv_match()
+        if msg is not None:
+            if msg.get_type() == "GPS_UBX_NAV_SOL":
+                print(msg)
+                if msg.gpsFix > 0:
+                    target_last_time = (msg.time_s, msg.time_us)
+                    gps = NumPy.array([msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100]).reshape((3, 1))
+                    vector = gps - ACS.x_y_z
+                    vector = ACS.recount_vector(vector)
+                    ACS.count_target_angles(vector)
 
         if auto_control_mod:
-            msg = data_connection.recv_match()
-            if msg.get_type() == "GPS_UBX_NAV_SOL":
-                target_last_time = (msg.time_s, msg.time_us)
-                gps = NumPy.array(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100, ndmin=2)
-
-            if (time.time() - start_time) < ANTENNA_AIMING_PERIOD:
+            if (time.time() - start_time) > ANTENNA_AIMING_PERIOD:
                 if gps is not None:
                    ACS.aiming(gps)
+                   gps = None
+                start_time = time.time()
 
 
 
