@@ -45,9 +45,10 @@ class DM422_control_client ():
         GPIO.output(self.dir_pin, True)
 
         GPIO.setup(self.enable_pin, GPIO.OUT)
-        GPIO.output(self.enable_pin, False)
+        self.set_enable(False)
 
     def set_enable(self, mode=True):
+        self.enable = mode
         GPIO.output(self.enable_pin, mode)
 
     def angle_to_steps (self, ang):
@@ -96,3 +97,6 @@ class DM422_control_client ():
 
     def get_last_steps_direction(self):
         return self.last_steps_direction
+
+    def get_enable_state(self):
+        return self.enable
