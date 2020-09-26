@@ -84,14 +84,17 @@ def parse(input_connection, output_connections, packet_log, raw_log, print_logs,
     stream_raw_log = raw_log
 
     while run_w:
-        input_connection.timeout = None
-        input_connection.timeout = 1.0
+        input_connection.timeout = 5.0
         r1 = input_connection.read(1)
 
         if r1 == b'':
             continue
 
-        input_connection.timeout = 1.0
+        # Один радио пакет в 220 байт передается примерно
+        # 220 байт / 9600 бауд / (8 бит + 1 старт бит + 1 стоп бит) ~= 0.0023 с.
+        # Поэтому если мы подождем тут 0.3мс - мы его точно поймаем
+        # Сильно дольше ждать опасно, так как мы можем ухватить кусок следующего пакета
+        input_connection.timeout = 0.3
         r2 = input_connection.read(400)
 
         data = r1 + r2

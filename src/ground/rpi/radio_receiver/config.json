@@ -7,5 +7,5 @@
   "raw_logfile_basename": "its_raw_log_",
   "logfile_extension": "mavlog",
   "print": true,
-  "RSSI": false
+  "RSSI": true
 }
