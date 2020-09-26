@@ -3,20 +3,73 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from source import settings_control
 
 
-class DataWidget(QtWidgets.QTableWidget):
-    class Timer(QtCore.QTimer):
-        def __init__(self, table, row_num, table_len, color):
-            super(DataWidget.Timer, self).__init__()
-            self.timeout.connect(self.timeout_reaction)
-            self.row_num = row_num
-            self.table_len = table_len
-            self.color = color
-            self.table = table
+class DataWidget(QtWidgets.QTreeWidget):
+    class TreeItem(QtWidgets.QTreeWidgetItem):
+        packet_name = []
+        data_range = []
+        colors = [QtGui.QColor('#0000FF'), QtGui.QColor('#FF0000')]
+        background_color = QtGui.QColor('#000000')
 
-        def timeout_reaction(self):
-            for i in range(self.table_len):
-                for j in range(3):
-                    self.table.item(self.row_num + i, j).setBackground(self.color)
+        def set_background_color(self, background_color):
+            self.background_color = background_color
+
+        def get_packet_name(self):
+            return self.packet_name
+
+        def set_packet_name(self, packet_name):
+            self.packet_name = packet_name
+
+        def setup_fields(self, names, group_name=None):
+            self.setup_background(self.background_color)
+            if group_name is not None:
+                self.setText(0, group_name)
+            for name in names:
+                item = QtWidgets.QTreeWidgetItem(self)
+                item.setText(0, name)
+            self.set_data_range([])
+
+        def setup_background(self, color):
+            for i in range(self.columnCount()):
+                self.setBackground(i, color)
+
+        def set_data(self, data):
+            self.setup_background(self.background_color)
+            if len(data) <= self.childCount():
+                for i in range(len(data)):
+                    self.child(i).setText(1, str(data[i]))
+                    DataWidget.TreeItem.setup_background(self.child(i), self.background_color)
+                    if self.data_range[i] is not None:
+                        if data[i] < self.data_range[i][0]:
+                            DataWidget.TreeItem.setup_background(self.child(i), self.colors[0])
+                        elif data[i] > self.data_range[i][1]:
+                            DataWidget.TreeItem.setup_background(self.child(i), self.colors[1])
+
+        def set_value(self, value):
+            self.setup_background(self.background_color)
+            self.setText(1, str(value))
+
+        def get_value(self):
+            return self.text(1)
+
+        def setup_timeout(self, color, time_limit):
+            self.timeout_color = color
+            self.timer = QtCore.QTimer()
+            self.timer.setSingleShot(True)
+            self.timer.setInterval(int(time_limit * 1000))
+            self.timer.timeout.connect(self.timeout_action)
+
+        def timeout_action(self):
+            for i in self.childCount():
+                TreeItem.setup_background(self.child(i), self.timeout_color)
+
+        def set_data_range(self, data_range):
+            self.data_range = data_range
+            if len(data_range) < self.childCount():
+                for i in range(self.childCount() - len(data_range)):
+                    self.data_range.append([None])
+
+        def set_colors(self, colors):
+            self.colors = colors
 
     def __init__(self):
         super(DataWidget, self).__init__()
@@ -27,119 +80,118 @@ class DataWidget(QtWidgets.QTableWidget):
         self.update_current_values()
 
     def setup_ui(self):
-        self.setColumnCount(3)
-        self.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)
-        self.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.setSelectionMode(QtWidgets.QTreeView.NoSelection)
-        self.verticalHeader().hide()
-        self.horizontalHeader().hide()
-        self.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.setColumnCount(2)
 
     def setup_ui_design(self):
+        self.clear()
         self.settings.beginGroup("CentralWidget/DataWidget")
         self.background_color = QtGui.QColor(self.settings.value("background_color"))
+        self.headerItem().setText(0, '')
+        self.headerItem().setText(1, '')
         palette = QtGui.QPalette()
         palette.setColor(QtGui.QPalette.Base, self.background_color)
         self.setPalette(palette)
+        self.setStyleSheet("QHeaderView::section { background-color:" + self.settings.value("background_color") + '}')
         self.colors = tuple([QtGui.QColor(self.settings.value("colors")[i]) for i in range(3)])
-
-        row_count = 0
-        if int(self.settings.value("Time_table/is_on")):
-            self.settings.beginGroup("Time_table")
-            for group in self.settings.childGroups():
-                if int(self.settings.value(group + "/is_on")):
-                    row_count += 1
-            self.settings.endGroup()
-
-        if int(self.settings.value("Data_table/is_on")):
-            self.settings.beginGroup("Data_table")
-            for group in self.settings.childGroups():
-                if int(self.settings.value(group + "/is_on")):
-                    row_count = row_count + len(self.settings.value(group +"/name")) - 1
-            self.settings.endGroup()
-
-        self.setRowCount(row_count)
 
         self.table_dict = {}
         self.time_tuple = []
 
-        row_count = 0
+        self.time_table = 0
+        self.packet_table = 0
+
         if int(self.settings.value("Time_table/is_on")):
+            self.time_table = 1
             self.settings.beginGroup("Time_table")
+            top_item = QtWidgets.QTreeWidgetItem()
+            top_item.setText(0, 'Systems time')
             for group in self.settings.childGroups():
                 if int(self.settings.value(group + "/is_on")):
                     self.settings.beginGroup(group)
-                    self.setItem(row_count, 0, QtWidgets.QTableWidgetItem())
-                    self.setItem(row_count, 1, QtWidgets.QTableWidgetItem(self.settings.value("name")))
-                    self.setItem(row_count, 2, QtWidgets.QTableWidgetItem())
-                    timer = DataWidget.Timer(self, row_count, 1, self.colors[2])
-                    timer.setSingleShot(True)
-                    timer.setInterval(int(float(self.settings.value("time_limit"))*1000))
-                    self.time_tuple.append(tuple([row_count, timer] + self.settings.value("packet_name")[:-1]))
-                    row_count += 1
+                    item = DataWidget.TreeItem(top_item)
+                    item.set_background_color(self.background_color)
+                    item.setup_fields([], self.settings.value("name"))
+                    item.set_packet_name(self.settings.value("packet_name")[:-1])
+                    item.setup_timeout(self.colors[2], float(self.settings.value("time_limit")))
                     self.settings.endGroup()
-            self.setItem(0, 0, QtWidgets.QTableWidgetItem('Time_table'))
-            self.time_tuple = tuple(self.time_tuple)
+            self.addTopLevelItem(top_item)
+            self.settings.endGroup()
+
+        if int(self.settings.value("Packet_table/is_on")):
+            self.packet_table = 1
+            self.settings.beginGroup("Packet_table")
+            top_item = QtWidgets.QTreeWidgetItem()
+            top_item.setText(0, 'Packets count')
+            for group in self.settings.childGroups():
+                if int(self.settings.value(group + "/is_on")):
+                    self.settings.beginGroup(group)
+                    item = DataWidget.TreeItem(top_item)
+                    item.set_background_color(self.background_color)
+                    item.setup_fields([], self.settings.value("name"))
+                    item.set_packet_name([self.settings.value("packet_name")])
+                    item.set_value(0)
+                    self.settings.endGroup()
+            self.addTopLevelItem(top_item)
             self.settings.endGroup()
 
         if int(self.settings.value("Data_table/is_on")):
             self.settings.beginGroup("Data_table")
+            top_item = QtWidgets.QTreeWidgetItem()
+            top_item.setText(0, 'Data')
             for group in self.settings.childGroups():
                 if int(self.settings.value(group + "/is_on")):
                     self.settings.beginGroup(group)
-                    packet_len = len(self.settings.value("name")) - 1
-                    for i in range(packet_len):
-                        self.setItem(row_count + i, 0, QtWidgets.QTableWidgetItem())
-                        self.setItem(row_count + i, 1, QtWidgets.QTableWidgetItem(self.settings.value("name")[i]))
-                        self.setItem(row_count + i, 2, QtWidgets.QTableWidgetItem())
-                    self.setItem(row_count, 0, QtWidgets.QTableWidgetItem(group))
-                    timer = DataWidget.Timer(self, row_count, packet_len, self.colors[2])
-                    timer.setSingleShot(True)
-                    timer.setInterval(int(float(self.settings.value("time_limit"))*1000))
-                    self.table_dict.update([(self.settings.value("packet_name"), (row_count, 
-                                                                                  packet_len,
-                                                                                  tuple([float(num) for num in self.settings.value("range")]),
-                                                                                  timer))])
-                    row_count = row_count + packet_len
+                    item = DataWidget.TreeItem(top_item)
+                    item.set_background_color(self.background_color)
+                    item.setup_fields(self.settings.value("name")[:-1], group)
+                    item.set_packet_name([self.settings.value("packet_name")])
+                    item.setup_timeout(self.colors[2], float(self.settings.value("time_limit")))
+                    data_range = []
+                    if self.settings.value("range") != 'nan':
+                        for i in range(0, len(self.settings.value("range")), 2):
+                            data_range.append([float(self.settings.value("range")[i]), float(self.settings.value("range")[i + 1])])
+                    item.set_data_range(data_range)
+                    item.set_colors(self.colors[:2])
                     self.settings.endGroup()
+                self.addTopLevelItem(top_item)
             self.settings.endGroup()
         self.settings.endGroup()
+
+        for i in range(self.topLevelItemCount()):
+            self.expandItem(self.topLevelItem(i))
+            for j in range(self.topLevelItem(i).childCount()):
+                self.expandItem(self.topLevelItem(i).child(j))
 
     def update_current_values (self):
         pass
 
     def new_data_reaction(self, data):
-        for table in self.table_dict.items():
-            pack = data.get(table[0], None)
-            if pack is not None:
-                pack = pack[-1]
-                if ((pack.shape[0] - 1) >= table[1][1]):
-                    for i in range(table[1][1]):
-                        self.item(table[1][0] + i, 2).setText(str(pack[i + 1]))
-                        if (pack[i + 1] < table[1][2][2 * i]):
-                            for j in range(3):
-                                self.item(table[1][0] + i, j).setBackground(self.colors[0])
-                        elif (pack[i + 1] > table[1][2][2 * i + 1]):
-                            for j in range(3):
-                                self.item(table[1][0] + i, j).setBackground(self.colors[1])
-                        else:
-                            for j in range(3):
-                                self.item(table[1][0] + i, j).setBackground(self.background_color)
-                    table[1][3].start()
-        for row in self.time_tuple:
-            time = None
-            for packet in row[2:]:
-                pack = data.get(packet, None)
+        if self.time_table:
+            for i in range(self.topLevelItem(0).childCount()):
+                item = self.topLevelItem(0).child(i)
+                time = None
+                for packet_name in item.get_packet_name():
+                    pack = data.get(packet_name, None)
+                    if pack is not None:
+                        if (time is None) or (time < pack[-1][0]):
+                            time = pack[-1][0]
+                if time is not None:
+                    item.set_value(time)
+
+        if self.packet_table:
+            for i in range(self.topLevelItem(self.time_table).childCount()):
+                item = self.topLevelItem(self.time_table).child(i)
+                pack = data.get(item.get_packet_name()[0], None)
                 if pack is not None:
-                    if (time is None) or (time < pack[-1][0]):
-                        time = pack[-1][0]
-            if time is not None:
-                self.item(row[0], 2).setText(str(time))
-                for j in range(3):
-                    self.item(row[0], j).setBackground(self.background_color)
-                row[1].start()
+                    print('lol')
+                    item.set_value(int(item.get_value()) + len(list(pack[:,1])))
+
+        for j in range((self.time_table + self.packet_table), self.topLevelItemCount()):
+            for i in range(self.topLevelItem(j).childCount()):
+                item = self.topLevelItem(j).child(i)
+                pack = data.get(item.get_packet_name()[0], None)
+                if pack is not None:
+                    item.set_data(list(pack[:,1]))
 
     def clear_data(self):
-        self.clear()
-        self.clearContents()
         self.setup_ui_design()

@@ -80,8 +80,6 @@ class MAVLogDataSource():
         if data is None:
             raise TypeError("Message type not supported")
 
-        print(data)
-
         if self.real_time:
             if self.time_shift is None:
                 self.time_shift = data[0][1][0][0]
@@ -117,8 +115,7 @@ class MAVDataSource():
         if data is None:
             raise TypeError("Message type not supported")
             
-
-        #print(data)
+        print(data)
         return data
 
     def get_data(self, msg):
