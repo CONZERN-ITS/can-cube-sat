@@ -5,8 +5,7 @@ os.environ['MAVLINK20'] = "its"
 from pymavlink.dialects.v20 import its as mavlink2
 from pymavlink import mavutil
 
-from source import RES_ROOT
-LOG_PATH = os.path.join(RES_ROOT, "log")
+from source import RES_ROOT, LOG_FOLDER_PATH
 
 import math
 import time
@@ -49,7 +48,7 @@ class AntennaSystem():
 
     def setup_connection(self):
         self.connection = mavutil.mavlink_connection('udpout:' + self.ip + ':' + self.port)
-        self.log = open(LOG_PATH + 'command_log_' + time.strftime("%d-%m-%Y_%H-%M-%S", time.localtime()) + '.mav', 'wb')
+        self.log = open(LOG_FOLDER_PATH + 'command_log_' + time.strftime("%d-%m-%Y_%H-%M-%S", time.localtime()) + '.mav', 'wb')
 
     def close_connection(self):
         self.log.close()
@@ -70,11 +69,20 @@ class AntennaSystem():
     def get_top_to_ascs_matrix(self):
         return self.top_to_ascs
 
+    def get_dec_to_top_matrix(self):
+        return self.dec_to_top
+
     def get_target_pos(self):
         return (self.target_azimuth, self.target_elevation)
 
     def get_target_response_time(self):
         return self.target_response_time
+
+    def get_mode(self):
+        return self.mode
+
+    def get_motors_enable(self):
+        return self.motors_enable
 
     def add_state_data(self, msg):
         if msg.get_type() == 'AS_STATE':
@@ -85,6 +93,7 @@ class AntennaSystem():
             self.altitude = msg.alt
             self.ecef = tuple(msg.ecef)
             self.top_to_ascs = tuple(msg.top_to_ascs)
+            self.dec_to_top = tuple(msg.dec_to_top)
             self.response_time = self.convert_time_from_s_us_to_s(msg.time_s, msg.time_us)
 
             self.target_azimuth = msg.target_azimuth
@@ -92,6 +101,7 @@ class AntennaSystem():
             self.target_response_time = self.convert_time_from_s_us_to_s(msg.target_time_s, msg.target_time_us)
 
             self.mode = msg.mode
+            self.motors_enable = tuple(msg.enable)
             return True
         else:
             return False
@@ -134,6 +144,13 @@ class AntennaSystem():
                                                                                    current_time[1],
                                                                                    int(mode)))
 
+    def set_motors_enable(self, mode):
+        current_time = self.convert_time_from_s_to_s_us(time.time())
+        if self.connection is not None:
+            self.send_message(mavlink2.MAVLink_as_motors_enable_mode_message(current_time[0],
+                                                                     current_time[1],
+                                                                     int(mode)))
+
     def send_command(self, command_id):
         current_time = self.convert_time_from_s_to_s_us(time.time())
         if self.connection is not None:
@@ -156,11 +173,15 @@ class AntennaSystem():
 
 class CommandSystem(QtCore.QObject):
     command_sent = QtCore.pyqtSignal(str)
+
     antenna_pos_changed = QtCore.pyqtSignal(tuple)
     target_pos_changed = QtCore.pyqtSignal(tuple)
     lat_lon_alt_changed = QtCore.pyqtSignal(tuple)
     ecef_changed = QtCore.pyqtSignal(tuple)
     top_to_ascs_matrix_changed = QtCore.pyqtSignal(tuple)
+    dec_to_top_matrix_changed = QtCore.pyqtSignal(tuple)
+    control_mode_changed = QtCore.pyqtSignal(bool)
+    motors_enable_changed = QtCore.pyqtSignal(tuple)
     def __init__(self):
         super(CommandSystem, self).__init__()
         self.antenna_system = None
@@ -194,6 +215,11 @@ class CommandSystem(QtCore.QObject):
         self.ecef_changed.emit(self.antenna_system.get_antenna_system_x_y_z())
 
         self.top_to_ascs_matrix_changed.emit(self.antenna_system.get_top_to_ascs_matrix())
+        self.dec_to_top_matrix_changed.emit(self.antenna_system.get_top_to_ascs_matrix())
+
+        self.control_mode_changed.emit(bool(self.antenna_system.get_mode()))
+
+        self.motors_enable_changed.emit(tuple([bool(num) for num in self.antenna_system.get_motors_enable()]))
 
     def set_mode(self, mode):
         self.mode = mode
@@ -224,11 +250,11 @@ class CommandSystem(QtCore.QObject):
         self.manual_control(0, angle)
 
     def turn_right(self, num):
-        angle = self.count_angle(num)
+        angle = -self.count_angle(num)
         self.manual_control(angle, 0)
 
     def turn_left(self, num):
-        angle = -self.count_angle(num)
+        angle = self.count_angle(num)
         self.manual_control(angle, 0)
 
     def automatic_control_on(self):
@@ -237,6 +263,14 @@ class CommandSystem(QtCore.QObject):
 
     def automatic_control_off(self):
         self.antenna_system.automatic_control(False)
+        self.command_sent.emit(str(self.antenna_system.get_last_msg()))
+
+    def pull_motors_enable_pin_high(self):
+        self.antenna_system.set_motors_enable(True)
+        self.command_sent.emit(str(self.antenna_system.get_last_msg()))
+
+    def pull_motors_enable_pin_low(self):
+        self.antenna_system.set_motors_enable(False)
         self.command_sent.emit(str(self.antenna_system.get_last_msg()))
 
     def setup_elevation_zero(self):

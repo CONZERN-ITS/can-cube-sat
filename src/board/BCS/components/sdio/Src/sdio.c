@@ -211,7 +211,10 @@ static int _sd_mount_connect() {
 		.allocation_unit_size = 16 * 1024
 	};
 
+	ESP_LOGD("SD","WOW");
+	card = 0;
 	esp_err_t ret = esp_vfs_fat_sdmmc_mount(mount_point, &host, &slot_config, &mount_config, &card);
+	ESP_LOGD("SD","WOW1");
 	if (ret == ESP_OK) {
 		ESP_LOGD("SD", "FS mounted");
 		return 0;
