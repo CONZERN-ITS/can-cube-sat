@@ -117,6 +117,7 @@ int mems_lis3mdl_get_m_data_mG(int16_t * data, float * magn)
 
 
 #if !CALIBRATION
+
 	vmv(magn, (float*)offset_vector, magn);
 	mxv((float(*)[3])transform_matrix, magn, magn);
 

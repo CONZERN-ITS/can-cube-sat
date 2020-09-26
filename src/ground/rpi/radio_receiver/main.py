@@ -17,7 +17,7 @@ from parse_arguments import *
 # TODO: добавить системные логи (дата и время включения, открытие, закрытие файлов и соединенй, ошибки рабооты программы
 
 RSSI_STRUCT = struct.Struct("b")
-GCS_SYSTEM_ID = 0
+GCS_SYSTEM_ID = 1
 GCS_RADIO_COMPONENT_ID = 0
 
 run_w = True
