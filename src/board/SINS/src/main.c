@@ -97,6 +97,83 @@ void system_reset()
 static uint32_t last_gps_packet_ts = 0;
 static uint32_t last_gps_fix_packet_ts = 0;
 
+
+static void calibration_accel()
+{
+	backup_sram_enable();
+	backup_sram_erase();
+
+	sensors_init();
+
+	debug_uart_init();
+
+	for(;;)
+	{
+		//	Arrays
+		float accel[3] = {0, 0, 0};
+		float gyro[3] = {0, 0, 0};
+//		float magn[3] = {0, 0, 0};
+
+//		error_system.lis3mdl_error = sensors_lis3mdl_read(magn);
+	//	trace_printf("lis error %d\n", error_system.lis3mdl_init_error);
+
+		error_system.lsm6ds3_error = sensors_lsm6ds3_read(accel, gyro);
+	//	trace_printf("lsm error %d\n", error_system.lsm6ds3_init_error);
+
+		if (error_system.lsm6ds3_error != 0)
+			continue;
+
+		//	пересчитываем их и записываем в структуры
+		stateSINS_isc.tv.tv_sec = HAL_GetTick();
+
+		for (int k = 0; k < 3; k++)
+		{
+
+			stateSINS_isc.accel[k] = accel[k];
+		}
+
+		mavlink_sins_isc(&stateSINS_isc);
+		led_toggle();
+	}
+}
+
+
+static void calibration_magn()
+{
+	backup_sram_enable();
+	backup_sram_erase();
+
+	sensors_init();
+
+	debug_uart_init();
+
+	for(;;)
+	{
+		//	Arrays
+//		float accel[3] = {0, 0, 0};
+//		float gyro[3] = {0, 0, 0};
+		float magn[3] = {0, 0, 0};
+
+		error_system.lis3mdl_error = sensors_lis3mdl_read(magn);
+
+		if (error_system.lis3mdl_error!= 0)
+			continue;
+
+		//	пересчитываем их и записываем в структуры
+		stateSINS_isc.tv.tv_sec = HAL_GetTick();
+
+		for (int k = 0; k < 3; k++)
+		{
+
+			stateSINS_isc.magn[k] = magn[k];
+		}
+
+		mavlink_sins_isc(&stateSINS_isc);
+		led_toggle();
+	}
+}
+
+
 // Функция для слежения за здоровьем GPS и передачи его пакетов в мавлинк
 static void on_gps_packet_main(void * arg, const ubx_any_packet_t * packet)
 {
@@ -255,11 +332,17 @@ int main(int argc, char* argv[])
 	memset(&state_zero,				0x00, sizeof(state_zero));
 	memset(&error_system, 			0x00, sizeof(error_system));
 
-//	iwdg_init(&transfer_uart_iwdg_handle);
-
 	led_init();
 
 	dwt_init();
+
+	if (CALIBRATION_LSM)
+		calibration_accel();
+
+	if (CALIBRATION_LIS)
+		calibration_magn();
+
+
 
 	if (check_SINS_state() == 1)
 	{
@@ -288,6 +371,8 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
+		iwdg_init(&transfer_uart_iwdg_handle);
+
 		time_svc_steady_init();
 
 		backup_sram_enable_after_reset();

@@ -192,6 +192,26 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 		HAL_NVIC_SetPriority(USART2_IRQn, ITS_SINS_GPS_UART_IRQ_PRIORITY, 0);
 		HAL_NVIC_EnableIRQ(USART2_IRQn);
 	}
+
+	if (huart->Instance == USART3) {
+		__USART3_CLK_ENABLE();
+		__GPIOC_CLK_ENABLE();
+
+		GPIO_InitTypeDef gpioa;
+		gpioa.Alternate = GPIO_AF7_USART3;
+		gpioa.Mode = GPIO_MODE_AF_PP;
+		gpioa.Pin = GPIO_PIN_10;		//TX
+		gpioa.Pull = GPIO_NOPULL;
+		gpioa.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+		HAL_GPIO_Init(GPIOC, &gpioa);
+
+		gpioa.Alternate = GPIO_AF7_USART3;
+		gpioa.Mode = GPIO_MODE_AF_OD;
+		gpioa.Pin = GPIO_PIN_11;		//RX
+		gpioa.Pull = GPIO_NOPULL;
+		gpioa.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+		HAL_GPIO_Init(GPIOC, &gpioa);
+	}
 }
 
 

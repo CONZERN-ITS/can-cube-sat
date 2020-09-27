@@ -15,19 +15,25 @@
 #define LED_CLOCK __HAL_RCC_GPIOC_CLK_ENABLE()
 
 
-void led_up()
+void led_up(void)
 {
 	HAL_GPIO_WritePin(LED_PORT, LED_PIN, SET);
 }
 
 
-void led_down()
+void led_down(void)
 {
 	HAL_GPIO_WritePin(LED_PORT, LED_PIN, RESET);
 }
 
 
-void led_init()
+void led_toggle(void)
+{
+	HAL_GPIO_TogglePin(LED_PORT, LED_PIN);
+}
+
+
+void led_init(void)
 {
 	LED_CLOCK;
 

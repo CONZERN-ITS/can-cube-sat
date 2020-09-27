@@ -10,10 +10,11 @@
 
 
 //! Настройка светодиодов
-extern void led_init(void);
-extern void led_blink(int count, uint32_t timeout);
-extern void led_down();
-extern void led_up();
+void led_init(void);
+void led_blink(int count, uint32_t timeout);
+void led_down(void);
+void led_up(void);
 
+void led_toggle(void);
 
 #endif /* DRIVERS_LED_H_ */
