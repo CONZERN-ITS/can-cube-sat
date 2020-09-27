@@ -150,22 +150,51 @@ DataWidget\Data_table\SUBSYS_2_DATA\packet_name=SUBSYS_2_DATA_PACK
 DataWidget\Data_table\SUBSYS_2_DATA\range=0, 1, 0, 1
 DataWidget\Data_table\SUBSYS_2_DATA\time_limit=1
 ```
+##### Packet_table 
+Раздел, содержащий данные о количестве обработанных пакетов.
 
+Настройки раздела:
+
+| Название  | Описание        | Возможные значения | Примечания |
+| --------- | --------------- | ------------------ | ---------- |
+| is_on     | ВКЛ/ВЫКЛ раздел | 2 - ВКЛ, 0 - ВЫКЛ  |            |
+
+Каждая новый пакет добавляется за счет создания нового раздела, содержащего следущие настройки:
+
+| Название    | Описание                                   | Возможные значения | Примечания |
+| ----------- | ------------------------------------------ | ------------------ | ---------- |
+| is_on       | ВКЛ/ВЫКЛ раздел                            | 2 - ВКЛ, 0 - ВЫКЛ  |            |
+| name        | имя пакета при отображении                 | строка             |            |
+| packet_name | имя пакета                                 | строка             |            |
+
+Пример:
+
+```
+DataWidget\Packet_table\SUBSYS_P1\is_on=2
+DataWidget\Packet_table\SUBSYS_P1\name=subsystem 1 packet 1 name
+DataWidget\Packet_table\SUBSYS_P1\packet_name=SUBSYS_1_PACK_1
+DataWidget\Packet_table\SUBSYS_P2\is_on=2
+DataWidget\Packet_table\SUBSYS_P2\name=subsystem 1 packet 2 name
+DataWidget\Packet_table\SUBSYS_P2\packet_name=SUBSYS_1_PACK_2
+DataWidget\Packet_table\is_on=2
+```
 #### GraphWidget
 "Виджет с графиками", содержащий данные из внутренних пакетов в виде графиков.
 
 Настройки виджета:
 
-| Название         | Описание                                                 | Возможные значения              | Примечания |
-| ---------------- | -------------------------------------------------------- | ------------------------------- | ---------- |
-| is_on            | ВКЛ/ВЫКЛ виджет                                          | 2 - ВКЛ, 0 - ВЫКЛ               |            |
-| position         | позиция крайней занимаемой клетки сетки и размер виджета | строка, столбец, высота, ширина |            |
+| Название | Описание                                                 | Возможные значения              | Примечания |
+| -------- | -------------------------------------------------------- | ------------------------------- | ---------- |
+| is_on    | ВКЛ/ВЫКЛ виджет                                          | 2 - ВКЛ, 0 - ВЫКЛ               |            |
+| position | позиция крайней занимаемой клетки сетки и размер виджета | строка, столбец, высота, ширина |            |
+| units    | единицы измерения для оси времени                        | строка                          |            |
 
 Пример:
 
 ```
 GraphWidget\is_on=2
 GraphWidget\position=1, 0, 1, 1
+GraphWidget\time_units=s
 ```
 Каждый новый график добавляется за счет создания нового раздела, содержащего следущие настройки:
 
@@ -176,6 +205,14 @@ GraphWidget\position=1, 0, 1, 1
 | max_data_length | максимальная длинна отображаемого массива        | число больше нуля               |                                    |
 | packet_name     | массив имен пакетов и диапазона номеров линий    | строки + диапазон (см. range()) | (начало, имя пакета, конец, ...)   |
 | position        | позиция крайней занимаемой клетки сетки и размер | строка, столбец, высота, ширина |                                    |
+| units           | единицы измерения                                | строка                          |                                    |
+
+И подраздел, содержащий настройки легенды
+
+| Название        | Описание          | Возможные значения | Примечания                         |
+| --------------- | ----------------- | ------------------ | ---------------------------------- |
+| is_on           | ВКЛ/ВЫКЛ легенду  | 2 - ВКЛ, 0 - ВЫКЛ  |                                    |
+| name            | подписи для линий | массив строк       | в конце массива необходима запятая |
 
 Пример:
 
@@ -185,11 +222,17 @@ GraphWidget\Graph\PLOT_1\is_on=2
 GraphWidget\Graph\PLOT_1\max_data_length=100
 GraphWidget\Graph\PLOT_1\packet_name=0, PACK_1, 1
 GraphWidget\Graph\PLOT_1\position=0, 0, 1, 1
+GraphWidget\Graph\PLOT_1\Legend\is_on=2
+GraphWidget\Graph\PLOT_1\Legend\name=PACK_1, 
+GraphWidget\Graph\PLOT_1\units=units
 GraphWidget\Graph\PLOT_2\colour=r, 
 GraphWidget\Graph\PLOT_2\is_on=2
 GraphWidget\Graph\PLOT_2\max_data_length=100
 GraphWidget\Graph\PLOT_2\packet_name=0, PACK_2, 1
 GraphWidget\Graph\PLOT_2\position=0, 1, 1, 1
+GraphWidget\Graph\PLOT_2\Legend\is_on=2
+GraphWidget\Graph\PLOT_2\Legend\name=PACK_2, 
+GraphWidget\Graph\PLOT_2\units=units
 ```
 
 #### MapWidget
