@@ -170,7 +170,7 @@ void task_socket_comm(void *pvParameters) {
 //------------------------------------------------------------------
 //------------------------------------------------------------------
 
-#define WIFI_AP_CHANNEL			5
+#define WIFI_AP_CHANNEL			6
 #define WIFI_AP_MAX_STA_CONN	4
 static void event_handler(void* arg, esp_event_base_t event_base,
 								int32_t event_id, void* event_data)

@@ -225,8 +225,9 @@ static void safe_uart_send(safe_send_t *h, uint8_t *buf, uint16_t size) {
 				s = maxSend;
 			}
 			int64_t start = esp_timer_get_time();
-			uart_write_bytes(h->cfg.port, (char *) buf, s);
+				uart_write_bytes(h->cfg.port, (char *) buf, s);
 
+			vTaskDelay(1);
 			int t = uart_wait_tx_done(h->cfg.port, RADIO_SEND_DELAY / portTICK_PERIOD_MS);
 			int64_t now = esp_timer_get_time();
 
