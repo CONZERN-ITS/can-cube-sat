@@ -227,9 +227,9 @@ class AutoGuidance():
 
     def setup_v_limit_pos_as_beg(self):
         trigger = None
-        while trigger is None:
-            trigger = self.rotate_v_stepper_motor(-180)
-        self.rotate_v_stepper_motor(-self.phi)
+        trigger = self.rotate_v_stepper_motor(-360)
+        if trigger is not None:
+            self.rotate_v_stepper_motor(-self.phi)
 
 def send_message(connection, msg):
     msg.get_header().srcSystem = 0
@@ -288,41 +288,50 @@ if __name__ == '__main__':
     auto_control_mod = False
     motors_timeout_flag = False
     motors_timeout = MOTORS_TIMEOUT
-    antenna_aiming_pediod = ANTENNA_AIMING_PERIOD
+    antenna_aiming_period = ANTENNA_AIMING_PERIOD
     target_last_time = (0, 0)
+    print('Init block end')
 
     while True:
         msg = command_connection.recv_match()
         if msg is not None:
-            print(msg)
-            if msg.get_type() == "AS_AUTOMATIC_CONTROL":
-                auto_control_mod = bool(msg.mode)
-            elif msg.get_type() == "AS_HARD_MANUAL_CONTROL":
-                ACS.v_stepper_motor.rotate_using_angle(msg.elevation)
-                ACS.h_stepper_motor.rotate_using_angle(msg.azimuth)
-            elif msg.get_type() == "AS_SOFT_MANUAL_CONTROL":
-                ACS.rotate_v_stepper_motor(msg.elevation)
-                ACS.rotate_h_stepper_motor(msg.azimuth)
-            elif msg.get_type() == "AS_MOTORS_ENABLE_MODE":
-                ACS.v_stepper_motor.set_enable(bool(msg.mode))
-                ACS.h_stepper_motor.set_enable(bool(msg.mode))
-            elif msg.get_type() == "AS_AIMING_PERIOD":
-                antenna_aiming_pediod = msg.period
-            elif msg.get_type() == "AS_SET_MOTORS_TIMEOUT":
-                motors_timeout = msg.timeout
-            elif msg.get_type() == "AS_MOTORS_AUTO_DISABLE":
-                motors_timeout_flag = msg.mode
-            elif msg.get_type() == "AS_SEND_COMMAND":
-                enum = mavutil.mavlink.enums['AS_COMMANDS']
-                if enum[msg.command_id].name == 'AS_SETUP_ELEVATION_ZERO':
-                    ACS.setup_v_limit_pos_as_beg()
-                elif enum[msg.command_id].name == 'AS_TARGET_TO_NORTH':
-                    ACS.target_to_north()
-                elif enum[msg.command_id].name == 'SETUP_COORD_SYSTEM':
-                    ACS.setup_coord_system()
-            command_connection.last_address = (command_connection.last_address[0], 13404)
-
             if msg.get_type() != 'BAD_DATA':
+                print(msg)
+                if msg.get_type() == "AS_AUTOMATIC_CONTROL":
+                    auto_control_mod = bool(msg.mode)
+                elif msg.get_type() == "AS_HARD_MANUAL_CONTROL":
+                    ACS.v_stepper_motor.rotate_using_angle(msg.elevation)
+                    ACS.h_stepper_motor.rotate_using_angle(msg.azimuth)
+                elif msg.get_type() == "AS_SOFT_MANUAL_CONTROL":
+                    ACS.rotate_v_stepper_motor(msg.elevation)
+                    ACS.rotate_h_stepper_motor(msg.azimuth)
+                elif msg.get_type() == "AS_MOTORS_ENABLE_MODE":
+                    ACS.v_stepper_motor.set_enable(bool(msg.mode))
+                    ACS.h_stepper_motor.set_enable(bool(msg.mode))
+                elif msg.get_type() == "AS_AIMING_PERIOD":
+                    if msg.period <= 0:
+                        antenna_aiming_period = ANTENNA_AIMING_PERIOD
+                    else:
+                        antenna_aiming_period = msg.period
+                elif msg.get_type() == "AS_SET_MOTORS_TIMEOUT":
+                    if msg.timeout <= 0:
+                        motors_timeout = MOTORS_TIMEOUT
+                    else:
+                        motors_timeout = msg.timeout
+                elif msg.get_type() == "AS_MOTORS_AUTO_DISABLE":
+                    motors_timeout_flag = msg.mode
+                elif msg.get_type() == "AS_SEND_COMMAND":
+                    enum = mavutil.mavlink.enums['AS_COMMANDS']
+                    if enum[msg.command_id].name == 'AS_SETUP_ELEVATION_ZERO':
+                        ACS.setup_v_limit_pos_as_beg()
+                    elif enum[msg.command_id].name == 'AS_TARGET_TO_NORTH':
+                        ACS.target_to_north()
+                    elif enum[msg.command_id].name == 'SETUP_COORD_SYSTEM':
+                        ACS.setup_coord_system()
+                print('Message processing end')
+                command_connection.last_address = (command_connection.last_address[0], 13404)
+
+                
                 current_time = convert_time_from_s_to_s_us(time.time())
                 send_message(command_connection, mavlink2.MAVLink_as_state_message(time_s=current_time[0],
                                                                                    time_us=current_time[1],
@@ -338,10 +347,10 @@ if __name__ == '__main__':
                                                                                    target_azimuth=ACS.get_target_alpha(),
                                                                                    target_elevation=ACS.get_target_phi(),
                                                                                    mode=int(auto_control_mod),
-                                                                                   period=antenna_aiming_pediod,
+                                                                                   period=antenna_aiming_period,
                                                                                    enable=[int(mode) for mode in ACS.get_enable_state()],
                                                                                    motor_auto_disable=int(motors_timeout_flag),
-                                                                                   motor_timeout=motors_timeout))
+                                                                                   motors_timeout=motors_timeout))
 
         msg = data_connection.recv_match()
         if msg is not None:
@@ -356,7 +365,7 @@ if __name__ == '__main__':
                     ACS.count_target_angles(vector)
 
         if auto_control_mod:
-            if (time.time() - start_time) > antenna_aiming_pediod:
+            if (time.time() - start_time) > antenna_aiming_period:
                 if gps is not None:
                    ACS.aiming(gps)
                    gps = None
@@ -368,6 +377,5 @@ if __name__ == '__main__':
 
             if (time.time() - ACS.get_h_motor_last_activ_time()) > motors_timeout:
                 ACS.h_stepper_motor.set_enable(False)
-
 
     i2c.close()
