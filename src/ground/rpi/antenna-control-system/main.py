@@ -33,7 +33,8 @@ class AutoGuidance():
                         mag_recount_matrix=None,
                         mag_calibration_matrix=None,
                         mag_calibration_vector=None,
-                        accel_recount_matrix=None,):
+                        accel_recount_matrix=None,
+                        min_rotation_angle=0.1):
         self.lis3mdl = lis3mdl
         self.lsm6ds3 = lsm6ds3
         self.gpsd = gpsd
@@ -60,6 +61,15 @@ class AutoGuidance():
         self.decl = 0
         self.target_alpha = 0
         self.target_phi = 0
+        self.min_rotation_angle = min_rotation_angle
+        self.v_motor_last_activ_time = time.time()
+        self.h_motor_last_activ_time = time.time()
+
+    def get_v_motor_last_activ_time(self):
+        return self.v_motor_last_activ_time
+
+    def get_h_motor_last_activ_time(self):
+        return self.h_motor_last_activ_time
 
     def setup_v_limit_pins_map(self, p_limit_pins_map, n_limit_pins_map):
         self.v_stepper_motor.setup_stop_triggers(list(p_limit_pins_map.keys()), list(n_limit_pins_map.keys()))
@@ -177,10 +187,10 @@ class AutoGuidance():
 
     def rotate_antenna (self, vector):
         self.count_target_angles(vector)
-        if (abs(self.target_phi - self.phi) > 0.2):
+        if (abs(self.target_phi - self.phi) > self.min_rotation_angle):
             self.rotate_v_stepper_motor(self.target_phi - self.phi)
         vector = vector / NumPy.linalg.norm(vector)
-        if (vector[2] < 0.995) and (abs(self.target_alpha - self.alpha) > 0.2):
+        if (vector[2] < 0.995) and (abs(self.target_alpha - self.alpha) > self.min_rotation_angle):
             if abs(self.target_alpha - self.alpha) > 180:
                 if self.alpha < self.target_alpha:
                     self.rotate_h_stepper_motor(self.target_alpha - self.alpha - 360)
@@ -198,6 +208,7 @@ class AutoGuidance():
         else:
             self.phi += self.v_stepper_motor.steps_to_angle(self.v_stepper_motor.get_last_steps_num(),
                                                             self.v_stepper_motor.get_last_steps_direction())
+        self.v_motor_last_activ_time = time.time()
         return trigger
 
     def rotate_h_stepper_motor(self, ang):
@@ -207,6 +218,7 @@ class AutoGuidance():
         else:
             self.alpha += self.h_stepper_motor.steps_to_angle(self.h_stepper_motor.get_last_steps_num(),
                                                               self.h_stepper_motor.get_last_steps_direction())
+        self.h_motor_last_activ_time = time.time()
         return trigger
 
     def target_to_north(self):
@@ -265,7 +277,8 @@ if __name__ == '__main__':
                        mag_recount_matrix=MAG_RECOUNT_MATRIX,
                        mag_calibration_matrix=MAG_CALIBRATION_MATRIX,
                        mag_calibration_vector=MAG_CALIBRATION_VECTOR,
-                       accel_recount_matrix=ACCEL_RECOUNT_MATRIX)
+                       accel_recount_matrix=ACCEL_RECOUNT_MATRIX,
+                       min_rotation_angle=MIN_ROTATION_ANGLE)
     ACS.setup()
     ACS.setup_v_limit_pins_map(V_P_LIMIT_PINS_MAP, V_N_LIMIT_PINS_MAP)
     ACS.setup_h_limit_pins_map(H_P_LIMIT_PINS_MAP, H_N_LIMIT_PINS_MAP)
@@ -273,6 +286,9 @@ if __name__ == '__main__':
     start_time = time.time()
     gps = None
     auto_control_mod = False
+    motors_timeout_flag = False
+    motors_timeout = MOTORS_TIMEOUT
+    antenna_aiming_pediod = ANTENNA_AIMING_PERIOD
     target_last_time = (0, 0)
 
     while True:
@@ -290,6 +306,12 @@ if __name__ == '__main__':
             elif msg.get_type() == "AS_MOTORS_ENABLE_MODE":
                 ACS.v_stepper_motor.set_enable(bool(msg.mode))
                 ACS.h_stepper_motor.set_enable(bool(msg.mode))
+            elif msg.get_type() == "AS_AIMING_PERIOD":
+                antenna_aiming_pediod = msg.period
+            elif msg.get_type() == "AS_SET_MOTORS_TIMEOUT":
+                motors_timeout = msg.timeout
+            elif msg.get_type() == "AS_MOTORS_AUTO_DISABLE":
+                motors_timeout_flag = msg.mode
             elif msg.get_type() == "AS_SEND_COMMAND":
                 enum = mavutil.mavlink.enums['AS_COMMANDS']
                 if enum[msg.command_id].name == 'AS_SETUP_ELEVATION_ZERO':
@@ -316,26 +338,36 @@ if __name__ == '__main__':
                                                                                    target_azimuth=ACS.get_target_alpha(),
                                                                                    target_elevation=ACS.get_target_phi(),
                                                                                    mode=int(auto_control_mod),
-                                                                                   enable=[int(mode) for mode in ACS.get_enable_state()]))
+                                                                                   period=antenna_aiming_pediod,
+                                                                                   enable=[int(mode) for mode in ACS.get_enable_state()],
+                                                                                   motor_auto_disable=int(motors_timeout_flag),
+                                                                                   motor_timeout=motors_timeout))
 
         msg = data_connection.recv_match()
         if msg is not None:
             if msg.get_type() == "GPS_UBX_NAV_SOL":
                 print(msg)
                 if msg.gpsFix > 0:
-                    target_last_time = (msg.time_s, msg.time_us)
+                    current_time = convert_time_from_s_to_s_us(time.time())
+                    target_last_time = (current_time[0], current_time[1])
                     gps = NumPy.array([msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100]).reshape((3, 1))
                     vector = gps - ACS.x_y_z
                     vector = ACS.recount_vector(vector)
                     ACS.count_target_angles(vector)
 
         if auto_control_mod:
-            if (time.time() - start_time) > ANTENNA_AIMING_PERIOD:
+            if (time.time() - start_time) > antenna_aiming_pediod:
                 if gps is not None:
                    ACS.aiming(gps)
                    gps = None
                 start_time = time.time()
 
+        if motors_timeout_flag:
+            if (time.time() - ACS.get_v_motor_last_activ_time()) > motors_timeout:
+                ACS.v_stepper_motor.set_enable(False)
+
+            if (time.time() - ACS.get_h_motor_last_activ_time()) > motors_timeout:
+                ACS.h_stepper_motor.set_enable(False)
 
 
     i2c.close()
