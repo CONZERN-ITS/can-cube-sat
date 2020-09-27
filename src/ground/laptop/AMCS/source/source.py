@@ -46,7 +46,10 @@ class CentralWidget(QtWidgets.QWidget):
         self.antenna.top_to_ascs_matrix_changed.connect(self.position_widget.change_top_to_ascs_matrix)
         self.antenna.dec_to_top_matrix_changed.connect(self.position_widget.change_dec_to_top_matrix)
         self.antenna.control_mode_changed.connect(self.position_widget.change_control_mode)
+        self.antenna.aiming_period_changed.connect(self.position_widget.change_aiming_period)
         self.antenna.motors_enable_changed.connect(self.position_widget.change_motors_enable)
+        self.antenna.motors_auto_disable_mode_changed.connect(self.position_widget.change_motors_auto_disable_mode)
+        self.antenna.motors_timeout_changed.connect(self.position_widget.change_motors_timeout)
 
         self.position_control_widget.pos_control_panel.top_btn_clicked.connect(self.antenna.put_up)
         self.position_control_widget.pos_control_panel.bottom_btn_clicked.connect(self.antenna.put_down)
@@ -55,6 +58,8 @@ class CentralWidget(QtWidgets.QWidget):
         self.position_control_widget.pos_control_panel.central_btn_clicked.connect(self.antenna.park)
         self.position_control_widget.control_btn.clicked.connect(self.control_btn_action)
         self.position_control_widget.mode_true_btn.toggled.connect(self.antenna.set_mode)
+        self.position_control_widget.set_aiming_period_btn.clicked.connect(self.set_aiming_period_btn_action)
+        self.position_control_widget.set_motors_timeout_btn.clicked.connect(self.set_motors_timeout_btn_action)
 
         self.antenna.command_sent.connect(self.command_log.add_data)
 
@@ -67,6 +72,18 @@ class CentralWidget(QtWidgets.QWidget):
     def control_btn_action(self):
         try:
             self.antenna.manual_control(*[float(line.text()) for line in self.position_control_widget.pos_control_line_edit])
+        except ValueError:
+            pass
+
+    def set_aiming_period_btn_action(self):
+        try:
+            self.antenna.set_aiming_period(float(self.position_control_widget.aiming_period_line_edit.text()))
+        except ValueError:
+            pass
+
+    def set_motors_timeout_btn_action(self):
+        try:
+            self.antenna.set_motors_timeout(float(self.position_control_widget.motors_timeout_line_edit.text()))
         except ValueError:
             pass
 
@@ -97,6 +114,7 @@ class MainWindow(QtWidgets.QMainWindow):
             while not close:
                 try:
                     msg = self.connection.recv_match(blocking=True)
+                    print(msg)
                 except Exception as e:
                     print(e)
                 if msg is not None:
@@ -137,11 +155,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.target_to_north_btn = self.toolbar.addAction('Turn target\nto north')
         self.target_to_north_btn.triggered.connect(self.antenna.target_to_north)
 
-        self.motors_enable_pin_high = self.toolbar.addAction('Pull high\nmotors enable pin')
+        self.motors_enable_pin_high = self.toolbar.addAction('Enable motors')
         self.motors_enable_pin_high.triggered.connect(self.antenna.pull_motors_enable_pin_high)
 
-        self.motors_enable_pin_low = self.toolbar.addAction('Pull low\nmotors enable pin')
+        self.motors_enable_pin_low = self.toolbar.addAction('Disable motors')
         self.motors_enable_pin_low.triggered.connect(self.antenna.pull_motors_enable_pin_low)
+
+        self.auto_control_on_btn = self.toolbar.addAction('Turn on motors\nauto disable mode')
+        self.auto_control_on_btn.triggered.connect(self.antenna.motors_auto_disable_on)
+
+        self.auto_control_off_btn = self.toolbar.addAction('Turn on motors\nauto disable mode')
+        self.auto_control_off_btn.triggered.connect(self.antenna.motors_auto_disable_off)
 
         self.setup_coord_system_btn = self.toolbar.addAction('Setup coord\nsystem')
         self.setup_coord_system_btn.triggered.connect(self.antenna.setup_coord_system)

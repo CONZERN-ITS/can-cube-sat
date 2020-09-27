@@ -271,6 +271,28 @@ class PositionControlWidget(QtWidgets.QWidget):
         self.control_btn = QtWidgets.QPushButton('Send')
         frame_layout.addWidget(self.control_btn, 2, 0, 1, 2)
 
+        frame = self.setup_frame(self.layout)
+        frame_layout = QtWidgets.QGridLayout(frame)
+        label = QtWidgets.QLabel('Aiming period:')
+        frame_layout.addWidget(label, 0, 0)
+        self.aiming_period_line_edit = QtWidgets.QLineEdit()
+        self.aiming_period_line_edit.setText('0')
+        self.aiming_period_line_edit.setValidator(QtGui.QDoubleValidator())
+        frame_layout.addWidget(self.aiming_period_line_edit, 0, 1)
+        self.set_aiming_period_btn = QtWidgets.QPushButton('Send')
+        frame_layout.addWidget(self.set_aiming_period_btn, 1, 0, 1, 2)
+
+        frame = self.setup_frame(self.layout)
+        frame_layout = QtWidgets.QGridLayout(frame)
+        label = QtWidgets.QLabel('Motors timeout:')
+        frame_layout.addWidget(label, 0, 0)
+        self.motors_timeout_line_edit = QtWidgets.QLineEdit()
+        self.motors_timeout_line_edit.setText('0')
+        self.motors_timeout_line_edit.setValidator(QtGui.QDoubleValidator())
+        frame_layout.addWidget(self.motors_timeout_line_edit, 0, 1)
+        self.set_motors_timeout_btn = QtWidgets.QPushButton('Send')
+        frame_layout.addWidget(self.set_motors_timeout_btn, 1, 0, 1, 2)
+
     def setup_ui_design(self):
         pass
 

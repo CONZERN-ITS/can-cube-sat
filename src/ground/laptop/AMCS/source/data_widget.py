@@ -262,6 +262,11 @@ class PositionWidget(QtWidgets.QWidget):
             self.ecef_lbl.append(self.setup_label(layout, 'None'))
 
         frame = self.setup_frame(data_layout)
+        frame_layout = QtWidgets.QHBoxLayout(frame)
+        self.setup_label(frame_layout, 'Aiming period')
+        self.aiming_period_lbl = self.setup_label(frame_layout, 'None')
+
+        frame = self.setup_frame(data_layout)
         frame_layout = QtWidgets.QVBoxLayout(frame)
         text_list = ['Vertical motor:', 'Horizontal motor:']
         self.enable_lbl = []
@@ -270,6 +275,16 @@ class PositionWidget(QtWidgets.QWidget):
             frame_layout.addLayout(layout)
             self.setup_label(layout, text_list[i])
             self.enable_lbl.append(self.setup_label(layout, 'None'))
+
+        frame = self.setup_frame(data_layout)
+        frame_layout = QtWidgets.QVBoxLayout(frame)
+        text_list = ['Motors auto disable:', 'Motors timeout:']
+        self.motors_auto_disable_lbl = []
+        for i in range(len(text_list)):
+            layout = QtWidgets.QHBoxLayout()
+            frame_layout.addLayout(layout)
+            self.setup_label(layout, text_list[i])
+            self.motors_auto_disable_lbl.append(self.setup_label(layout, 'None'))
 
     def setup_ui_design(self):
         pass
@@ -313,6 +328,9 @@ class PositionWidget(QtWidgets.QWidget):
             self.mode_lbl.setFont(font)
             self.mode_lbl.setText('Manual control')
 
+    def change_aiming_period(self, period):
+        self.aiming_period_lbl.setText('{:.3f}'.format(period))
+
     def change_motors_enable(self, data):
         font = QtGui.QFont()
         for i in range(2):
@@ -324,3 +342,17 @@ class PositionWidget(QtWidgets.QWidget):
                 font.setWeight(QtGui.QFont.Medium)
                 self.enable_lbl[i].setFont(font)
                 self.enable_lbl[i].setText('OFF')
+
+    def change_motors_auto_disable_mode(self, mode):
+        font = QtGui.QFont()
+        if mode:
+            font.setWeight(QtGui.QFont.Black)
+            self.motors_auto_disable_lbl[0].setText('ON')
+        else:
+            font.setWeight(QtGui.QFont.Medium)
+            self.motors_auto_disable_lbl[0].setText('OFF')
+
+        self.motors_auto_disable_lbl[0].setFont(font)
+
+    def change_motors_timeout(self, timeout):
+        self.motors_auto_disable_lbl[1].setText('{:.3f}'.format(timeout))

@@ -34,6 +34,9 @@ class AntennaSystem():
         self.top_to_ascs = (None, None, None,
                             None, None, None,
                             None, None, None)
+        self.dec_to_top = (None, None, None,
+                           None, None, None,
+                           None, None, None)
         self.response_time = None
 
         self.target_azimuth = None
@@ -41,6 +44,11 @@ class AntennaSystem():
         self.target_response_time = None
 
         self.mode = None
+        self.aiming_period = None
+
+        self.motors_enable = (None, None)
+        self.motors_auto_disable = None
+        self.motors_timeout = None
 
     def change_ip_and_port(self, ip, port):
         self.ip = ip
@@ -81,8 +89,17 @@ class AntennaSystem():
     def get_mode(self):
         return self.mode
 
+    def get_aiming_period(self):
+        return self.aiming_period
+
     def get_motors_enable(self):
         return self.motors_enable
+
+    def get_motors_auto_disable(self):
+        return self.motors_auto_disable
+
+    def get_motors_timeout(self):
+        return self.motors_timeout
 
     def add_state_data(self, msg):
         if msg.get_type() == 'AS_STATE':
@@ -101,7 +118,11 @@ class AntennaSystem():
             self.target_response_time = self.convert_time_from_s_us_to_s(msg.target_time_s, msg.target_time_us)
 
             self.mode = msg.mode
+            self.aiming_period = msg.period
+
             self.motors_enable = tuple(msg.enable)
+            self.motors_auto_disable = msg.motor_auto_disable
+            self.motors_timeout = msg.motors_timeout
             return True
         else:
             return False
@@ -125,31 +146,50 @@ class AntennaSystem():
         current_time = self.convert_time_from_s_to_s_us(time.time())
         if self.connection is not None:
             self.send_message(mavlink2.MAVLink_as_hard_manual_control_message(current_time[0],
-                                                                                     current_time[1],
-                                                                                     azimuth,
-                                                                                     elevation))
+                                                                              current_time[1],
+                                                                              azimuth,
+                                                                              elevation))
 
     def soft_manual_control(self, azimuth, elevation):
         current_time = self.convert_time_from_s_to_s_us(time.time())
         if self.connection is not None:
             self.send_message(mavlink2.MAVLink_as_soft_manual_control_message(current_time[0],
-                                                                                     current_time[1],
-                                                                                     azimuth,
-                                                                                     elevation))
+                                                                              current_time[1],
+                                                                              azimuth,
+                                                                              elevation))
 
     def automatic_control(self, mode):
         current_time = self.convert_time_from_s_to_s_us(time.time())
         if self.connection is not None:
             self.send_message(mavlink2.MAVLink_as_automatic_control_message(current_time[0],
-                                                                                   current_time[1],
-                                                                                   int(mode)))
+                                                                            current_time[1],
+                                                                            int(mode)))
+
+    def set_aiming_period(self, period):
+        current_time = self.convert_time_from_s_to_s_us(time.time())
+        if self.connection is not None:
+            self.send_message(mavlink2.MAVLink_as_aiming_period_message(current_time[0],
+                                                                        current_time[1],
+                                                                        period))
 
     def set_motors_enable(self, mode):
         current_time = self.convert_time_from_s_to_s_us(time.time())
         if self.connection is not None:
             self.send_message(mavlink2.MAVLink_as_motors_enable_mode_message(current_time[0],
-                                                                     current_time[1],
-                                                                     int(mode)))
+                                                                             current_time[1],
+                                                                             int(mode)))
+    def set_motors_auto_disable_mode(self, mode):
+        current_time = self.convert_time_from_s_to_s_us(time.time())
+        if self.connection is not None:
+            self.send_message(mavlink2.MAVLink_as_motors_auto_disable_message(current_time[0],
+                                                                             current_time[1],
+                                                                             int(mode)))
+    def set_motors_timeout(self, timeout):
+        current_time = self.convert_time_from_s_to_s_us(time.time())
+        if self.connection is not None:
+            self.send_message(mavlink2.MAVLink_as_set_motors_timeout_message(current_time[0],
+                                                                             current_time[1],
+                                                                             timeout))
 
     def send_command(self, command_id):
         current_time = self.convert_time_from_s_to_s_us(time.time())
@@ -181,7 +221,10 @@ class CommandSystem(QtCore.QObject):
     top_to_ascs_matrix_changed = QtCore.pyqtSignal(tuple)
     dec_to_top_matrix_changed = QtCore.pyqtSignal(tuple)
     control_mode_changed = QtCore.pyqtSignal(bool)
+    aiming_period_changed = QtCore.pyqtSignal(float)
     motors_enable_changed = QtCore.pyqtSignal(tuple)
+    motors_auto_disable_mode_changed = QtCore.pyqtSignal(bool)
+    motors_timeout_changed = QtCore.pyqtSignal(float)
     def __init__(self):
         super(CommandSystem, self).__init__()
         self.antenna_system = None
@@ -218,8 +261,11 @@ class CommandSystem(QtCore.QObject):
         self.dec_to_top_matrix_changed.emit(self.antenna_system.get_top_to_ascs_matrix())
 
         self.control_mode_changed.emit(bool(self.antenna_system.get_mode()))
+        self.aiming_period_changed.emit(self.antenna_system.get_aiming_period())
 
         self.motors_enable_changed.emit(tuple([bool(num) for num in self.antenna_system.get_motors_enable()]))
+        self.motors_auto_disable_mode_changed.emit(bool(self.antenna_system.get_motors_auto_disable()))
+        self.motors_timeout_changed.emit(self.antenna_system.get_motors_timeout())
 
     def set_mode(self, mode):
         self.mode = mode
@@ -271,6 +317,22 @@ class CommandSystem(QtCore.QObject):
 
     def pull_motors_enable_pin_low(self):
         self.antenna_system.set_motors_enable(False)
+        self.command_sent.emit(str(self.antenna_system.get_last_msg()))
+
+    def motors_auto_disable_on(self):
+        self.antenna_system.set_motors_auto_disable_mode(True)
+        self.command_sent.emit(str(self.antenna_system.get_last_msg()))
+
+    def motors_auto_disable_off(self):
+        self.antenna_system.set_motors_auto_disable_mode(False)
+        self.command_sent.emit(str(self.antenna_system.get_last_msg()))
+
+    def set_motors_timeout(self, timeout):
+        self.antenna_system.set_motors_timeout(timeout)
+        self.command_sent.emit(str(self.antenna_system.get_last_msg()))
+
+    def set_aiming_period(self, period):
+        self.antenna_system.set_aiming_period(period)
         self.command_sent.emit(str(self.antenna_system.get_last_msg()))
 
     def setup_elevation_zero(self):
