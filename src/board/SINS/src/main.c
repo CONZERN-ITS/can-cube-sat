@@ -278,9 +278,17 @@ int UpdateDataAll(void)
 	}
 
 	//	Copy vectors to global structure
-	for (int i = 0; i < 3; i++)
+	if (0 == error_system.lis3mdl_error)
 	{
-		stateSINS_isc.magn[i] = magn[i];
+		for (int i = 0; i < 3; i++)
+		{
+			stateSINS_isc.magn[i] = magn[i];
+		}
+	}
+	else
+	{
+		for(int i = 0; i < 3; i++)
+			stateSINS_isc.magn[i] = 0;
 	}
 
 	return error;
