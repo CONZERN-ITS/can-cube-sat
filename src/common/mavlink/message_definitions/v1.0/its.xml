@@ -13,10 +13,10 @@
         <description>Ground radio</description>
       </entry>
       <entry value="2" name="GCS_AS">
-        <description>Ground radio</description>
+        <description>Antenna system</description>
       </entry>
       <entry value="3" name="GCS_AMCS">
-        <description>Ground radio</description>
+        <description>Antenna manual control system</description>
       </entry>
       <entry value="10" name="CUBE_1_BCU">
         <description>Board control unit</description>
@@ -377,7 +377,31 @@
       <field type="uint8_t" name="mode">Boolean turning on (1) or off (0) auto control</field>
     </message>
 
-    <message id="50029" name="AS_MOTORS_ENABLE_MODE">
+    <message id="50029" name="AS_MOTORS_AUTO_DISABLE">
+      <description>Set motors auto disable mode</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="uint8_t" name="mode">Boolean turning on (1) or off (0) motors auto disable</field>
+    </message>
+
+    <message id="50030" name="AS_SET_MOTORS_TIMEOUT">
+      <description>Set motors auto disable timeout</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="float" name="timeout" units="s">Motors auto disable timeout</field>
+    </message>
+
+    <message id="50031" name="AS_AIMING_PERIOD">
+      <description>Set antenna aiming period</description>
+      <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
+      <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
+
+      <field type="float" name="period" units="s">Antenna aiming period</field>
+    </message>
+
+    <message id="50032" name="AS_MOTORS_ENABLE_MODE">
       <description>Set motors enable pin state</description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
@@ -385,7 +409,7 @@
       <field type="uint8_t" name="mode">Boolean seting hight (1) or low (0) motors enable pin state</field>
     </message>
 
-    <message id="50030" name="AS_STATE">
+    <message id="50033" name="AS_STATE">
       <description>Antenna system state</description>
       <field type="uint64_t" name="time_s" units="s">Time since the Unix epoch</field>
       <field type="uint32_t" name="time_us" units="us">Millionth of a second</field>
@@ -406,8 +430,11 @@
       <field type="float" name="target_elevation" units="grad">Last target elevation</field>
 
       <field type="uint8_t" name="mode">Boolean indicating auto (1) or manual (0) control mod is on</field>
+      <field type="float" name="period" units="s">Antenna aiming period</field>
 
       <field type="uint8_t[2]" name="enable">Boolean indicating hight (1) or low (0) motors enable pin state</field>
+      <field type="uint8_t" name="motor_auto_disable">Boolean indicating motors auto disable mode is enable (1) or disable (0)</field>
+      <field type="float" name="motors_timeout" units="s">Motors auto disable timeout</field>
     </message>
 
   </messages>
