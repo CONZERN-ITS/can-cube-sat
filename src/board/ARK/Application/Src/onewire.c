@@ -34,7 +34,7 @@ void TM_GPIO_SetPinAsInput(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
 		/* Pin is set */
 		if (GPIO_Pin & (1 << i)) {
 			/* Set 00 bits combination for input */
-			if (i < 7) {
+			if (i < 8) {
 				GPIOx->CRL &= ~((uint32_t)(0x03 << 4*i));
 			}
 			else {
@@ -52,7 +52,7 @@ void TM_GPIO_SetPinAsOutput(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
 		/* Pin is set */
 		if (GPIO_Pin & (1 << i)) {
 			/* Set 00 bits combination for input */
-			if (i < 7) {
+			if (i < 8) {
 				GPIOx->CRL = (GPIOx->CRL & ~((uint32_t)(0x03 << 4*i))) | ((uint32_t)0x01 << 4*i);
 			}
 			else {
