@@ -61,10 +61,34 @@ static void sensors_task(void *arg) {
 #endif
 	owb_use_crc(owb, true);  // enable CRC check for ROM code
 
+#ifndef ITS_ESP_DEBUG
+	// Если это не стенд
+
+	const OneWireBus_ROMCode device_rom_codes[ITS_OWB_MAX_DEVICES] = {
+	#	if !defined(ITS_WIFI_SERVER) || !ITS_WIFI_SERVER // if wifi client
+			{ .bytes = { 0x28, 0x52, 0x95, 0xE6, 0x0B, 0x00, 0x00, 0xBA } }, // БСК1
+			{ .bytes = { 0x28, 0x6E, 0x55, 0xE6, 0x0B, 0x00, 0x00, 0x08 } }, // БСК 2-2
+			{ .bytes = { 0x28, 0xD6, 0x96, 0xE6, 0x0B, 0x00, 0x00, 0xC2 } }, // БСК 3-2
+			{ .bytes = { 0x28, 0xE6, 0x89, 0xE6, 0x0B, 0x00, 0x00, 0x3C } }, // БСК 4-2
+			{ .bytes = { 0x28, 0x4F, 0x19, 0xAC, 0x0A, 0x00, 0x00, 0x11 } }  // БСК 5-2
+
+#	else // if wifi server
+			{ .bytes = { 0x28, 0x9A, 0x88, 0xE6, 0x0B, 0x00, 0x00, 0x14 } }, // БКУ
+			{ .bytes = { 0x28, 0x1A, 0x24, 0xE6, 0x0B, 0x00, 0x00, 0xEC } }, // БСК 2-1
+			{ .bytes = { 0x28, 0xA3, 0x1C, 0xAC, 0x0A, 0x00, 0x00, 0x97 } }, // БСК 3-1
+			{ .bytes = { 0x28, 0x24, 0x56, 0xE6, 0x0B, 0x00, 0x00, 0xFC } }, // БСК 4-1
+			{ .bytes = { 0x28, 0xEA, 0x18, 0xAC, 0x0A, 0x00, 0x00, 0x6B } }  // БСК 5-1
+#	endif
+	};
+
+	const int num_devices = 5;
+#else // if defined ITS_ESP_DEBUG
+	// Если это стенд
 	// Find all connected devices
 	ESP_LOGD(TAG, "Find devices:");
-	OneWireBus_ROMCode device_rom_codes[ITS_OWB_MAX_DEVICES] = {0};
+
 	int num_devices = 0;
+
 	OneWireBus_SearchState search_state = {0};
 	bool found = false;
 	owb_search_first(owb, &search_state, &found);
@@ -78,59 +102,22 @@ static void sensors_task(void *arg) {
 		owb_search_next(owb, &search_state, &found);
 	}
 	ESP_LOGD(TAG, "Found %d device%s", num_devices, num_devices == 1 ? "" : "s");
+
+#endif
+
 	for (int i = 0; i < num_devices; i++)
 	{
-		ESP_LOGI(
-			TAG,
-			"ds18b20_addr: %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
-			(int)device_rom_codes[i].bytes[0],
-			(int)device_rom_codes[i].bytes[1],
-			(int)device_rom_codes[i].bytes[2],
-			(int)device_rom_codes[i].bytes[3],
-			(int)device_rom_codes[i].bytes[4],
-			(int)device_rom_codes[i].bytes[5],
-			(int)device_rom_codes[i].bytes[6],
-			(int)device_rom_codes[i].bytes[7]
-		);
-	}
+		const OneWireBus_ROMCode * rom_code = &device_rom_codes[i];
+		char rom_code_s[OWB_ROM_CODE_STRING_LENGTH] = {0};
+		owb_string_from_rom_code(*rom_code, rom_code_s, sizeof(rom_code_s));
 
-	// In this example, if a single device is present, then the ROM code is probably
-	// not very interesting, so just print it out. If there are multiple devices,
-	// then it may be useful to check that a specific device is present.
+		ESP_LOGD(TAG, "checking ds18b20 number %d", i);
 
-	if (0)
-	{
-		// For a single device only:
-		OneWireBus_ROMCode rom_code;
-		owb_status status = owb_read_rom(owb, &rom_code);
-		if (status == OWB_STATUS_OK)
-		{
-			char rom_code_s[OWB_ROM_CODE_STRING_LENGTH];
-			owb_string_from_rom_code(rom_code, rom_code_s, sizeof(rom_code_s));
-			ESP_LOGD(TAG, "Single device %s present", rom_code_s);
-		}
-		else
-		{
-			ESP_LOGE(TAG, "An error occurred reading ROM code: %d", status);
-		}
-	}
-	else
-	{
-		// Search for a known ROM code (LSB first):
-		// For example: 0x1502162ca5b2ee28
-		OneWireBus_ROMCode known_device = {
-			.fields.family = { 0x28 },
-			.fields.serial_number = { 0xee, 0xb2, 0xa5, 0x2c, 0x16, 0x02 },
-			.fields.crc = { 0x15 },
-		};
-		char rom_code_s[OWB_ROM_CODE_STRING_LENGTH];
-		owb_string_from_rom_code(known_device, rom_code_s, sizeof(rom_code_s));
-		bool is_present = false;
-
-		owb_status search_status = owb_verify_rom(owb, known_device, &is_present);
+		bool is_present;
+		owb_status search_status = owb_verify_rom(owb, *rom_code, &is_present);
 		if (search_status == OWB_STATUS_OK)
 		{
-			ESP_LOGD(TAG, "Device %s is %s", rom_code_s, is_present ? "present" : "not present");
+			ESP_LOGI(TAG, "Device %s is %s", rom_code_s, is_present ? "present" : "not present");
 		}
 		else
 		{
@@ -144,31 +131,11 @@ static void sensors_task(void *arg) {
 	{
 		DS18B20_Info * ds18b20_info = ds18b20_malloc();  // heap allocation
 		devices[i] = ds18b20_info;
-/*
-		if (num_devices == 1)
-		{
-			ESP_LOGD(TAG, "Single device optimisations enabled");
-			ds18b20_init_solo(ds18b20_info, owb);          // only one device on bus
-		}
-		else
-		{*/
-			ds18b20_init(ds18b20_info, owb, device_rom_codes[i]); // associate with bus and device
-		//}
+
+		ds18b20_init(ds18b20_info, owb, device_rom_codes[i]); // associate with bus and device
 		ds18b20_use_crc(ds18b20_info, true);           // enable CRC check on all reads
 		ds18b20_set_resolution(ds18b20_info, DS18B20_RESOLUTION);
 	}
-
-//    // Read temperatures from all sensors sequentially
-//    while (1)
-//    {
-//        printf("\nTemperature readings (degrees C):\n");
-//        for (int i = 0; i < num_devices; ++i)
-//        {
-//            float temp = ds18b20_get_temp(devices[i]);
-//            printf("  %d: %.3f\n", i, temp);
-//        }
-//        vTaskDelay(1000 / portTICK_PERIOD_MS);
-//    }
 
 	// Check for parasitic-powered devices
 	bool parasitic_power = false;
