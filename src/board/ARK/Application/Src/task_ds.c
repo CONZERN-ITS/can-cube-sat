@@ -14,10 +14,37 @@
 static float ds_temp[TDS_TEMP_MAX_COUNT];
 static int _is_valid[TDS_TEMP_MAX_COUNT];
 
-static ds18b20_config_t hds[TDS_TEMP_MAX_COUNT];
-static int ds_count;
-static onewire_t how;
+#if !defined CUBE_1 && !defined CUBE_2
 
+	static ds18b20_config_t hds[TDS_TEMP_MAX_COUNT];
+	static int ds_count = 0;
+
+#elif defined CUBE_1 && !defined CUBE_2
+	static ds18b20_config_t hds[TDS_TEMP_MAX_COUNT] =
+	{
+			{ .rom = 0x8b00000b4dc90b28 }, // банка 1
+			{ .rom = 0x3900000b4de81f28 }, // банка 2
+			{ .rom = 0xf800000b4d5f8d28 }, // банка 3
+			{ .rom = 0xf500000b4d235a28 }  // банка 4
+	};
+	static int ds_count = 4;
+
+#elif defined CUBE_2 && !defined CUBE_1
+	static ds18b20_config_t hds[TDS_TEMP_MAX_COUNT] =
+	{
+
+			{ .rom = 0xf900000b4d77cb28 }, // банка 1
+			{ .rom = 0x4800000b4ded0428 }, // банка 2
+			{ .rom = 0xe800000b4df6e328 }, // банка 3
+			{ .rom = 0xf400000b4de78128 }  // банка 4
+	};
+	static int ds_count = 4;
+
+#else
+	#error "invalid cube definition"
+#endif
+
+static onewire_t how;
 
 
 static void (*callback_arr[TDS_CALLBACK_COUNT])(void);
@@ -54,6 +81,7 @@ void task_ds_init(void *arg) {
     onewire_Init(&how, OW_GPIO_Port, OW_Pin);
     HAL_Delay(100);
 
+#if !defined CUBE_1 && !defined CUBE_2
     int status = onewire_First(&how);
     int index = 0;
     while (status) {
@@ -75,6 +103,14 @@ void task_ds_init(void *arg) {
         return;
     }
     _ds_sort(hds, ds_count);
+#else
+    for (int i = 0; i < ds_count; i++)
+    {
+        hds[i].how = &how;
+        hds[i].resolution = ds18b20_Resolution_12bits;
+    }
+#endif
+
     ds18b20_StartAll(&hds[0]);
 }
 
