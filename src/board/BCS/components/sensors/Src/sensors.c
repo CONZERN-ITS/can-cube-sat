@@ -78,6 +78,21 @@ static void sensors_task(void *arg) {
 		owb_search_next(owb, &search_state, &found);
 	}
 	ESP_LOGD(TAG, "Found %d device%s", num_devices, num_devices == 1 ? "" : "s");
+	for (int i = 0; i < num_devices; i++)
+	{
+		ESP_LOGI(
+			TAG,
+			"ds18b20_addr: %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
+			(int)device_rom_codes[i].bytes[0],
+			(int)device_rom_codes[i].bytes[1],
+			(int)device_rom_codes[i].bytes[2],
+			(int)device_rom_codes[i].bytes[3],
+			(int)device_rom_codes[i].bytes[4],
+			(int)device_rom_codes[i].bytes[5],
+			(int)device_rom_codes[i].bytes[6],
+			(int)device_rom_codes[i].bytes[7]
+		);
+	}
 
 	// In this example, if a single device is present, then the ROM code is probably
 	// not very interesting, so just print it out. If there are multiple devices,
