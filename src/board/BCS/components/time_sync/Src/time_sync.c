@@ -125,7 +125,7 @@ void time_sync_from_sins_install(ts_sync *cfg) {
 	gpio_config_t init_pin_int = {
 		.mode = GPIO_MODE_INPUT,
 		.pull_up_en = GPIO_PULLUP_DISABLE,
-		.pull_down_en = GPIO_PULLDOWN_DISABLE,
+		.pull_down_en = GPIO_PULLDOWN_ENABLE,
 		.intr_type = GPIO_INTR_POSEDGE,
 		.pin_bit_mask = 1ULL << cfg->pin
 	};
