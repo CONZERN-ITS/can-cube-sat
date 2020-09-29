@@ -34,8 +34,18 @@ int tina219_get_value(tina_value_t **arr, int **is_valid) {
 }
 
 void task_ina_init(void *arg) {
-    ina219_init_default(&hina[0], &hi2c2, INA219_I2CADDR_A1_GND_A0_GND << 1, INA_TIMEOUT);
-    ina219_init_default(&hina[1], &hi2c2, INA219_I2CADDR_A1_GND_A0_VSP << 1, INA_TIMEOUT);
+
+#   if defined CUBE_1 && !defined CUBE_2
+	ina219_init_default(&hina[0], &hi2c2, INA219_I2CADDR_A1_GND_A0_GND << 1, INA_TIMEOUT);
+#   elif defined CUBE_2 && !defined CUBE_1
+    // не делаем ничего, так как ин тут нет
+#   else
+#       error "invalid cube definition"
+    // устаревший вариант для двух инн
+    //ina219_init_default(&hina[0], &hi2c2, INA219_I2CADDR_A1_GND_A0_GND << 1, INA_TIMEOUT);
+    //ina219_init_default(&hina[1], &hi2c2, INA219_I2CADDR_A1_GND_A0_VSP << 1, INA_TIMEOUT);
+
+#   endif
 }
 
 void task_ina_update(void *arg) {

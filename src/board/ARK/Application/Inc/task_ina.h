@@ -10,9 +10,15 @@
 
 #define TINA_READ_PERIOD 0
 #define TINA_CALLBACK_COUNT 3
-#define TINA_COUNT 2
-
 #define INA_TIMEOUT 100
+
+#if defined CUBE_1 && !defined CUBE_2
+#   define TINA_COUNT 1
+#elif defined CUBE_2 && !defined CUBE_1
+#   define TINA_COUNT 0
+#else
+#   error "invalid cube definition"
+#endif
 
 typedef struct {
     float current;

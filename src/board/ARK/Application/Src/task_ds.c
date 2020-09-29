@@ -27,7 +27,7 @@ static int _is_valid[TDS_TEMP_MAX_COUNT];
 			{ .rom = 0xf800000b4d5f8d28 }, // банка 3
 			{ .rom = 0xf500000b4d235a28 }  // банка 4
 	};
-	static int ds_count = 4;
+	static const int ds_count = 4;
 
 #elif defined CUBE_2 && !defined CUBE_1
 	static ds18b20_config_t hds[TDS_TEMP_MAX_COUNT] =
@@ -38,7 +38,7 @@ static int _is_valid[TDS_TEMP_MAX_COUNT];
 			{ .rom = 0xe800000b4df6e328 }, // банка 3
 			{ .rom = 0xf400000b4de78128 }  // банка 4
 	};
-	static int ds_count = 4;
+	static const int ds_count = 4;
 
 #else
 	#error "invalid cube definition"

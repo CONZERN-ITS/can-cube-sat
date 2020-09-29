@@ -18,7 +18,7 @@
 
 
 static int tsend_therm_period = 1000 / TDS_TEMP_MAX_COUNT;
-static int tsend_elect_period = 1000 / TINA_COUNT;
+static int tsend_elect_period = 2000 / (TINA_COUNT + 1);
 
 static int ds_updated;
 static int ina_updated;
