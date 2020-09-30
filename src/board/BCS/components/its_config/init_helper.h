@@ -72,7 +72,7 @@
 
 #define ITS_SPISR_PORT				SPI2_HOST
 
-#define ITS_OWB_MAX_DEVICES			10
+#define ITS_OWB_MAX_DEVICES			6
 
 
 static const ip_addr_t ITS_WIFI_SERVER_ADDRESS = IPADDR4_INIT_BYTES(192, 168, 4, 1);
