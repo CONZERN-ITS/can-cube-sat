@@ -9,6 +9,8 @@ class DataWidget(QtWidgets.QTreeWidget):
         data_range = []
         colors = [QtGui.QColor('#0000FF'), QtGui.QColor('#FF0000')]
         background_color = QtGui.QColor('#000000')
+        timeout_color = QtGui.QColor('#FF00FF')
+        timer = None
 
         def set_background_color(self, background_color):
             self.background_color = background_color
@@ -20,9 +22,9 @@ class DataWidget(QtWidgets.QTreeWidget):
             self.packet_name = packet_name
 
         def setup_fields(self, names, group_name=None):
-            self.setup_background(self.background_color)
             if group_name is not None:
                 self.setText(0, group_name)
+                self.setText(1, '')
             for name in names:
                 item = QtWidgets.QTreeWidgetItem(self)
                 item.setText(0, name)
@@ -43,10 +45,14 @@ class DataWidget(QtWidgets.QTreeWidget):
                             DataWidget.TreeItem.setup_background(self.child(i), self.colors[0])
                         elif data[i] > self.data_range[i][1]:
                             DataWidget.TreeItem.setup_background(self.child(i), self.colors[1])
+                    if self.timer is not None:
+                        self.timer.start()
 
         def set_value(self, value):
             self.setup_background(self.background_color)
             self.setText(1, str(value))
+            if self.timer is not None:
+                self.timer.start()
 
         def get_value(self):
             return self.text(1)
@@ -59,14 +65,15 @@ class DataWidget(QtWidgets.QTreeWidget):
             self.timer.timeout.connect(self.timeout_action)
 
         def timeout_action(self):
-            for i in self.childCount():
-                TreeItem.setup_background(self.child(i), self.timeout_color)
+            self.setup_background(self.timeout_color)
+            for i in range(self.childCount()):
+                DataWidget.TreeItem.setup_background(self.child(i), self.timeout_color)
 
         def set_data_range(self, data_range):
             self.data_range = data_range
             if len(data_range) < self.childCount():
                 for i in range(self.childCount() - len(data_range)):
-                    self.data_range.append([None])
+                    self.data_range.append(None)
 
         def set_colors(self, colors):
             self.colors = colors
@@ -183,15 +190,14 @@ class DataWidget(QtWidgets.QTreeWidget):
                 item = self.topLevelItem(self.time_table).child(i)
                 pack = data.get(item.get_packet_name()[0], None)
                 if pack is not None:
-                    print('lol')
-                    item.set_value(int(item.get_value()) + len(list(pack[:,1])))
+                    item.set_value(int(item.get_value()) + pack.shape[0])
 
         for j in range((self.time_table + self.packet_table), self.topLevelItemCount()):
             for i in range(self.topLevelItem(j).childCount()):
                 item = self.topLevelItem(j).child(i)
                 pack = data.get(item.get_packet_name()[0], None)
                 if pack is not None:
-                    item.set_data(list(pack[:,1]))
+                    item.set_data(pack[-1][1:])
 
     def clear_data(self):
         self.setup_ui_design()
