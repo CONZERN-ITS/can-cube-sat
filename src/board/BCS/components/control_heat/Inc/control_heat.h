@@ -10,9 +10,11 @@
 
 #include "shift_reg.h"
 
-#define CONTROL_HEAT_HIGHTHD 10.0
-#define CONTROL_HEAT_LOWTHD -5.0
+#define CONTROL_HEAT_HIGHTHD 34.0
+#define CONTROL_HEAT_LOWTHD 29.0
 #define CONTROL_HEAT_UPDATE_PERIOD 10000 //ms
+#define CONTROL_HEAT_RADIO_HIGH_THD 35.0
+#define CONTROL_HEAT_RADIO_LOW_THD 30.0
 
 int control_heat_init(shift_reg_handler_t *hsr, int shift, int task_on);
 

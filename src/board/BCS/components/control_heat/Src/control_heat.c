@@ -17,7 +17,9 @@
 #include "mavlink_help2.h"
 #include "init_helper.h"
 #include "log_collector.h"
+#include "radio.h"
 
+#include <math.h>
 
 static void _task_recv(void *arg);
 
@@ -34,6 +36,11 @@ static shift_reg_handler_t *_hsr;
 static int consumption[ITS_BSK_COUNT] = {0}; //mA
 static int max_consumption = 1;
 static float temperature[ITS_BSK_COUNT] = {30.0};
+int64_t last_time_finite[ITS_BSK_COUNT];
+
+#define FINITE_TIMEOUT 10000 //ms
+
+static int radio_state;
 
 static TaskHandle_t t_recv;
 static TaskHandle_t t_upda;
@@ -43,18 +50,19 @@ static log_data_t log_data;
 
 int control_heat_init(shift_reg_handler_t *hsr, int shift, int task_on) {
 	memset(&log_data, 0, sizeof(log_data));
-	log_data.last_state = LOG_STATE_ON;
 	_hsr = hsr;
 	_shift = shift;
 
 	if (task_on) {
-		if (xTaskCreatePinnedToCore(log_collector_log_task, "Control heat log", configMINIMAL_STACK_SIZE + 1500, 0, 1, 0, tskNO_AFFINITY) != pdTRUE ||
-				xTaskCreatePinnedToCore(_task_update, "Control heat update", configMINIMAL_STACK_SIZE + 1500, 0, 4, &t_upda, tskNO_AFFINITY) != pdTRUE ||
+		if (xTaskCreatePinnedToCore(_task_update, "Control heat update", configMINIMAL_STACK_SIZE + 1500, 0, 4, &t_upda, tskNO_AFFINITY) != pdTRUE ||
 				xTaskCreatePinnedToCore(_task_recv, "Control heat recv", configMINIMAL_STACK_SIZE + 1500, 0, 3, &t_recv, tskNO_AFFINITY) != pdTRUE) {
 
 			log_data.last_state = LOG_STATE_OFF;
 		}
-
+		int64_t now = esp_timer_get_time();
+		for (int i = 0; i < ITS_BSK_COUNT; i++) {
+			last_time_finite[i] = now;
+		}
 
 	}
 
@@ -62,7 +70,6 @@ int control_heat_init(shift_reg_handler_t *hsr, int shift, int task_on) {
 		ESP_LOGE("CONTROL_HEAT", "Can't create tasks");
 		log_data.error_count++;
 		log_data.last_error = LOG_ERROR_LOW_MEMORY;
-		log_data.last_state = LOG_STATE_OFF;
 		log_collector_add(LOG_COMP_ID_SHIFT_REG, &log_data);
 	}
 	return -1;
@@ -104,7 +111,6 @@ static void _task_recv(void *arg) {
 	if (!tid.queue) {
 		log_data.error_count++;
 		log_data.last_error = LOG_ERROR_LOW_MEMORY;
-		log_data.last_state = LOG_STATE_OFF;
 		vTaskDelete(0);
 	}
 	if (its_rt_register(MAVLINK_MSG_ID_THERMAL_STATE, tid)) {
@@ -112,15 +118,9 @@ static void _task_recv(void *arg) {
 		vQueueDelete(tid.queue);
 		log_data.error_count++;
 		log_data.last_error = LOG_ERROR_LOW_MEMORY;
-		log_data.last_state = LOG_STATE_OFF;
 		vTaskDelete(0);
 	}
 	while (1) {
-		if (log_data.last_state == LOG_STATE_OFF) {
-			its_rt_unregister(MAVLINK_MSG_ID_THERMAL_STATE, tid);
-			vQueueDelete(tid.queue);
-			vTaskDelete(0);
-		}
 		mavlink_message_t msg = {0};
 		xQueueReceive(tid.queue, &msg, portMAX_DELAY);
 		if (msg.sysid != mavlink_system) {
@@ -128,29 +128,85 @@ static void _task_recv(void *arg) {
 		}
 		mavlink_thermal_state_t mts = {0};
 		mavlink_msg_thermal_state_decode(&msg, &mts);
-		temperature[msg.compid] = mts.temperature;
+		ESP_LOGD("CONTROL_HEAT", "TEMP: %d %f", msg.compid, mts.temperature);
+		if (isfinite(mts.temperature)) {
+			temperature[msg.compid] = mts.temperature;
+			last_time_finite[msg.compid] = esp_timer_get_time();
+		}
 	}
 }
+#define __CAT(a,b) a ## b
+#define __BSK(i) __CAT(ITS_BSK, i)
 
 static void _task_update(void *arg) {
+	int64_t now = esp_timer_get_time();
+	//Массив для сортировки не сортируя
 	int arr[ITS_BSK_COUNT] = {0};
 
+
 	while (1) {
-		if (log_data.last_state == LOG_STATE_OFF) {
-			vTaskDelete(0);
+		for (int i = 0; i < ITS_BSK_COUNT; i++) {
+			arr[i] = i;
 		}
+		//Поуправляем радио. Если плата слишком горячая, то...
+		if (temperature[0] > CONTROL_HEAT_HIGHTHD) {
+			portMUX_TYPE myMutex = portMUX_INITIALIZER_UNLOCKED;
+			taskENTER_CRITICAL(&myMutex);
+			radio_send_set_baud_koef(0.05);
+			taskEXIT_CRITICAL(&myMutex);
+			ESP_LOGD("CONTROL_HEAT", "TOO hot! Radio off");
+
+		}
+		if (temperature[0] < CONTROL_HEAT_LOWTHD) {
+			portMUX_TYPE myMutex = portMUX_INITIALIZER_UNLOCKED;
+			taskENTER_CRITICAL(&myMutex);
+			radio_send_set_baud_koef(1);
+			taskEXIT_CRITICAL(&myMutex);
+			ESP_LOGD("CONTROL_HEAT", "Cool! Radio on");
+		}
+		//Выключим те, от которых ничего не слышно
+		for (int i = 0; i < ITS_BSK_COUNT; i++) {
+			if ((now - last_time_finite[i]) / 1000 > FINITE_TIMEOUT) {
+				state[i] = OFF;
+				//Подправим температуру, чтобы оно не включилось из-за низкой температуры
+				temperature[i] = CONTROL_HEAT_HIGHTHD;
+				ESP_LOGD("CONTROL_HEAT", "No response from %d sensor. Switching off", i);
+			}
+		}
+		//Отсортируем. Теперь temperature[arr[i]] отсортированно по i по возрастанию
 		_sort(temperature, arr, ITS_BSK_COUNT);
+		//Подготовим новые состояния
 		state_t new[ITS_BSK_COUNT] = {0};
+		//Масимальный ток потребления
 		int total_consumption = 0;
 		for (int i = 0; i < ITS_BSK_COUNT; i++) {
+			ESP_LOGD("CONTROL_HEAT", "TEMP: %d %d %f", i, arr[i], temperature[arr[i]]);
+			//Если температура низкая и достаточно тока в запасе - вклчючаем.
+			//Самые холодные будут точно включены, так как они первые проходили эту проверку
 			if (temperature[arr[i]] < CONTROL_HEAT_LOWTHD &&
 					(total_consumption + consumption[arr[i]] < max_consumption)) {
 				new[arr[i]] = ON;
 				total_consumption += consumption[arr[i]];
+			} else {
+				new[arr[i]] = OFF;
 			}
 		}
-		for (int i = 0; i < ITS_BSK_COUNT; i++) {
-			shift_reg_set_level_pin(_hsr, _shift + ITS_SR_PACK_SIZE * i, new[i] == ON);
+		//Запишем на сдвиговые регистры новое состояние
+		for (int sensor = 0; sensor < ITS_BSK_COUNT; sensor++) {
+			//Между порядком датчиков и порядком нагревателей не прямое соответствие
+			int heater = 0;
+			switch (sensor) {
+			case 0: heater = ITS_BSK_1; break;
+			case 1: heater = ITS_BSK_2; break;
+			case 2: heater = ITS_BSK_3; break;
+			case 3: heater = ITS_BSK_4; break;
+			case 4: heater = ITS_BSK_5; break;
+			case 5: heater = ITS_BSK_2A; break;
+			default: heater = -1;
+			}
+			if (heater >= 0) {
+				shift_reg_set_level_pin(_hsr, _shift + ITS_SR_PACK_SIZE * heater, new[sensor] == ON);
+			}
 		}
 		esp_err_t rc = shift_reg_load(_hsr);
 		if (rc == ESP_OK) {
@@ -168,6 +224,8 @@ static void _task_update(void *arg) {
 			log_data.last_error = LOG_ERROR_LL_API;
 			log_data.error_count++;
 		}
+		//Соберем немного логов
+		log_collector_add(LOG_COMP_ID_SHIFT_REG, &log_data);
 		vTaskDelay(CONTROL_HEAT_UPDATE_PERIOD / portTICK_PERIOD_MS);
 	}
 

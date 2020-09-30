@@ -34,4 +34,6 @@ void radio_send_suspend(void);
 
 void radio_send_resume(void);
 
+void radio_send_set_baud_koef(float koef);
+
 #endif /* COMPONENTS_RADIO_INC_RADIO_H_ */

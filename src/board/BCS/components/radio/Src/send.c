@@ -164,6 +164,7 @@ typedef struct  {
 	uart_port_t port; //Порт уарта
 	uint32_t low_thrld; //Нижная граница буфера
 	uint32_t high_thrld;//Верхняя граница буфера
+	float baud_koef;
 } safe_send_cfg_t;
 
 /*
@@ -181,7 +182,8 @@ static 	safe_send_t sst = {
 			.high_thrld = 100,
 			.baud_send = 2400 / 2,
 			.buffer_size = 1000,
-			.port = ITS_UARTR_PORT
+			.port = ITS_UARTR_PORT,
+			.baud_koef = 1,
 	}
 };
 
@@ -242,7 +244,7 @@ static void task_send(void *arg) {
 		}
 
 		// Отлично, мы готовы отправлять. Сколько там радио может принять?
-		const int Bs = sst.cfg.baud_send / 8; //Перевод из бит/сек в Байт/сек
+		const int Bs = sst.cfg.baud_send * sst.cfg.baud_koef / 8; //Перевод из бит/сек в Байт/сек
 		//Буфер успел освободиться за то время, пока эта ф-ия не вызывалась
 		const int64_t now = esp_timer_get_time();
 		// Сколько байт успело уйти из буфера радио
@@ -313,6 +315,9 @@ void radio_send_resume(void) {
 		vTaskResume(task_s);
 }
 
+void radio_send_set_baud_koef(float koef) {
+	sst.cfg.baud_koef = koef;
+}
 
 void radio_send_init(void) {
 	xTaskCreatePinnedToCore(task_send, "Radio send", configMINIMAL_STACK_SIZE + 4000, 0, 4, &task_s, tskNO_AFFINITY);
