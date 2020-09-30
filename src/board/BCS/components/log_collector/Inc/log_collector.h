@@ -9,6 +9,10 @@
 #define COMPONENTS_LOG_COLLECTOR_INC_LOG_COLLECTOR_H_
 
 #include <stdint.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+#include "freertos/semphr.h"
 
 #define LOG_COLLECTOR_SEND_PERIOD 1000 //ms
 #define LOG_COLLECTOR_ADD_PERIOD_COMMON LOG_COLLECTOR_SEND_PERIOD //ms
@@ -41,6 +45,7 @@ typedef enum {
 
 typedef struct {
 	log_data_t log_data[log_comp_name_size];
+	SemaphoreHandle_t mutex;
 } log_collector_t;
 
 typedef enum {

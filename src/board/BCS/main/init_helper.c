@@ -148,12 +148,12 @@ void init_basic(void) {
 	//esp - stm32f4
 	uart_param_config(ITS_UARTE_PORT, &init_pin_uart);
 	uart_driver_install(ITS_UARTE_PORT, ITS_UARTE_RX_BUF_SIZE, ITS_UARTE_TX_BUF_SIZE, ITS_UARTE_QUEUE_SIZE, &quart, 0);
-	uart_set_pin(ITS_UARTE_PORT, ITS_PIN_UARTE_TX, ITS_PIN_UARTE_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+	uart_set_pin(ITS_UARTE_PORT, UART_PIN_NO_CHANGE, ITS_PIN_UARTE_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
 	//esp - radio
 	uart_param_config(ITS_UARTR_PORT, &init_pin_uart0);
 	uart_driver_install(ITS_UARTR_PORT, ITS_UARTR_RX_BUF_SIZE, ITS_UARTR_TX_BUF_SIZE, 0, 0, 0);
-	uart_set_pin(ITS_UARTR_PORT, ITS_PIN_UARTR_TX, ITS_PIN_UARTR_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+	uart_set_pin(ITS_UARTR_PORT, ITS_PIN_UARTR_TX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
 #ifndef ITS_ESP_DEBUG
 	//shift reg
@@ -176,6 +176,7 @@ void init_basic(void) {
 }
 
 void init_helper(void) {
+	log_collector_init(0);
 	init_basic();
 
 	//imi_init();
@@ -206,9 +207,9 @@ void init_helper(void) {
 	int t = gpio_set_level(ITS_PIN_PL_VCC, 1);
 	ESP_LOGD("SYSTEM", "---------------------HEH: 0x%d", t);
 	control_magnet_init(&hsr, 2, 3);
-	control_heat_init(&hsr, 1, 0);
+	control_heat_init(&hsr, 1, 1);
 
-	shift_reg_load(&hsr);
+
 /*
 	control_magnet_enable(ITS_BSK_1, 1);
 	control_magnet_enable(ITS_BSK_2A, -1);
@@ -244,17 +245,16 @@ void init_helper(void) {
 	while (sd_init()) {
 		ESP_LOGD("SYSTEM","Trying launch SD");
 	}
+
 #endif
 #else
 	time_sync_from_bcs_install(&ITS_WIFI_SERVER_ADDRESS);
 #endif
 
 	ESP_LOGD("SYSTEM", "Wifi inited");
-	log_collector_init(0);
 	op_config_ip(&hop, 53597);
 	op_init((op_handler_t *)&hop);
 	input_init((op_handler_t *)&hop);
-
 }
 
 uint8_t mv_packet[MAVLINK_MAX_PACKET_LEN];
