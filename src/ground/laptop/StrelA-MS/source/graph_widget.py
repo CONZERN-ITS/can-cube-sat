@@ -129,7 +129,10 @@ class GraphWidget(PyQtGraph.GraphicsLayoutWidget):
 
     def setup_ui_design(self):
         for plot in self.plots:
-            self.removeItem(plot.plot)
+            try:
+                self.removeItem(plot.plot)
+            except KeyError:
+                pass
         self.plots = []
 
         self.settings.beginGroup("CentralWidget/GraphWidget")
