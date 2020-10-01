@@ -169,6 +169,8 @@ class DataWidget(QtWidgets.QTreeWidget):
             for j in range(self.topLevelItem(i).childCount()):
                 self.expandItem(self.topLevelItem(i).child(j))
 
+        self.resizeColumnToContents(0)
+
     def update_current_values (self):
         pass
 
