@@ -13,7 +13,11 @@
 
 #include "assert.h"
 
+#if defined CUBE_1
 const static uint8_t mavlink_system = CUBE_1_PCU;
+#elif defined CUBE_2
+const static uint8_t mavlink_system = CUBE_2_PCU;
+#endif
 
 mavlink_channel_t mavlink_claim_channel(void);
 
