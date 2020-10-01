@@ -44,10 +44,12 @@ void task_main_init(void *arg) {
 
     task_t t = {0};
 
+#   if defined CUBE_1 && !defined CUBE_2
     t.init = task_ina_init;
     t.update = task_ina_update;
     strcpy(t.name, "INA read");
     task_create(t, 0);
+#endif
 
     t.init = task_ds_init;
     t.update = task_ds_update;
@@ -64,10 +66,10 @@ void task_main_init(void *arg) {
     strcpy(t.name, "I2C recv");
     task_create(t, 0);
 
-    t.init = task_battery_control_init;
-    t.update = task_battery_control_update;
-    strcpy(t.name, "Battery control");
-    task_create(t, 0);
+    //t.init = task_battery_control_init;
+    //t.update = task_battery_control_update;
+    //strcpy(t.name, "Battery control");
+    //task_create(t, 0);
 
     t.init = adc_task_init;
     t.update = adc_task_update;
