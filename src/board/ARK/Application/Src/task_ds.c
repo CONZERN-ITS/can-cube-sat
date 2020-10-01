@@ -22,21 +22,22 @@ static int _is_valid[TDS_TEMP_MAX_COUNT];
 #elif defined CUBE_1 && !defined CUBE_2
 	static ds18b20_config_t hds[TDS_TEMP_MAX_COUNT] =
 	{
-			{ .rom = 0x8b00000b4dc90b28 }, // банка 1
-			{ .rom = 0x3900000b4de81f28 }, // банка 2
-			{ .rom = 0xf800000b4d5f8d28 }, // банка 3
-			{ .rom = 0xf500000b4d235a28 }  // банка 4
+			// Из-за путаницы при сборке в первом кубе стоит вторая АКБ
+			{ .rom = 0xf900000b4d77cb28 }, // банка 1
+			{ .rom = 0x4800000b4ded0428 }, // банка 2
+			{ .rom = 0xe800000b4df6e328 }, // банка 3
+			{ .rom = 0xf400000b4de78128 }  // банка 4
 	};
 	static const int ds_count = 4;
 
 #elif defined CUBE_2 && !defined CUBE_1
 	static ds18b20_config_t hds[TDS_TEMP_MAX_COUNT] =
 	{
-
-			{ .rom = 0xf900000b4d77cb28 }, // банка 1
-			{ .rom = 0x4800000b4ded0428 }, // банка 2
-			{ .rom = 0xe800000b4df6e328 }, // банка 3
-			{ .rom = 0xf400000b4de78128 }  // банка 4
+			// Из-за путаницы при сборке во втором кубе стоит первая АКБ
+			{ .rom = 0x8b00000b4dc90b28 }, // банка 1
+			{ .rom = 0x3900000b4de81f28 }, // банка 2
+			{ .rom = 0xf800000b4d5f8d28 }, // банка 3
+			{ .rom = 0xf500000b4d235a28 }  // банка 4
 	};
 	static const int ds_count = 4;
 
