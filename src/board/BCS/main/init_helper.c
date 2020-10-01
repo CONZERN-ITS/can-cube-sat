@@ -209,7 +209,23 @@ void init_helper(void) {
 	control_magnet_init(&hsr, 2, 3);
 	control_heat_init(&hsr, 1, 1);
 
-
+#if ITS_WIFI_SERVER
+	control_heat_set_max_consumption(1199);
+	control_heat_set_consumption(0, 300);
+	control_heat_set_consumption(1, 300);
+	control_heat_set_consumption(2, 300);
+	control_heat_set_consumption(3, 300);
+	control_heat_set_consumption(4, 300);
+	control_heat_set_consumption(5, 300);
+#else
+	control_heat_set_max_consumption(1199);
+	control_heat_set_consumption(0, 300);
+	control_heat_set_consumption(1, 300);
+	control_heat_set_consumption(2, 300);
+	control_heat_set_consumption(3, 300);
+	control_heat_set_consumption(4, 300);
+	control_heat_set_consumption(5, 300);
+#endif
 /*
 	control_magnet_enable(ITS_BSK_1, 1);
 	control_magnet_enable(ITS_BSK_2A, -1);
