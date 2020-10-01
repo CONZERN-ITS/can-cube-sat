@@ -290,6 +290,7 @@ if __name__ == '__main__':
     motors_timeout = MOTORS_TIMEOUT
     antenna_aiming_period = ANTENNA_AIMING_PERIOD
     target_last_time = (0, 0)
+    last_rssi_msg = None
     print('Init block end')
 
     while True:
@@ -351,6 +352,8 @@ if __name__ == '__main__':
                                                                                    enable=[int(mode) for mode in ACS.get_enable_state()],
                                                                                    motor_auto_disable=int(motors_timeout_flag),
                                                                                    motors_timeout=motors_timeout))
+                if last_rssi_msg is not None:
+                	send_message(command_connection, last_rssi_msg)
 
         msg = data_connection.recv_match()
         if msg is not None:
@@ -363,6 +366,12 @@ if __name__ == '__main__':
                     vector = gps - ACS.x_y_z
                     vector = ACS.recount_vector(vector)
                     ACS.count_target_angles(vector)
+
+            if msg.get_type() == "RSSI":
+                print(msg)
+                last_rssi_msg = msg
+                if command_connection.last_address is not None:
+                    send_message(command_connection, last_rssi_msg)
 
         if auto_control_mod:
             if (time.time() - start_time) > antenna_aiming_period:
