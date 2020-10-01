@@ -37,7 +37,7 @@
 #define ITS_SINS_GPS_CONFIGURE_TIMEOUT (1500)
 
 //! Размер для циклобуфера уарта, по которому приходят входящие GPS сообщения
-#define ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE (1500)
+#define ITS_SINS_GPS_UART_CYCLE_BUFFER_SIZE (4000)
 
 //! Размер линейного буфера для накопления UBX сообщений
 /*! Должен быть не меньше чем самое большое обрабатываемое UBX сообщение */
