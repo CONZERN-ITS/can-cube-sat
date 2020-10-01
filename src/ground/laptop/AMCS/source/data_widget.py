@@ -263,7 +263,7 @@ class PositionWidget(QtWidgets.QWidget):
 
         frame = self.setup_frame(data_layout)
         frame_layout = QtWidgets.QHBoxLayout(frame)
-        self.setup_label(frame_layout, 'Aiming period')
+        self.setup_label(frame_layout, 'Aiming period:')
         self.aiming_period_lbl = self.setup_label(frame_layout, 'None')
 
         frame = self.setup_frame(data_layout)
@@ -286,8 +286,16 @@ class PositionWidget(QtWidgets.QWidget):
             self.setup_label(layout, text_list[i])
             self.motors_auto_disable_lbl.append(self.setup_label(layout, 'None'))
 
+        frame = self.setup_frame(data_layout)
+        frame_layout = QtWidgets.QHBoxLayout(frame)
+        self.setup_label(frame_layout, 'RSSI:')
+        self.rssi_lbl = self.setup_label(frame_layout, 'None')
+
     def setup_ui_design(self):
         pass
+
+    def change_rssi(self, data):
+        self.rssi_lbl.setText('{:.0f}'.format(data))
 
     def change_antenna_pos(self, data):
         for i in range(3):

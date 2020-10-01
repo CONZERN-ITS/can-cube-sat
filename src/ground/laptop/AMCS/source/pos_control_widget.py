@@ -172,23 +172,23 @@ class PositionControlPanel(QtWidgets.QWidget):
         if (sqr_norm < rad ** 2):
             if (abs(pos.x()) < 0.1) or (abs(pos.y() / pos.x()) < 1):
                 if pos.x() < 0:
-                    reg = 2
+                    sector = 2
                 else:
-                    reg = 0
+                    sector = 0
             else:
                 if pos.y() < 0:
-                    reg = 1
+                    sector = 1
                 else:
-                    reg = 3
+                    sector = 3
             if sqr_norm > ((rad * 0.75) ** 2):
-                rad = 3
+                circle = 3
             elif sqr_norm > ((rad * 0.5) ** 2):
-                rad = 2
+                circle = 2
             elif sqr_norm > ((rad * 0.25) ** 2):
-                rad = 1
+                circle = 1
             else:
-                rad = 0
-            return (reg, rad)
+                circle = 0
+            return (sector, circle)
         else:
             return None
 
@@ -234,6 +234,8 @@ class PositionControlWidget(QtWidgets.QWidget):
         return label
 
     def setup_ui(self):
+        double_validator = QtGui.QDoubleValidator()
+        double_validator.setLocale(QtCore.QLocale(QtCore.QLocale.English))
         self.layout = QtWidgets.QVBoxLayout(self)
 
         self.pos_control_panel = PositionControlPanel()
@@ -266,7 +268,7 @@ class PositionControlWidget(QtWidgets.QWidget):
             frame_layout.addWidget(label, 0, i)
             self.pos_control_line_edit.append(QtWidgets.QLineEdit())
             self.pos_control_line_edit[-1].setText('0')
-            self.pos_control_line_edit[-1].setValidator(QtGui.QDoubleValidator())
+            self.pos_control_line_edit[-1].setValidator(double_validator)
             frame_layout.addWidget(self.pos_control_line_edit[-1], 1, i)
         self.control_btn = QtWidgets.QPushButton('Send')
         frame_layout.addWidget(self.control_btn, 2, 0, 1, 2)
@@ -277,7 +279,7 @@ class PositionControlWidget(QtWidgets.QWidget):
         frame_layout.addWidget(label, 0, 0)
         self.aiming_period_line_edit = QtWidgets.QLineEdit()
         self.aiming_period_line_edit.setText('0')
-        self.aiming_period_line_edit.setValidator(QtGui.QDoubleValidator())
+        self.aiming_period_line_edit.setValidator(double_validator)
         frame_layout.addWidget(self.aiming_period_line_edit, 0, 1)
         self.set_aiming_period_btn = QtWidgets.QPushButton('Send')
         frame_layout.addWidget(self.set_aiming_period_btn, 1, 0, 1, 2)
@@ -288,7 +290,7 @@ class PositionControlWidget(QtWidgets.QWidget):
         frame_layout.addWidget(label, 0, 0)
         self.motors_timeout_line_edit = QtWidgets.QLineEdit()
         self.motors_timeout_line_edit.setText('0')
-        self.motors_timeout_line_edit.setValidator(QtGui.QDoubleValidator())
+        self.motors_timeout_line_edit.setValidator(double_validator)
         frame_layout.addWidget(self.motors_timeout_line_edit, 0, 1)
         self.set_motors_timeout_btn = QtWidgets.QPushButton('Send')
         frame_layout.addWidget(self.set_motors_timeout_btn, 1, 0, 1, 2)

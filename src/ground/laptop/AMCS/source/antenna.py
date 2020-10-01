@@ -50,6 +50,8 @@ class AntennaSystem():
         self.motors_auto_disable = None
         self.motors_timeout = None
 
+        self.rssi = None
+
     def change_ip_and_port(self, ip, port):
         self.ip = ip
         self.port = port
@@ -101,6 +103,9 @@ class AntennaSystem():
     def get_motors_timeout(self):
         return self.motors_timeout
 
+    def get_rssi(self):
+        return self.rssi
+
     def add_state_data(self, msg):
         if msg.get_type() == 'AS_STATE':
             self.azimuth = msg.azimuth
@@ -123,6 +128,13 @@ class AntennaSystem():
             self.motors_enable = tuple(msg.enable)
             self.motors_auto_disable = msg.motor_auto_disable
             self.motors_timeout = msg.motors_timeout
+            return True
+        else:
+            return False
+
+    def add_rssi(self, msg):
+        if msg.get_type() == 'RSSI':
+            self.rssi = msg.rssi
             return True
         else:
             return False
@@ -225,6 +237,7 @@ class CommandSystem(QtCore.QObject):
     motors_enable_changed = QtCore.pyqtSignal(tuple)
     motors_auto_disable_mode_changed = QtCore.pyqtSignal(bool)
     motors_timeout_changed = QtCore.pyqtSignal(float)
+    rssi_changed = QtCore.pyqtSignal(float)
     def __init__(self):
         super(CommandSystem, self).__init__()
         self.antenna_system = None
@@ -242,9 +255,12 @@ class CommandSystem(QtCore.QObject):
 
     def new_msg_reaction(self, msg):
         if self.antenna_system.add_state_data(msg):
-            self.update_data()
+            self.update_state_data()
 
-    def update_data(self):
+        if self.antenna_system.add_rssi(msg):
+            self.update_rssi_data()
+
+    def update_state_data(self):
         data = list(self.antenna_system.get_antenna_pos())
         data.append(self.antenna_system.get_response_time())
         self.antenna_pos_changed.emit(tuple(data))
@@ -266,6 +282,9 @@ class CommandSystem(QtCore.QObject):
         self.motors_enable_changed.emit(tuple([bool(num) for num in self.antenna_system.get_motors_enable()]))
         self.motors_auto_disable_mode_changed.emit(bool(self.antenna_system.get_motors_auto_disable()))
         self.motors_timeout_changed.emit(self.antenna_system.get_motors_timeout())
+
+    def update_rssi_data(self):
+        self.rssi_changed.emit(self.antenna_system.get_rssi())
 
     def set_mode(self, mode):
         self.mode = mode

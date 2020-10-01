@@ -50,6 +50,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.antenna.motors_enable_changed.connect(self.position_widget.change_motors_enable)
         self.antenna.motors_auto_disable_mode_changed.connect(self.position_widget.change_motors_auto_disable_mode)
         self.antenna.motors_timeout_changed.connect(self.position_widget.change_motors_timeout)
+        self.antenna.rssi_changed.connect(self.position_widget.change_rssi)
 
         self.position_control_widget.pos_control_panel.top_btn_clicked.connect(self.antenna.put_up)
         self.position_control_widget.pos_control_panel.bottom_btn_clicked.connect(self.antenna.put_down)
@@ -79,7 +80,7 @@ class CentralWidget(QtWidgets.QWidget):
         try:
             self.antenna.set_aiming_period(float(self.position_control_widget.aiming_period_line_edit.text()))
         except ValueError:
-            pass
+            print(self.position_control_widget.aiming_period_line_edit.text())
 
     def set_motors_timeout_btn_action(self):
         try:
@@ -140,7 +141,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setup_ui(self):
         self.antenna = antenna.CommandSystem()
-        self.antenna.start_connection('192.168.1.228', '13404')
+        self.antenna.start_connection('10.10.10.228', '13404')
 
         self.toolbar = self.addToolBar('Commands')
         self.auto_control_on_btn = self.toolbar.addAction('Turn on\nautomatic\ncontrol')
@@ -164,7 +165,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.auto_control_on_btn = self.toolbar.addAction('Turn on motors\nauto disable mode')
         self.auto_control_on_btn.triggered.connect(self.antenna.motors_auto_disable_on)
 
-        self.auto_control_off_btn = self.toolbar.addAction('Turn on motors\nauto disable mode')
+        self.auto_control_off_btn = self.toolbar.addAction('Turn off motors\nauto disable mode')
         self.auto_control_off_btn.triggered.connect(self.antenna.motors_auto_disable_off)
 
         self.setup_coord_system_btn = self.toolbar.addAction('Setup coord\nsystem')
