@@ -178,7 +178,7 @@ typedef struct  {
 
 static 	safe_send_t sst = {
 	.cfg = {
-			.low_thrld = 0,
+			.low_thrld = 50,
 			.high_thrld = 100,
 			.baud_send = 2400 / 2,
 			.buffer_size = 1000,
@@ -259,9 +259,9 @@ static void task_send(void *arg) {
 		if (radio_free_space < 0)
 			radio_free_space = 0;
 
-		if (radio_free_space < sst.cfg.low_thrld)
+		if (radio_free_space < portion_size)
 		{
-			// Слишком мало. Подождем
+			// Слишком мало. Подождем. Нужно отправлять целый пакет
 			continue;
 		}
 
