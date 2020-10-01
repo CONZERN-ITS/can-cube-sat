@@ -10,7 +10,7 @@
 
 #include "shift_reg.h"
 
-#define CONTROL_HEAT_HIGHTHD 34.0
+//#define CONTROL_HEAT_HIGHTHD 34.0
 #define CONTROL_HEAT_LOWTHD (-5.0)
 #define CONTROL_HEAT_UPDATE_PERIOD 10000 //ms
 #define CONTROL_HEAT_RADIO_HIGH_THD 55.0

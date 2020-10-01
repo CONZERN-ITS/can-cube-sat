@@ -35,12 +35,11 @@ static state_t state[ITS_BSK_COUNT];
 static shift_reg_handler_t *_hsr;
 static int consumption[ITS_BSK_COUNT] = {0}; //mA
 static int max_consumption = 1;
-static float temperature[ITS_BSK_COUNT] = {30.0};
+static float temperature[ITS_BSK_COUNT] = {CONTROL_HEAT_LOWTHD + 1};
 int64_t last_time_finite[ITS_BSK_COUNT];
 
 #define FINITE_TIMEOUT 10000 //ms
 
-static int radio_state;
 
 static TaskHandle_t t_recv;
 static TaskHandle_t t_upda;
@@ -49,6 +48,9 @@ static log_data_t log_data;
 
 
 int control_heat_init(shift_reg_handler_t *hsr, int shift, int task_on) {
+	for (int i = 0; i < ITS_BSK_COUNT; i++) {
+		temperature[i] = CONTROL_HEAT_LOWTHD + 1;
+	}
 	memset(&log_data, 0, sizeof(log_data));
 	_hsr = hsr;
 	_shift = shift;
@@ -154,7 +156,7 @@ static void _task_update(void *arg) {
 			taskENTER_CRITICAL(&myMutex);
 			radio_send_set_baud_koef(0.10);
 			taskEXIT_CRITICAL(&myMutex);
-			ESP_LOGD("CONTROL_HEAT", "TOO hot! Radio off");
+			ESP_LOGD("CONTROL_HEAT", "TOO hot! Radio OFF");
 
 		}
 		if (temperature[0] < CONTROL_HEAT_RADIO_LOW_THD) {
@@ -162,14 +164,14 @@ static void _task_update(void *arg) {
 			taskENTER_CRITICAL(&myMutex);
 			radio_send_set_baud_koef(1);
 			taskEXIT_CRITICAL(&myMutex);
-			ESP_LOGD("CONTROL_HEAT", "Cool! Radio on");
+			ESP_LOGD("CONTROL_HEAT", "Cool! Radio ON");
 		}
 		//Выключим те, от которых ничего не слышно
 		for (int i = 0; i < ITS_BSK_COUNT; i++) {
 			if ((now - last_time_finite[i]) / 1000 > FINITE_TIMEOUT) {
 				state[i] = OFF;
 				//Подправим температуру, чтобы оно не включилось из-за низкой температуры
-				temperature[i] = CONTROL_HEAT_HIGHTHD;
+				temperature[i] = CONTROL_HEAT_LOWTHD + 1;
 				ESP_LOGD("CONTROL_HEAT", "No response from %d sensor. Switching off", i);
 			}
 		}
@@ -212,10 +214,10 @@ static void _task_update(void *arg) {
 		if (rc == ESP_OK) {
 			for (int i = 0; i < ITS_BSK_COUNT; i++) {
 				if (new[i] == ON && state[i] == OFF) {
-					ESP_LOGD("CONTROL_HEAT", "now on %d %f", i, temperature[i]);
+					ESP_LOGD("CONTROL_HEAT", "now ON %d %f", i, temperature[i]);
 				}
 				if (new[i] == OFF && state[i] == ON) {
-					ESP_LOGD("CONTROL_HEAT", "now off %d %f", i, temperature[i]);
+					ESP_LOGD("CONTROL_HEAT", "now OFF %d %f", i, temperature[i]);
 				}
 				state[i] = new[i];
 			}
