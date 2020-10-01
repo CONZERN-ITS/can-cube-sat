@@ -26,7 +26,7 @@ int ina219_init_default(ina219_t * self, I2C_HandleTypeDef *hi2c, ina219_i2c_add
     ina_cfg.shunt_res = INA219_ADC_RES_12_BIT_OVS_1;
     ina_cfg.mode = INA219_MODE_SHUNT_AND_BUS_CONT;
 
-    ina_cfg.shunt_r = 0.1f; // 100 миллиом
+    ina_cfg.shunt_r = 0.01f; // 10 миллиом
     ina_cfg.current_lsb = INA_CURRENT_LSB;
     error = ina219_set_cfg(self, &ina_cfg);
     printf("set_cfg error: %d\n", error);
