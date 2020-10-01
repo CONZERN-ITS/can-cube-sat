@@ -13,6 +13,7 @@ class GPS_data():
         while ((time.time() - start) < self.timeout):
             data = self.gpsd.next()
             if data['class'] == 'TPV':
+                print(data)
                 return data
         return None
 
