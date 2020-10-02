@@ -3,6 +3,7 @@ import argparse
 import sys
 import csv
 import collections
+from datetime import datetime
 
 if "MAVLINK20" not in os.environ:
     os.environ["MAVLINK20"] = "true"
@@ -18,7 +19,7 @@ class MsgProcessor:
     def _expand(self,retval, the_list, base_name=""):
         """ Разворачивает список и каждый его элемент записывает в словарь retval
             с ключем "%s[%d]" % (base_name, i), где i - номер элемента """
-        if isinstance(the_list, collections.Iterable) and not isinstance(the_list, str):
+        if isinstance(the_list, collections.abc.Iterable) and not isinstance(the_list, str):
             for i, value in enumerate(the_list):
                 key = "%s[%d]" % (base_name, i)
                 self._expand(retval, value, base_name=key)
@@ -33,7 +34,7 @@ class MsgProcessor:
 
         return retval
 
-    def __init__(self, base_path, msg_id):
+    def __init__(self, base_path, msg_id, notimestamps=False):
         self.msg_id = msg_id
         self.msg_class = mavlink.mavlink_map[msg_id]
         self.fpath = os.path.join(base_path, self.msg_class.name + ".csv")
@@ -43,6 +44,7 @@ class MsgProcessor:
         self.stream = None
         self.writer = None
         self.message_count = 0
+        self.notimestamps = notimestamps
 
     def accept(self, msg):
         msg_dict = msg.to_dict()
@@ -55,6 +57,26 @@ class MsgProcessor:
             "srcSystem": hdr.srcSystem,
             "srcComponent": hdr.srcComponent,
         })
+
+        # Добавим поле с красивым таймштампом в читаемом виде
+        # Если в сообщении есть time_s и time_us
+        if "time_s" in msg_dict and "time_us" in msg_dict:
+            ts = msg_dict["time_s"] + msg_dict["time_us"] / (1000*1000)
+            dt = datetime.fromtimestamp(ts)
+            ts_text = dt.strftime("%Y-%m-%dT%H:%M:%S")
+            msg_dict.update({
+                "time_gregorian": ts_text,
+            })
+
+        # Добавляем таймштамп из mavlog файла
+        if not self.notimestamps:
+            ts = msg._timestamp
+            dt = datetime.fromtimestamp(ts)
+            ts_text = dt.strftime("%Y-%m-%dT%H:%M:%S")
+            msg_dict.update({
+                "log_timestamp": ts,
+                "log_timestamp_gregorian": ts_text
+            })
 
         if "mavpackettype" in msg_dict:
             del msg_dict["mavpackettype"]  # Совершенно излишне в нашем случае
@@ -80,8 +102,9 @@ def main(argv):
     notimestamps = args.notimestamps
 
     if not base_path:
-    	fname = os.path.split(f)[1]
-    	base_path = os.path.splitext(fname)[0]
+        fname = os.path.split(f)[1]
+        base_path = os.path.splitext(fname)[0]
+
     if not os.path.isdir(base_path):
         os.makedirs(base_path, exist_ok=True)
 
@@ -101,7 +124,7 @@ def main(argv):
 
         msg_dict = msg.to_dict()
         if msg_id not in processors:
-            processor = MsgProcessor(base_path, msg_id)
+            processor = MsgProcessor(base_path, msg_id, notimestamps=notimestamps)
             processors.update({msg_id: processor})
 
         processor = processors[msg_id]
