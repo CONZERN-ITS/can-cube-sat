@@ -43,12 +43,12 @@ static void log_collector_task(void *arg) {
 
 		if (hsr.mutex) {
 			xSemaphoreTake(hsr.mutex, 0);
-			mbs.shift_reg_last_state = *((uint32_t *)&hsr.byte_arr);
+			mbs.shift_reg_last_state = *((uint32_t *)hsr.byte_arr);
 			xSemaphoreGive(hsr.mutex);
 		}
-		mbs.shift_reg_elapsed_time_from_msg 	= coll->log_data[LOG_COMP_ID_SINC_COMM].ellapsed_time;
-		mbs.shift_reg_error_count 				= coll->log_data[LOG_COMP_ID_SINC_COMM].error_count;
-		mbs.shift_reg_last_error 				= coll->log_data[LOG_COMP_ID_SINC_COMM].last_error;
+		mbs.shift_reg_elapsed_time_from_msg 	= coll->log_data[LOG_COMP_ID_SHIFT_REG].ellapsed_time;
+		mbs.shift_reg_error_count 				= coll->log_data[LOG_COMP_ID_SHIFT_REG].error_count;
+		mbs.shift_reg_last_error 				= coll->log_data[LOG_COMP_ID_SHIFT_REG].last_error;
 
 		xSemaphoreGive(coll->mutex);
 		mavlink_msg_bcu_stats_encode(mavlink_system, COMP_ANY_0, &msg, &mbs);
