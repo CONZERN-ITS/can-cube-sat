@@ -165,7 +165,7 @@ typedef struct  {
 	uart_port_t port; //Порт уарта
 	int super_portion_byte_limit;
 	int empty_buffer_time_limit;
-	float baud_koef;
+	int64_t sleep_delay;
 } safe_send_cfg_t;
 
 /*
@@ -196,9 +196,9 @@ static 	safe_send_t sst = {
 			.baud_send = 2400 / 2,
 			.buffer_size = 1000,
 			.port = ITS_UARTR_PORT,
-			.baud_koef = 1,
 			.super_portion_byte_limit = 300,
 			.empty_buffer_time_limit = 0,
+			.sleep_delay = RADIO_DEFAULT_PERIOD,
 	},
 	.sleep_state = SLEEP_STATE_SENDING,
 	.super_portion_byte_counter = 300
@@ -278,7 +278,7 @@ static void task_send(void *arg) {
 		}
 
 		// Отлично, мы готовы отправлять. Сколько там радио может принять?
-		const int Bs = sst.cfg.baud_send * sst.cfg.baud_koef / 8; //Перевод из бит/сек в Байт/сек
+		const int Bs = sst.cfg.baud_send / 8; //Перевод из бит/сек в Байт/сек
 		//Буфер успел освободиться за то время, пока эта ф-ия не вызывалась
 		const int64_t now = esp_timer_get_time();
 		// Сколько байт успело уйти из буфера радио
@@ -317,7 +317,7 @@ static void task_send(void *arg) {
 			{
 				ESP_LOGD("radio", "state: %d %d %d %d", sst.super_portion_byte_counter, sst.empty_buffer_time_deadline, sst.sleep_state, sst.filled);
 				// Теперь будем ждать время
-				sst.empty_buffer_time_deadline = now + 2000 * 1000;
+				sst.empty_buffer_time_deadline = now + sst.cfg.sleep_delay * 1000;
 				sst.sleep_state = SLEEP_STATE_WAIT_TIME;
 			}
 			continue;
@@ -385,8 +385,8 @@ void radio_send_resume(void) {
 		vTaskResume(task_s);
 }
 
-void radio_send_set_baud_koef(float koef) {
-	sst.cfg.baud_koef = koef;
+void radio_send_set_sleep_delay(int64_t sleep_delay) {
+	sst.cfg.sleep_delay = sleep_delay;
 }
 
 void radio_send_init(void) {

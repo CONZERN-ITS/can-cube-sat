@@ -17,13 +17,14 @@
 	F(3, MAVLINK_MSG_ID_PLD_BME280_DATA, 15) \
 	F(4, MAVLINK_MSG_ID_PLD_ME2O2_DATA, 15) \
 	F(5, MAVLINK_MSG_ID_PLD_MICS_6814_DATA, 15) \
-	F(6, MAVLINK_MSG_ID_SINS_isc, 10)
+	F(6, MAVLINK_MSG_ID_SINS_isc, 15) \
+	F(7, MAVLINK_MSG_ID_GPS_UBX_NAV_SOL, 5)
 
 #define RADIO_SEND_BAN(F) \
 	F(MAVLINK_MSG_ID_TIMESTAMP)
 
 #define RADIO_DEFAULT_PERIOD 30
-
+#define RADIO_SLEEP_DEFAULT 2000
 /*
  * Инициализирует отправку сообщений по радио с заданными через
  * RADIO_SEND_ID_ARRAY, RADIO_SEND_BAN, RADIO_DEFAULT_PERIOD их частотами.
@@ -34,6 +35,6 @@ void radio_send_suspend(void);
 
 void radio_send_resume(void);
 
-void radio_send_set_baud_koef(float koef);
+void radio_send_set_sleep_delay(int64_t sleep_delay);
 
 #endif /* COMPONENTS_RADIO_INC_RADIO_H_ */
