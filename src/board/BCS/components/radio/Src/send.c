@@ -13,7 +13,8 @@
 #include "esp_log.h"
 
 #define RADIO_SEND_DELAY 50
-
+#define RADIO_SLEEP_AWAKE_LEGNTH 300 //ms
+#define RADIO_SLEEP_SLEEP_LENGTH 4000 //ms
 
 typedef struct  {
 	int id; //ID сообщения
@@ -162,31 +163,64 @@ typedef struct  {
 	uint32_t baud_send; //Баудрейт устр-ва в бит/сек
 	uint32_t buffer_size; //Размер буфера внутри устр-ва
 	uart_port_t port; //Порт уарта
-	uint32_t low_thrld; //Нижная граница буфера
-	uint32_t high_thrld;//Верхняя граница буфера
+	int super_portion_byte_limit;
+	int empty_buffer_time_limit;
 	float baud_koef;
 } safe_send_cfg_t;
 
 /*
  * Параметры safe_uart_send
  */
+
+typedef enum sleep_state_t
+{
+	SLEEP_STATE_SENDING,
+	SLEEP_STATE_WAIT_ZERO,
+	SLEEP_STATE_WAIT_TIME,
+} sleep_state_t;
+
+
+
 typedef struct  {
 	safe_send_cfg_t cfg; //Настройки
 	int filled;	//Заполненность буферв
 	int64_t last_checked; //Время в мкс последнего изменения filled
+	sleep_state_t sleep_state;
+	int super_portion_byte_counter;
+	int empty_buffer_time_deadline;
 } safe_send_t;
+
 
 static 	safe_send_t sst = {
 	.cfg = {
-			.low_thrld = 50,
-			.high_thrld = 100,
 			.baud_send = 2400 / 2,
 			.buffer_size = 1000,
 			.port = ITS_UARTR_PORT,
 			.baud_koef = 1,
-	}
+			.super_portion_byte_limit = 300,
+			.empty_buffer_time_limit = 0,
+	},
+	.sleep_state = SLEEP_STATE_SENDING,
+	.super_portion_byte_counter = 300
 };
 
+/*
+static int is_sleeping(safe_send_t *sst) {
+	int new_state = sst->sleep_state;
+	int64_t now = esp_timer_get_time();
+	if (sst->sleep_state == 0) {
+		new_state = (now - sst->last_changed_sleep_time) / 1000 > RADIO_SLEEP_AWAKE_LEGNTH ? 1 : 0;
+	} else {
+		new_state = (now - sst->last_changed_sleep_time) / 1000 > RADIO_SLEEP_SLEEP_LENGTH ? 0 : 1;
+	}
+	if (new_state != sst->sleep_state) {
+		ESP_LOGD("radio", "state: %d %d %d", (int)now, (int)sst->last_changed_sleep_time, (int)sst->sleep_state);
+		sst->last_changed_sleep_time = now;
+	}
+	sst->sleep_state = new_state;
+	return sst->sleep_state;
+}
+*/
 
 static void task_send(void *arg) {
 	// Конфигурация отправки пакетов с контроллируемой скоростью
@@ -265,6 +299,40 @@ static void task_send(void *arg) {
 			continue;
 		}
 
+		switch (sst.sleep_state)
+		{
+		case SLEEP_STATE_SENDING:
+			if (sst.super_portion_byte_counter > 0)
+			{
+				// Квота еще есть, продолжаем
+				break;
+			}
+			ESP_LOGD("radio", "state: %d %d %d %d", sst.super_portion_byte_counter, sst.empty_buffer_time_deadline, sst.sleep_state, sst.filled);
+			sst.sleep_state = SLEEP_STATE_WAIT_ZERO;
+			continue;
+
+		case SLEEP_STATE_WAIT_ZERO:
+			// Ждем пока заполненость буфера опустится до 0
+			if (sst.filled <= 0)
+			{
+				ESP_LOGD("radio", "state: %d %d %d %d", sst.super_portion_byte_counter, sst.empty_buffer_time_deadline, sst.sleep_state, sst.filled);
+				// Теперь будем ждать время
+				sst.empty_buffer_time_deadline = now + 2000 * 1000;
+				sst.sleep_state = SLEEP_STATE_WAIT_TIME;
+			}
+			continue;
+
+		case SLEEP_STATE_WAIT_TIME:
+			if (now >= sst.empty_buffer_time_deadline)
+			{
+				ESP_LOGD("radio", "state: %d %d %d %d", sst.super_portion_byte_counter, sst.empty_buffer_time_deadline, sst.sleep_state, sst.filled);
+				// Переходим в ссстояние отправки
+				sst.super_portion_byte_counter = sst.cfg.super_portion_byte_limit;
+				sst.sleep_state = SLEEP_STATE_SENDING;
+			}
+			continue;
+		}
+
 		// Теперь понятно сколько мы можем и сколько хотим отправить
 		int to_write = portion_size;
 		if (to_write > radio_free_space)
@@ -292,9 +360,11 @@ static void task_send(void *arg) {
 			// Сдвигаем указатели на количество записанного
 			portion += rc;
 			portion_size -= rc;
+			sst.super_portion_byte_counter -= rc;
 
 			// эти байты как заполненные в буфере радио
 			sst.filled += rc;
+			uart_wait_tx_done(sst.cfg.port, portMAX_DELAY);
 		}
 	} // while(1)
 	vTaskDelete(NULL);
