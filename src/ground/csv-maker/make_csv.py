@@ -4,6 +4,7 @@ import sys
 import csv
 import collections
 from datetime import datetime
+from wgs84 import wgs84_xyz_to_latlonh
 
 if "MAVLINK20" not in os.environ:
     os.environ["MAVLINK20"] = "true"
@@ -76,6 +77,16 @@ class MsgProcessor:
             msg_dict.update({
                 "log_timestamp": ts,
                 "log_timestamp_gregorian": ts_text
+            })
+
+        # Если это GPS_UBX_NAV_SOL
+        if "GPS_UBX_NAV_SOL" == self.msg_class.name:
+            # Пересчитываем координаты
+            lat, lon, h = wgs84_xyz_to_latlonh(msg.ecefX/100, msg.ecefY/100, msg.ecefZ/100)
+            msg_dict.update({
+                "lat": lat,
+                "lon": lon,
+                "h": h,
             })
 
         if "mavpackettype" in msg_dict:
