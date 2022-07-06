@@ -1,5 +1,5 @@
 future==0.18.2
-lxml==4.5.2
+lxml==4.9.1
 numpy==1.19.1
 numpy-stl==2.11.2
 #pymavlink @ can-cube-sat/src/common/mavlink/pymavlink/dist/pymavlink-2.4.7-py3-none-any.whl
