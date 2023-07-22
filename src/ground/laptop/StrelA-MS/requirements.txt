@@ -1,4 +1,4 @@
-future==0.18.2
+future==0.18.3
 lxml==4.5.2
 numpy==1.19.1
 numpy-stl==2.11.2
